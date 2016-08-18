@@ -73,6 +73,17 @@ namespace gmsuite {
          */
         void read(vector<Sequence> &output) const;
         
+        /**
+         * Read single sequence from file. This behaves differently for separate 
+         * file formats:
+         *
+         * - FASTA: For the first fasta header definition (e.g. >...), all subsequent
+         *          lines not starting with ">" will be constitute a single sequence.
+         *          All remaining fasta definitions/sequences will be ignored, since
+         *          this function is meant to read a single sequence from a file.
+         */
+        Sequence read() const;
+        
         
         /**
          * Write sequences to file. This behaves differently for separate

@@ -15,58 +15,45 @@
 #include "Options.hpp"
 #include "OptionsGMS2.hpp"
 
+#include "Module.hpp"
+#include "ModuleGMS2.hpp"
+
 using namespace std;
 using namespace gmsuite;
 
-// Define helper methods to create OptionsXXX objects, depending on the mode set
-template<typename T> Options* createOptionsFromMode() { return new T; };
+#define MOD_GMS2 "gms2"
 
-typedef map<string, Options*(*)()> mode_options_t;      // map a key (mode) to corresponding OptionsXXX object
-
-mode_options_t init_mode_options_map() {
-    mode_options_t map;
+string usage_message(string progName) {
+    stringstream ssm;
     
-    map["gms2"] = &createOptionsFromMode<OptionsGMS2>;          // add gms2 options pair
+    ssm << "Usage: " << progName << " mode" << endl;
+    ssm << "The valid modes are:" << endl;
+    ssm << "\t" << MOD_GMS2 << "\t" << "GeneMarkS2" << endl;
     
-    return map;
+    return ssm.str();
 }
 
-
 int main(int argc, const char * argv[]) {
-    
 
-    Options options;
-    
-    // get "mode" from options
-    if (!options.parse(argc, argv))
-        return 1;
-    
-    /***** Now that mode is parsed, we create the corresponding OptionsXXX object to handle its parameters *****/
-    
-    // start by creating a map that maps modes to OptionsXXX objects
-    mode_options_t mode_map = init_mode_options_map();
-    
-    // use that map to create the corresponding options object
-    Options* optionsMode;
-    
-    // depending on mode, compile new options object
-    try {
-        optionsMode = mode_map.at(options.mode)();
-    }
-    catch (out_of_range &ex) {
-        cerr << "Error" << "Invalid mode: " << options.mode << endl;
-        cerr << "Use the -help command for more info" << endl;
+    // first argument should be a valid "mode" (i.e. which module to run)
+    if (argc < 2) {
+        cerr << usage_message(argv[0]) << endl;
         return 1;
     }
     
-    // parse CML with new mode-specific options object
-    optionsMode->parse(argc, argv);
+    // get mode
+    string aMode = argv[1];
     
-    // do something with options object
-    
-    
-    // free options object
-    delete optionsMode;
+    // create option and module objects based on mode
+    if (aMode == MOD_GMS2) {                            // GeneMarkS2
+        OptionsGMS2 options(aMode);                     // create option object
+        
+        if (!options.parse(argc, argv))                 // parse input arguments
+            return 1;
+        
+        ModuleGMS2 module (options);                    // create module with options
+        module.run();                                   // run module
+    }
     
     
     return 0;

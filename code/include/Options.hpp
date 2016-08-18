@@ -36,13 +36,18 @@ namespace gmsuite {
          * @param argv a vector of the words
          * @return true if the parse is successful, false otherwise
          */
-        virtual bool parse(int argc, const char *argv[]);
+        virtual bool parse(int argc, const char *argv[]) = 0;
         
         
         
         
         
     protected:
+        
+        
+        /**
+         * Create three groups of parameters: (1) all, (2) hidden, (3) positional
+         */
         
         /**
          * Retrieve the program name from the path (i.e. the word after the 

@@ -30,7 +30,7 @@ namespace gmsuite {
         
     public:
         
-        OptionsGMS2() {}
+        OptionsGMS2(string mode) { this->mode = mode; }
         
         /**
          * Parse the command-line words into arguments
@@ -46,9 +46,6 @@ namespace gmsuite {
     public:
         
         string fname_in;                /**< Input filename containing DNA sequence */
-        
-        
-        
     };
 }
 

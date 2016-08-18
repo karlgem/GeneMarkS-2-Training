@@ -16,6 +16,7 @@
 #include "CharNumConverter.hpp"
 
 using std::vector;
+using std::ostream;
 
 namespace gmsuite {
     
@@ -39,9 +40,9 @@ namespace gmsuite {
     public:
         
         typedef vector<int>::size_type size_type;                       // type for numeric sequence size
-        typedef CharNumConverter::element_t num_t;                                        /**< define generic type for number @see CharNumConverter */
+        typedef CharNumConverter::element_t num_t;                      /**< define generic type for number @see CharNumConverter */
         
-        vector<num_t> numSeq;                                                /**< Numeric sequence */
+        vector<num_t> numSeq;                                           /**< Numeric sequence */
         
         /**
          * Default constructor: create an empty numeric sequence.
@@ -70,16 +71,11 @@ namespace gmsuite {
          * @param idx the index of the element
          */
         int& operator[](size_type idx);
-        
-        
+    
     private:
-        
-        
-        
-        
-        
-        
+
     };
+    
 }
 
 #endif /* NumSequence_hpp */

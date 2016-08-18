@@ -29,10 +29,6 @@ SequenceFile::SequenceFile(string path, access_t access, format_t format) {
     this->access = access;
     this->format = format;
     
-    // if format not specified (i.e. AUTO), try to guess what it is
-    if (this->format == AUTO)
-        this->format = detectFormat();
-    
     // setup file parameters
     params.path = path;
     if (access == READ)
@@ -42,6 +38,10 @@ SequenceFile::SequenceFile(string path, access_t access, format_t format) {
     
     // open new file
     openfile();
+    
+    // if format not specified (i.e. AUTO), try to guess what it is
+    if (this->format == AUTO)
+        this->format = detectFormat();
     
     
     
@@ -85,12 +85,30 @@ void SequenceFile::read(vector<Sequence> &output) const {
 }
 
 
+Sequence SequenceFile::read() const {
+    
+    // read based on format set
+    if (this->format == FASTA) {
+        
+        // FIXME: Make this step more efficient and stable. No need to read all fasta defs
+        vector<Sequence> output;
+        read_fasta(output);
+        if (output.size() > 0)
+            return output[0];
+        else
+            return Sequence();
+    }
+    
+    return Sequence();
+}
 
+
+// file should already be opened
 SequenceFile::format_t SequenceFile::detectFormat() const {
     
     format_t result = PLAIN;            // assume it's PLAIN format
     
-    if (containsFastaDefLine(begin_read, end_read))
+    if (containsFastaDefLine(begin_read, end_read))                 // check if fasta
         result = FASTA;
     
     return result;

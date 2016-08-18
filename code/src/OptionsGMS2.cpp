@@ -22,16 +22,17 @@ bool OptionsGMS2::parse(int argc, const char *argv[]) {
     
     po::options_description desc("General Options");        // holds general arguments and values
     desc.add_options()
-    ("help,h", "Display help message")
-    ("config", po::value(&config_fnames), "Config file where options may be specified (can be specified more than once)")
-    ("verbose", po::value<int>(&verbose)->default_value(0), "Verbose level")
+        ("help,h", "Display help message")
+        ("config", po::value(&config_fnames), "Config file where options may be specified (can be specified more than once)")
+        ("verbose", po::value<int>(&verbose)->default_value(0), "Verbose level")
     ;
     
     // create set of hidden arguments which correspond to positional arguments. This is used
     // to add positional arguments, while not putting their description in the "options" section
     po::options_description positional_hidden;
     positional_hidden.add_options()
-    ("fname", po::value<string>(&fname_in)->required(), "filename")
+        ("mode", po::value<string>(&mode)->required(), "Program Mode")
+        ("fname", po::value<string>(&fname_in)->required(), "Name of sequence file");
     ;
     
     // congregate all options
@@ -41,16 +42,24 @@ bool OptionsGMS2::parse(int argc, const char *argv[]) {
     
     // specify positional arguments
     po::positional_options_description pos;
-    pos.add("fname", -1);
+    pos.add("mode", 1);
+    pos.add("fname", 1);
     
     
     // create storage component for storing names and values of arguments
     po::variables_map vm;
-    po::store(po::command_line_parser(argc, argv).          // pass in input
-              options(all_options).                         // specify options list
-              positional(pos).                              // specify which are positional
-              run(),                                        // parse options
-              vm);                                          // specify storage container
+    
+    try {
+        po::store(po::command_line_parser(argc, argv).          // pass in input
+                  options(all_options).                         // specify options list
+                  positional(pos).                              // specify which are positional
+                  run(),                                        // parse options
+                  vm);                                          // specify storage container
+    }
+    catch(exception &ex) {
+        cout << "Error: " << ex.what() << endl;
+        return false;
+    }
     
     // if help specified, print usage message and quit
     if (vm.count("help")) {
@@ -82,7 +91,15 @@ bool OptionsGMS2::parse(int argc, const char *argv[]) {
         }
     }
     
-    po::notify(vm);
+    
+    // try parsing arguments. Exception is returned if require option not provided.
+    try {
+        po::notify(vm);
+    }
+    catch (po::required_option &ex) {
+        cerr << "Error: " << ex.what() << endl;
+        return false;
+    }
     
     return true;
 
