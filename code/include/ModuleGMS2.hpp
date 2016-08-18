@@ -17,7 +17,7 @@
 namespace gmsuite {
     
     /**
-     * @class main_GMS2
+     * @class ModuleGMS2
      * @brief A class than runs the GeneMarkS2 module
      */
     class ModuleGMS2 : public Module {
