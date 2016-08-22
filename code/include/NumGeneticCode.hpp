@@ -55,7 +55,7 @@ namespace gmsuite {
          * @param codon candidate codon
          * @return true if codon is a start; false otherwise
          */
-        bool isStart(int codon) const;
+        bool isStart(CharNumConverter::seq_t codon) const;
         
         
         /**
@@ -64,32 +64,23 @@ namespace gmsuite {
          * @param codon candidate codon
          * @return true if codon is a stop; false otherwise
          */
-        bool isStop(int codon) const;
+        bool isStop(CharNumConverter::seq_t codon) const;
         
         
         /**
          * Get the list of start codons
          *
-         * @return a vector of ints, where each int represents a start
+         * @return a vector of CharNumConverter::seq_t, where each element represents a start
          */
-        vector<int> getStarts() const;
+        vector<CharNumConverter::seq_t> getStarts() const;
         
         
         /**
          * Get the list of stop codons
          *
-         * @return a vector of ints, where each int represents a stop
+         * @return a vector of CharNumConverter::seq_t, where each element represents a stop
          */
-        vector<int> getStops() const;
-        
-        
-        /**
-         * Translate a codon into an amino acid
-         *
-         * @param codon the codon to be translated
-         * @return amino acid integer representation
-         */
-        int translateCodon(int codon) const;
+        vector<CharNumConverter::seq_t> getStops() const;
         
         
         /**
@@ -103,9 +94,8 @@ namespace gmsuite {
     private:
         
         gcode_t gcode;                                      /**< Genetic code value         */
-        vector<int> starts;                                 /**< List of start codons       */
-        vector<int> stops;                                  /**< List of stop codons        */
-        map<int, int> translationTable;                     /**< Translation table of codons to amino-acids */
+        vector<CharNumConverter::seq_t> starts;             /**< List of start codons       */
+        vector<CharNumConverter::seq_t> stops;              /**< List of stop codons        */
     };
 }
 

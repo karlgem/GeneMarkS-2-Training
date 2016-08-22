@@ -13,8 +13,11 @@
 #include "SequenceFile.hpp"
 
 #include "AlphabetDNA.hpp"
-#include "CharNumConverter.hpp"
 #include "NumSequence.hpp"
+#include "GeneticCode.hpp"
+#include "NumGeneticCode.hpp"
+#include "CharNumConverter.hpp"
+
 
 using namespace std;
 using namespace gmsuite;
@@ -56,4 +59,29 @@ void ModuleGMS2::run() {
     
     cout << endl;
     
+    // Create genetic code 11
+    GeneticCode gc (GeneticCode::ELEVEN);
+    
+    cout << "ATG: " << gc.isStart("ATG") << endl;
+    cout << "GTG: " << gc.isStart("GTG") << endl;
+    cout << "TTG: " << gc.isStart("TTG") << endl;
+    
+    cout << "TAA: " << gc.isStop("TAA") << endl;
+    cout << "TGA: " << gc.isStop("TGA") << endl;
+    cout << "TAG: " << gc.isStop("TAG") << endl;
+    
+    // Create numeric genetic code 11
+    NumGeneticCode gcNum (gc, cnc);
+    
+    
 }
+
+
+
+
+
+
+
+
+
+
