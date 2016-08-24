@@ -27,8 +27,6 @@ TEST_CASE("Testing SequenceFile - ") {
         vector<Sequence> output;
         seqfile.read(output);
         
-        cout << output.size() << endl;
-        
     }
     
     SECTION("Read motifs") {
@@ -36,8 +34,6 @@ TEST_CASE("Testing SequenceFile - ") {
         
         vector<Sequence> output;
         seqfile.read(output);
-        
-        cout << output.size() << endl;
     }
     
     
