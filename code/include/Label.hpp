@@ -10,6 +10,9 @@
 #define Label_hpp
 
 #include <stdio.h>
+#include <string>
+
+using std::string;
 
 namespace gmsuite {
     
@@ -40,6 +43,18 @@ namespace gmsuite {
          * @param strand the strand (+,-)
          */
         Label(size_t left, size_t right, strand_t strand);
+        
+        
+        /**
+         * Get a string representation of the label. By default, label indeces are 0-indexed.
+         * However, for compatibility with existing datafile formats, the indexFromOne option
+         * allows the labels to be indexed from 1 (i.e. shifted up by 1).
+         *
+         * @param indexFromOne if set to true, output indeces start from 1 instead of 0
+         * @return a string representation of the label
+         */
+        string toString(bool indexFromOne) const;
+        
         
         size_t left;            /**< left-end of the fragment (inclusive) */
         size_t right;           /**< right-end of the fragment (inclusive) */
