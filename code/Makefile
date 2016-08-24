@@ -25,7 +25,7 @@ clean:
 
 # Tests
 tester:
-	$(CC) $(CFLAGS) test/*.cpp $(INC) $(LIB) -o bin/tester
+	$(CC) $(CFLAGS) test/maincatch.cpp $(INC) $(LIB) -o bin/tester
 
 # Spikes
 ticket:
