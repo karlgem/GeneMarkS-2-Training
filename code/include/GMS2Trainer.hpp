@@ -10,6 +10,7 @@
 #define GMS2Trainer_hpp
 
 #include <stdio.h>
+#include "Label.hpp"
 #include "NumSequence.hpp"
 
 namespace gmsuite {
@@ -33,7 +34,7 @@ namespace gmsuite {
         /**
          * Train
          */
-        void estimateParameters(const NumSequence &sequence);
+        void estimateParameters(const NumSequence &sequence, const vector<Label*> &labels);
         
         
         

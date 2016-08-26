@@ -53,7 +53,7 @@ void ModuleGMS2::run() {
     // convert sequence to numeric form
     NumSequence numSeq (seq, cnc);
     
-    for (NumSequence::size_type i = 0; i < numSeq.numSeq.size(); i++) {
+    for (NumSequence::size_type i = 0; i < numSeq.size(); i++) {
         cout << numSeq[i];
     }
     

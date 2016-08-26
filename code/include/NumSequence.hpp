@@ -42,8 +42,6 @@ namespace gmsuite {
         typedef vector<int>::size_type size_type;                       // type for numeric sequence size
         typedef CharNumConverter::element_t num_t;                      /**< define generic type for number @see CharNumConverter */
         
-        vector<num_t> numSeq;                                           /**< Numeric sequence */
-        
         /**
          * Default constructor: create an empty numeric sequence.
          */
@@ -71,9 +69,33 @@ namespace gmsuite {
          * @param idx the index of the element
          */
         int& operator[](size_type idx);
+        
+        /**
+         * Get the size of the sequence (equivalent to sequence length()).
+         *
+         * @return the size of the sequence.
+         */
+        virtual size_type size() const;
+        
+        
+        /*************** Sequence Iterators *******************/
+        
+        // Iterators
+        typedef vector<num_t>::iterator iterator;                   /**< Sequence iterator */
+        
+        virtual iterator begin();                                   /**< Start of iterator */
+        virtual iterator end();                                     /**< End of iterator   */
+        
+        
+        // Const Iterators
+        typedef vector<num_t>::const_iterator const_iterator;       /**< Const sequence iterator */
+        
+        virtual const_iterator begin() const;                       /**< Start of const iterator */
+        virtual const_iterator end() const;                         /**< End of const iterator   */
     
     private:
-
+        
+        vector<num_t> numSeq;                                           /**< Numeric sequence */
     };
     
 }

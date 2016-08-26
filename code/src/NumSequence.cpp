@@ -32,3 +32,30 @@ const NumSequence::num_t&  NumSequence::operator[](size_type idx) const {
 NumSequence::num_t& NumSequence::operator[](size_type idx) {
     return numSeq[idx];
 }
+
+
+
+NumSequence::iterator NumSequence::begin() {
+    return this->numSeq.begin();
+}
+
+NumSequence::iterator NumSequence::end() {
+    return this->numSeq.end();
+}
+
+
+
+NumSequence::const_iterator NumSequence::begin() const {
+    return this->numSeq.begin();
+}
+
+NumSequence::const_iterator NumSequence::end() const {
+    return this->numSeq.end();
+}
+
+
+NumSequence::size_type NumSequence::size() const {
+    return numSeq.size();
+}
+
+
