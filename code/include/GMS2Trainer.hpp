@@ -36,11 +36,10 @@ namespace gmsuite {
          */
         void estimateParameters(const NumSequence &sequence, const vector<Label*> &labels);
         
+        void estimateParamtersCoding(const NumSequence &sequence, const vector<Label *> &labels);
+        void estimateParamtersNonCoding(const NumSequence &sequence, const vector<Label *> &labels);
         
         
-        
-        
-    private:
         
     };
 }
