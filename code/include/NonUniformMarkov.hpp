@@ -76,21 +76,30 @@ namespace gmsuite {
         
     private:
         
-        // Define: type to store probabilities of non-uniform Markov model.
-        typedef vector<vector<double> > nonunif_markov_t;              // for probabilities
-        
-        nonunif_markov_t model;             // to store probabilities
-        size_t length;                      // model length
-        
         /**
          * Initialize the model by allocating space, setting the keys, and setting counts to 0
          */
         void initialize();
         
-        /**
-         * Reset all counts to zero
-         */
-        void resetCounts();
+        
+        // The structure of the model 'm' is a vector of vectors, where m[p] holds
+        // the probabilities for position 'p' of the model. If the model order is 2, the length
+        // is 4, and the alphabet is made up of 2 letters A,B, then the model structure will
+        // look like:
+        //    m[0]  m[1]  m[2]  m[3]
+        //      A   AA    AAA   AAA
+        //      B   AB    AAB   AAB
+        //          BA    ABA   ABA
+        //          BB    ABB   ABB
+        //                BAA   BAA
+        //                BAB   BAB
+        //                BBA   BBA
+        //                BBB   BBB
+        typedef vector<vector<double> > nonunif_markov_t;              // for probabilities
+        
+        nonunif_markov_t model;             // to store probabilities
+        size_t length;                      // model length
+        
     };
     
 }

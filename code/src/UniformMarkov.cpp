@@ -96,11 +96,6 @@ void UniformMarkov::initialize() {
     model.resize(numWords, 0);
 }
 
-// Reset all counts to zero
-void UniformMarkov::resetCounts() {
-    fill(model.begin(), model.end(), 0);        // set all values to zero
-}
-
 
 
 

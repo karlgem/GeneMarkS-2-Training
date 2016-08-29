@@ -37,6 +37,7 @@ namespace gmsuite {
          */
         Markov(unsigned order, const AlphabetDNA* alph);
         
+        
         /**
          * Construct the model probabilities from a list of sequences
          *

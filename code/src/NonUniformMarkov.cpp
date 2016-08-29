@@ -110,7 +110,3 @@ void NonUniformMarkov::initialize() {
         model[p].resize(numWords, 0);
     }
 }
-
-// reset counts to zero
-void NonUniformMarkov::resetCounts() {
-}

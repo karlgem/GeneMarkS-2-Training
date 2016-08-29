@@ -112,10 +112,6 @@ void PeriodicMarkov::initialize() {
     }
 }
 
-// reset counts to zero
-void PeriodicMarkov::resetCounts() {
-    
-}
 
 
 

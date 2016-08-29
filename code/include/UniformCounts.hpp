@@ -65,7 +65,8 @@ namespace gmsuite {
         
         /**
          * Update counts for a given sequence, by either incrementing or decrementing them. This provides
-         * a common implementation for count/decount methods
+         * a common implementation for count/decount methods. Each derived class of Counts should implement
+         * this method, as it is called by the count/decount methods.
          *
          * @param begin the start of the sequence
          * @param end the end of the sequence

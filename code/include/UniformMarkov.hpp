@@ -41,6 +41,7 @@ namespace gmsuite {
          */
         void construct(const vector<NumSequence> &sequences, int pcount = 0);
         
+        
         /**
          * Construct the model probabilities from existing counts.
          *
@@ -53,6 +54,7 @@ namespace gmsuite {
          */
         void construct(const Counts* counts, int pcount = 0);
         
+        
         /**
          * Compute the score of a sequence using the model probabilities
          *
@@ -61,6 +63,7 @@ namespace gmsuite {
          * @param useLog whether log-form should be used.
          */
         double evaluate(NumSequence::const_iterator begin, NumSequence::const_iterator end, bool useLog = false) const;
+        
         
         /**
          * Generate a string representation of the model
@@ -71,21 +74,28 @@ namespace gmsuite {
         
         
     private:
-        
-        // Define: type to store probabilities of non-uniform Markov model.
-        typedef vector<double> uniform_markov_t;                // for probabilities
-        
-        uniform_markov_t model;         // to store probabilities
-        
+
         /**
          * Initialize the model by allocating space, setting the keys, and setting counts to 0
          */
         void initialize();
         
-        /**
-         * Reset all counts to zero
-         */
-        void resetCounts();
+        
+        // The structure of the model 'm' is a vector of doubles, where m holds
+        // the counts of the model. If the model order is 2, and the alphabet is
+        // made up of 2 letters A,B, then the model structure will look like:
+        //     m
+        //    AAA
+        //    AAB
+        //    ABA
+        //    ABB
+        //    BAA
+        //    BAB
+        //    BBA
+        //    BBB
+        typedef vector<double> uniform_markov_t;        // for probabilities
+        
+        uniform_markov_t model;                         // to store probabilities
     };
     
 }
