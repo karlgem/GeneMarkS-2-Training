@@ -9,6 +9,7 @@
 #include "NonUniformMarkov.hpp"
 #include "NonUniformCounts.hpp"
 
+#include <math.h>
 #include <stdexcept>
 
 using std::invalid_argument;
@@ -86,7 +87,74 @@ void NonUniformMarkov::construct(const Counts* counts, int pcount) {
 
 // Compute the score of a sequence using the model probabilities
 double NonUniformMarkov::evaluate(NumSequence::const_iterator begin, NumSequence::const_iterator end, bool useLog) const {
-    return 0;
+    
+    // if nothing to iterate over, return 0
+    if (begin >= end)
+        return 0;
+    
+    double score = 1;       // since we're multiplying (if !useLog)
+    if (useLog)
+        score = 0;          // since we're summing
+    
+    size_t numElements = alphabet->sizeValid();             // number of elements that can make up valid words (e.g. A,C,G,T)
+    size_t elementEncodingSize = ceil(log2(numElements));   // number of bits required to encode all elements (e.g. A,C,G,T require 2 bits)
+    size_t mask = 0;                        // used to clear wordIndex of junk and capture the relevant bits for the index
+    
+    size_t position = 0;                       // position of pwm
+    
+    // To set the mask, we need to set the N lower bits to 1's, where N is the number
+    // of bits required to encode a word of 'order+1' elements
+    // A word is made up of elementEncondingSize * (order+1) bits. Set them to 1 by simply looping that many times
+    
+    NumSequence::const_iterator currentElement = begin;
+    
+    size_t wordIndex = 0;       // contains the index of the current word (made up of order+1 elements)
+    
+    // loop over first "order" elements to store them as part of the initial word index
+    for (size_t i = 0; i < order; i++, currentElement++) {
+        wordIndex <<= elementEncodingSize;      // create space at lower bits for a new element
+        wordIndex += *currentElement;           // add new element to the wordIndex
+        
+        // set the mask to read word of 'i+1' elements
+        mask <<= 1;         // shift by one position
+        mask |= 1;          // set lowest bit to one
+        
+        // mask to remove old junk characters (doesn't affect wordIndex here. I do it just for consistency with remaining code)
+        wordIndex = wordIndex & mask;
+        
+        if (useLog)
+            score += log2(model[position][wordIndex]);
+        else
+            score *= model[position][wordIndex];
+        
+        position++;                                 // increment position
+        if (position == length)
+            break;                                  // exit loop when reached length of markov model
+    }
+    
+    
+    // for every word, add a count in the pwm
+    while (currentElement != end) {
+        
+        // add new element to the wordIndex
+        wordIndex <<= elementEncodingSize;      // create space at lower bits for a new element
+        wordIndex += *currentElement;           // add new element to the wordIndex
+        
+        wordIndex = wordIndex & mask;           // mask to remove old junk characters
+        
+        if (useLog)
+            score += log2(model[position][wordIndex]);
+        else
+            score *= model[position][wordIndex];
+        
+        position++;                                // increment frame
+        if (position == length)
+            break;                              // quit if frame reaches length of model
+        
+        currentElement++;                       // move to next letter
+    }
+
+    return score;
 }
 
 // Generate a string representation of the model
