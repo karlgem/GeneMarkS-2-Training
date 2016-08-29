@@ -20,23 +20,6 @@ Counts::Counts(unsigned order, const AlphabetDNA* alph) {
     this->alphabet = alph;
 }
 
-// copy constructor
-Counts::Counts(const Counts &other) {
-    this->order = other.order;
-    this->alphabet = other.alphabet;
-}
-
-// copy assignment
-Counts& Counts::operator=(const Counts &other) {
-    this->order = other.order;
-    this->alphabet = other.alphabet;
-    return *this;
-}
-
-// destructor
-Counts::~Counts() {
-}
-
 // Get the model's order
 unsigned Counts::getOrder() const {
     return order;

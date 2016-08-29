@@ -36,27 +36,6 @@ namespace gmsuite {
          */
         Counts(unsigned order, const AlphabetDNA* alph);
         
-        /**
-         * Copy constructor: handle data management during copies
-         *
-         * @param other the model to be copied
-         */
-        Counts(const Counts &other);
-        
-        
-        /**
-         * Copy assignment operator: handle data management during copies
-         *
-         * @param other the model to be copied
-         */
-        Counts& operator=(const Counts &other);
-        
-        
-        /**
-         * Destructor
-         */
-        virtual ~Counts();
-        
         
         /**
          * Construct the model counts from a list of sequences
