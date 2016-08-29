@@ -31,3 +31,13 @@ const AlphabetDNA* Counts::getAlphabet() const {
 }
 
 
+// Count the sequence.
+void Counts::count(NumSequence::const_iterator begin, NumSequence::const_iterator end) {
+    updateCounts(begin, end, "increment");
+}
+
+
+// Decount the sequence.
+void Counts::decount(NumSequence::const_iterator begin, NumSequence::const_iterator end) {
+    updateCounts(begin, end, "decrement");
+}

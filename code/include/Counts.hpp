@@ -20,14 +20,16 @@ namespace gmsuite {
      * @class Counts
      * @brief An abstract class that represents Markov counts
      *
-     * A counts class representing generic Markov model counts
+     * A counts class representing generic Markov model counts. Given a set of sequences,
+     * this class can extract the element counts of that sequence based on the underlying
+     * Markov properties.
      */
     class Counts {
         
     public:
         
         /**
-         * Constructor: Initialize a Counts model witha specific order and alphabet
+         * Constructor: Initialize a Counts model with a specific order and alphabet.
          *
          * @param order the order of the model
          * @param alph the alphabet used by the sequences handled by this model
@@ -38,27 +40,23 @@ namespace gmsuite {
         
         
         /**
-         * Construct the model counts from a list of sequences
+         * Count the sequence. This method calls the updateCounts (increment) method, which
+         * should be implemented by each derived class.
          *
-         * @param sequences the list of sequences
+         * @param begin the start of the sequence
+         * @param end the end of the sequence
          */
-        virtual void construct(const vector<NumSequence> &sequences) = 0;
+        void count(NumSequence::const_iterator begin, NumSequence::const_iterator end);
         
         
         /**
-         * Count the sequence.
+         * Decount the sequence. This method calls the updateCounts (decrement) method, which
+         * should be implemented by each derived class.
          *
-         * @param sequence the sequence
+         * @param begin the start of the sequence
+         * @param end the end of the sequence
          */
-        virtual void count(NumSequence::const_iterator begin, NumSequence::const_iterator end) = 0;
-        
-        
-        /**
-         * Decount the sequence.
-         *
-         * @param sequence the sequence
-         */
-        virtual void decount(NumSequence::const_iterator begin, NumSequence::const_iterator end) = 0;
+        void decount(NumSequence::const_iterator begin, NumSequence::const_iterator end);
         
         
         /**
@@ -68,12 +66,21 @@ namespace gmsuite {
          */
         unsigned getOrder() const;
         
+        
         /**
          * Get the model's alphabet
          *
          * @return the model's alphabet
          */
         const AlphabetDNA* getAlphabet() const;
+        
+        
+        /**
+         * Construct the model counts from a list of sequences
+         *
+         * @param sequences the list of sequences
+         */
+        virtual void construct(const vector<NumSequence> &sequences) = 0;
         
         
         /**
@@ -93,6 +100,20 @@ namespace gmsuite {
         
         unsigned order;                     /**< The model's order */
         const AlphabetDNA *alphabet;        /**< The alphabet */
+        
+        
+        /**
+         * Update counts for a given sequence, by either incrementing or decrementing them. This provides
+         * a common implementation for count/decount methods. Each derived class of Counts should implement
+         * this method, as it is called by the count/decount methods.
+         *
+         * @param begin the start of the sequence
+         * @param end the end of the sequence
+         * @param operation what to do: either "increment" or "decrement"
+         *
+         * @throw invalid_argument if operation is neither "increment" or "decrement"
+         */
+        virtual void updateCounts(NumSequence::const_iterator begin, NumSequence::const_iterator end, string operation) = 0;
         
     };
     
