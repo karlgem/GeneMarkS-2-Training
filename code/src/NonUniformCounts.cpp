@@ -34,18 +34,6 @@ void NonUniformCounts::construct(const vector<NumSequence> &sequences) {
 }
 
 
-// Counts the sequence
-void NonUniformCounts::count(NumSequence::const_iterator begin, NumSequence::const_iterator end) {
-    updateCounts(begin, end, "increment");
-}
-
-
-// Decount the sequence
-void NonUniformCounts::decount(NumSequence::const_iterator begin, NumSequence::const_iterator end) {
-    updateCounts(begin, end, "decrement");
-}
-
-
 // generate string representation of the model
 string NonUniformCounts::toString() const {
     return "";
@@ -55,7 +43,7 @@ string NonUniformCounts::toString() const {
 // Reset counts to zero
 void NonUniformCounts::resetCounts() {
     for (size_t p = 0; p < model.size(); p++)
-        fill(model[p].begin(), model[p].end(), 0);          // set all values to zero
+        fill(model[p].begin(), model[p].end(), 0);      // set all values to zero
 }
 
 // initialize empty markov model
@@ -69,9 +57,8 @@ void NonUniformCounts::initialize() {
     model.resize(length);
     
     // for each period, allocate space of size 'numWords', and set all elements to zero
-    for (size_t p = 0; p < length; p++) {
+    for (size_t p = 0; p < length; p++) 
         model[p].resize(numWords, 0);
-    }
 }
 
 
