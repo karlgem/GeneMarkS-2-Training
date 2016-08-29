@@ -68,7 +68,7 @@ namespace gmsuite {
          */
         virtual double evaluate(NumSequence::const_iterator begin, NumSequence::const_iterator end, bool useLog = false) const = 0;
         
-        
+
         /**
          * Get the model's order
          *

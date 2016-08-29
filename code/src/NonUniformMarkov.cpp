@@ -1,13 +1,13 @@
 //
-//  PeriodicMarkov.cpp
+//  NonUniformMarkov.cpp
 //  GeneMark Suite
 //
-//  Created by Karl Gemayel on 8/27/16.
+//  Created by Karl Gemayel on 8/29/16.
 //  Copyright © 2016 Karl Gemayel. All rights reserved.
 //
 
-#include "PeriodicMarkov.hpp"
-#include "PeriodicCounts.hpp"
+#include "NonUniformMarkov.hpp"
+#include "NonUniformCounts.hpp"
 
 #include <stdexcept>
 
@@ -15,17 +15,17 @@ using std::invalid_argument;
 using namespace gmsuite;
 
 // Constructor:
-PeriodicMarkov::PeriodicMarkov(unsigned order, size_t period, const AlphabetDNA* alph) : Markov(order, alph) {
-    this->period = period;
+NonUniformMarkov::NonUniformMarkov(unsigned order, size_t length, const AlphabetDNA* alph) : Markov(order, alph) {
+    this->length = length;
     initialize();
 }
 
 
 // Construct the model probabilities from a list of sequences
-void PeriodicMarkov::construct(const vector<NumSequence> &sequences, int pcount) {
+void NonUniformMarkov::construct(const vector<NumSequence> &sequences, int pcount) {
     
     // get counts
-    PeriodicCounts counts (order, period, alphabet);
+    NonUniformCounts counts (order, length, alphabet);
     counts.construct(sequences);
     
     // construct probabilities from counts
@@ -33,7 +33,7 @@ void PeriodicMarkov::construct(const vector<NumSequence> &sequences, int pcount)
 }
 
 // Construct the model probabilities from existing counts.
-void PeriodicMarkov::construct(const Counts* counts, int pcount) {
+void NonUniformMarkov::construct(const Counts* counts, int pcount) {
     
     // counts cannot be NULL
     if (counts == NULL)
@@ -48,22 +48,22 @@ void PeriodicMarkov::construct(const Counts* counts, int pcount) {
         throw invalid_argument("Counts order must match Markov order.");
     
     // cast counts to PeriodiCounts
-    const PeriodicCounts* periodicCounts = dynamic_cast<const PeriodicCounts*>(counts);
+    const NonUniformCounts* nonunifCounts = dynamic_cast<const NonUniformCounts*>(counts);
     
-    if (periodicCounts == NULL)
+    if (nonunifCounts == NULL)
         throw invalid_argument("Counts should have type 'PeriodicCounts'.");
     
     // counts period must match Markov period
-    if (periodicCounts->getPeriod() != this->period)
-        throw invalid_argument("Counts period must match Markov period.");
+    if (nonunifCounts->getLength() != this->length)
+        throw invalid_argument("Counts length must match Markov length.");
     
     // start by copying counts
-    this->model = periodicCounts->model;
+    this->model = nonunifCounts->model;
     
-    vector<double> sums (period, 0);            // will contain sum of counts for each period
+    vector<double> sums (length, 0);            // will contain sum of counts for each period
     
     // add pseudocounts
-    for (size_t p = 0; p < period; p++)                         // for each period
+    for (size_t p = 0; p < length; p++)                         // for each period
         for (size_t n = 0; n < model[p].size(); n++) {          // for each word
             model[p][n] += pcount;                              // add pseudocount
             sums[p] += model[p][n];                             // add to sum
@@ -71,7 +71,7 @@ void PeriodicMarkov::construct(const Counts* counts, int pcount) {
     
     
     // normalize to get joint probabilities (e.g. P(ACG))
-    for (size_t p = 0; p < period; p++)                         // for each period
+    for (size_t p = 0; p < length; p++)                         // for each period
         for (size_t n = 0; n < model[p].size(); n++)            // for each word
             if (sums[p] != 0)                                   // check for division by zero
                 model[p][n] /= sums[p];                         // normalize word counts on sum
@@ -79,65 +79,38 @@ void PeriodicMarkov::construct(const Counts* counts, int pcount) {
     
     // for each period, convert joint probabilities to Markov (conditional):
     // e.g. P(ACG) -> P(G|AC)
-    for (size_t p = 0; p < period; p++)
+    for (size_t p = 0; p < length; p++)
         jointToMarkov(model[p]);
     
 }
 
 // Compute the score of a sequence using the model probabilities
-double PeriodicMarkov::evaluate(NumSequence::const_iterator begin, NumSequence::const_iterator end, bool useLog) const {
+double NonUniformMarkov::evaluate(NumSequence::const_iterator begin, NumSequence::const_iterator end, bool useLog) const {
     return 0;
 }
 
 // Generate a string representation of the model
-string PeriodicMarkov::toString() const {
+string NonUniformMarkov::toString() const {
     return "";
 }
 
 
-
-
 // Initialize the model by allocating space, setting the keys, and setting counts to 0
-void PeriodicMarkov::initialize() {
+void NonUniformMarkov::initialize() {
     size_t numElements = alphabet->sizeValid();         // the number of elements that can make up valid words (e.g. A,C,G,T)
     
-    size_t wordSize = (order+1);                        // the size of a word
-    size_t numWords = numElements << wordSize;          // number of possible words of size 'wordSize' with given alphabet
-    
-    model.resize(period);
+    model.resize(length);
     
     // for each period, allocate space of size 'numWords', and set all elements to zero
-    for (size_t p = 0; p < period; p++) {
+    for (size_t p = 0; p < length; p++) {
+        
+        size_t wordSize = (p+1);                        // the size of a word
+        size_t numWords = numElements << wordSize;          // number of possible words of size 'wordSize' with given alphabet
+        
         model[p].resize(numWords, 0);
     }
 }
 
 // reset counts to zero
-void PeriodicMarkov::resetCounts() {
-    
+void NonUniformMarkov::resetCounts() {
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

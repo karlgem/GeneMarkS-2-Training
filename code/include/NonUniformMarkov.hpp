@@ -1,15 +1,16 @@
 //
-//  PeriodicMarkov.hpp
+//  NonUniformMarkov.hpp
 //  GeneMark Suite
 //
-//  Created by Karl Gemayel on 8/27/16.
+//  Created by Karl Gemayel on 8/29/16.
 //  Copyright © 2016 Karl Gemayel. All rights reserved.
 //
 
-#ifndef PeriodicMarkov_hpp
-#define PeriodicMarkov_hpp
+#ifndef NonUniformMarkov_hpp
+#define NonUniformMarkov_hpp
 
 #include <stdio.h>
+
 
 #include "Markov.hpp"
 
@@ -17,12 +18,12 @@ namespace gmsuite {
     
     
     /**
-     * @class PeriodicMarkov
-     * @brief A Periodic Markov model
+     * @class NonUniformMarkov
+     * @brief A Non-uniform Markov model
      *
-     * This class represents a periodic Markov model of any order.
+     * This class represents a non-uniform Markov model of any order.
      */
-    class PeriodicMarkov : public Markov {
+    class NonUniformMarkov : public Markov {
         
     public:
         
@@ -30,10 +31,10 @@ namespace gmsuite {
          * Constructor:
          *
          * @param order the model's order
-         * @param period the model's period
+         * @param length the model's length
          * @param alphabet the alphabet used by the model
          */
-        PeriodicMarkov(unsigned order, size_t period, const AlphabetDNA* alph);
+        NonUniformMarkov(unsigned order, size_t length, const AlphabetDNA* alph);
         
         
         /**
@@ -76,10 +77,10 @@ namespace gmsuite {
     private:
         
         // Define: type to store probabilities of non-uniform Markov model.
-        typedef vector<vector<double> > period_markov_t;              // for probabilities
+        typedef vector<vector<double> > nonunif_markov_t;              // for probabilities
         
-        period_markov_t model;          // to store probabilities
-        size_t period;                  // model length
+        nonunif_markov_t model;             // to store probabilities
+        size_t length;                      // model length
         
         /**
          * Initialize the model by allocating space, setting the keys, and setting counts to 0
@@ -94,4 +95,6 @@ namespace gmsuite {
     
 }
 
-#endif /* PeriodicMarkov_hpp */
+
+
+#endif /* NonUniformMarkov_hpp */
