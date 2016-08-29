@@ -76,6 +76,7 @@ namespace gmsuite {
          */
         unsigned getOrder() const;
         
+        
         /**
          * Get the model's alphabet
          *
@@ -95,6 +96,15 @@ namespace gmsuite {
         
         unsigned order;                             /**< the model's order */
         const AlphabetDNA* alphabet;                /**< the alphabet */
+        
+        
+        /**
+         * Convert joing probabilities to Markov (conditional) probabilities.
+         * E.g. P(ACG) -> P(G|CA)
+         *
+         * @param probs vector of joint probabilities
+         */
+        void jointToMarkov(vector<double> &probs);
         
     };
     

@@ -80,7 +80,7 @@ namespace gmsuite {
         typedef vector<vector<string> > keys_t;                 // for keys (i.e. terms)
         
         
-        period_markov_t model;                // to store probabilities
+        period_markov_t model;          // to store probabilities
         size_t period;                  // model length
         
         /**
@@ -98,11 +98,7 @@ namespace gmsuite {
          */
         void resetCounts();
         
-        /**
-         * Convert joing probabilities to Markov (conditional) probabilities.
-         * E.g. P(ACG) -> P(G|CA)
-         */
-        void jointToMarkov(vector<double> &probs);
+        
         
         
     };

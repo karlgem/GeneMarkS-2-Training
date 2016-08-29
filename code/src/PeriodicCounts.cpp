@@ -54,7 +54,8 @@ string PeriodicCounts::toString() const {
 
 // Reset counts to zero
 void PeriodicCounts::resetCounts() {
-    
+    for (size_t p = 0; p < model.size(); p++)
+        fill(model[p].begin(), model[p].end(), 0);          // set all values to zero
 }
 
 // initialize empty markov model
@@ -121,6 +122,8 @@ void PeriodicCounts::updateCounts(NumSequence::const_iterator begin, NumSequence
         wordIndex <<= elementEncodingSize;      // create space at lower bits for a new element
         wordIndex += *currentElement;           // add new element to the wordIndex
         
+        wordIndex = wordIndex & mask;           // mask to remove old junk characters
+        
         // increment or decrement
         if (operation == "increment") {
             model[frame][wordIndex]++;              // increment count by 1
@@ -142,8 +145,7 @@ void PeriodicCounts::updateCounts(NumSequence::const_iterator begin, NumSequence
 }
 
 
-
-
+// Get the model's period
 size_t PeriodicCounts::getPeriod() const {
     return period;
 }
