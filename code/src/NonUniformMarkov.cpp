@@ -89,8 +89,12 @@ void NonUniformMarkov::construct(const Counts* counts, int pcount) {
 double NonUniformMarkov::evaluate(NumSequence::const_iterator begin, NumSequence::const_iterator end, bool useLog) const {
     
     // if nothing to iterate over, return 0
-    if (begin >= end)
-        return 0;
+    if (begin >= end) {
+        if (useLog)
+            return -std::numeric_limits<double>::infinity();
+        else
+            return 0;
+    }
     
     double score = 1;       // since we're multiplying (if !useLog)
     if (useLog)
