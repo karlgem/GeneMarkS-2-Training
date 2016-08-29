@@ -17,10 +17,10 @@ namespace gmsuite {
     
     
     /**
-     * @class UnifMarkov
-     * @brief A Uniform Markov model
+     * @class PeriodicMarkov
+     * @brief A Periodic Markov model
      *
-     * This class represents a uniform Markov model of any order.
+     * This class represents a periodic Markov model of any order.
      */
     class PeriodicMarkov : public Markov {
         
@@ -77,8 +77,6 @@ namespace gmsuite {
         
         // Define: type to store probabilities of non-uniform Markov model.
         typedef vector<vector<double> > period_markov_t;              // for probabilities
-        typedef vector<vector<string> > keys_t;                 // for keys (i.e. terms)
-        
         
         period_markov_t model;          // to store probabilities
         size_t period;                  // model length
@@ -97,10 +95,6 @@ namespace gmsuite {
          * Reset all counts to zero
          */
         void resetCounts();
-        
-        
-        
-        
     };
     
 }

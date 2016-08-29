@@ -77,7 +77,7 @@ void PeriodicMarkov::construct(const Counts* counts, int pcount) {
                 model[p][n] /= sums[p];                         // normalize word counts on sum
     
     
-    // for each period, convert joint probabilities to Markov( conditional):
+    // for each period, convert joint probabilities to Markov (conditional):
     // e.g. P(ACG) -> P(G|AC)
     for (size_t p = 0; p < period; p++)
         jointToMarkov(model[p]);
@@ -101,7 +101,17 @@ void PeriodicMarkov::convertCountsToProbability() {
 
 // Initialize the model by allocating space, setting the keys, and setting counts to 0
 void PeriodicMarkov::initialize() {
+    size_t numElements = alphabet->sizeValid();         // the number of elements that can make up valid words (e.g. A,C,G,T)
     
+    size_t wordSize = (order+1);                        // the size of a word
+    size_t numWords = numElements << wordSize;          // number of possible words of size 'wordSize' with given alphabet
+    
+    model.resize(period);
+    
+    // for each period, allocate space of size 'numWords', and set all elements to zero
+    for (size_t p = 0; p < period; p++) {
+        model[p].resize(numWords, 0);
+    }
 }
 
 // reset counts to zero
