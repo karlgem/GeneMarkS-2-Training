@@ -34,18 +34,6 @@ void PeriodicCounts::construct(const vector<NumSequence> &sequences) {
 }
 
 
-// Counts the sequence
-void PeriodicCounts::count(NumSequence::const_iterator begin, NumSequence::const_iterator end) {
-    updateCounts(begin, end, "increment");
-}
-
-
-// Decount the sequence
-void PeriodicCounts::decount(NumSequence::const_iterator begin, NumSequence::const_iterator end) {
-    updateCounts(begin, end, "decrement");
-}
-
-
 // generate string representation of the model
 string PeriodicCounts::toString() const {
     return "";

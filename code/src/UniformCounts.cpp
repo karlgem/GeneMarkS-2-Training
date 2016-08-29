@@ -29,18 +29,6 @@ void UniformCounts::construct(const vector<NumSequence> &sequences) {
 }
 
 
-// Count the sequence.
-void UniformCounts::count(NumSequence::const_iterator begin, NumSequence::const_iterator end) {
-    updateCounts(begin, end, "increment");
-}
-
-
-// Decount the sequence.
-void UniformCounts::decount(NumSequence::const_iterator begin, NumSequence::const_iterator end) {
-    updateCounts(begin, end, "decrement");
-}
-
-
 // Generate a string representation of the model
 string UniformCounts::toString() const {
     return "";
@@ -51,8 +39,6 @@ string UniformCounts::toString() const {
 void UniformCounts::resetCounts() {
     fill(model.begin(), model.end(), 0);        // set all values to zero
 }
-
-
 
 
 // Initialize the model by allocating space and setting counts to 0

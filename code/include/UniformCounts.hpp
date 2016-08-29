@@ -42,22 +42,6 @@ namespace gmsuite {
         
         
         /**
-         * Count the sequence.
-         *
-         * @param sequence the sequence
-         */
-        void count(NumSequence::const_iterator begin, NumSequence::const_iterator end);
-        
-        
-        /**
-         * Decount the sequence.
-         *
-         * @param sequence the sequence
-         */
-        void decount(NumSequence::const_iterator begin, NumSequence::const_iterator end);
-        
-
-        /**
          * Generate a string representation of the model
          *
          * @return a string representation of the model
@@ -72,10 +56,6 @@ namespace gmsuite {
 
     
     protected:
-        
-        typedef vector<double> uniform_counts_t;        // to store counts
-        
-        uniform_counts_t model;     // to store counts
         
         /**
          * Initialize the model by allocating space and setting counts to 0
@@ -94,6 +74,23 @@ namespace gmsuite {
          * @throw invalid_argument if operation is neither "increment" or "decrement"
          */
         void updateCounts(NumSequence::const_iterator begin, NumSequence::const_iterator end, string operation);
+        
+        
+        // The structure of the model 'm' is a vector of doubles, where m holds
+        // the counts of the model. If the model order is 2, and the alphabet is
+        // made up of 2 letters A,B, then the model structure will look like:
+        //     m
+        //    AAA
+        //    AAB
+        //    ABA
+        //    ABB
+        //    BAA
+        //    BAB
+        //    BBA
+        //    BBB
+        typedef vector<double> uniform_counts_t;        // to store counts
+        
+        uniform_counts_t model;                         // to store counts
         
     };
 }

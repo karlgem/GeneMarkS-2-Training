@@ -39,28 +39,13 @@ namespace gmsuite {
          */
         PeriodicCounts(unsigned order, size_t period, const AlphabetDNA *alph);
         
+        
         /**
          * Construct the model counts from a list of sequences
          *
          * @param sequences the list of sequences
          */
         void construct(const vector<NumSequence> &sequences);
-        
-        
-        /**
-         * Count the sequence.
-         *
-         * @param sequence the sequence
-         */
-        void count(NumSequence::const_iterator begin, NumSequence::const_iterator end);
-        
-        
-        /**
-         * Decount the sequence.
-         *
-         * @param sequence the sequence
-         */
-        void decount(NumSequence::const_iterator begin, NumSequence::const_iterator end);
         
         
         /**
@@ -78,6 +63,7 @@ namespace gmsuite {
          */
         size_t getPeriod() const;
         
+        
         /**
          * Reset all counts to zero
          */
@@ -85,11 +71,6 @@ namespace gmsuite {
 
         
     private:
-        
-        typedef vector<vector<double> > period_counts_t;          // to store counts
-        
-        period_counts_t model;          // to store counts
-        size_t period;                  // model's period
         
         /**
          * Initialize the model by allocating space and setting counts to 0
@@ -107,6 +88,25 @@ namespace gmsuite {
          * @throw invalid_argument if operation is neither "increment" or "decrement"
          */
         void updateCounts(NumSequence::const_iterator begin, NumSequence::const_iterator end, string operation);
+        
+        
+        // The structure of the model 'm' is a vector of vectors, where m[p] holds
+        // the counts for frame 'p' of the model. If the model order is 2, the period
+        // is 3, and the alphabet is made up of 2 letters A,B, then the model structure will
+        // look like:
+        //    m[0]  m[1]  m[2]
+        //    AAA   AAA   AAA
+        //    AAB   AAB   AAB
+        //    ABA   ABA   ABA
+        //    ABB   ABB   ABB
+        //    BAA   BAA   BAA
+        //    BAB   BAB   BAB
+        //    BBA   BBA   BBA
+        //    BBB   BBB   BBB
+        typedef vector<vector<double> > period_counts_t;          // to store counts
+        
+        period_counts_t model;          // to store counts
+        size_t period;                  // model's period
         
     };
     
