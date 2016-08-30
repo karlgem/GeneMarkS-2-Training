@@ -68,6 +68,9 @@ void UniformMarkov::construct(const Counts* counts, int pcount) {
         if (sum != 0)                                           // check for division by zero
             model[n] /= sum;                                    // normalize word counts
     
+    // derive joint probabilities for order 'order-1' and lower. This is used to compute words of length shorter than 'order+1'
+    
+    
     // convert joint probabilities to Markov (conditional)
     // e.g. P(ACG) -> (G|AC)
     jointToMarkov(model);

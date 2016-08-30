@@ -93,9 +93,16 @@ namespace gmsuite {
         //    BAB
         //    BBA
         //    BBB
-        typedef vector<double> uniform_markov_t;        // for probabilities
+        typedef vector<double> uniform_markov_t;            // for markov probabilities
+        
+        // For order 2, to compute P(ACGT), we can break it down into
+        // P(ACGT) = P(AC) * P(G|AC) * P(T|CG)
+        // These joint probabilities P(AC) are stored in the below model,
+        // since they don't fit easily in the above structure. 
+        typedef vector<vector<double > > uniform_joint_t;   // for joint probabilities of lower orders
         
         uniform_markov_t model;                         // to store probabilities
+        uniform_joint_t jointProbs;                     // to store joint probabilities of lower orders
     };
     
 }

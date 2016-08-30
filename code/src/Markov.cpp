@@ -8,6 +8,7 @@
 
 #include "Markov.hpp"
 #include <stdexcept>
+#include <math.h>
 
 using std::invalid_argument;
 using namespace gmsuite;
@@ -39,7 +40,7 @@ const AlphabetDNA* Markov::getAlphabet() const {
 void Markov::jointToMarkov(vector<double> &probs) {
     
     // Problem Context:
-    // the probs vector holds element in the following order: e.g.
+    // the probs vector holds elements in the following order: e.g.
     //  index   |   element
     //     0    |     A1 A2
     //     1    |     A1 C2
@@ -96,3 +97,67 @@ void Markov::jointToMarkov(vector<double> &probs) {
             probs[n] /= denominators[blockIdx];                     // normalize
     }
 }
+
+
+
+void Markov::getLowerOrderJoint(unsigned currentOrder, const vector<double> &current, vector<double> &result) const {
+    
+    if (currentOrder == 0)
+        throw invalid_argument("Current order cannot be zero when getting lower order probabilities.");
+
+    // Problem Context:
+    // the probs vector holds elements in the following order: e.g.
+    //  index   |   element
+    //     0    |     A1 A2
+    //     1    |     A1 C2
+    //     2    |     A1 G2
+    //     3    |     A1 T2
+    //     4    |     C1 A2
+    //     5    |     C1 C2
+    //     6    |     C1 G2
+    //     7    |     C1 T2
+    //     8    |     ...
+    //
+    // The numbers near the letters indicate the position of the letter in the dinucleotide. E.g.
+    // A1C2 is AC, whereas A2C1 == C1A2 == CA
+    //
+    // To get joint probabilities of lower order, note that
+    // P(X1) = sum_{x} P(X1,X2)                                 for all values of x (e.g. A,C,G,T)
+    //
+    // This generalizes to higher orders, where
+    // P(X1,...,Xn-1) = sum_{x} P(X1,...,Xn-1,xn)
+    
+    // Define a block to be the number of (consecutive) elements contributing
+    // to the sum. E.g. in the above example, AA,AC,AG,AT all contribute
+    // to the same sum_{x} P(A1,x2). So the block size is 4.
+    size_t blockSize = alphabet->sizeValid();
+    size_t numOfBlocks = current.size() / blockSize;
+    
+    // current.size() should be divisible by blockSize
+    if (current.size() % blockSize != 0)
+        throw std::logic_error("Current.size() should be divisible by blockSize.");
+
+    // Compute the marginal probabilities (i.e. P(X1,...,Xn-1) = sum_{x} P(X1,...,Xn-1,xn))
+    result.resize(numOfBlocks,0);
+    
+    // compute one marginal for every block
+    for (size_t b = 0; b < numOfBlocks; b++) {
+        
+        // get starting index of current block in probs vector
+        size_t idx = b * blockSize;
+        
+        // loop over block and sum probabilities
+        for (size_t i = 0; i < blockSize; i++)
+            result[b] += current[idx++];
+    }
+}
+
+
+
+
+
+
+
+
+
+
