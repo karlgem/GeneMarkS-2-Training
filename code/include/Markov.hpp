@@ -94,18 +94,6 @@ namespace gmsuite {
         virtual string toString() const = 0;
         
         
-        /**
-         * Compute the 'direct' (i.e. currentOrder-1) lower order distribution of joint probabilities.
-         *
-         * @param currentOrder the current order of the joint probabilities
-         * @param current a vector holding the joint probabilities for order <currentOrder>
-         * @param result the vector where the result will be stored. That is, the joint probabilities
-         * for order = currentOrder-1
-         *
-         * @throw invalid_argument if currentOrder is equal to zero
-         */
-        void getLowerOrderJoint(unsigned currentOrder, const vector<double> &current, vector<double> &result) const;
-        
     protected:
         
         unsigned order;                             /**< the model's order */
@@ -119,6 +107,20 @@ namespace gmsuite {
          * @param probs vector of joint probabilities
          */
         void jointToMarkov(vector<double> &probs);
+        
+        
+        /**
+         * Compute the 'direct' (i.e. currentOrder-1) lower order distribution of joint probabilities.
+         *
+         * @param currentOrder the current order of the joint probabilities
+         * @param current a vector holding the joint probabilities for order <currentOrder>
+         * @param result the vector where the result will be stored. That is, the joint probabilities
+         * for order = currentOrder-1
+         *
+         * @throw invalid_argument if currentOrder is equal to zero
+         */
+        void getLowerOrderJoint(unsigned currentOrder, const vector<double> &current, vector<double> &result) const;
+        
         
     };
     

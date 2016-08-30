@@ -68,8 +68,13 @@ void UniformMarkov::construct(const Counts* counts, int pcount) {
         if (sum != 0)                                           // check for division by zero
             model[n] /= sum;                                    // normalize word counts
     
-    // derive joint probabilities for order 'order-1' and lower. This is used to compute words of length shorter than 'order+1'
+    // create a joint distribution for all orders less than or equal to this->order
+    jointProbs.resize(this->order + 1);      // for order, order-1, order-2, ... 0
+    jointProbs[this->order] = model;         // the joint for 'order' is in 'model'
     
+    // derive remaining joint probabilities for 'order-1' and lower. This is used to compute words of length shorter than 'order+1'
+    for (unsigned o = this->order; o > 0; o--)
+        this->getLowerOrderJoint(o, jointProbs[o], jointProbs[o-1]);        //  take previous joint probs and reduce (marginalize) it by one
     
     // convert joint probabilities to Markov (conditional)
     // e.g. P(ACG) -> (G|AC)
@@ -108,7 +113,7 @@ double UniformMarkov::evaluate(NumSequence::const_iterator begin, NumSequence::c
     size_t wordIndex = 0;       // contains the index of the current word (made up of order+1 elements)
     
     // loop over first "order" elements to store them as part of the initial word index
-    for (size_t i = 0; i < order; i++, currentElement++) {
+    for (size_t i = 0; i < order; i++) {
         wordIndex <<= elementEncodingSize;      // create space at lower bits for a new element
         wordIndex += *currentElement;           // add new element to the wordIndex
         
@@ -119,14 +124,28 @@ double UniformMarkov::evaluate(NumSequence::const_iterator begin, NumSequence::c
         // mask to remove old junk characters (doesn't affect wordIndex here. I do it just for consistency with remaining code)
         wordIndex = wordIndex & mask;
 
-        
         // FIXME: use absolute probabilities of smaller order to account for short words
-//        if (useLog)
-//            score += log2(model[wordIndex]);
-//        else
-//            score *= model[wordIndex];
+        if (useLog)
+            score += log2(model[wordIndex]);
+        else
+            score *= model[wordIndex];
+        
+        currentElement++;
+        
+        // if reached end of sequence, then use joint probabilities to compute sequence prob
+        if (currentElement == end) {
+            if (useLog)
+                return log2(jointProbs[i][wordIndex]);
+            else
+                return jointProbs[i][wordIndex];
+        }
     }
     
+    // compute joint probability of first word
+    if (useLog)
+        score += log2(jointProbs[this->order][wordIndex]);
+    else
+        score *= jointProbs[this->order][wordIndex];
     
     // for every word, add a count in the pwm
     while (currentElement != end) {
