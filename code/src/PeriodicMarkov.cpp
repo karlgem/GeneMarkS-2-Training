@@ -78,6 +78,21 @@ void PeriodicMarkov::construct(const Counts* counts, int pcount) {
                 model[p][n] /= sums[p];                         // normalize word counts on sum
     
     
+    // create a set of joint distributions for each period
+    jointProbs.resize(this->period);
+    
+    // for each period
+    for (size_t p = 0; p < this->period; p++) {
+        
+        // create a joint distribution for all orders less than or equal to this->order
+        jointProbs[p].resize(this->order + 1);      // for order, order-1, order-2, ... 0
+        jointProbs[p][this->order] = model[p];         // the joint for 'order' is in 'model'
+        
+        // derive remaining joint probabilities for 'order-1' and lower. This is used to compute words of length shorter than 'order+1'
+        for (unsigned o = this->order; o > 0; o--)
+            this->getLowerOrderJoint(o, jointProbs[p][o], jointProbs[p][o-1]);        //  take previous joint probs and reduce (marginalize) it by one
+    }
+    
     // for each period, convert joint probabilities to Markov (conditional):
     // e.g. P(ACG) -> P(G|AC)
     for (size_t p = 0; p < period; p++)
@@ -127,6 +142,7 @@ double PeriodicMarkov::evaluate(NumSequence::const_iterator begin, NumSequence::
         // mask to remove old junk characters (doesn't affect wordIndex here. I do it just for consistency with remaining code)
         wordIndex = wordIndex & mask;
         
+        // FIXME: use joint probability model (of lower orders, if necessary)
         if (useLog)
             score += log2(model[frame][wordIndex]);
         else

@@ -97,9 +97,18 @@ namespace gmsuite {
         //    BAB   BAB   BAB
         //    BBA   BBA   BBA
         //    BBB   BBB   BBB
-        typedef vector<vector<double> > period_markov_t;              // for probabilities
+        typedef vector<vector<double> > period_markov_t;              // for markov probabilities
+        
+        
+        // For order 2, to compute P(ACGT), we can break it down into
+        // P(ACGT) = P(AC) * P(G|AC) * P(T|CG)
+        // These joint probabilities P(AC) are stored in the below model,
+        // since they don't fit easily in the above structure. Since this is a periodic model,
+        // each frame has its own set of joint probability distributions
+        typedef vector<vector<vector<double > > > period_joint_t;   // for joint probabilities of lower orders
         
         period_markov_t model;          // to store probabilities
+        period_joint_t jointProbs;      // to store joint probabilities
         size_t period;                  // model length
     };
     
