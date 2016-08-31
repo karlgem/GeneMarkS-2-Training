@@ -9,9 +9,11 @@
 #include "ModuleGMS2.hpp"
 #include <iostream>
 
+#include "Label.hpp"
 #include "Sequence.hpp"
 #include "SequenceFile.hpp"
 
+#include "GMS2Trainer.hpp"
 #include "AlphabetDNA.hpp"
 #include "NumSequence.hpp"
 #include "GeneticCode.hpp"
@@ -30,6 +32,8 @@ ModuleGMS2::ModuleGMS2(const OptionsGMS2& opt) : options(opt) {
 // run GMS2 module
 void ModuleGMS2::run() {
     
+    const unsigned MAX_ITER = 10;
+    
     // read single sequence from file
     Sequence seq;
     try {
@@ -40,6 +44,10 @@ void ModuleGMS2::run() {
         cerr << "Error: Could not open file: " << options.fname_in << endl;
         return;
     }
+    
+    // read labels from file
+    vector<Label*> labels;
+    
     
     AlphabetDNA alphabet;                       // sequence alphabet
     GeneticCode gc (GeneticCode::ELEVEN);       // Create genetic code 11
@@ -65,12 +73,17 @@ void ModuleGMS2::run() {
      *      Step 2: Main Cycle     *
     \*******************************/
     
-    // Perform K iterations, where
+    // Perform MAX_ITER iterations, where
     //  (a) Perform motif search based on latest predicted starts
     //  (b) Estimate model parameters for coding, non-coding, motif models, ...
     //  (c) Pass parameters to HMM predictor, and get back new genome predictions
     //  (d) If convergence reached, end loop
-    
+    for (size_t iter = 0; iter < MAX_ITER; iter++) {
+        
+        GMS2Trainer trainer;
+        trainer.estimateParameters(numSeq, labels);
+        
+    }
     
     
     
