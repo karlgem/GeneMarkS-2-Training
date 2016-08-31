@@ -17,6 +17,7 @@ using namespace std;
 
 
 Label* readNextLabelLST(const char*& current, const char* const end);
+void gotoKey(const char*& current, const char* const end, string key);
 
 
 // constructor
@@ -77,15 +78,27 @@ void LabelFile::read_lst(vector<Label*> &output) const {
     // point to start of data
     const char* current = begin_read;
     
+    // ignore all lines until we reach "Predicted Genes"
+    gotoKey(current, end_read, "Predicted genes");
+
+    
+    bool foundFirstLabel = false;
+    
     // loop over all the file
     while (current != end_read) {
+        
+        // skip all new-lines
+        while (current != end_read && (*current == '\n' || *current == '\r'))
+            current++;
         
         // read next label
         currlabel = readNextLabelLST(current, end_read);
         
-        if (currlabel != NULL)
+        if (currlabel != NULL) {
             output.push_back(currlabel);
-        else
+            foundFirstLabel = true;
+        }
+        else if (foundFirstLabel)
             throw runtime_error("Could not read label from file.");
     }    
 }
@@ -109,12 +122,15 @@ Label* readNextLabelLST(const char*& current, const char* const end) {
     const char* endOfLine = current;
     
     cmatch match;
-    cregex expr = cregex::compile("^\\s*(\\d+)\\s+([+,-])\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+([1,2])\\s*$");
+    cregex expr = cregex::compile("^\\s*(\\d+)\\s+([+,-])\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+([1,2])\\s*");
     
     Label* label = NULL;
     
+    string t (startOfLine, endOfLine);
+    
     // parse 'line' for label information
-    if (regex_search(startOfLine, endOfLine, match, expr) && match.size() > 1) {
+//    if (regex_search(startOfLine, endOfLine, match, expr) && match.size() > 1) {
+    if (regex_search(t.c_str(), match, expr) && match.size() > 1) {
         size_t left;
         size_t right;
         char strandChar;
@@ -136,7 +152,74 @@ Label* readNextLabelLST(const char*& current, const char* const end) {
 
 
 
+void gotoKey(const char*& current, const char* const end, string key) {
+    
+    cmatch match;
+    cregex expr = cregex::compile(key);
+    
+    while (current != end) {
+        
+        // skip all new-lines
+        while (current != end && (*current == '\n' || *current == '\r'))
+            current++;
+            
+            
+        // start of line
+        const char* startOfLine = current;
+        
+        // read the remainder of the line
+        while (current != end && *current != '\n' && *current != '\r')
+            current++;
+        
+        const char* endOfLine = current;
+        
+        // check if line matches key
+        if (regex_search(startOfLine, endOfLine, match, expr)) {
+            return;
+        }
+    }
+}
 
+
+/**
+ * Detect the file's format. This assumes an already opened file
+ *
+ * @return the file's format.
+ */
+LabelFile::format_t LabelFile::detectFormat() const {
+    return LST;     // FIXME: detect format
+}
+
+/**
+ * Open the file and set start/end pointers to the data.
+ */
+void LabelFile::openFile() {
+    
+    // if file is open, close it
+    if (mfile.is_open())
+        mfile.close();
+    
+    // open file
+    mfile.open(params);
+    
+    // (re)set pointers
+    if (access == READ) {
+        begin_read = mfile.const_data();
+        end_read = begin_read + mfile.size();
+    }
+    else if (access == WRITE) {
+        begin_write = mfile.data();
+        end_write = begin_write + mfile.size();
+    }
+}
+
+/**
+ * Close the file
+ */
+void LabelFile::closeFile() {
+    if (mfile.is_open())
+        mfile.close();
+}
 
 
 
