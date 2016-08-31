@@ -30,15 +30,10 @@ ModuleGMS2::ModuleGMS2(const OptionsGMS2& opt) : options(opt) {
 // run GMS2 module
 void ModuleGMS2::run() {
     
-    Sequence seq;
-    
     // read single sequence from file
+    Sequence seq;
     try {
-        SequenceFile seqFile (options.fname_in, SequenceFile::READ);        // open sequence file for reading
-    
-        seq = seqFile.read();          // read single sequence from file.
-    
-        cout << seq.toString() << endl;
+        seq = readInputSequence(options.fname_in);
     }
     // if file could not be opened
     catch (ios_base::failure &ex) {
@@ -46,32 +41,58 @@ void ModuleGMS2::run() {
         return;
     }
     
-    AlphabetDNA alphabet;
+    AlphabetDNA alphabet;                       // sequence alphabet
+    GeneticCode gc (GeneticCode::ELEVEN);       // Create genetic code 11
+    CharNumConverter cnc (&alphabet);           // converts characters to numbers
     
-    CharNumConverter cnc (&alphabet);
+    // numeric versions of sequence and genetic code
+    NumSequence numSeq (seq, cnc);              // convert character sequence to numeric form
+    NumGeneticCode gcNum (gc, cnc);             // create numeric genetic code 11
     
-    // convert sequence to numeric form
-    NumSequence numSeq (seq, cnc);
     
-    for (NumSequence::size_type i = 0; i < numSeq.size(); i++) {
-        cout << numSeq[i];
-    }
+    /*******************************\
+     *      Step 1: Initiation     *
+    \*******************************/
     
-    cout << endl;
+    // (1) Read heuristic parameters
+    // (2) Use heuristic parameters to get initial parse (prediction) of the sequence
+    // (3) Classific genome into one of 3 types
     
-    // Create genetic code 11
-    GeneticCode gc (GeneticCode::ELEVEN);
     
-    cout << "ATG: " << gc.isStart("ATG") << endl;
-    cout << "GTG: " << gc.isStart("GTG") << endl;
-    cout << "TTG: " << gc.isStart("TTG") << endl;
     
-    cout << "TAA: " << gc.isStop("TAA") << endl;
-    cout << "TGA: " << gc.isStop("TGA") << endl;
-    cout << "TAG: " << gc.isStop("TAG") << endl;
     
-    // Create numeric genetic code 11
-    NumGeneticCode gcNum (gc, cnc);
+    /*******************************\
+     *      Step 2: Main Cycle     *
+    \*******************************/
+    
+    // Perform K iterations, where
+    //  (a) Perform motif search based on latest predicted starts
+    //  (b) Estimate model parameters for coding, non-coding, motif models, ...
+    //  (c) Pass parameters to HMM predictor, and get back new genome predictions
+    //  (d) If convergence reached, end loop
+    
+    
+    
+    
+    /*******************************\
+     *  Step 3: Adaptive Training  *
+    \*******************************/
+    
+    // Repeat:
+    //  (a) Generate non-coding sequences from non-coding model
+    //  (b) Perform gene prediction and compute number of false positives
+    //  (c) Update parameters based on threshold
+    
+    
+    
+    
+    /*******************************\
+     *      Step 4: Output         *
+    \*******************************/
+    
+    // print output
+    
+    
     
     
 }
@@ -79,7 +100,13 @@ void ModuleGMS2::run() {
 
 
 
-
+Sequence ModuleGMS2::readInputSequence(string filename) const {
+    Sequence seq;
+    
+    // read single sequence from file
+    SequenceFile seqFile (options.fname_in, SequenceFile::READ);        // open sequence file for reading
+    return seqFile.read();                                              // read single sequence from file.
+}
 
 
 

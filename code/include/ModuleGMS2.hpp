@@ -12,6 +12,7 @@
 #include <stdio.h>
 
 #include "Module.hpp"
+#include "Sequence.hpp"
 #include "OptionsGMS2.hpp"
 
 namespace gmsuite {
@@ -39,6 +40,17 @@ namespace gmsuite {
     private:
         
         const OptionsGMS2& options;         /**< Module option */
+        
+        
+        /**
+         * Read input sequence from file.
+         * TODO: For now, this assumes a single FASTA sequence in the file. This should
+         * be updated to handle genomes (i.e. multiple chromosomes, plasmids, etc...)
+         *
+         * @param filename the name of the file containing the sequence
+         */
+        Sequence readInputSequence(string filename) const;
+        
         
         
     };
