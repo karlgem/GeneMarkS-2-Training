@@ -59,7 +59,11 @@ void LabelFile::read(vector<Label*> &output) const {
 
 // Write labels to file.
 void LabelFile::write(const vector<Label*> &labels) const {
+    if (access != WRITE)
+        throw logic_error("File not opened for writing.");
     
+    if (format == LST)
+        write_lst(labels);
 }
 
 
@@ -129,8 +133,7 @@ Label* readNextLabelLST(const char*& current, const char* const end) {
     string t (startOfLine, endOfLine);
     
     // parse 'line' for label information
-//    if (regex_search(startOfLine, endOfLine, match, expr) && match.size() > 1) {
-    if (regex_search(t.c_str(), match, expr) && match.size() > 1) {
+    if (regex_search(startOfLine, endOfLine, match, expr) && match.size() > 1) {
         size_t left;
         size_t right;
         char strandChar;
@@ -227,7 +230,9 @@ void LabelFile::closeFile() {
 
 
 
-
+void LabelFile::write_lst(const vector<Label *> &labels) const {
+    
+}
 
 
 

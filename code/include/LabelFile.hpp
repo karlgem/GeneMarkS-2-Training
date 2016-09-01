@@ -96,6 +96,13 @@ namespace gmsuite {
          */
         void read_lst(vector<Label*> &output) const;
         
+        /**
+         * Write labels to LST file.
+         *
+         * @param labels the vector of labels to be written to the file
+         */
+        void write_lst(const vector<Label*> &labels) const;
+        
         
         
         
