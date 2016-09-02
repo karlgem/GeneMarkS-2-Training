@@ -43,10 +43,10 @@ void UniformCounts::resetCounts() {
 
 // Initialize the model by allocating space and setting counts to 0
 void UniformCounts::initialize() {
-    size_t numElements = alphabet->sizeValid();         // the number of eleents that can make up valid words (e.g. A,C,G,T)
+    size_t numElements = alphabet->sizeValid();             // the number of eleents that can make up valid words (e.g. A,C,G,T)
     
-    size_t wordSize = (order+1);                        // size of a word
-    size_t numWords = numElements << wordSize;          // number of possible words of size 'wordSize' with the given alphabet
+    size_t wordSize = (order+1);                            // size of a word
+    size_t numWords = pow(numElements, wordSize);           // number of possible words of size 'wordSize' with the given alphabet
     
     model.resize(numWords, 0);
 }

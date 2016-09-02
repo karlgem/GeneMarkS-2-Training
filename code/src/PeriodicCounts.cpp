@@ -52,7 +52,7 @@ void PeriodicCounts::initialize() {
     size_t numElements = alphabet->sizeValid();         // the number of elements that can make up valid words (e.g. A,C,G,T)
     
     size_t wordSize = (order+1);                        // the size of a word
-    size_t numWords = numElements << wordSize;          // number of possible words of size 'wordSize' with given alphabet
+    size_t numWords = pow(numElements, wordSize);       // number of possible words of size 'wordSize' with given alphabet
     
     model.resize(period);
     

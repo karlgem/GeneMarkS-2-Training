@@ -177,7 +177,7 @@ void NonUniformMarkov::initialize() {
     for (size_t p = 0; p < length; p++) {
         
         size_t wordSize = (p+1);                        // the size of a word
-        size_t numWords = numElements << wordSize;          // number of possible words of size 'wordSize' with given alphabet
+        size_t numWords = pow(numElements, wordSize);   // number of possible words of size 'wordSize' with given alphabet
         
         model[p].resize(numWords, 0);
     }
