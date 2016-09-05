@@ -44,4 +44,9 @@ TEST_CASE("Testing Uniform Markovs") {
         unsigned order = 1;
         testOrder(order);
     }
+    
+    SECTION("Order 2") {
+        unsigned order = 2;
+        testOrder(order);
+    }
 }
