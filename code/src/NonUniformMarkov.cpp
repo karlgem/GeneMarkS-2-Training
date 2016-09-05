@@ -16,7 +16,7 @@ using std::invalid_argument;
 using namespace gmsuite;
 
 // Constructor:
-NonUniformMarkov::NonUniformMarkov(unsigned order, size_t length, const AlphabetDNA* alph) : Markov(order, alph) {
+NonUniformMarkov::NonUniformMarkov(unsigned order, size_t length, const AlphabetDNA &alph) : Markov(order, alph) {
     this->length = length;
     initialize();
 }
@@ -26,7 +26,7 @@ NonUniformMarkov::NonUniformMarkov(unsigned order, size_t length, const Alphabet
 void NonUniformMarkov::construct(const vector<NumSequence> &sequences, int pcount) {
     
     // get counts
-    NonUniformCounts counts (order, length, alphabet);
+    NonUniformCounts counts (order, length, *alphabet);
     counts.construct(sequences);
     
     // construct probabilities from counts

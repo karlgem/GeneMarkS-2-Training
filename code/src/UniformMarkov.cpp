@@ -16,7 +16,7 @@ using namespace std;
 using namespace gmsuite;
 
 // Constructor:
-UniformMarkov::UniformMarkov(unsigned order, const AlphabetDNA* alph) : Markov(order, alph) {
+UniformMarkov::UniformMarkov(unsigned order, const AlphabetDNA &alph) : Markov(order, alph) {
     initialize();
 }
 
@@ -24,7 +24,7 @@ UniformMarkov::UniformMarkov(unsigned order, const AlphabetDNA* alph) : Markov(o
 // Construct the model probabilities from a list of sequences
 void UniformMarkov::construct(const vector<NumSequence> &sequences, int pcount) {
     // get counts
-    UniformCounts counts(order, alphabet);
+    UniformCounts counts(order, *alphabet);
     counts.construct(sequences);
     
     // construct probabilities from counts

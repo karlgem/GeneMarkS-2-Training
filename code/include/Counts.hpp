@@ -36,7 +36,7 @@ namespace gmsuite {
          *
          * @throw invalid_argument if alph is NULL
          */
-        Counts(unsigned order, const AlphabetDNA* alph);
+        Counts(unsigned order, const AlphabetDNA &alph);
         
         
         /**

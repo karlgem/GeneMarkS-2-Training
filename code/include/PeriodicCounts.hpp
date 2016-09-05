@@ -37,7 +37,7 @@ namespace gmsuite {
          * @param period the model's period; i.e. the number of different count models
          * @param alph the alphabet used by the model
          */
-        PeriodicCounts(unsigned order, size_t period, const AlphabetDNA *alph);
+        PeriodicCounts(unsigned order, size_t period, const AlphabetDNA &alph);
         
         
         /**

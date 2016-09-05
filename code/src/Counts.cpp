@@ -12,12 +12,9 @@
 using std::invalid_argument;
 using namespace gmsuite;
 
-Counts::Counts(unsigned order, const AlphabetDNA* alph) {
-    if (alph == NULL)
-        throw std::invalid_argument("Alphabet cannot be NULL.");
-    
+Counts::Counts(unsigned order, const AlphabetDNA &alph) {
     this->order = order;
-    this->alphabet = alph;
+    this->alphabet = &alph;
 }
 
 // Get the model's order

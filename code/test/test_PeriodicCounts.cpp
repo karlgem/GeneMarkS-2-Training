@@ -19,7 +19,7 @@ using namespace gmsuite;
 TEST_CASE("Testing PeriodicCounts") {
     
     AlphabetDNA alph;
-    PeriodicCounts p (1, 3, &alph);
+    PeriodicCounts p (1, 3, alph);
     
     vector<Sequence> sequences;
     sequences.push_back(Sequence("ACGT"));

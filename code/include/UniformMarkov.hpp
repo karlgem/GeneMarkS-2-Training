@@ -30,7 +30,7 @@ namespace gmsuite {
          * @param order the model's order
          * @param alphabet the alphabet used by the model
          */
-        UniformMarkov(unsigned order, const AlphabetDNA* alph);
+        UniformMarkov(unsigned order, const AlphabetDNA &alph);
         
         
         /**

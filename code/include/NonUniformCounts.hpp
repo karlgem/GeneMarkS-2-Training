@@ -37,7 +37,7 @@ namespace gmsuite {
          * @param length the model's length; i.e. the number of different count models
          * @param alph the alphabet used by the model
          */
-        NonUniformCounts(unsigned order, size_t length, const AlphabetDNA *alph);
+        NonUniformCounts(unsigned order, size_t length, const AlphabetDNA &alph);
         
         
         /**

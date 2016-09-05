@@ -35,7 +35,7 @@ namespace gmsuite {
          *
          * @throw invalid_argument if alph is NULL
          */
-        Markov(unsigned order, const AlphabetDNA* alph);
+        Markov(unsigned order, const AlphabetDNA &alph);
         
         
         /**

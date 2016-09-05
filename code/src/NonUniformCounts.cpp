@@ -13,7 +13,7 @@ using namespace std;;
 using namespace gmsuite;
 
 // constructor
-NonUniformCounts::NonUniformCounts(unsigned order, size_t length, const AlphabetDNA *alph) : Counts(order, alph) {
+NonUniformCounts::NonUniformCounts(unsigned order, size_t length, const AlphabetDNA &alph) : Counts(order, alph) {
     
     if (length == 0)
         throw std::invalid_argument("Length cannot be 0.");

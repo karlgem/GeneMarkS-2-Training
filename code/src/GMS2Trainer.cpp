@@ -21,7 +21,7 @@ GMS2Trainer::GMS2Trainer() {
 void GMS2Trainer::estimateParamtersCoding(const NumSequence &sequence, const vector<Label *> &labels) {
     
     AlphabetDNA alph;
-    PeriodicCounts counts (2, 3, &alph);
+    PeriodicCounts counts (2, 3, alph);
     
     // get counts for 3 period markov model given order
     for (vector<Label*>::const_iterator iter = labels.begin(); iter != labels.end(); iter++) {
@@ -44,7 +44,7 @@ void GMS2Trainer::estimateParamtersCoding(const NumSequence &sequence, const vec
 void GMS2Trainer::estimateParamtersNonCoding(const NumSequence &sequence, const vector<Label *> &labels) {
     
     AlphabetDNA alph;
-    PeriodicCounts counts (2, 1, &alph);
+    PeriodicCounts counts (2, 1, alph);
     
     size_t leftNoncoding = 0;       // left position of current noncoding region
     
