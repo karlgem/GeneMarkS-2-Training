@@ -74,7 +74,7 @@ namespace gmsuite {
         string toString() const;
         
         
-    private:
+    protected:
         
         /**
          * Initialize the model by allocating space, setting the keys, and setting counts to 0

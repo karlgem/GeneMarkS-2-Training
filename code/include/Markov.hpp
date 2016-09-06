@@ -106,7 +106,7 @@ namespace gmsuite {
          *
          * @param probs vector of joint probabilities
          */
-        void jointToMarkov(vector<double> &probs);
+        void jointToMarkov(vector<double> &probs) const;
         
         
         /**

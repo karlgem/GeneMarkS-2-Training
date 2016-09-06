@@ -34,7 +34,7 @@ const AlphabetDNA* Markov::getAlphabet() const {
 
 
 
-void Markov::jointToMarkov(vector<double> &probs) {
+void Markov::jointToMarkov(vector<double> &probs) const {
     
     // Problem Context:
     // the probs vector holds elements in the following order: e.g.
