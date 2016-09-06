@@ -1,33 +1,29 @@
 //
-//  OptionsGMS2.hpp
+//  OptionsMFinder.hpp
 //  GeneMark Suite
 //
-//  Created by Karl Gemayel on 8/15/16.
+//  Created by Karl Gemayel on 9/5/16.
 //  Copyright © 2016 Karl Gemayel. All rights reserved.
 //
 
-#ifndef OptionsGMS2_hpp
-#define OptionsGMS2_hpp
+#ifndef OptionsMFinder_hpp
+#define OptionsMFinder_hpp
 
 #include <stdio.h>
-#include <string>
-
 #include "Options.hpp"
-
-using std::string;
 
 namespace gmsuite {
     
     /**
-     * @class OptionsGMS2
-     * @brief A class that deals with parsing command-line options for GMS2 module
+     * @class OptionsMFinder
+     * @brief A class that deals with parsing command-line options for MFinder module
      */
-    class OptionsGMS2 : public Options {
+    class OptionsMFinder : public Options {
         
         
     public:
         
-        OptionsGMS2(string mode);
+        OptionsMFinder(string mode);
         
         /**
          * Parse the command-line words into arguments
@@ -39,11 +35,13 @@ namespace gmsuite {
         bool parse(int argc, const char *argv[]);
         
         
-    // Below, create a variable for each parameter, to make for easy access
+        // Below, create a variable for each parameter, to make for easy access
     public:
         
         string fname_in;                /**< Input filename containing DNA sequence */
+        double pcounts;                 /**< The pseudocount value */
     };
+    
 }
 
-#endif /* OptionsGMS2_hpp */
+#endif /* OptionsMFinder_hpp */

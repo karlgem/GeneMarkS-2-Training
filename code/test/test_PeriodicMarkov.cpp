@@ -20,7 +20,7 @@ using namespace gmsuite;
 TEST_CASE("Testing PeriodicMarkovs") {
     
     AlphabetDNA alph;
-    PeriodicCounts p (1, 1, &alph);
+    PeriodicCounts p (1, 1, alph);
     
     vector<Sequence> sequences;
     sequences.push_back(Sequence("ACGT"));
@@ -34,6 +34,6 @@ TEST_CASE("Testing PeriodicMarkovs") {
     
     p.construct(numSequences);
     
-    PeriodicMarkov m(1,1,&alph);
+    PeriodicMarkov m(1,1,alph);
     m.construct(&p);
 }

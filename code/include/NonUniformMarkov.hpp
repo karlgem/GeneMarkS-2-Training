@@ -34,7 +34,7 @@ namespace gmsuite {
          * @param length the model's length
          * @param alphabet the alphabet used by the model
          */
-        NonUniformMarkov(unsigned order, size_t length, const AlphabetDNA* alph);
+        NonUniformMarkov(unsigned order, size_t length, const AlphabetDNA &alph);
         
         
         /**
@@ -74,7 +74,7 @@ namespace gmsuite {
         string toString() const;
         
         
-    private:
+    protected:
         
         /**
          * Initialize the model by allocating space, setting the keys, and setting counts to 0

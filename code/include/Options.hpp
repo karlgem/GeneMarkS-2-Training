@@ -30,6 +30,11 @@ namespace gmsuite {
     public:
         
         /**
+         * Constructor: set the mode name
+         */
+        Options(string name);
+        
+        /**
          * Parse the command-line words into arguments
          *
          * @param argc the number of command-line words

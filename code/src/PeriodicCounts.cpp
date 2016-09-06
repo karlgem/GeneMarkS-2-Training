@@ -13,7 +13,7 @@ using namespace std;;
 using namespace gmsuite;
 
 // constructor
-PeriodicCounts::PeriodicCounts(unsigned order, size_t period, const AlphabetDNA *alph) : Counts(order, alph) {
+PeriodicCounts::PeriodicCounts(unsigned order, size_t period, const AlphabetDNA &alph) : Counts(order, alph) {
     
     if (period == 0)
         throw std::invalid_argument("Period cannot be 0.");

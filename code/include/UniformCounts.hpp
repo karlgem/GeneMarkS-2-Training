@@ -30,7 +30,7 @@ namespace gmsuite {
          * @param order the model's order
          * @param alph the alphabet used by the model
          */
-        UniformCounts(unsigned order, const AlphabetDNA* alph);
+        UniformCounts(unsigned order, const AlphabetDNA &alph);
         
         
         /**

@@ -14,14 +14,17 @@
 
 #include "Options.hpp"
 #include "OptionsGMS2.hpp"
+#include "OptionsMFinder.hpp"
 
 #include "Module.hpp"
 #include "ModuleGMS2.hpp"
+#include "ModuleMFinder.hpp"
 
 using namespace std;
 using namespace gmsuite;
 
 #define MOD_GMS2 "gms2"
+#define MOD_MFINDER "mfinder"
 
 string usage_message(string progName) {
     stringstream ssm;
@@ -29,6 +32,7 @@ string usage_message(string progName) {
     ssm << "Usage: " << progName << " mode" << endl;
     ssm << "The valid modes are:" << endl;
     ssm << "\t" << MOD_GMS2 << "\t" << "GeneMarkS2" << endl;
+    ssm << "\t" << MOD_MFINDER << "\t" << "MFinder" << endl;
     
     return ssm.str();
 }
@@ -52,6 +56,15 @@ int main(int argc, const char * argv[]) {
             return 1;
         
         ModuleGMS2 module (options);                    // create module with options
+        module.run();                                   // run module
+    }
+    else if (aMode == MOD_MFINDER) {
+        OptionsMFinder options(aMode);                  // Motif Finder
+        
+        if (!options.parse(argc, argv))                 // parse input arguments
+            return 1;
+        
+        ModuleMFinder module (options);                  // create module with options
         module.run();                                   // run module
     }
     

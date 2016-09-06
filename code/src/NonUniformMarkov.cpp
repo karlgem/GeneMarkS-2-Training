@@ -16,7 +16,7 @@ using std::invalid_argument;
 using namespace gmsuite;
 
 // Constructor:
-NonUniformMarkov::NonUniformMarkov(unsigned order, size_t length, const AlphabetDNA* alph) : Markov(order, alph) {
+NonUniformMarkov::NonUniformMarkov(unsigned order, size_t length, const AlphabetDNA &alph) : Markov(order, alph) {
     this->length = length;
     initialize();
 }
@@ -26,7 +26,7 @@ NonUniformMarkov::NonUniformMarkov(unsigned order, size_t length, const Alphabet
 void NonUniformMarkov::construct(const vector<NumSequence> &sequences, int pcount) {
     
     // get counts
-    NonUniformCounts counts (order, length, alphabet);
+    NonUniformCounts counts (order, length, *alphabet);
     counts.construct(sequences);
     
     // construct probabilities from counts
@@ -115,13 +115,15 @@ double NonUniformMarkov::evaluate(NumSequence::const_iterator begin, NumSequence
     size_t wordIndex = 0;       // contains the index of the current word (made up of order+1 elements)
     
     // loop over first "order" elements to store them as part of the initial word index
-    for (size_t i = 0; i < order; i++, currentElement++) {
+    for (size_t i = 0; i <= order; i++, currentElement++) {
         wordIndex <<= elementEncodingSize;      // create space at lower bits for a new element
         wordIndex += *currentElement;           // add new element to the wordIndex
         
         // set the mask to read word of 'i+1' elements
-        mask <<= 1;         // shift by one position
-        mask |= 1;          // set lowest bit to one
+        for (size_t n = 0; n < elementEncodingSize; n++) {
+            mask <<= 1;         // shift by one position
+            mask |= 1;          // set lowest bit to one
+        }
         
         // mask to remove old junk characters (doesn't affect wordIndex here. I do it just for consistency with remaining code)
         wordIndex = wordIndex & mask;

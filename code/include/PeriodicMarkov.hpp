@@ -33,7 +33,7 @@ namespace gmsuite {
          * @param period the model's period
          * @param alphabet the alphabet used by the model
          */
-        PeriodicMarkov(unsigned order, size_t period, const AlphabetDNA* alph);
+        PeriodicMarkov(unsigned order, size_t period, const AlphabetDNA &alph);
         
         
         /**
@@ -76,7 +76,7 @@ namespace gmsuite {
         string toString() const;
         
         
-    private:
+    protected:
         
         /**
          * Initialize the model by allocating space, setting the keys, and setting counts to 0

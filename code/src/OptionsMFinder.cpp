@@ -1,12 +1,12 @@
 //
-//  OptionsGMS2.cpp
+//  OptionsMFinder.cpp
 //  GeneMark Suite
 //
-//  Created by Karl Gemayel on 8/15/16.
+//  Created by Karl Gemayel on 9/5/16.
 //  Copyright © 2016 Karl Gemayel. All rights reserved.
 //
 
-#include "OptionsGMS2.hpp"
+#include "OptionsMFinder.hpp"
 
 #include <vector>
 #include <fstream>
@@ -17,12 +17,14 @@ using namespace std;
 using namespace gmsuite;
 namespace po = boost::program_options;
 
-OptionsGMS2::OptionsGMS2(string mode) : Options(mode) {
+OptionsMFinder::OptionsMFinder(string mode) : Options(mode) {
     
 }
 
+
+
 // parse CMD options
-bool OptionsGMS2::parse(int argc, const char *argv[]) {
+bool OptionsMFinder::parse(int argc, const char *argv[]) {
     
     
     try {
@@ -32,16 +34,17 @@ bool OptionsGMS2::parse(int argc, const char *argv[]) {
         // only on the command line (CML)
         po::options_description generic("General Options");
         generic.add_options()
-            ("version", "Print version string")
-            ("help,h", "Display help message")
-            ("config", po::value(&config_fnames), "Config file where options may be specified (can be specified more than once)")
+        ("version", "Print version string")
+        ("help,h", "Display help message")
+        ("config", po::value(&config_fnames), "Config file where options may be specified (can be specified more than once)")
         ;
         
         // Declare a group of options that will be allowed
         // on both CML and in the config files
         po::options_description config("Configuration");
         config.add_options()
-            ("verbose,v", po::value<int>(&verbose)->default_value(0), "Verbose level")
+        ("verbose,v", po::value<int>(&verbose)->default_value(0), "Verbose level")
+        ("pcount", po::value<double>(&pcounts)->default_value(1), "Pseudocounts")
         ;
         
         // Create set of hidden arguments (which can correspond to positional arguments). This is used
@@ -49,8 +52,8 @@ bool OptionsGMS2::parse(int argc, const char *argv[]) {
         // Hidden options are allowed in both CML and config files
         po::options_description hidden;
         hidden.add_options()
-            ("mode", po::value<string>(&mode)->required(), "Program Mode")
-            ("fname", po::value<string>(&fname_in)->required(), "Name of sequence file");
+        ("mode", po::value<string>(&mode)->required(), "Program Mode")
+        ("fname", po::value<string>(&fname_in)->required(), "Name of sequence file");
         ;
         
         // Congregate options into further groups
@@ -122,6 +125,6 @@ bool OptionsGMS2::parse(int argc, const char *argv[]) {
     }
     
     return true;
-
+    
     
 }

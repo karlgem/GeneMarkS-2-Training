@@ -35,7 +35,7 @@ namespace gmsuite {
          *
          * @throw invalid_argument if alph is NULL
          */
-        Markov(unsigned order, const AlphabetDNA* alph);
+        Markov(unsigned order, const AlphabetDNA &alph);
         
         
         /**
@@ -106,7 +106,7 @@ namespace gmsuite {
          *
          * @param probs vector of joint probabilities
          */
-        void jointToMarkov(vector<double> &probs);
+        void jointToMarkov(vector<double> &probs) const;
         
         
         /**

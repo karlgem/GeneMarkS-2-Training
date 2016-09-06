@@ -14,13 +14,10 @@ using std::invalid_argument;
 using namespace gmsuite;
 
 // Contructor: Initialize a Markov model with a specific order and alphabet.
-Markov::Markov(unsigned order, const AlphabetDNA* alph) {
-    
-    if (alph == NULL)
-        throw invalid_argument("Alphabet cannot be NULL.");
+Markov::Markov(unsigned order, const AlphabetDNA &alph) {
     
     this->order = order;
-    this->alphabet = alph;
+    this->alphabet = &alph;
     
 }
 
@@ -37,7 +34,7 @@ const AlphabetDNA* Markov::getAlphabet() const {
 
 
 
-void Markov::jointToMarkov(vector<double> &probs) {
+void Markov::jointToMarkov(vector<double> &probs) const {
     
     // Problem Context:
     // the probs vector holds elements in the following order: e.g.
