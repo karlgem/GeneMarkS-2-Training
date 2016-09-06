@@ -195,7 +195,7 @@ public:
                 }
                 
                 if (ratio != 0)
-                    score += this->NonUniformCounts::model[pos][word] * log2(ratio);
+                    score += this->NonUniformCounts::model[pos][word] * log(ratio);
             }
         }
         

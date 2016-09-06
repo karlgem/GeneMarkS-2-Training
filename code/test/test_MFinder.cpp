@@ -23,7 +23,8 @@ TEST_CASE("Testing Motif Finder") {
     OptionsMFinder options("mfinder");
     options.fname_in = "/Users/Karl/repos/GeneMarkS-2/code/tmp/ecoli-motifs.fa";
 //    options.fname_in = "/Users/Karl/repos/GeneMarkS-2/code/tmp/sample-motifs.fa";
-    options.pcounts = 1;
+//    options.fname_in = "/Users/Karl/repos/GeneMarkS-2/code/tmp/sample-rand-motifs.fa";
+    options.pcounts = 0;
     
     ModuleMFinder mfinder (options);
     

@@ -113,22 +113,24 @@ double UniformMarkov::evaluate(NumSequence::const_iterator begin, NumSequence::c
     size_t wordIndex = 0;       // contains the index of the current word (made up of order+1 elements)
     
     // loop over first "order" elements to store them as part of the initial word index
-    for (size_t i = 0; i < order; i++) {
+    for (size_t i = 0; i <= order; i++) {
         wordIndex <<= elementEncodingSize;      // create space at lower bits for a new element
         wordIndex += *currentElement;           // add new element to the wordIndex
         
         // set the mask to read word of 'i+1' elements
-        mask <<= 1;         // shift by one position
-        mask |= 1;          // set lowest bit to one
+        for (size_t n = 0; n < elementEncodingSize; n++) {
+            mask <<= 1;         // shift by one position
+            mask |= 1;          // set lowest bit to one
+        }
         
         // mask to remove old junk characters (doesn't affect wordIndex here. I do it just for consistency with remaining code)
         wordIndex = wordIndex & mask;
 
         // FIXME: use absolute probabilities of smaller order to account for short words
-        if (useLog)
-            score += log2(model[wordIndex]);
-        else
-            score *= model[wordIndex];
+//        if (useLog)
+//            score += log2(model[wordIndex]);
+//        else
+//            score *= model[wordIndex];
         
         currentElement++;
         

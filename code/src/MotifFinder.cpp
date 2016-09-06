@@ -10,6 +10,7 @@
 
 #include <float.h>              // DBL_MAX
 #include <stdlib.h>             // rand
+#include <iostream>
 
 #include "CountModels.hpp"
 #include "CountModelsV1.hpp"
@@ -17,6 +18,7 @@
 #include "ProbabilityModels.hpp"
 #include "ProbabilityModelsV1.hpp"
 
+using namespace std;
 using namespace gmsuite;
 
 
@@ -107,7 +109,7 @@ double MotifFinder::gibbsFinder(const vector<NumSequence> &sequences, vector<Num
     for (size_t iter = 0; iter < maxIter; iter++) {
         
         // shuffle indeces to select sequences in random order
-        random_shuffle(shuffled.begin(), shuffled.end());
+//        random_shuffle(shuffled.begin(), shuffled.end());
         
         // 1) select a sequence z
         // 2) remove z from counts
@@ -117,12 +119,20 @@ double MotifFinder::gibbsFinder(const vector<NumSequence> &sequences, vector<Num
         
         for (vector<NumSequence>::size_type k = 0; k < numSeqs; k++) {
             
+//            if (iter == 12 && k == 3)
+//                cout << "reached" << endl;
+            
+//            if (k == 5) {
+//                cout << "reached" << endl;
+//            }
             
             Sequence::size_type zIndex = shuffled[k];                                       // select sequence z
             
             counts->decount(sequences[zIndex], tempPositions[zIndex]);                      // remove z from counts
             
             probs->construct(counts);                                                       // build models from remaining sequences counts
+            
+//            cout << k << "\t" << probs->computeCLL() << endl;
             
             tempPositions[zIndex] = probs->samplePosition(sequences[zIndex]);               // find new motif location in z
             
@@ -149,7 +159,7 @@ double MotifFinder::gibbsFinder(const vector<NumSequence> &sequences, vector<Num
         
         // calculate alignment conditional log-likelihood
         double tempScore = probs->computeCLL();
-        
+//        cout << iter << "\t" << tempScore << endl;
         if (tempScore > maxScore) {
             maxScore = tempScore;
             maxPositions = tempPositions;
