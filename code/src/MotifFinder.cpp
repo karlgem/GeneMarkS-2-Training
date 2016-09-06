@@ -107,7 +107,7 @@ double MotifFinder::gibbsFinder(const vector<NumSequence> &sequences, vector<Num
     for (size_t iter = 0; iter < maxIter; iter++) {
         
         // shuffle indeces to select sequences in random order
-//        random_shuffle(shuffled.begin(), shuffled.end());
+        random_shuffle(shuffled.begin(), shuffled.end());
         
         // 1) select a sequence z
         // 2) remove z from counts

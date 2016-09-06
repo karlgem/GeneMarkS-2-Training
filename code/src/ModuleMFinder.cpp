@@ -63,6 +63,8 @@ void ModuleMFinder::run() {
     mfinder.findMotifs(numSequences, positions);
     
     // print positions
-    for (size_t n = 0; n < numSequences.size(); n++)
-        cout << positions[n] + 1 << endl;
+    for (size_t n = 0; n < numSequences.size(); n++) {
+        cout << cnc.convert(numSequences[n].begin() + positions[n], numSequences[n].begin() + positions[n] + 6);
+        cout << "\t" << positions[n] + 1 << endl;
+    }
 }
