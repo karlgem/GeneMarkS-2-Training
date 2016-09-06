@@ -8,7 +8,9 @@
 
 #include "ProbabilityModelsV1.hpp"
 #include "CountModelsV1.hpp"
+#include <math.h>
 
+using namespace std;
 using namespace gmsuite;
 
 
@@ -140,15 +142,103 @@ void ProbabilityModelsV1::construct(const CountModels* counts) {
 }
 
 
+// a class to compute the score of an alignment from the markov models
+class ScoreComputer : public UniformMarkov, public NonUniformMarkov, public NonUniformCounts {
+    
+public:
+    ScoreComputer(const NonUniformMarkov *mMotif, const UniformMarkov *mBackground, const NonUniformCounts *mMotifCounts,
+                  const UnivariatePDF *positionDistribution, MFinderModelParams::align_t align,
+                  const vector<double> &positionCounts) : UniformMarkov(*mBackground), NonUniformMarkov(*mMotif), NonUniformCounts(*mMotifCounts)  {
+        
+        // raise order of background model to that of motif model
+        UniformMarkov::changeOrder(mMotif->getOrder());
+        
+        if (this->UniformMarkov::order != this->NonUniformMarkov::order)
+            throw logic_error("ScoreComputer: Orders of models should be the same.");
+        
+        this->positionDistribution = positionDistribution;
+        this->positionCounts = &positionCounts;
+        this->align = align;
+    }
+    
+    double computeScore() const {
+        double score = 0;
+        unsigned order = this->NonUniformMarkov::order;
+        
+        // for uniform model, get conditional pdf for every order <= "motif model order"
+        vector<vector<double> > mBackConditionals (order+1);
+        for (size_t n = 0; n < mBackConditionals.size()-1; n++) {
+            mBackConditionals[n] = this->UniformMarkov::jointProbs[n];      // copy joint
+            UniformMarkov::jointToMarkov(mBackConditionals[n]);             // convert joint to markov
+        }
+        
+        // for last one, just copy it
+        mBackConditionals[mBackConditionals.size()-1] = this->UniformMarkov::model;
+        
+        
+        
+        // for each position in motif model
+        for (NonUniformMarkov::nonunif_markov_t::size_type pos = 0; pos < this->NonUniformMarkov::model.size(); pos++) {
+            
+            // get size of word (i.e. depending on order and position)
+            size_t wordSize = order+1;
+            if (pos < order)
+                wordSize = pos+1;
+            
+            
+            
+            // for every word in that position
+            for (size_t word = 0; word < this->NonUniformMarkov::model[pos].size(); word++) {
+                double ratio = 0;
+                if (mBackConditionals[wordSize-1][word] != 0) {
+                    ratio = this->NonUniformMarkov::model[pos][word] / mBackConditionals[wordSize-1][word];
+                }
+                
+                if (ratio != 0)
+                    score += this->NonUniformCounts::model[pos][word] * log2(ratio);
+            }
+        }
+        
+        if (align != MFinderModelParams::NONE) {
+    
+            // for each valid position in model
+            for (vector<double>::size_type p = 0; p < positionCounts->size(); p++) {
+                if ((*positionDistribution)[p] != 0)
+                    score += (*positionCounts)[p] * log((*positionDistribution)[p]);
+            }
+        }
+
+        
+        return score;
+    }
+    
+private:
+    
+    MFinderModelParams::align_t align;
+    const UnivariatePDF *positionDistribution;
+    const vector<double> *positionCounts;
+    
+};
+
+
 /**
  * Compute conditional log-likelihood
  */
 double ProbabilityModelsV1::computeCLL() {
-    double score = 0;
+
+    ScoreComputer scoreComputer(mMotif, mBack, mMotifCounts, positionDistribution, align, positionCounts);
+    return scoreComputer.computeScore();
     
-    // for each position in motif
-    for (Sequence::size_type pos = 0; pos < width; pos++) {
-        
+    
+//    double score = 0;
+//    
+//    // copy background model, and increase its order to that of the motif model
+//    UniformMarkov *mBackNew = new UniformMarkov(*mBack);
+//    mBackNew->changeOrder(mMotif->getOrder());
+//    
+//    // for each position in motif
+//    for (Sequence::size_type pos = 0; pos < width; pos++) {
+//        
 //        // loop over all keys at current position in motif model
 //        for (NonUniformMarkov::const_iterator_keys itKey = mMotif->beginKeys(pos); itKey != mMotif->endKeys(pos); itKey++) {
 //            
@@ -160,21 +250,20 @@ double ProbabilityModelsV1::computeCLL() {
 //                score += mMotifCounts->valueAtKey(pos, *itKey) * log(ratio);
 //            
 //        }
-    }
+//    }
+//    
+//    delete mBackNew;
     
-    
-    if (align != MFinderModelParams::NONE) {
-        
+//    if (align != MFinderModelParams::NONE) {
+//        
 //        // for each valid position in model
 //        for (vector<double>::size_type p = 0; p < positionCounts.size(); p++) {
 //            if ((*positionDistribution)[p] != 0)
 //                score += positionCounts[p] * log((*positionDistribution)[p]);
-//            
 //        }
-        
-    }
-    
-    return score;
+//    }
+//    
+//    return score;
 }
 
 

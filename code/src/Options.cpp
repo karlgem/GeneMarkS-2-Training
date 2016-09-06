@@ -16,6 +16,10 @@
 using namespace std;
 using namespace gmsuite;
 
+Options::Options(string name) {
+    this->mode = name;
+}
+
 
 // extract program name from path
 string Options::basename(const string &path) const {

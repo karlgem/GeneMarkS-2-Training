@@ -70,7 +70,7 @@ namespace gmsuite {
         void resetCounts();
 
         
-    private:
+    protected:
         
         /**
          * Initialize the model by allocating space and setting counts to 0
