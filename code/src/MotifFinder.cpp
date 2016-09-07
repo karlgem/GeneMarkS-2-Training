@@ -31,6 +31,7 @@ MotifFinder::MotifFinder(
                          MFinderModelParams::align_t align,
                          unsigned tries,
                          unsigned maxIter,
+                         unsigned maxEMIter,
                          unsigned shiftEvery) {
     
     this->width = width;
@@ -40,6 +41,7 @@ MotifFinder::MotifFinder(
     this->align = align;
     this->tries = tries;
     this->maxIter = maxIter;
+    this->maxEMIter = maxEMIter;
     this->shiftEvery = shiftEvery;
 }
 
@@ -163,7 +165,7 @@ double MotifFinder::gibbsFinder(const vector<NumSequence> &sequences, vector<Num
     counts->construct(sequences, tempPositions);
     
     // perform EM on best configuration
-    for (size_t iter = 0; iter < 10; iter++) {
+    for (size_t iter = 0; iter < maxEMIter; iter++) {
         
         // shuffle indeces to select sequences in random order
         random_shuffle(shuffled.begin(), shuffled.end());

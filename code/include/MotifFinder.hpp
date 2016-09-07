@@ -39,7 +39,8 @@ namespace gmsuite {
          * @param pcounts the pseudocounts
          * @param align whether to align sequences and use a length distribution (see class def)
          * @param tries the number of times with different starting points the algorithm is executed
-         * @param maxIter the maximum number of iteration per try
+         * @param maxIter the maximum number of gibbs iterations per try
+         * @param maxEMIter the maximum number of iterations for the EM phase
          * @param shiftEvery the number of iterations between every shift-operation
          */
         MotifFinder(unsigned width,
@@ -49,6 +50,7 @@ namespace gmsuite {
                     MFinderModelParams::align_t align           =   MFinderModelParams::NONE,
                     unsigned tries          =   10,
                     unsigned maxIter        =   100,
+                    unsigned maxEMIter      =   10,
                     unsigned shiftEvery     =   20);
         
         
@@ -93,8 +95,9 @@ namespace gmsuite {
         double   pcounts                            ;       /**< pseudocounts */
         unsigned tries                              ;       /**< number of tries (starting points) */
         unsigned maxIter                            ;       /**< maximum number of iterations per try */
+        unsigned maxEMIter                          ;       /**< maximum number of EM iterations per try */
         unsigned shiftEvery                         ;       /**< number of iterations between every shift-operation */
-        AlphabetDNA alphabet                        ;
+        AlphabetDNA alphabet                        ;       /**< the alphabet used by the sampler; at the moment, only DNA is available */
         MFinderModelParams::align_t align           ;       /**< whether to align sequences first and use length distribution */
         
     };
@@ -109,6 +112,7 @@ namespace gmsuite {
         
         unsigned    tries;
         unsigned    MAX_ITER;
+        unsigned    MAX_EM_ITER;
         unsigned    shiftEvery;
         unsigned    motifOrder;
         unsigned    backOrder;
@@ -124,6 +128,7 @@ namespace gmsuite {
             tries           =   10;
             MAX_ITER        =   60;
             shiftEvery      =   10;
+            MAX_EM_ITER     =   10;
             motifOrder      =   0;
             backOrder       =   0;
             width           =   6;
@@ -137,6 +142,7 @@ namespace gmsuite {
         // returns Builder for shorthand inline usage
         Builder& setNumTries    (const unsigned v)                          { this->tries = v;      return *this;   }
         Builder& setMaxIter     (const unsigned v)                          { this->MAX_ITER = v;   return *this;   }
+        Builder& setMaxEMIter   (const unsigned v)                          { this->MAX_EM_ITER = v;return *this;   }
         Builder& setShiftEvery  (const unsigned v)                          { this->shiftEvery = v; return *this;   }
         Builder& setMotifOrder  (const unsigned v)                          { this->motifOrder = v; return *this;   }
         Builder& setBackOrder   (const unsigned v)                          { this->backOrder = v;  return *this;   }
@@ -147,7 +153,7 @@ namespace gmsuite {
         
         // build motif finder with set parameters
         MotifFinder build() {
-            return MotifFinder(width, motifOrder, backOrder, pcounts, align, tries, MAX_ITER, shiftEvery);
+            return MotifFinder(width, motifOrder, backOrder, pcounts, align, tries, MAX_ITER, MAX_EM_ITER, shiftEvery);
         }
     };
 
