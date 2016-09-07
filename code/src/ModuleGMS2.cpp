@@ -79,11 +79,10 @@ void ModuleGMS2::run() {
     //  (c) Pass parameters to HMM predictor, and get back new genome predictions
     //  (d) If convergence reached, end loop
     for (size_t iter = 0; iter < MAX_ITER; iter++) {
-        
         GMS2Trainer trainer;
         trainer.estimateParameters(numSeq, labels);
-        
     }
+    
     
     
     

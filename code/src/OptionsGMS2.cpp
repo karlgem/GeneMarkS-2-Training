@@ -73,7 +73,7 @@ bool OptionsGMS2::parse(int argc, const char *argv[]) {
         // create storage component for storing names and values of arguments
         po::variables_map vm;
         
-        // store comand-line options
+        // store command-line options
         po::store(po::command_line_parser(argc, argv).          // pass in input
                   options(cmdline_options).                     // specify options list
                   positional(pos).                              // specify which are positional
@@ -82,7 +82,7 @@ bool OptionsGMS2::parse(int argc, const char *argv[]) {
         
         // if help specified, print usage message and quit
         if (vm.count("help")) {
-            cout << make_usage_string(basename(argv[0]), generic, pos) << endl;
+            cout << make_usage_string(basename(argv[0]), cmdline_options, pos) << endl;
             return false;
         }
         
