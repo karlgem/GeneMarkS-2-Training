@@ -109,7 +109,7 @@ double MotifFinder::gibbsFinder(const vector<NumSequence> &sequences, vector<Num
     for (size_t iter = 0; iter < maxIter; iter++) {
         
         // shuffle indeces to select sequences in random order
-//        random_shuffle(shuffled.begin(), shuffled.end());
+        random_shuffle(shuffled.begin(), shuffled.end());
         
         // 1) select a sequence z
         // 2) remove z from counts
@@ -119,20 +119,11 @@ double MotifFinder::gibbsFinder(const vector<NumSequence> &sequences, vector<Num
         
         for (vector<NumSequence>::size_type k = 0; k < numSeqs; k++) {
             
-//            if (iter == 12 && k == 3)
-//                cout << "reached" << endl;
-            
-//            if (k == 5) {
-//                cout << "reached" << endl;
-//            }
-            
             Sequence::size_type zIndex = shuffled[k];                                       // select sequence z
             
             counts->decount(sequences[zIndex], tempPositions[zIndex]);                      // remove z from counts
             
             probs->construct(counts);                                                       // build models from remaining sequences counts
-            
-//            cout << k << "\t" << probs->computeCLL() << endl;
             
             tempPositions[zIndex] = probs->samplePosition(sequences[zIndex]);               // find new motif location in z
             
@@ -150,7 +141,7 @@ double MotifFinder::gibbsFinder(const vector<NumSequence> &sequences, vector<Num
                 shiftPositions(tempPositions, amountToShift, sequences, shiftedPositions);  // shift positions by amountToShift
                 
                 tempPositions = shiftedPositions;                                           // assign new positions
-                counts->construct(sequences, tempPositions);                               // construct new counts
+                counts->construct(sequences, tempPositions);                                // construct new counts
             }
         }
         
@@ -159,7 +150,7 @@ double MotifFinder::gibbsFinder(const vector<NumSequence> &sequences, vector<Num
         
         // calculate alignment conditional log-likelihood
         double tempScore = probs->computeCLL();
-//        cout << iter << "\t" << tempScore << endl;
+        
         if (tempScore > maxScore) {
             maxScore = tempScore;
             maxPositions = tempPositions;
@@ -184,20 +175,6 @@ double MotifFinder::gibbsFinder(const vector<NumSequence> &sequences, vector<Num
             tempPositions[zIndex] = probs->samplePosition(sequences[zIndex], true);         // find new motif location in z (get max since it's EM)
             counts->count(sequences[zIndex], tempPositions[zIndex]);                        // add new z info back to counts
         }
-        
-        //        // try shifting motifs left and right to find better locations
-        //        if (!EM && iter > 0 && iter % shiftEvery == 0) {
-        //            int amountToShift = attemptShift(sequences, tempPositions);                                     // try shifting
-        //
-        //            if (amountToShift != 0) {
-        //                vector<Sequence::size_type> shiftedPositions;
-        //                shiftPositions(tempPositions, amountToShift, sequences, shiftedPositions);           // shift positions by amountToShift
-        //
-        //                tempPositions = shiftedPositions;                                                   // assign new positions
-        //                counts->construct(&sequences, tempPositions);                                       // construct new counts
-        //            }
-        //        }
-        
         
         probs->construct(counts);
         
