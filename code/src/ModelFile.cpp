@@ -1,4 +1,5 @@
 //
+//
 //  ModelFile.cpp
 //  GeneMark Suite
 //
@@ -9,7 +10,9 @@
 #include "ModelFile.hpp"
 
 #include <stdexcept>
+#include <iostream>
 #include <boost/algorithm/string.hpp>
+#include <boost/iostreams/stream.hpp>
 
 using namespace std;
 using namespace gmsuite;
@@ -27,8 +30,9 @@ ModelFile::ModelFile(string path, access_t access) {
     params.path = path;
     if (access == READ)
         params.flags = io::mapped_file::readonly;           // read-only file
-    else if (access == WRITE)
+    else if (access == WRITE) {
         params.flags = io::mapped_file::readwrite;          // read-write file
+    }
     
     openFile();                                             // open file
 }
@@ -197,8 +201,33 @@ bool ModelFile::keyExists(string key) const {
 /**
  * Write model parameters to file in key-value pair format.
  */
-void ModelFile::write(const map<string, string> &keyValue) const {
-
+void ModelFile::write(const map<string, string> &keyValue) {
+    
+    
+    
+    size_t size = 0;
+    for (map<string,string>::const_iterator iter = keyValue.begin(); iter != keyValue.end(); iter++) {
+        size += iter->first.size() + iter->second.size() + 1;
+    }
+    
+    params.new_file_size = size;
+    io::mapped_file_sink mfile(params);
+    
+    size_t currPos = 0;
+    // loop over each key-value pair
+    for (map<string,string>::const_iterator iter = keyValue.begin(); iter != keyValue.end(); iter++) {
+        
+        memcpy(mfile.data()+currPos, iter->first.c_str(), iter->first.size());      // write key
+        currPos += iter->first.size();
+        
+        memcpy(mfile.data()+currPos, " ", 1);                                       // write space
+        currPos += 1;
+        
+        memcpy(mfile.data()+currPos, iter->second.c_str(), iter->second.size());    // write value
+        currPos += iter->second.size();
+        
+    }
+    mfile.close();
 }
 
 
@@ -212,11 +241,10 @@ void ModelFile::openFile() {
     if (mfile.is_open())
         mfile.close();
     
-    // open file
-    mfile.open(params);
-    
     // (re)set pointers
     if (access == READ) {
+        // open file
+        mfile.open(params);
         begin_read = mfile.const_data();
         end_read = begin_read + mfile.size();
     }
