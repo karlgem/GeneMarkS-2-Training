@@ -202,17 +202,16 @@ void LabelFile::openFile() {
     if (mfile.is_open())
         mfile.close();
     
-    // open file
-    mfile.open(params);
-    
     // (re)set pointers
     if (access == READ) {
+        // open file
+        mfile.open(params);
         begin_read = mfile.const_data();
         end_read = begin_read + mfile.size();
     }
     else if (access == WRITE) {
-        begin_write = mfile.data();
-        end_write = begin_write + mfile.size();
+//        begin_write = mfile.data();
+//        end_write = begin_write + mfile.size();
     }
 }
 
@@ -232,6 +231,36 @@ void LabelFile::closeFile() {
 
 void LabelFile::write_lst(const vector<Label *> &labels) const {
     
+    ofstream out;
+    out.open(params.path);
+    
+    // FIXME: add correct header information
+    out << "GeneMark.hmm PROKARYOTIC (Version 3.4.4)" << endl;
+    out << "Date: Tue Jun  7 11:17:04 2016" << endl;
+    out << "" << endl;
+    out << "Sequence file name: /storage2/starter/data/Escherichia_coli_K_12_substr__MG1655_uid57779/NC_000913.fa" << endl;
+    out << "Model file name: itr_6.rbs.mod" << endl;
+    out << "RBS: true" << endl;
+    out << "Model information: GeneMarkS_gcode_11" << endl;
+    out << endl;
+    out << "FASTA definition line: NC_000913" << endl;
+    out << "Predicted genes" << endl;
+    out << "Gene    Strand    LeftEnd    RightEnd       Gene     Class     RBS      RBS" << endl;
+    out << "#                                         Length            position  score" << endl;
+    out << endl;
+    
+    // FIXME: need to incorporate incomplete genes
+    // loop over all labels
+    for (size_t n = 0; n < labels.size(); n++) {
+        out << n+1 << "\t";                                                 // gene
+        out << (labels[n]->strand == Label::POS ? "+" : "-") << "\t";       // strand
+        out << labels[n]->left+1 << "\t";                                   // left
+        out << labels[n]->right+1 << "\t";                                  // right
+        out << labels[n]->right - labels[n]->left + 1 << "\t";              // length
+        out << 1 << endl;
+    }
+    
+    out.close();
 }
 
 
