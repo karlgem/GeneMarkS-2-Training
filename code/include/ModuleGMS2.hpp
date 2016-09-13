@@ -11,9 +11,12 @@
 
 #include <stdio.h>
 
+#include "Label.hpp"
 #include "Module.hpp"
 #include "Sequence.hpp"
+#include "NumSequence.hpp"
 #include "OptionsGMS2.hpp"
+#include "CharNumConverter.hpp"
 
 namespace gmsuite {
     
@@ -52,6 +55,8 @@ namespace gmsuite {
         Sequence readInputSequence(string filename) const;
         
         
+        typedef enum {C1, C2, C3} genome_class_t;
+        genome_class_t classifyGenome(const NumSequence &numSeq, const CharNumConverter &cnc, const vector<Label*> labels, NumSequence::size_type upstrLength) const;
         
     };
     
