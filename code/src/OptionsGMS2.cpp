@@ -17,7 +17,7 @@ using namespace std;
 using namespace gmsuite;
 namespace po = boost::program_options;
 
-OptionsGMS2::OptionsGMS2(string mode) : Options(mode) {
+OptionsGMS2::OptionsGMS2(string mode) : Options(mode), optionsMFinder(mode) {
     
 }
 
