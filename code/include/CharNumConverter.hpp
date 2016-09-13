@@ -114,6 +114,15 @@ namespace gmsuite {
          */
         void complement(const seq_t &original, seq_t &result) const;
         
+        /**
+         * Complement DNA element
+         *
+         * @param original the original element
+         * @exception logic_error DNA complements can only be done for DNA alphabets
+         * @exception out_of_range if numeric element is not in the valid conversion range
+         */
+        element_t complement(element_t original) const;
+        
         
     private:
         
