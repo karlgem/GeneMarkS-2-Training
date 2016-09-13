@@ -190,8 +190,49 @@ void gotoKey(const char*& current, const char* const end, string key) {
  * @return the file's format.
  */
 LabelFile::format_t LabelFile::detectFormat() const {
-    return LST;     // FIXME: detect format
+    if (detectLST(begin_read, end_read))
+        return LST;
+    
+    // if no format detected, throw exception
+    throw logic_error("File format could not be detected.");
 }
+
+
+bool LabelFile::detectLST(const char* const begin, const char* const end) const {
+    
+    const char* current = begin;
+    
+    while (current != end) {
+        
+        // skip whitespaces
+        while (current != end && isspace(*current))
+            current++;
+        
+        // start of line
+        const char* startOfLine = current;
+        
+        // read the remainder of the line
+        while (current != end && *current != '\n' && *current != '\r')
+            current++;
+        
+        const char* endOfLine = current;
+        
+        cmatch match;
+        cregex expr = cregex::compile("Predicted genes");
+        
+        // check if key found
+        if (regex_search(startOfLine, endOfLine, match, expr)) {
+            return true;
+        }
+    }
+    
+    return false;
+
+}
+
+
+
+
 
 /**
  * Open the file and set start/end pointers to the data.
