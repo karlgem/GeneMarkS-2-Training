@@ -57,6 +57,15 @@ namespace gmsuite {
         
         
         /**
+         * Constructor: create a numeric sequence a vector of num_t elements. This simply
+         * copies the vector into the NumSequence class.
+         *
+         * @param numSequence the vector of num_t elements constituting the sequence
+         */
+        NumSequence(const vector<num_t> &numSequence);
+        
+        
+        /**
          * Access an element from a const numeric sequence (i.e. cannot be modified)
          *
          * @param idx the index of the element
@@ -76,6 +85,27 @@ namespace gmsuite {
          * @return the size of the sequence.
          */
         virtual size_type size() const;
+        
+        
+        /**
+         * Get a subsequence
+         *
+         * @param n the start index of the subsequence (inclusive)
+         * @param length the length of the subsequence
+         *
+         * @exception std::invalid_argument thrown if n is larger than the sequence's
+         * length, or if n + length is larger than the sequence's length.
+         */
+        NumSequence subseq(size_type n, size_type length) const;
+        
+        
+        /**
+         * Reverse complement the numeric sequence
+         *
+         * @param cnc the char-num converter that holds the DNA-complement information for the 
+         * alphabet used by this sequence.
+         */
+        void reverseComplement(const CharNumConverter &cnc);
         
         
         /*************** Sequence Iterators *******************/
