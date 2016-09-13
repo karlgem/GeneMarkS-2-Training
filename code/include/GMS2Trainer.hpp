@@ -12,6 +12,10 @@
 #include <stdio.h>
 #include "Label.hpp"
 #include "NumSequence.hpp"
+#include "UniformMarkov.hpp"
+#include "PeriodicMarkov.hpp"
+#include "NonUniformMarkov.hpp"
+
 
 namespace gmsuite {
     
@@ -38,7 +42,19 @@ namespace gmsuite {
         
         void estimateParamtersCoding(const NumSequence &sequence, const vector<Label *> &labels);
         void estimateParamtersNonCoding(const NumSequence &sequence, const vector<Label *> &labels);
+        void estimateParametersStartContext(const NumSequence &sequence, const vector<Label *> &labels);
         
+        unsigned pcounts;
+        unsigned codingOrder;
+        unsigned noncodingOrder;
+        unsigned startContextOrder;
+        NumSequence::size_type startContextLength;
+        
+        // public variables for models
+        NonUniformMarkov *motif;
+        UniformMarkov *noncoding;
+        PeriodicMarkov *coding;
+        NonUniformMarkov *startContext;
         
         
     };
