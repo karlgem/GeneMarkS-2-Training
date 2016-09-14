@@ -13,6 +13,7 @@
 #include "Sequence.hpp"
 #include "SequenceFile.hpp"
 
+#include "UnivariatePDF.hpp"
 #include "MotifFinder.hpp"
 #include "GMS2Trainer.hpp"
 #include "AlphabetDNA.hpp"
@@ -105,10 +106,18 @@ ModuleGMS2::genome_class_t ModuleGMS2::classifyGenome(const NumSequence &numSeq,
     mfinder.findMotifs(upstreamRegions, positions);
     
     // build histogram from positions
+    vector<double> positionCounts (upstrLength - options.optionsMFinder.width+1, 0);
+    for (size_t n = 0; n < positions.size(); n++) {
+        // FIXME account for LEFT alignment
+        // below is only for right
+        positionCounts[upstrLength - options.optionsMFinder.width - positions[n]]++;        // increment position
+    }
     
+    UnivariatePDF spacerDistribution(positionCounts);
     
     genome_class_t genomeClass;
     
+    // TODO: analyze spacer and get class
     
     
     return genomeClass;

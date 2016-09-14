@@ -8,7 +8,7 @@
 
 #include "PeriodicCounts.hpp"
 #include <math.h>
-
+#include <assert.h>
 using namespace std;;
 using namespace gmsuite;
 
@@ -100,6 +100,9 @@ void PeriodicCounts::updateCounts(NumSequence::const_iterator begin, NumSequence
         frame++;                                // increment frame
         if (frame == period)
             frame = 0;                          // reset frame when it reaches "period"
+        
+        if (currentElement == end)
+            assert(false);      // should never reach this; sanity check
     }
     
     

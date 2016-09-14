@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include "Label.hpp"
 
+#include "UnivariatePDF.hpp"
 #include "NumSequence.hpp"
 #include "UniformMarkov.hpp"
 #include "OptionsMFinder.hpp"
@@ -66,6 +67,8 @@ namespace gmsuite {
         NonUniformMarkov *rbs;
         NonUniformMarkov *promoter;
         NonUniformMarkov *upstreamSignature;
+        UnivariatePDF *rbsSpacer;
+        UnivariatePDF *promoterSpacer;
         
         typedef ProkGeneStartModel::genome_class_t genome_class_t;
         genome_class_t genomeClass;

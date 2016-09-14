@@ -91,9 +91,12 @@ void LabelFile::read_lst(vector<Label*> &output) const {
     // loop over all the file
     while (current != end_read) {
         
-        // skip all new-lines
-        while (current != end_read && (*current == '\n' || *current == '\r'))
+        // skip all white spaces
+        while (current != end_read && isspace(*current))
             current++;
+        
+        if (current == end_read)
+            break;
         
         // read next label
         currlabel = readNextLabelLST(current, end_read);
@@ -138,8 +141,8 @@ Label* readNextLabelLST(const char*& current, const char* const end) {
         size_t right;
         char strandChar;
         
-        left = (size_t) strtol(match.str(3).c_str(), NULL, 10);
-        right = (size_t) strtol(match.str(4).c_str(), NULL, 10);
+        left = (size_t) strtol(match.str(3).c_str(), NULL, 10)-1;
+        right = (size_t) strtol(match.str(4).c_str(), NULL, 10)-1;
         strandChar = match.str(2)[0];
         
         Label::strand_t strand = Label::POS;

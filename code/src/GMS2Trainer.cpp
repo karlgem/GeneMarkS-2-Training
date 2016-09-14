@@ -7,7 +7,7 @@
 //
 
 #include "GMS2Trainer.hpp"
-
+#include <iostream>
 #include "MotifFinder.hpp"
 #include "UnivariatePDF.hpp"
 #include "UniformCounts.hpp"
@@ -36,9 +36,10 @@ void GMS2Trainer::estimateParamtersCoding(const NumSequence &sequence, const vec
         
         size_t left = (*iter)->left;                // get left position of fragment
         size_t right = (*iter)->right;              // get right position of fragment
-        size_t length = left + right + 1;           // compute fragment length
+        size_t length = right - left + 1;           // compute fragment length
         
-        counts.count(sequence.begin()+left, sequence.begin() + left +length);
+        if ((*iter)->strand == Label::POS)
+            counts.count(sequence.begin()+left, sequence.begin() + left +length);
     }
     
     // convert counts to probabilities
@@ -145,7 +146,15 @@ void GMS2Trainer::estimateParametersMotifModel(const NumSequence &sequence, cons
         rbs->construct(&rbsCounts, optionsMFinder->pcounts);
         
         // build spacer distribution
-        UnivariatePDF spacerDist UnivariatePDF(<#const vector<double> &weights#>)
+        // build histogram from positions
+        vector<double> positionCounts (upstreamLength - optionsMFinder->width+1, 0);
+        for (size_t n = 0; n < positions.size(); n++) {
+            // FIXME account for LEFT alignment
+            // below is only for right
+            positionCounts[upstreamLength - optionsMFinder->width - positions[n]]++;        // increment position
+        }
+        
+        rbsSpacer = new UnivariatePDF(positionCounts, false, pcounts);
         
     }
     // if genome is class 2, search for weak RBS, and estimate upstream signature pwm
