@@ -13,7 +13,7 @@ using namespace std;;
 using namespace gmsuite;
 
 // constructor
-PeriodicCounts::PeriodicCounts(unsigned order, size_t period, const AlphabetDNA &alph) : Counts(order, alph) {
+PeriodicCounts::PeriodicCounts(unsigned order, size_t period, const AlphabetDNA &alph, const CharNumConverter &cn) : Counts(order, alph), cnc(cn) {
     
     if (period == 0)
         throw std::invalid_argument("Period cannot be 0.");
@@ -64,7 +64,7 @@ void PeriodicCounts::initialize() {
 
 
 // Update counts for a given sequence, by either incrementing or decrementing them
-void PeriodicCounts::updateCounts(NumSequence::const_iterator begin, NumSequence::const_iterator end, string operation) {
+void PeriodicCounts::updateCounts(NumSequence::const_iterator begin, NumSequence::const_iterator end, string operation, bool reverseComplement) {
     
     if (operation != "increment" && operation != "decrement")
         throw invalid_argument("Operation must either be 'increment' or 'decrement'.");
@@ -87,31 +87,45 @@ void PeriodicCounts::updateCounts(NumSequence::const_iterator begin, NumSequence
         mask |= 1;          // set lowest bit to one
     }
     
+    size_t seqSize = distance(begin, end);          // total number of nucleotides in sequence
+    size_t remainingSize = seqSize;                 // number of nucleotides still to be counted
     
     NumSequence::const_iterator currentElement = begin;
+    if (reverseComplement)
+        currentElement = end-1;
     
     size_t wordIndex = 0;       // contains the index of the current word (made up of order+1 elements)
     
     // loop over first "order" elements to store them as part of the initial word index
-    for (size_t i = 0; i < order; i++, currentElement++) {
+    for (size_t i = 0; i < order; i++) {
+        
         wordIndex <<= elementEncodingSize;      // create space at lower bits for a new element
-        wordIndex += *currentElement;           // add new element to the wordIndex
+        if (reverseComplement)
+            wordIndex += cnc.complement(*currentElement);           // complement element then add to the wordIndex
+        else
+            wordIndex += *currentElement;                           // add element to the wordIndex
         
         frame++;                                // increment frame
         if (frame == period)
             frame = 0;                          // reset frame when it reaches "period"
         
-        if (currentElement == end)
-            assert(false);      // should never reach this; sanity check
+        // move to next element on negative or positive strand
+        (reverseComplement ? currentElement-- : currentElement++);
+        
+        remainingSize--;
     }
     
     
     // for every word, add a count in the pwm
-    while (currentElement != end) {
+    while (remainingSize != 0) {
         
         // add new element to the wordIndex
         wordIndex <<= elementEncodingSize;      // create space at lower bits for a new element
-        wordIndex += *currentElement;           // add new element to the wordIndex
+        
+        if (reverseComplement)
+            wordIndex += cnc.complement(*currentElement);           // complement element then add to the wordIndex
+        else
+            wordIndex += *currentElement;                           // add element to the wordIndex
         
         wordIndex = wordIndex & mask;           // mask to remove old junk characters
         
@@ -131,7 +145,10 @@ void PeriodicCounts::updateCounts(NumSequence::const_iterator begin, NumSequence
         if (frame == period)
             frame = 0;                          // reset frame when it reaches "period"
         
-        currentElement++;                       // move to next letter
+        // move to next element on negative or positive strand
+        (reverseComplement ? currentElement-- : currentElement++);
+        
+        remainingSize--;
     }
 }
 

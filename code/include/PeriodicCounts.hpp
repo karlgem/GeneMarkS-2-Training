@@ -37,7 +37,7 @@ namespace gmsuite {
          * @param period the model's period; i.e. the number of different count models
          * @param alph the alphabet used by the model
          */
-        PeriodicCounts(unsigned order, size_t period, const AlphabetDNA &alph);
+        PeriodicCounts(unsigned order, size_t period, const AlphabetDNA &alph, const CharNumConverter &cnc);
         
         
         /**
@@ -88,7 +88,7 @@ namespace gmsuite {
          *
          * @throw invalid_argument if operation is neither "increment" or "decrement"
          */
-        void updateCounts(NumSequence::const_iterator begin, NumSequence::const_iterator end, string operation);
+        void updateCounts(NumSequence::const_iterator begin, NumSequence::const_iterator end, string operation, bool reverseComplement = false);
         
         
         // The structure of the model 'm' is a vector of vectors, where m[p] holds
@@ -108,6 +108,8 @@ namespace gmsuite {
         
         period_counts_t model;          // to store counts
         size_t period;                  // model's period
+        
+        const CharNumConverter &cnc;
         
     };
     

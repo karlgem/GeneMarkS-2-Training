@@ -53,7 +53,7 @@ void UniformCounts::initialize() {
 
 
 // Update counts for a given sequence, by either incrementing or decrementing them.
-void UniformCounts::updateCounts(NumSequence::const_iterator begin, NumSequence::const_iterator end, string operation) {
+void UniformCounts::updateCounts(NumSequence::const_iterator begin, NumSequence::const_iterator end, string operation, bool reverseComplement) {
     if (operation != "increment" && operation != "decrement")
         throw invalid_argument("Operation must either be 'increment' or 'decrement'.");
     

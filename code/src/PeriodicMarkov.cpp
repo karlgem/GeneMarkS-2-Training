@@ -16,7 +16,7 @@ using std::invalid_argument;
 using namespace gmsuite;
 
 // Constructor:
-PeriodicMarkov::PeriodicMarkov(unsigned order, size_t period, const AlphabetDNA &alph) : Markov(order, alph) {
+PeriodicMarkov::PeriodicMarkov(unsigned order, size_t period, const AlphabetDNA &alph, const CharNumConverter &cn) : Markov(order, alph), cnc(cn) {
     this->period = period;
     initialize();
 }
@@ -26,7 +26,7 @@ PeriodicMarkov::PeriodicMarkov(unsigned order, size_t period, const AlphabetDNA 
 void PeriodicMarkov::construct(const vector<NumSequence> &sequences, int pcount) {
     
     // get counts
-    PeriodicCounts counts (order, period, *alphabet);
+    PeriodicCounts counts (order, period, *alphabet, cnc);
     counts.construct(sequences);
     
     // construct probabilities from counts

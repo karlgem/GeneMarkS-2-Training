@@ -26,7 +26,7 @@ GMS2Trainer::GMS2Trainer() {
 void GMS2Trainer::estimateParamtersCoding(const NumSequence &sequence, const vector<Label *> &labels) {
     
     AlphabetDNA alph;
-    PeriodicCounts counts (codingOrder, 3, alph);
+    PeriodicCounts counts (codingOrder, 3, alph, *this->cnc);
     
     // get counts for 3 period markov model given order
     for (vector<Label*>::const_iterator iter = labels.begin(); iter != labels.end(); iter++) {
@@ -38,12 +38,13 @@ void GMS2Trainer::estimateParamtersCoding(const NumSequence &sequence, const vec
         size_t right = (*iter)->right;              // get right position of fragment
         size_t length = right - left + 1;           // compute fragment length
         
-        if ((*iter)->strand == Label::POS)
-            counts.count(sequence.begin()+left, sequence.begin() + left +length);
+        bool reverseComplement = (*iter)->strand == Label::NEG;
+        
+        counts.count(sequence.begin()+left, sequence.begin() + left +length, reverseComplement);
     }
     
     // convert counts to probabilities
-    coding = new PeriodicMarkov(codingOrder, 3, alph);
+    coding = new PeriodicMarkov(codingOrder, 3, alph, *this->cnc);
     coding->construct(&counts, pcounts);
     
 }

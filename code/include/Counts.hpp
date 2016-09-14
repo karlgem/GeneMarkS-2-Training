@@ -46,7 +46,7 @@ namespace gmsuite {
          * @param begin the start of the sequence
          * @param end the end of the sequence
          */
-        void count(NumSequence::const_iterator begin, NumSequence::const_iterator end);
+        void count(NumSequence::const_iterator begin, NumSequence::const_iterator end, bool reverseComplement=false);
         
         
         /**
@@ -56,7 +56,7 @@ namespace gmsuite {
          * @param begin the start of the sequence
          * @param end the end of the sequence
          */
-        void decount(NumSequence::const_iterator begin, NumSequence::const_iterator end);
+        void decount(NumSequence::const_iterator begin, NumSequence::const_iterator end, bool reverseComplement=false);
         
         
         /**
@@ -113,7 +113,7 @@ namespace gmsuite {
          *
          * @throw invalid_argument if operation is neither "increment" or "decrement"
          */
-        virtual void updateCounts(NumSequence::const_iterator begin, NumSequence::const_iterator end, string operation) = 0;
+        virtual void updateCounts(NumSequence::const_iterator begin, NumSequence::const_iterator end, string operation, bool reverseComplement = false) = 0;
         
     };
     

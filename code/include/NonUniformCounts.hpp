@@ -88,7 +88,7 @@ namespace gmsuite {
          *
          * @throw invalid_argument if operation is neither "increment" or "decrement"
          */
-        void updateCounts(NumSequence::const_iterator begin, NumSequence::const_iterator end, string operation);
+        void updateCounts(NumSequence::const_iterator begin, NumSequence::const_iterator end, string operation, bool reverseComplement = false);
         
         
         // The structure of the model 'm' is a vector of vectors, where m[p] holds

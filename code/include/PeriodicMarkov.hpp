@@ -33,7 +33,7 @@ namespace gmsuite {
          * @param period the model's period
          * @param alphabet the alphabet used by the model
          */
-        PeriodicMarkov(unsigned order, size_t period, const AlphabetDNA &alph);
+        PeriodicMarkov(unsigned order, size_t period, const AlphabetDNA &alph, const CharNumConverter &cn);
         
         
         /**
@@ -110,6 +110,8 @@ namespace gmsuite {
         period_markov_t model;          // to store probabilities
         period_joint_t jointProbs;      // to store joint probabilities
         size_t period;                  // model length
+        
+        const CharNumConverter &cnc;
     };
     
 }
