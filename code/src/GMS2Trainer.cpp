@@ -8,9 +8,12 @@
 
 #include "GMS2Trainer.hpp"
 
+#include "MotifFinder.hpp"
+#include "UnivariatePDF.hpp"
 #include "UniformCounts.hpp"
 #include "PeriodicCounts.hpp"
 #include "NonUniformCounts.hpp"
+#include "SequenceParser.hpp"
 
 using namespace std;
 using namespace gmsuite;
@@ -95,6 +98,65 @@ void GMS2Trainer::estimateParametersStartContext(const NumSequence &sequence, co
     // convert counts to probabilities
     startContext = new NonUniformMarkov(startContextOrder, startContextLength, alph);
     startContext->construct(&counts, pcounts);
+}
+
+
+void GMS2Trainer::estimateParametersMotifModel(const NumSequence &sequence, const vector<Label *> &labels) {
+    
+    // build motif finder
+    MotifFinder::Builder b;
+    if (optionsMFinder->align == "left")
+        b.setAlign(MFinderModelParams::LEFT);
+    else if (optionsMFinder->align == "right")
+        b.setAlign(MFinderModelParams::RIGHT);
+    else
+        b.setAlign(MFinderModelParams::NONE);
+    
+    b.setWidth(optionsMFinder->width);
+    b.setMaxIter(optionsMFinder->maxIter);
+    b.setPcounts(optionsMFinder->pcounts);
+    b.setNumTries(optionsMFinder->tries);
+    b.setBackOrder(optionsMFinder->bkgdOrder);
+    b.setMaxEMIter(optionsMFinder->maxEMIter);
+    b.setMotifOrder(optionsMFinder->motifOrder);
+    b.setShiftEvery(optionsMFinder->shiftEvery);
+    
+    
+    MotifFinder mfinder = b.build();
+    
+    // if genome is class 1, search for RBS
+    if (genomeClass == ProkGeneStartModel::C1) {
+        
+        // extract upstream of each label
+        vector<NumSequence> upstreams;
+        SequenceParser::extractUpstreamSequences(sequence, labels, *cnc, upstreamLength, upstreams);
+        
+        vector<NumSequence::size_type> positions;
+        mfinder.findMotifs(upstreams, positions);
+        
+        // build RBS model
+        AlphabetDNA alph;
+        NonUniformCounts rbsCounts(optionsMFinder->motifOrder, optionsMFinder->width, alph);
+        for (size_t n = 0; n < upstreams.size(); n++) {
+            rbsCounts.count(upstreams[n].begin()+positions[n], upstreams[n].begin()+positions[n]+optionsMFinder->width);
+        }
+        
+        rbs = new NonUniformMarkov(optionsMFinder->motifOrder, optionsMFinder->width, alph);
+        rbs->construct(&rbsCounts, optionsMFinder->pcounts);
+        
+        // build spacer distribution
+        UnivariatePDF spacerDist UnivariatePDF(<#const vector<double> &weights#>)
+        
+    }
+    // if genome is class 2, search for weak RBS, and estimate upstream signature pwm
+    else if (genomeClass == ProkGeneStartModel::C2) {
+        throw logic_error("Code not yet completed.");
+    }
+    // if genome is class 3, search for RBS and promoter
+    else {
+        throw logic_error("Code not yet completed.");
+    }
+    
 }
 
 

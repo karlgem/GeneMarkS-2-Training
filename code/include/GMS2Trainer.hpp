@@ -11,11 +11,13 @@
 
 #include <stdio.h>
 #include "Label.hpp"
+
 #include "NumSequence.hpp"
 #include "UniformMarkov.hpp"
+#include "OptionsMFinder.hpp"
 #include "PeriodicMarkov.hpp"
 #include "NonUniformMarkov.hpp"
-
+#include "ProkGeneStartModel.hpp"
 
 namespace gmsuite {
     
@@ -43,12 +45,16 @@ namespace gmsuite {
         void estimateParamtersCoding(const NumSequence &sequence, const vector<Label *> &labels);
         void estimateParamtersNonCoding(const NumSequence &sequence, const vector<Label *> &labels);
         void estimateParametersStartContext(const NumSequence &sequence, const vector<Label *> &labels);
+        void estimateParametersMotifModel(const NumSequence &sequence, const vector<Label *> &labels);
         
         unsigned pcounts;
         unsigned codingOrder;
         unsigned noncodingOrder;
         unsigned startContextOrder;
+        NumSequence::size_type upstreamLength;          // for genome
         NumSequence::size_type startContextLength;
+        
+        const OptionsMFinder* optionsMFinder;
         
         // public variables for models
         NonUniformMarkov *motif;
@@ -56,6 +62,15 @@ namespace gmsuite {
         PeriodicMarkov *coding;
         NonUniformMarkov *startContext;
         
+        // start models
+        NonUniformMarkov *rbs;
+        NonUniformMarkov *promoter;
+        NonUniformMarkov *upstreamSignature;
+        
+        typedef ProkGeneStartModel::genome_class_t genome_class_t;
+        genome_class_t genomeClass;
+        
+        const CharNumConverter *cnc;
         
     };
 }
