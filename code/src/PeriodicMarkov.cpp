@@ -26,7 +26,7 @@ PeriodicMarkov::PeriodicMarkov(unsigned order, size_t period, const AlphabetDNA 
 void PeriodicMarkov::construct(const vector<NumSequence> &sequences, int pcount) {
     
     // get counts
-    PeriodicCounts counts (order, period, *alphabet, cnc);
+    PeriodicCounts counts (order, period, *alphabet, *cnc);
     counts.construct(sequences);
     
     // construct probabilities from counts

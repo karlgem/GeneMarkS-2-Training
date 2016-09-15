@@ -26,7 +26,7 @@ NonUniformMarkov::NonUniformMarkov(unsigned order, size_t length, const Alphabet
 void NonUniformMarkov::construct(const vector<NumSequence> &sequences, int pcount) {
     
     // get counts
-    NonUniformCounts counts (order, length, *alphabet, cnc);
+    NonUniformCounts counts (order, length, *alphabet, *cnc);
     counts.construct(sequences);
     
     // construct probabilities from counts

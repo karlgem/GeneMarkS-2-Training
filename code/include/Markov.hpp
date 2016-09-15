@@ -98,7 +98,7 @@ namespace gmsuite {
         
         unsigned order;                             /**< the model's order */
         const AlphabetDNA* alphabet;                /**< the alphabet */
-        const CharNumConverter &cnc;                /**< the char-number converter; for reverse complementation */
+        const CharNumConverter *cnc;                /**< the char-number converter; for reverse complementation */
         
         /**
          * Convert joing probabilities to Markov (conditional) probabilities.

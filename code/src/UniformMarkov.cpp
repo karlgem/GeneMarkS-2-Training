@@ -24,7 +24,7 @@ UniformMarkov::UniformMarkov(unsigned order, const AlphabetDNA &alph, const Char
 // Construct the model probabilities from a list of sequences
 void UniformMarkov::construct(const vector<NumSequence> &sequences, int pcount) {
     // get counts
-    UniformCounts counts(order, *alphabet, cnc);
+    UniformCounts counts(order, *alphabet, *cnc);
     counts.construct(sequences);
     
     // construct probabilities from counts

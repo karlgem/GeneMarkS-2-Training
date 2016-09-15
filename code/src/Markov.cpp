@@ -14,10 +14,11 @@ using std::invalid_argument;
 using namespace gmsuite;
 
 // Contructor: Initialize a Markov model with a specific order and alphabet.
-Markov::Markov(unsigned order, const AlphabetDNA &alph, const CharNumConverter &cn) : cnc(cn)  {
+Markov::Markov(unsigned order, const AlphabetDNA &alph, const CharNumConverter &cnc)  {
     
     this->order = order;
     this->alphabet = &alph;
+    this->cnc = &cnc;
     
 }
 
