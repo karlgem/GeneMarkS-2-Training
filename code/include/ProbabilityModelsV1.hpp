@@ -113,6 +113,7 @@ namespace gmsuite {
     private:
         
         const AlphabetDNA *alphabet;               /**< alphabet */
+        const CharNumConverter *cnc;                /**< the char-number converter */
         NumSequence::size_type width;              /**< motif width */
         unsigned motifOrder;                    /**< order for motif model */
         unsigned backOrder;                     /**< order for background model */

@@ -36,7 +36,7 @@ namespace gmsuite {
          *
          * @throw invalid_argument if alph is NULL
          */
-        Counts(unsigned order, const AlphabetDNA &alph);
+        Counts(unsigned order, const AlphabetDNA &alph, const CharNumConverter &cnc);
         
         
         /**
@@ -100,6 +100,7 @@ namespace gmsuite {
         
         unsigned order;                     /**< The model's order */
         const AlphabetDNA *alphabet;        /**< The alphabet */
+        const CharNumConverter *cnc;        /**< The character-number converter. Contains info on complementation */
         
         
         /**

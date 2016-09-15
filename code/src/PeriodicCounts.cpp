@@ -13,7 +13,7 @@ using namespace std;;
 using namespace gmsuite;
 
 // constructor
-PeriodicCounts::PeriodicCounts(unsigned order, size_t period, const AlphabetDNA &alph, const CharNumConverter &cn) : Counts(order, alph), cnc(cn) {
+PeriodicCounts::PeriodicCounts(unsigned order, size_t period, const AlphabetDNA &alph, const CharNumConverter &cnc) : Counts(order, alph, cnc) {
     
     if (period == 0)
         throw std::invalid_argument("Period cannot be 0.");
@@ -101,7 +101,7 @@ void PeriodicCounts::updateCounts(NumSequence::const_iterator begin, NumSequence
         
         wordIndex <<= elementEncodingSize;      // create space at lower bits for a new element
         if (reverseComplement)
-            wordIndex += cnc.complement(*currentElement);           // complement element then add to the wordIndex
+            wordIndex += cnc->complement(*currentElement);           // complement element then add to the wordIndex
         else
             wordIndex += *currentElement;                           // add element to the wordIndex
         
@@ -123,7 +123,7 @@ void PeriodicCounts::updateCounts(NumSequence::const_iterator begin, NumSequence
         wordIndex <<= elementEncodingSize;      // create space at lower bits for a new element
         
         if (reverseComplement)
-            wordIndex += cnc.complement(*currentElement);           // complement element then add to the wordIndex
+            wordIndex += cnc->complement(*currentElement);           // complement element then add to the wordIndex
         else
             wordIndex += *currentElement;                           // add element to the wordIndex
         

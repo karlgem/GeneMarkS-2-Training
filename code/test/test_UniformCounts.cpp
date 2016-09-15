@@ -26,10 +26,10 @@ void testOrder(unsigned order) {
     for (size_t n = 0; n < sequences.size(); n++)
         numSequences.push_back(NumSequence(sequences[n], cnc));
     
-    UniformCounts counts (order, alph);
+    UniformCounts counts (order, alph, cnc);
     counts.construct(numSequences);
     
-    UniformMarkov m(order,alph);
+    UniformMarkov m(order,alph,cnc);
     m.construct(&counts);
 }
 

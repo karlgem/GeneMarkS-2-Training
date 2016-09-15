@@ -16,7 +16,7 @@ using std::invalid_argument;
 using namespace gmsuite;
 
 // Constructor:
-PeriodicMarkov::PeriodicMarkov(unsigned order, size_t period, const AlphabetDNA &alph, const CharNumConverter &cn) : Markov(order, alph), cnc(cn) {
+PeriodicMarkov::PeriodicMarkov(unsigned order, size_t period, const AlphabetDNA &alph, const CharNumConverter &cnc) : Markov(order, alph, cnc) {
     this->period = period;
     initialize();
 }

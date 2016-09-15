@@ -14,7 +14,7 @@ using namespace std;
 using namespace gmsuite;
 
 // Constructor: Create a uniform count model by defining it's order and alphabet
-UniformCounts::UniformCounts(unsigned order, const AlphabetDNA &alph) : Counts(order, alph) {
+UniformCounts::UniformCounts(unsigned order, const AlphabetDNA &alph, const CharNumConverter &cnc) : Counts(order, alph, cnc) {
     initialize();
 }
 

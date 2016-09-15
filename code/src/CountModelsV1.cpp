@@ -20,8 +20,9 @@ CountModelsV1::CountModelsV1(const AlphabetDNA &alphabet, Sequence::size_type wi
     
     
     // allocate models
-    mMotif = new NonUniformCounts(motifOrder, width, alphabet);
-    mBack = new UniformCounts(motifOrder, alphabet);
+    cnc = new CharNumConverter(this->alphabet);
+    mMotif = new NonUniformCounts(motifOrder, width, alphabet, *cnc);
+    mBack = new UniformCounts(motifOrder, alphabet, *cnc);
 }
 
 // copy constructor
@@ -34,6 +35,7 @@ CountModelsV1::CountModelsV1(const CountModelsV1 &obj) {
     positionCounts = obj.positionCounts;
     
     // deep copy
+    cnc = new CharNumConverter(*cnc);
     mMotif = new NonUniformCounts(*obj.mMotif);
     mBack = new UniformCounts(*obj.mBack);
 }
@@ -48,11 +50,14 @@ CountModelsV1& CountModelsV1::operator=(const CountModelsV1& other) {
     positionCounts = other.positionCounts;
     
     // deep copy
+    if (cnc != NULL)
+        delete cnc;
     if (mMotif != NULL)
         delete mMotif;
     if (mBack != NULL)
         delete mBack;
     
+    cnc = new CharNumConverter(*other.cnc);
     mMotif = new NonUniformCounts(*other.mMotif);
     mBack = new UniformCounts(*other.mBack);
     return *this;
@@ -62,6 +67,7 @@ CountModelsV1& CountModelsV1::operator=(const CountModelsV1& other) {
  * Destructor
  */
 CountModelsV1::~CountModelsV1() {
+    delete cnc;
     delete mMotif;
     delete mBack;
 }

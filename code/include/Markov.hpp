@@ -35,7 +35,7 @@ namespace gmsuite {
          *
          * @throw invalid_argument if alph is NULL
          */
-        Markov(unsigned order, const AlphabetDNA &alph);
+        Markov(unsigned order, const AlphabetDNA &alph, const CharNumConverter &cnc);
         
         
         /**
@@ -98,7 +98,7 @@ namespace gmsuite {
         
         unsigned order;                             /**< the model's order */
         const AlphabetDNA* alphabet;                /**< the alphabet */
-        
+        const CharNumConverter &cnc;                /**< the char-number converter; for reverse complementation */
         
         /**
          * Convert joing probabilities to Markov (conditional) probabilities.

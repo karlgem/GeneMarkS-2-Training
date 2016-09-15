@@ -36,8 +36,9 @@ namespace gmsuite {
          * @param order the model's order (at every 'length')
          * @param length the model's length; i.e. the number of different count models
          * @param alph the alphabet used by the model
+         * @param cnc the character-number converter; for reverse complementation
          */
-        NonUniformCounts(unsigned order, size_t length, const AlphabetDNA &alph);
+        NonUniformCounts(unsigned order, size_t length, const AlphabetDNA &alph, const CharNumConverter &cnc);
         
         
         /**

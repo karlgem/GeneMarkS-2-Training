@@ -109,8 +109,6 @@ namespace gmsuite {
         period_counts_t model;          // to store counts
         size_t period;                  // model's period
         
-        const CharNumConverter &cnc;
-        
     };
     
 }

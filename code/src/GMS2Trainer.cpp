@@ -53,7 +53,7 @@ void GMS2Trainer::estimateParamtersCoding(const NumSequence &sequence, const vec
 void GMS2Trainer::estimateParamtersNonCoding(const NumSequence &sequence, const vector<Label *> &labels) {
     
     AlphabetDNA alph;
-    UniformCounts counts(noncodingOrder, alph);
+    UniformCounts counts(noncodingOrder, alph, *this->cnc);
     
     size_t leftNoncoding = 0;       // left position of current noncoding region
     
@@ -74,14 +74,14 @@ void GMS2Trainer::estimateParamtersNonCoding(const NumSequence &sequence, const 
     }
     
     // convert counts to probabilities
-    noncoding = new UniformMarkov(noncodingOrder, alph);
+    noncoding = new UniformMarkov(noncodingOrder, alph, *this->cnc);
     noncoding->construct(&counts, pcounts);
 }
 
 
 void GMS2Trainer::estimateParametersStartContext(const NumSequence &sequence, const vector<Label *> &labels) {
     AlphabetDNA alph;
-    NonUniformCounts counts(startContextOrder, startContextLength, alph);
+    NonUniformCounts counts(startContextOrder, startContextLength, alph, *this->cnc);
     
     // get counts for start context model
     for (vector<Label*>::const_iterator iter = labels.begin(); iter != labels.end(); iter++) {
@@ -98,7 +98,7 @@ void GMS2Trainer::estimateParametersStartContext(const NumSequence &sequence, co
     }
     
     // convert counts to probabilities
-    startContext = new NonUniformMarkov(startContextOrder, startContextLength, alph);
+    startContext = new NonUniformMarkov(startContextOrder, startContextLength, alph, *this->cnc);
     startContext->construct(&counts, pcounts);
 }
 
@@ -138,12 +138,12 @@ void GMS2Trainer::estimateParametersMotifModel(const NumSequence &sequence, cons
         
         // build RBS model
         AlphabetDNA alph;
-        NonUniformCounts rbsCounts(optionsMFinder->motifOrder, optionsMFinder->width, alph);
+        NonUniformCounts rbsCounts(optionsMFinder->motifOrder, optionsMFinder->width, alph, *this->cnc);
         for (size_t n = 0; n < upstreams.size(); n++) {
             rbsCounts.count(upstreams[n].begin()+positions[n], upstreams[n].begin()+positions[n]+optionsMFinder->width);
         }
         
-        rbs = new NonUniformMarkov(optionsMFinder->motifOrder, optionsMFinder->width, alph);
+        rbs = new NonUniformMarkov(optionsMFinder->motifOrder, optionsMFinder->width, alph, *this->cnc);
         rbs->construct(&rbsCounts, optionsMFinder->pcounts);
         
         // build spacer distribution
