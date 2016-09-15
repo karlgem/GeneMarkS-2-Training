@@ -38,6 +38,8 @@ namespace gmsuite {
          */
         GMS2Trainer();
         
+        ~GMS2Trainer();
+        
         /**
          * Train
          */
@@ -75,6 +77,8 @@ namespace gmsuite {
         
         const CharNumConverter *cnc;
         
+    private:
+        void deallocAllModels();
     };
 }
 

@@ -179,6 +179,9 @@ void GMS2Trainer::estimateParametersMotifModel(const NumSequence &sequence, cons
 
 void GMS2Trainer::estimateParameters(const NumSequence &sequence, const vector<gmsuite::Label *> &labels) {
     
+    // reset all models
+    deallocAllModels();
+    
     // TODO: sort labels by 'left' in increasing order
     
     // estimate parameters for coding model
@@ -192,4 +195,27 @@ void GMS2Trainer::estimateParameters(const NumSequence &sequence, const vector<g
     
     // estimate parameters for motif models
     estimateParametersMotifModel(sequence, labels);
+}
+
+
+
+
+void GMS2Trainer::deallocAllModels() {
+    
+    // dealloc public variables for models
+    if (motif != NULL) delete motif;
+    if (noncoding != NULL) delete noncoding;
+    if (coding != NULL) delete coding;
+    if (startContext != NULL) delete startContext;
+    if (rbs != NULL) delete rbs;
+    if (promoter != NULL) delete promoter;
+    if (upstreamSignature != NULL) delete upstreamSignature;
+    if (upstreamSignature != NULL) delete upstreamSignature;
+    if (rbsSpacer != NULL) delete rbsSpacer;
+    if (promoterSpacer != NULL) delete promoterSpacer;
+}
+
+// destructor
+GMS2Trainer::~GMS2Trainer() {
+    deallocAllModels();
 }
