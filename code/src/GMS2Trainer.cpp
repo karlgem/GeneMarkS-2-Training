@@ -34,6 +34,7 @@ void GMS2Trainer::estimateParamtersCoding(const NumSequence &sequence, const vec
         if (*iter == NULL)
             throw invalid_argument("Label can't be NULL");
         
+        // FIXME: Ignore first 12 nucleotides from start
         size_t left = (*iter)->left;                // get left position of fragment
         size_t right = (*iter)->right;              // get right position of fragment
         size_t length = right - left + 1;           // compute fragment length
@@ -88,13 +89,19 @@ void GMS2Trainer::estimateParametersStartContext(const NumSequence &sequence, co
         if (*iter == NULL)
             throw invalid_argument("Label can't be NULL");
         
-        size_t left = (*iter)->left + 3;                // get left position of start context fragment
-        
         // skip sequence if it doesn't have enough nucleotides for start context
-        if (left + startContextLength > (*iter)->right)
+        if ((*iter)->right - (*iter)->left + 1 - 6 < startContextLength)        // get lenght of sequence, and -6 to account for start/stop codons
             continue;
         
-        counts.count(sequence.begin() + left, sequence.begin() + left + startContextLength);
+        size_t left;
+        
+        if ((*iter)->strand == Label::POS)
+            left = (*iter)->left + 3;
+        else
+            left = (*iter)->right - 2 - startContextLength;
+        
+        bool reverseComplement = (*iter)->strand == Label::NEG;
+        counts.count(sequence.begin() + left, sequence.begin() + left + startContextLength, reverseComplement);
     }
     
     // convert counts to probabilities
@@ -184,4 +191,5 @@ void GMS2Trainer::estimateParameters(const NumSequence &sequence, const vector<g
     estimateParametersStartContext(sequence, labels);
     
     // estimate parameters for motif models
+    estimateParametersMotifModel(sequence, labels);
 }
