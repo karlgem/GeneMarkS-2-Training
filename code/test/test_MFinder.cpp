@@ -26,9 +26,9 @@ TEST_CASE("Testing Motif Finder") {
     options.motifOrder = 0;
     options.bkgdOrder = 0;
     options.pcounts = 1;
-    options.tries = 1;//10;
-    options.maxIter = 20;//60;
-    options.shiftEvery = 20;
+    options.tries = 10;
+    options.maxIter = 60;
+    options.shiftEvery = 10;
     options.maxEMIter = 10;
     
     options.fname_in = "/Users/Karl/repos/GeneMarkS-2/code/tmp/ecoli-motifs.fa";
