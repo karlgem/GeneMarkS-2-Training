@@ -152,7 +152,32 @@ void Markov::getLowerOrderJoint(unsigned currentOrder, const vector<double> &cur
 
 
 
-
+NumSequence Markov::indexToNumSequence(size_t idx, size_t wordLength) const {
+    vector<NumSequence::num_t>  numSeq;
+    
+    numSeq.resize(wordLength);      // allocate space
+    
+    size_t numElements = alphabet->sizeValid();             // number of elements that can make up valid words (e.g. A,C,G,T)
+    size_t elementEncodingSize = ceil(log2(numElements));   // number of bits required to encode all elements (e.g. A,C,G,T require 2 bits)
+    size_t mask = 0;                        // used to clear wordIndex of junk and capture the relevant bits for the index
+    
+    // get a mask that captures one letter at a time
+    for (size_t n = 0; n < elementEncodingSize; n++) {
+        mask <<= 1;      // shift by one
+        mask |= 1;      // set rightmost bit to 1
+    }
+    
+    // for each character of the word
+    for (size_t n = 0; n < wordLength; n++) {
+        
+        size_t current = idx & mask;            // 'extract' this character from idx
+        idx >>= elementEncodingSize;            // remove this character from idx
+        
+        numSeq[wordLength-n-1] = (NumSequence::num_t) current;       // set current character in numeric sequence
+    }
+    
+    return NumSequence(numSeq);
+}
 
 
 

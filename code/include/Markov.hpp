@@ -122,6 +122,13 @@ namespace gmsuite {
         void getLowerOrderJoint(unsigned currentOrder, const vector<double> &current, vector<double> &result) const;
         
         
+        /**
+         * Convert the array index to the numeric sequence 'located' at that index.
+         * For example, for index 7 and wordLength 3 (i..e 000111 -> ACT), the numeric
+         * sequence will be 013
+         */
+        NumSequence indexToNumSequence(size_t idx, size_t wordLength) const;
+        
     };
     
 }
