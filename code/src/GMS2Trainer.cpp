@@ -21,6 +21,19 @@ using namespace gmsuite;
 // default constructor
 GMS2Trainer::GMS2Trainer() {
     
+    // public variables for models
+    motif = NULL;
+    noncoding = NULL;
+    coding = NULL;
+    startContext = NULL;
+    
+    // start models
+    rbs = NULL;
+    promoter = NULL;
+    upstreamSignature = NULL;
+    rbsSpacer = NULL;
+    promoterSpacer = NULL;
+    
 }
 
 void GMS2Trainer::estimateParamtersCoding(const NumSequence &sequence, const vector<Label *> &labels) {
