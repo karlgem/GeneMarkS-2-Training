@@ -76,6 +76,8 @@ void SequenceFile::write(const vector<Sequence> &sequences) const {
     
     if (this->format == FASTA)
         write_fasta(sequences);
+    else if (this->format == PLAIN)
+        write_plain(sequences);
 }
 
 // read sequences from file

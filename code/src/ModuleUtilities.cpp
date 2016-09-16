@@ -27,9 +27,8 @@ void ModuleUtilities::run() {
     if (options.utility == EXTRACT_UPSTR) {
         runExtractUpstream();
     }
-    
-    // unrecognized utility to run
-    throw invalid_argument("Unknown utility function " + options.utility);
+    else            // unrecognized utility to run
+        throw invalid_argument("Unknown utility function " + options.utility);
     
 }
 

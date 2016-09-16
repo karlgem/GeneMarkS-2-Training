@@ -50,7 +50,8 @@ bool OptionsUtilities::parse(int argc, const char *argv[]) {
         po::options_description hidden;
         hidden.add_options()
         ("mode", po::value<string>(&mode)->required(), "Program Mode")
-        ("utility", po::value<string>(&utility)->required(), "Utility function");
+        ("utility", po::value<string>(&utility)->required(), "Utility function")
+        ("subargs", po::value<std::vector<std::string> >(), "Arguments for command")
         ;
         
         // Congregate options into further groups
@@ -66,7 +67,8 @@ bool OptionsUtilities::parse(int argc, const char *argv[]) {
         // Specify positional arguments
         po::positional_options_description pos;
         pos.add("mode",1);
-        pos.add("utility",-1);
+        pos.add("utility",1);
+        pos.add("subargs",-1);
         
         
         
@@ -105,9 +107,10 @@ bool OptionsUtilities::parse(int argc, const char *argv[]) {
             ;
             
             // Collect all the unrecognized options from the first pass. This will include the
-            // (positional) command name, so we need to erase that
+            // (positional) mode and command name, so we need to erase them
             vector<string> opts = po::collect_unrecognized(parsed.options, po::include_positional);
-            opts.erase(opts.begin());
+            opts.erase(opts.begin());       // erase mode
+            opts.erase(opts.begin());       // erase command name
             
             // Parse again...
             po::store(po::command_line_parser(opts).options(utilDesc).run(), vm);
@@ -115,10 +118,11 @@ bool OptionsUtilities::parse(int argc, const char *argv[]) {
             // get remaining parameters whose values were not assigned in add_options() above
             extractUpstreamUtility.allowOverlaps = vm.count("allow-overlap-with-cds") > 0;
         }
+        else                                                                        // unrecognized utility
+            throw po::invalid_option_value(utility);
         
-        
-        // unrecognized utility
-        throw po::invalid_option_value(utility);
+        // update all values and make sure required are provided
+        po::notify(vm);
     }
     catch (exception &ex) {
         cerr << "Error: " << ex.what() << endl;
