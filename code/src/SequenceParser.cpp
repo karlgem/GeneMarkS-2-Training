@@ -8,6 +8,7 @@
 
 #include "SequenceParser.hpp"
 #include <stdexcept>
+#include <iostream>
 
 using namespace std;
 using namespace gmsuite;
@@ -37,7 +38,7 @@ void SequenceParser::extractUpstreamSequences(const NumSequence& sequence, const
                     size_t boundaryRight = (n == labels.size()-1 ? sequence.size()-1 : labels[n+1]->left-1);
                     size_t boundaryLeft = labels[n]->right + 1;
                     
-                    size_t length = boundaryRight - boundaryLeft + 1;
+                    size_t length = (boundaryRight > boundaryLeft ? boundaryRight - boundaryLeft + 1 : 0);
                     if (length < upstrLength)
                         skip = true;
                 }
@@ -46,7 +47,7 @@ void SequenceParser::extractUpstreamSequences(const NumSequence& sequence, const
                     size_t boundaryLeft = (n == 0 ? 0 : labels[n-1]->right+1);
                     size_t boundaryRight = labels[n]->left - 1;
                     
-                    size_t length = boundaryRight - boundaryLeft + 1;
+                    size_t length = (boundaryRight > boundaryLeft ? boundaryRight - boundaryLeft + 1 : 0);
                     if (length < upstrLength)
                         skip = true;
                 }

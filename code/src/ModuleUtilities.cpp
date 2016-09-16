@@ -53,7 +53,7 @@ void ModuleUtilities::runExtractUpstream() {
     
     // extract upstream regions from numeric sequence
     vector<NumSequence> upstreams;
-    SequenceParser::extractUpstreamSequences(numSequence, labels, cnc, options.extractUpstreamUtility.length, upstreams, options.extractUpstreamUtility.allowOverlaps);
+    SequenceParser::extractUpstreamSequences(numSequence, labels, cnc, options.extractUpstreamUtility.length, upstreams, options.extractUpstreamUtility.allowOverlaps, options.extractUpstreamUtility.minimumGeneLength);
     
     // convert upstream numeric sequences back to string
     vector<Sequence> strUpstreams (upstreams.size());
