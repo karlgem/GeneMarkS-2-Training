@@ -11,7 +11,7 @@
 #include <float.h>              // DBL_MAX
 #include <stdlib.h>             // rand
 #include <iostream>
-
+#include <algorithm>
 #include "CountModels.hpp"
 #include "CountModelsV1.hpp"
 #include "UnivariatePDF.hpp"

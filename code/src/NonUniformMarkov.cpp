@@ -10,6 +10,7 @@
 #include "NonUniformCounts.hpp"
 
 #include <math.h>
+#include <limits>       
 #include <stdexcept>
 
 using std::invalid_argument;

@@ -276,7 +276,7 @@ void LabelFile::closeFile() {
 void LabelFile::write_lst(const vector<Label *> &labels) const {
     
     ofstream out;
-    out.open(params.path);
+    out.open(params.path.c_str());
     
     // FIXME: add correct header information
     out << "GeneMark.hmm PROKARYOTIC (Version 3.4.4)" << endl;

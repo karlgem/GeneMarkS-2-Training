@@ -9,6 +9,8 @@
 #include "ProbabilityModelsV1.hpp"
 #include "CountModelsV1.hpp"
 #include <math.h>
+#include <stdexcept>
+#include <algorithm>
 
 using namespace std;
 using namespace gmsuite;

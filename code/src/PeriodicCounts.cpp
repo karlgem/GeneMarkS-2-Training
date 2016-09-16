@@ -9,6 +9,8 @@
 #include "PeriodicCounts.hpp"
 #include <math.h>
 #include <assert.h>
+#include <stdexcept>
+
 using namespace std;;
 using namespace gmsuite;
 

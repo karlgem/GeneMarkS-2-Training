@@ -8,6 +8,7 @@
 
 #include "NonUniformCounts.hpp"
 #include <math.h>
+#include <stdexcept>
 
 using namespace std;;
 using namespace gmsuite;

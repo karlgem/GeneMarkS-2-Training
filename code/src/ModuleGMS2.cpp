@@ -36,8 +36,9 @@ NumSequence extractUpstreamSequence(const NumSequence& sequence, const Label &la
     if (label.strand == Label::POS) {           // positive strand
         
         if (label.left < upstrLength)
-            throw out_of_range("Not enough sequence for position " + to_string(label.left) + " to extract upstream of length " + to_string(upstrLength));
-        
+            //throw out_of_range("Not enough sequence for position " + to_string(label.left) + " to extract upstream of length " + to_string(upstrLength));
+            throw out_of_range("Not enough upstream sequence.");
+
         size_t left = label.left - upstrLength;                     // left idx of upstream sequence
         size_t right = label.left-1;                                // right idx of upstream sequence
         size_t length = right - left + 1;                           // length of upstream sequence
@@ -48,7 +49,8 @@ NumSequence extractUpstreamSequence(const NumSequence& sequence, const Label &la
     else {                                      // negative strand; reverse complement
         
         if (label.right + upstrLength >= sequence.size())
-            throw out_of_range("Not enought sequence for position " + to_string(label.right) + " on negative strand to extract upstream of length " + to_string(upstrLength));
+            //throw out_of_range("Not enought sequence for position " + to_string(label.right) + " on negative strand to extract upstream of length " + to_string(upstrLength));
+            throw out_of_range("Not enough upstream sequence.");
         
         size_t left = label.right + 1;                              // left idx of upstream sequence
         size_t right = label.right + upstrLength;                   // right idx of upstream sequence

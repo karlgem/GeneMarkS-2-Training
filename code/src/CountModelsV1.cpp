@@ -7,7 +7,7 @@
 //
 
 #include "CountModelsV1.hpp"
-
+#include <stdexcept>
 using namespace gmsuite;
 
 // constructor

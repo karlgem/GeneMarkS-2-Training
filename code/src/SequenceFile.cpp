@@ -151,7 +151,7 @@ void SequenceFile::write_fasta(const vector<Sequence> &sequences) const {
     
     // open a file using fstream
     ofstream out;
-    out.open(params.path);
+    out.open(params.path.c_str());
     
     for (size_t n = 0; n < sequences.size(); n++) {
         out << ">" << sequences[n].getMetaData() << endl;       // write fasta definition
@@ -165,7 +165,7 @@ void SequenceFile::write_fasta(const vector<Sequence> &sequences) const {
 void SequenceFile::write_plain(const vector<Sequence> &sequences) const {
     // open a file using fstream
     ofstream out;
-    out.open(params.path);
+    out.open(params.path.c_str());
     
     for (size_t n = 0; n < sequences.size(); n++) {
         out << sequences[n].toString() << endl;                 // write sequence

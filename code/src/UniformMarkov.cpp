@@ -10,6 +10,7 @@
 #include "UniformCounts.hpp"
 
 #include <math.h>
+#include <limits>
 #include <stdexcept>
 
 using namespace std;
