@@ -83,13 +83,6 @@ bool OptionsUtilities::parse(int argc, const char *argv[]) {
             run();
         
         po::store(parsed,vm);
-        po::notify(vm);
-        
-        // if help specified, print usage message and quit
-        if (vm.count("help")) {
-            cout << make_usage_string(basename(argv[0]), cmdline_options, pos) << endl;
-            return false;
-        }
         
         // try parsing arguments.
         po::notify(vm);
@@ -106,6 +99,8 @@ bool OptionsUtilities::parse(int argc, const char *argv[]) {
                 ("allow-overlap-with-cds", "If set, then upstream (non-coding) regions are allowed to overlap with coding regions. If not set, these sequences are ignored.")
             ;
             
+            cmdline_options.add(utilDesc);
+            
             // Collect all the unrecognized options from the first pass. This will include the
             // (positional) mode and command name, so we need to erase them
             vector<string> opts = po::collect_unrecognized(parsed.options, po::include_positional);
@@ -120,6 +115,12 @@ bool OptionsUtilities::parse(int argc, const char *argv[]) {
         }
         else                                                                        // unrecognized utility
             throw po::invalid_option_value(utility);
+        
+        // if help specified, print usage message and quit
+        if (vm.count("help")) {
+            cout << make_usage_string(basename(argv[0]), cmdline_options, pos) << endl;
+            return false;
+        }
         
         // update all values and make sure required are provided
         po::notify(vm);
