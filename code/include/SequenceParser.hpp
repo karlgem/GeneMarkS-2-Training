@@ -24,7 +24,7 @@ namespace gmsuite {
         
         static NumSequence extractUpstreamSequence(const NumSequence& sequence, const Label &label, const CharNumConverter &cnc, NumSequence::size_type upstrLength);
         
-        static void extractUpstreamSequences(const NumSequence& sequence, const vector<Label*> &labels, const CharNumConverter &cnc, NumSequence::size_type upstrLength, vector<NumSequence> &upstreams, bool allowOverlapWithCDS = false);
+        static void extractUpstreamSequences(const NumSequence& sequence, const vector<Label*> &labels, const CharNumConverter &cnc, NumSequence::size_type upstrLength, vector<NumSequence> &upstreams, bool allowOverlapWithCDS = false, size_t minimumGeneLength=0);
         
     };
     

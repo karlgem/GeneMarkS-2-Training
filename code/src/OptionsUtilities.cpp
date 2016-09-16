@@ -97,6 +97,7 @@ bool OptionsUtilities::parse(int argc, const char *argv[]) {
                 ("output,o", po::value<string>(&extractUpstreamUtility.fn_output)->required(), "Output filename")
                 ("length", po::value<size_t>(&extractUpstreamUtility.length)->required(), "Upstream length")
                 ("allow-overlap-with-cds", "If set, then upstream (non-coding) regions are allowed to overlap with coding regions. If not set, these sequences are ignored.")
+                ("min-gene-length", po::value<size_t>(&extractUpstreamUtility.minimumGeneLength)->default_value(0), "Minimum gene length")
             ;
             
             cmdline_options.add(utilDesc);

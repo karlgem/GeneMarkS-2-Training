@@ -60,6 +60,7 @@ namespace gmsuite {
             string fn_output;               // output filename
             size_t length;                  // length of upstream regions
             bool allowOverlaps;             // allow upstream region to overlap coding region
+            size_t minimumGeneLength;       // minimum gene length associated with upstream
         }
         extractUpstreamUtility;
         

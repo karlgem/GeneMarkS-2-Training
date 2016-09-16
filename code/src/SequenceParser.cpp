@@ -13,7 +13,7 @@ using namespace std;
 using namespace gmsuite;
 
 
-void SequenceParser::extractUpstreamSequences(const NumSequence& sequence, const vector<Label*> &labels, const CharNumConverter &cnc, NumSequence::size_type upstrLength, vector<NumSequence> &upstreamRegions, bool allowOverlapWithCDS) {
+void SequenceParser::extractUpstreamSequences(const NumSequence& sequence, const vector<Label*> &labels, const CharNumConverter &cnc, NumSequence::size_type upstrLength, vector<NumSequence> &upstreamRegions, bool allowOverlapWithCDS, size_t minimumGeneLength) {
     
     if (sequence.size() == 0)
         return;
@@ -26,6 +26,9 @@ void SequenceParser::extractUpstreamSequences(const NumSequence& sequence, const
     for (size_t n = 0; n < labels.size(); n++) {
         try {
             bool skip = false;
+            
+            if (labels[n]->right - labels[n]->left + 1 < minimumGeneLength)
+                skip = true;
             
             if (!allowOverlapWithCDS) {
                 // skip if overlapping with CDS
