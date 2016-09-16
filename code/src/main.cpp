@@ -15,16 +15,19 @@
 #include "Options.hpp"
 #include "OptionsGMS2.hpp"
 #include "OptionsMFinder.hpp"
+#include "OptionsUtilities.hpp"
 
 #include "Module.hpp"
 #include "ModuleGMS2.hpp"
 #include "ModuleMFinder.hpp"
+#include "ModuleUtilities.hpp"
 
 using namespace std;
 using namespace gmsuite;
 
 #define MOD_GMS2 "gms2"
 #define MOD_MFINDER "mfinder"
+#define MOD_UTILITIES "utilities"
 
 string usage_message(string progName) {
     stringstream ssm;
@@ -33,6 +36,7 @@ string usage_message(string progName) {
     ssm << "The valid modes are:" << endl;
     ssm << "\t" << MOD_GMS2 << "\t" << "GeneMarkS2" << endl;
     ssm << "\t" << MOD_MFINDER << "\t" << "MFinder" << endl;
+    ssm << "\t" << MOD_UTILITIES << "\t" << "Utilities" << endl;
     
     return ssm.str();
 }
@@ -64,8 +68,18 @@ int main(int argc, const char * argv[]) {
         if (!options.parse(argc, argv))                 // parse input arguments
             return 1;
         
-        ModuleMFinder module (options);                  // create module with options
+        ModuleMFinder module (options);                 // create module with options
         module.run();                                   // run module
+    }
+    else if (aMode == MOD_UTILITIES) {
+        OptionsUtilities options(aMode);                // Utilities
+        
+        if (!options.parse(argc, argv))                 // parse input arguments
+            return 1;
+        
+        ModuleUtilities module (options);               // create module with options
+        module.run();                                   // run module
+
     }
     
     

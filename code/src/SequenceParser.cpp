@@ -13,7 +13,10 @@ using namespace std;
 using namespace gmsuite;
 
 
-void SequenceParser::extractUpstreamSequences(const NumSequence& sequence, const vector<Label*> &labels, const CharNumConverter &cnc, NumSequence::size_type upstrLength, vector<NumSequence> &upstreamRegions) {
+void SequenceParser::extractUpstreamSequences(const NumSequence& sequence, const vector<Label*> &labels, const CharNumConverter &cnc, NumSequence::size_type upstrLength, vector<NumSequence> &upstreamRegions, bool allowOverlapWithCDS) {
+    
+    if (sequence.size() == 0)
+        return;
     
     // extract upstream region, and reverse complement when on negative strand
     upstreamRegions.resize(labels.size());
@@ -22,7 +25,34 @@ void SequenceParser::extractUpstreamSequences(const NumSequence& sequence, const
     
     for (size_t n = 0; n < labels.size(); n++) {
         try {
-            upstreamRegions[n-numSkipped] = extractUpstreamSequence(sequence, *labels[n], cnc, upstrLength);
+            bool skip = false;
+            
+            if (!allowOverlapWithCDS) {
+                // skip if overlapping with CDS
+                if (labels[n]->strand == Label::NEG) {
+                    // boundaryRight is either end of sequence (if this is the last label), or the left-end of the gene to the "right" of the current gene
+                    size_t boundaryRight = (n == labels.size()-1 ? sequence.size()-1 : labels[n+1]->left-1);
+                    size_t boundaryLeft = labels[n]->right + 1;
+                    
+                    size_t length = boundaryRight - boundaryLeft + 1;
+                    if (length < upstrLength)
+                        skip = true;
+                }
+                else {
+                    // boundaryLeft is either start of sequence (if this is the first label), or the right-end of the gene to the "left" of the current gene
+                    size_t boundaryLeft = (n == 0 ? 0 : labels[n-1]->right+1);
+                    size_t boundaryRight = labels[n]->left - 1;
+                    
+                    size_t length = boundaryRight - boundaryLeft + 1;
+                    if (length < upstrLength)
+                        skip = true;
+                }
+            }
+            
+            if (skip)
+                numSkipped++;
+            else
+                upstreamRegions[n-numSkipped] = extractUpstreamSequence(sequence, *labels[n], cnc, upstrLength);
         }
         catch (out_of_range) {
             numSkipped++;
