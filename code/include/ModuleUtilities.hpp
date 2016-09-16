@@ -13,7 +13,7 @@
 
 #include "Module.hpp"
 #include "Sequence.hpp"
-#include "OptionsUtilities.hpp""
+#include "OptionsUtilities.hpp"
 
 namespace gmsuite {
     

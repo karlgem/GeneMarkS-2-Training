@@ -55,6 +55,9 @@ namespace gmsuite {
         
         // extract-upstream options
         struct ExtractUpstreamUtility : public GenericOptions {
+            string fn_sequence;             // sequence filename
+            string fn_label;                // label filename
+            string fn_output;               // output filename
             size_t length;                  // length of upstream regions
             bool allowOverlaps;             // allow upstream region to overlap coding region
         }

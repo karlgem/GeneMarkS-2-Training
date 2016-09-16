@@ -8,6 +8,8 @@
 
 #include "ModuleUtilities.hpp"
 
+#include "LabelFile.hpp"
+#include "SequenceFile.hpp"
 #include "SequenceParser.hpp"
 
 using namespace std;
@@ -35,6 +37,36 @@ void ModuleUtilities::run() {
 
 void ModuleUtilities::runExtractUpstream() {
     
+    // read sequence file
+    SequenceFile sequenceFile (options.extractUpstreamUtility.fn_sequence, SequenceFile::READ);
+    Sequence strSequence = sequenceFile.read();
+    
+    // read label file
+    LabelFile labelFile (options.extractUpstreamUtility.fn_label, LabelFile::READ);
+    vector<Label*> labels;
+    labelFile.read(labels);
+    
+    // create numeric sequence
+    AlphabetDNA alph;
+    CharNumConverter cnc (&alph);
+    
+    NumSequence numSequence (strSequence, cnc);
+    
+    // extract upstream regions from numeric sequence
+    vector<NumSequence> upstreams;
+    SequenceParser::extractUpstreamSequences(numSequence, labels, cnc, options.extractUpstreamUtility.length, upstreams, options.extractUpstreamUtility.allowOverlaps);
+    
+    // convert upstream numeric sequences back to string
+    vector<Sequence> strUpstreams (upstreams.size());
+    
+    for (size_t n = 0; n < upstreams.size(); n++) {
+        strUpstreams[n] = Sequence(cnc.convert(upstreams[n].begin(), upstreams[n].end()));
+    }
+    
+    
+    // write sequences to file
+    SequenceFile outputFile(options.extractUpstreamUtility.fn_output, SequenceFile::WRITE);
+    outputFile.write(strUpstreams);
     
     
 }

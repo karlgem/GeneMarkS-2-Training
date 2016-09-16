@@ -96,7 +96,10 @@ bool OptionsUtilities::parse(int argc, const char *argv[]) {
             
             po::options_description utilDesc(string(EXTRACT_UPSTR) + " options");
             utilDesc.add_options()
-                ("length,l", po::value<size_t>(&extractUpstreamUtility.length)->required(), "Upstream length")
+                ("sequence,s", po::value<string>(&extractUpstreamUtility.fn_sequence)->required(), "Sequence filename")
+                ("label,l", po::value<string>(&extractUpstreamUtility.fn_label)->required(), "Label filename")
+                ("output,o", po::value<string>(&extractUpstreamUtility.fn_output)->required(), "Output filename")
+                ("length", po::value<size_t>(&extractUpstreamUtility.length)->required(), "Upstream length")
                 ("allow-overlap-with-cds", "If set, then upstream (non-coding) regions are allowed to overlap with coding regions. If not set, these sequences are ignored.")
             ;
             
@@ -110,8 +113,6 @@ bool OptionsUtilities::parse(int argc, const char *argv[]) {
             
             // get remaining parameters whose values were not assigned in add_options() above
             extractUpstreamUtility.allowOverlaps = vm.count("allow-overlap-with-cds") > 0;
-            
-            
         }
         
         
