@@ -43,8 +43,11 @@ SequenceFile::SequenceFile(string path, access_t access, format_t format) {
     // open new file
     openfile();
     
+    if (this->format == AUTO && access == WRITE)
+        this->format = PLAIN;
+    
     // if format not specified (i.e. AUTO), try to guess what it is
-    if (this->format == AUTO)
+    if (this->format == AUTO && access == READ)
         this->format = detectFormat();
     
     
