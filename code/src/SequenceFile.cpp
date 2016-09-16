@@ -86,6 +86,8 @@ void SequenceFile::read(vector<Sequence> &output) const {
     // read based of format set
     if (this->format == FASTA)
         read_fasta(output);
+    else if (this->format == PLAIN)
+        read_plain(output);
     
 }
 
@@ -227,7 +229,39 @@ void SequenceFile::read_fasta(vector<Sequence> &output) const{
 
 
 
+void SequenceFile::read_plain(vector<Sequence> &output) const {
+    
+    string seq;        // stores single sequence
+    
+    output.clear();         // clear output vector (sanity check)
+    
+    // point to start of data
+    const char *  current = begin_read;
+    
+    // loop over all file
+    while (current != end_read) {
+        
+        // skip all newline characters
+        while (current != end_read && isspace(*current))
+            current++;
+        
+        // if reached end of file, break
+        if (current == end_read)
+            break;
+        
+        // otherwise, read line
+        const char* startOfLine = current;
+        while (current != end_read && *current != '\n' && *current != '\r')
+            current++;
+        
+        const char* endOfLine = current;
+        
+        // create new sequence and add it to the output vector
+        output.push_back(Sequence(string(startOfLine, endOfLine)));
+    }
 
+    
+}
 
 
 

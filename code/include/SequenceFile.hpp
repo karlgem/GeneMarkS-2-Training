@@ -124,6 +124,9 @@ namespace gmsuite {
         // read file in fasta format
         void read_fasta(vector<Sequence> &output) const;
         
+        // read file in plain format (i.e. one seq per line)
+        void read_plain(vector<Sequence> &output) const;
+        
         // write to file in fasta format
         void write_fasta(const vector<Sequence> &sequences) const;
         
