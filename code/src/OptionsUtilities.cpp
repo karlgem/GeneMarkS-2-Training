@@ -81,6 +81,7 @@ bool OptionsUtilities::parse(int argc, const char *argv[]) {
             run();
         
         po::store(parsed,vm);
+        po::notify(vm);
         
         // if help specified, print usage message and quit
         if (vm.count("help")) {
