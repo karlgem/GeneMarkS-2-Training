@@ -127,6 +127,9 @@ namespace gmsuite {
         // write to file in fasta format
         void write_fasta(const vector<Sequence> &sequences) const;
         
+        // write to file in plain format (i.e. just sequences each on a line)
+        void write_plain(const vector<Sequence> &sequences) const;
+        
         
         /**
          * Reopen file and reset parameters
