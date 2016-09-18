@@ -191,7 +191,7 @@ string PeriodicMarkov::toString() const {
     
     // since all frames have the same set of keys, let's start looping over keys and put
     // one per line
-    for (size_t idx = 0; idx < jointProbs[0].size(); idx++) {
+    for (size_t idx = 0; idx < jointProbs[0][order].size(); idx++) {
         
         // convert index to numeric sequence
         NumSequence numSeq = this->indexToNumSequence(idx, order+1);
