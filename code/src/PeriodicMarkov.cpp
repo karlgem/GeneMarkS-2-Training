@@ -11,9 +11,10 @@
 
 #include <math.h>
 #include <limits>
+#include <sstream>
 #include <stdexcept>
 
-using std::invalid_argument;
+using namespace std;
 using namespace gmsuite;
 
 // Constructor:
@@ -183,7 +184,30 @@ double PeriodicMarkov::evaluate(NumSequence::const_iterator begin, NumSequence::
 
 // Generate a string representation of the model
 string PeriodicMarkov::toString() const {
-    return "";
+    stringstream ssm;
+    
+    if (jointProbs.size() == 0)
+        return "";
+    
+    // since all frames have the same set of keys, let's start looping over keys and put
+    // one per line
+    for (size_t idx = 0; idx < jointProbs[0].size(); idx++) {
+        
+        // convert index to numeric sequence
+        NumSequence numSeq = this->indexToNumSequence(idx, order+1);
+        
+        // convert numeric sequence to string sequence and add to ssm
+        ssm << cnc->convert(numSeq.begin(), numSeq.end());
+
+        // now that we have the key, loop over each frame and print the probability of that key in the frame
+        for (size_t p = 0; p < period; p++) {
+            ssm << "\t" << this->jointProbs[p][order][idx];     // we print the key of "order" since we only care about the highest order
+        }
+        
+        ssm << endl;
+    }
+        
+    return ssm.str();
 }
 
 
