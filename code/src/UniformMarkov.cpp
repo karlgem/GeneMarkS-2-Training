@@ -12,6 +12,7 @@
 #include <math.h>
 #include <limits>
 #include <stdexcept>
+#include <sstream>
 
 using namespace std;
 using namespace gmsuite;
@@ -126,12 +127,6 @@ double UniformMarkov::evaluate(NumSequence::const_iterator begin, NumSequence::c
         
         // mask to remove old junk characters (doesn't affect wordIndex here. I do it just for consistency with remaining code)
         wordIndex = wordIndex & mask;
-
-        // FIXME: use absolute probabilities of smaller order to account for short words
-//        if (useLog)
-//            score += log2(model[wordIndex]);
-//        else
-//            score *= model[wordIndex];
         
         currentElement++;
         
@@ -173,7 +168,23 @@ double UniformMarkov::evaluate(NumSequence::const_iterator begin, NumSequence::c
 
 // Generate a string representation of the model
 string UniformMarkov::toString() const {
-    return "";
+    
+    stringstream ssm;
+    
+    // for each index in join probability distribution
+    for (size_t idx = 0; idx < this->model.size(); idx++) {
+        // convert index to numeric sequence
+        NumSequence numSeq = this->indexToNumSequence(idx, this->order+1);
+        
+        // convert numeric sequence to string sequence and add to ssm
+        ssm << cnc->convert(numSeq.begin(), numSeq.end());
+        
+        // add probability of current index
+        ssm << "\t" << this->model[idx] << endl;
+    }
+    
+    return ssm.str();
+    
 }
 
 

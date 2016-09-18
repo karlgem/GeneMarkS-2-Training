@@ -10,10 +10,11 @@
 #include "NonUniformCounts.hpp"
 
 #include <math.h>
-#include <limits>       
+#include <limits>
+#include <sstream>
 #include <stdexcept>
 
-using std::invalid_argument;
+using namespace std;
 using namespace gmsuite;
 
 // Constructor:
@@ -77,6 +78,24 @@ void NonUniformMarkov::construct(const Counts* counts, int pcount) {
         for (size_t n = 0; n < model[p].size(); n++)            // for each word
             if (sums[p] != 0)                                   // check for division by zero
                 model[p][n] /= sums[p];                         // normalize word counts on sum
+    
+    // store joint probabilities
+    jointProbs = model;
+//    // create a set of joint distributions for each position
+//    jointProbs.resize(this->length);
+//    
+//    // for each position
+//    for (size_t p = 0; p < this->length; p++) {
+//        
+//        // create a joint distribution for all orders less than or equal to this->order
+//        jointProbs[p].resize(this->order + 1);          // for order, order-1, order-2, ... 0
+//        jointProbs[p][this->order] = model[p];          // the joint for 'order' is in 'model'
+//        
+//        // derive remaining joint probabilities for 'order-1' and lower. This is used to compute words of length shorter than 'order+1'
+//        for (unsigned o = this->order; o > 0; o--)
+//            this->getLowerOrderJoint(o, jointProbs[p][o], jointProbs[p][o-1]);        //  take previous joint probs and reduce (marginalize) it by one
+//    }
+    
     
     
     // for each period, convert joint probabilities to Markov (conditional):
@@ -166,7 +185,57 @@ double NonUniformMarkov::evaluate(NumSequence::const_iterator begin, NumSequence
 
 // Generate a string representation of the model
 string NonUniformMarkov::toString() const {
-    return "";
+    stringstream ssm;
+    
+    // for all positions < order, print each on a line (since they have different keys)
+    for (size_t p = 0; p < order; p++) {
+        ssm << "POS " << p << endl;
+        size_t wordLength = p+1;
+        
+        // for each index in that position
+        for (size_t idx = 0; idx < this->jointProbs[p].size(); idx++) {
+            
+            // convert index to numeric sequence
+            NumSequence numSeq = this->indexToNumSequence(idx, wordLength);
+            
+            // convert numeric sequence to string sequence and add to ssm
+            ssm << cnc->convert(numSeq.begin(), numSeq.end());
+            
+            // print probability
+            ssm << "\t" << this->jointProbs[p][idx] << endl;
+        }
+    }
+    
+    
+    // if there are any positions left
+    if (length > order) {
+        
+        // for all remaining positions (>= order), print them on the "same" line, since they have the same keys
+        ssm << "POS " << order << "-" << length-1 << endl;         // print position
+        
+        // get length of "word" for current position
+        size_t wordLength = order+1;
+        
+        // loop over each key first (of any position, since they're all the same)
+        for (size_t idx = 0; idx < this->jointProbs[order].size(); idx++) {
+            
+            // convert index to numeric sequence
+            NumSequence numSeq = this->indexToNumSequence(idx, wordLength);
+            
+            // convert numeric sequence to string sequence and add to ssm
+            ssm << cnc->convert(numSeq.begin(), numSeq.end());
+            
+            // loop over all remaining positions, and print probabilities
+            for (size_t p = order; p < length; p++) {
+                ssm << "\t" << jointProbs[p][idx];
+            }
+            
+            ssm << endl;    // goto new line (i.e. new key)
+        }
+        
+    }
+
+    return ssm.str();
 }
 
 

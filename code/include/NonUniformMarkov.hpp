@@ -97,7 +97,16 @@ namespace gmsuite {
         //                BBB   BBB
         typedef vector<vector<double> > nonunif_markov_t;              // for probabilities
         
+        
+        // For order 2, to compute P(ACGT), we can break it down into
+        // P(ACGT) = P(AC) * P(G|AC) * P(T|CG)
+        // These joint probabilities P(AC) are stored in the below model,
+        // since they don't fit easily in the above structure. Since this is a nonuniform model,
+        // each position has its own set of joint probability distributions
+        typedef vector<vector<double> > nonunif_joint_t;   // for joint probabilities of each position
+        
         nonunif_markov_t model;             // to store probabilities
+        nonunif_joint_t jointProbs;         // to store joint probabilities
         size_t length;                      // model length
         
     };
