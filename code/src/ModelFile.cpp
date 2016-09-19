@@ -10,6 +10,7 @@
 #include "ModelFile.hpp"
 
 #include <stdexcept>
+#include <fstream>
 #include <iostream>
 #include <boost/algorithm/string.hpp>
 #include <boost/iostreams/stream.hpp>
@@ -202,32 +203,18 @@ bool ModelFile::keyExists(string key) const {
  * Write model parameters to file in key-value pair format.
  */
 void ModelFile::write(const map<string, string> &keyValue) {
+
+    // open filestream
+    ofstream out;
+    out.open(params.path.c_str());
     
-    
-    
-    size_t size = 0;
-    for (map<string,string>::const_iterator iter = keyValue.begin(); iter != keyValue.end(); iter++) {
-        size += iter->first.size() + iter->second.size() + 1;
+    for (map<string, string>::const_iterator iter = keyValue.begin(); iter != keyValue.end(); iter++) {
+        out << "$" << iter->first << endl;
+        out << iter->second << endl;
     }
     
-    params.new_file_size = size;
-    io::mapped_file_sink mfile(params);
-    
-    size_t currPos = 0;
-    // loop over each key-value pair
-    for (map<string,string>::const_iterator iter = keyValue.begin(); iter != keyValue.end(); iter++) {
-        
-        memcpy(mfile.data()+currPos, iter->first.c_str(), iter->first.size());      // write key
-        currPos += iter->first.size();
-        
-        memcpy(mfile.data()+currPos, " ", 1);                                       // write space
-        currPos += 1;
-        
-        memcpy(mfile.data()+currPos, iter->second.c_str(), iter->second.size());    // write value
-        currPos += iter->second.size();
-        
-    }
-    mfile.close();
+    // close filestream
+    out.close();
 }
 
 
