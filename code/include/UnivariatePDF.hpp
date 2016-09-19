@@ -11,7 +11,9 @@
 
 #include <stdio.h>
 #include <vector>
+#include <string>
 
+using std::string;
 using std::vector;
 
 namespace gmsuite {
@@ -64,6 +66,8 @@ namespace gmsuite {
         const double& operator[] (size_t pos) const;
         
         size_t size() const;
+        
+        string toString() const;
         
         
     private:

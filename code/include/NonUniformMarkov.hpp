@@ -73,6 +73,13 @@ namespace gmsuite {
          */
         string toString() const;
         
+        /**
+         * Get the length of the non-uniform Markov model
+         *
+         * @return the model's length
+         */
+        size_t getLength() const;
+        
         
     protected:
         

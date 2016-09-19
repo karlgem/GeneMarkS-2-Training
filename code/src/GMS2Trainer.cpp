@@ -22,7 +22,6 @@ using namespace gmsuite;
 GMS2Trainer::GMS2Trainer() {
     
     // public variables for models
-    motif = NULL;
     noncoding = NULL;
     coding = NULL;
     startContext = NULL;
@@ -216,13 +215,11 @@ void GMS2Trainer::estimateParameters(const NumSequence &sequence, const vector<g
 void GMS2Trainer::deallocAllModels() {
     
     // dealloc public variables for models
-    if (motif != NULL) delete motif;
     if (noncoding != NULL) delete noncoding;
     if (coding != NULL) delete coding;
     if (startContext != NULL) delete startContext;
     if (rbs != NULL) delete rbs;
     if (promoter != NULL) delete promoter;
-    if (upstreamSignature != NULL) delete upstreamSignature;
     if (upstreamSignature != NULL) delete upstreamSignature;
     if (rbsSpacer != NULL) delete rbsSpacer;
     if (promoterSpacer != NULL) delete promoterSpacer;
@@ -232,3 +229,61 @@ void GMS2Trainer::deallocAllModels() {
 GMS2Trainer::~GMS2Trainer() {
     deallocAllModels();
 }
+
+
+
+void GMS2Trainer::toModFile(map<string, string> &toMod) const {
+    
+    // dealloc public variables for models
+    if (noncoding != NULL) {
+        toMod["NONC_ORDER"] = noncoding->getOrder();
+        toMod["NONC_MAT"] = noncoding->toString();
+    }
+    
+    if (coding != NULL) {
+        toMod["COD_ORDER"] = coding->getOrder();
+        toMod["COD_MAT"] = coding->toString();
+    }
+    
+    if (startContext != NULL) {
+        toMod["SC_ORDER"] = startContext->getOrder();
+        toMod["SC_MAT"] = startContext->toString();
+    }
+    
+    if (rbs != NULL) {
+        toMod["RBS_ORDER"] = rbs->getOrder();
+        toMod["RBS_WIDTH"] = rbs->getLength();
+        toMod["RBS_MAT"] = rbs->toString();
+    }
+    
+    if (promoter != NULL) {
+        toMod["PROMOTER_ORDER"] = promoter->getOrder();
+        toMod["PROMOTER_WIDTH"] = promoter->getLength();
+        toMod["PROMOTER_MAT"] = promoter->toString();
+    }
+    
+    if (upstreamSignature != NULL) {
+        toMod["UPSTR_SIG_ORDER"] = upstreamSignature->getOrder();
+        toMod["UPSTR_SIG_WIDTH"] = upstreamSignature->getLength();
+        toMod["UPSTR_SIG_MAT"] = upstreamSignature->toString();
+    }
+    
+    if (rbsSpacer != NULL) {
+        toMod["RBS_POS_DISTR"] = rbsSpacer->toString();
+    }
+    
+    if (promoterSpacer != NULL) {
+        toMod["PROMOTER_POS_DISTR"] = promoterSpacer->toString();
+    }
+    
+}
+
+
+
+
+
+
+
+
+
+

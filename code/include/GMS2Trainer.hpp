@@ -10,6 +10,9 @@
 #define GMS2Trainer_hpp
 
 #include <stdio.h>
+#include <string>
+#include <map>
+
 #include "Label.hpp"
 
 #include "UnivariatePDF.hpp"
@@ -19,6 +22,9 @@
 #include "PeriodicMarkov.hpp"
 #include "NonUniformMarkov.hpp"
 #include "ProkGeneStartModel.hpp"
+
+using std::map;
+using std::string;
 
 namespace gmsuite {
     
@@ -60,7 +66,7 @@ namespace gmsuite {
         const OptionsMFinder* optionsMFinder;
         
         // public variables for models
-        NonUniformMarkov *motif;
+//        NonUniformMarkov *motif;
         UniformMarkov *noncoding;
         PeriodicMarkov *coding;
         NonUniformMarkov *startContext;
@@ -76,6 +82,8 @@ namespace gmsuite {
         genome_class_t genomeClass;
         
         const CharNumConverter *cnc;
+        
+        void toModFile(map<string, string> &toMod) const;
         
     private:
         void deallocAllModels();

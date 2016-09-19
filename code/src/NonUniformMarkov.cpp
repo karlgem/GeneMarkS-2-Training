@@ -254,3 +254,8 @@ void NonUniformMarkov::initialize() {
         model[p].resize(numWords, 0);
     }
 }
+
+
+size_t NonUniformMarkov::getLength() const {
+    return length;
+}
