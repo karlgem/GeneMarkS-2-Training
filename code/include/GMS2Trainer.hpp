@@ -39,10 +39,23 @@ namespace gmsuite {
         
     public:
         
+        typedef ProkGeneStartModel::genome_class_t genome_class_t;
+        
         /**
          * Default constructor:
          */
         GMS2Trainer();
+        
+        GMS2Trainer(unsigned pcounts,
+                    unsigned codingOrder,
+                    unsigned noncodingOrder,
+                    unsigned startContextOrder,
+                    NumSequence::size_type upstreamLength,
+                    NumSequence::size_type startContextLength,
+                    genome_class_t genomeClass,
+                    const OptionsMFinder &optionsMFinder,
+                    const CharNumConverter &cnc,
+                    const AlphabetDNA &alph);
         
         ~GMS2Trainer();
         
@@ -56,14 +69,17 @@ namespace gmsuite {
         void estimateParametersStartContext(const NumSequence &sequence, const vector<Label *> &labels);
         void estimateParametersMotifModel(const NumSequence &sequence, const vector<Label *> &labels);
         
+        // parameters
         unsigned pcounts;
         unsigned codingOrder;
         unsigned noncodingOrder;
         unsigned startContextOrder;
         NumSequence::size_type upstreamLength;          // for genome
         NumSequence::size_type startContextLength;
-        
+        genome_class_t genomeClass;
         const OptionsMFinder* optionsMFinder;
+        const CharNumConverter *cnc;
+        const AlphabetDNA *alphabet;
         
         // public variables for models
 //        NonUniformMarkov *motif;
@@ -78,10 +94,7 @@ namespace gmsuite {
         UnivariatePDF *rbsSpacer;
         UnivariatePDF *promoterSpacer;
         
-        typedef ProkGeneStartModel::genome_class_t genome_class_t;
-        genome_class_t genomeClass;
         
-        const CharNumConverter *cnc;
         
         void toModFile(map<string, string> &toMod) const;
         

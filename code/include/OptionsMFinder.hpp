@@ -12,6 +12,9 @@
 #include <stdio.h>
 #include "Options.hpp"
 
+#include <boost/program_options.hpp>
+namespace po = boost::program_options;
+
 namespace gmsuite {
     
     /**
@@ -33,6 +36,9 @@ namespace gmsuite {
          * @return true if the parse is successful, false otherwise
          */
         bool parse(int argc, const char *argv[]);
+        
+        
+        static void addProcessOptions(OptionsMFinder &optionsMFinder, po::options_description &processOptions);
         
         
         // Below, create a variable for each parameter, to make for easy access

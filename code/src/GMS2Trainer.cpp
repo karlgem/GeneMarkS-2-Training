@@ -14,13 +14,14 @@
 #include "PeriodicCounts.hpp"
 #include "NonUniformCounts.hpp"
 #include "SequenceParser.hpp"
+#include <boost/lexical_cast.hpp>
 
 using namespace std;
 using namespace gmsuite;
 
 // default constructor
 GMS2Trainer::GMS2Trainer() {
-    
+    // DEPRECATED
     // public variables for models
     noncoding = NULL;
     coding = NULL;
@@ -35,10 +36,45 @@ GMS2Trainer::GMS2Trainer() {
     
 }
 
+GMS2Trainer::GMS2Trainer(unsigned pcounts,
+                         unsigned codingOrder,
+                         unsigned noncodingOrder,
+                         unsigned startContextOrder,
+                         NumSequence::size_type upstreamLength,
+                         NumSequence::size_type startContextLength,
+                         genome_class_t genomeClass,
+                         const OptionsMFinder &optionsMFinder,
+                         const CharNumConverter &cnc,
+                         const AlphabetDNA &alph) {
+    
+    this->pcounts = pcounts;
+    this->codingOrder = codingOrder;
+    this->noncodingOrder = noncodingOrder;
+    this->startContextOrder = startContextOrder;
+    this->upstreamLength = upstreamLength;
+    this->startContextLength = startContextLength;
+    this->genomeClass = genomeClass;
+    this->optionsMFinder = &optionsMFinder;
+    this->cnc = &cnc;
+    this->alphabet = &alph;
+    
+    
+    // public variables for models
+    noncoding = NULL;
+    coding = NULL;
+    startContext = NULL;
+    
+    // start models
+    rbs = NULL;
+    promoter = NULL;
+    upstreamSignature = NULL;
+    rbsSpacer = NULL;
+    promoterSpacer = NULL;
+}
+
 void GMS2Trainer::estimateParamtersCoding(const NumSequence &sequence, const vector<Label *> &labels) {
     
-    AlphabetDNA alph;
-    PeriodicCounts counts (codingOrder, 3, alph, *this->cnc);
+    PeriodicCounts counts (codingOrder, 3, *this->alphabet, *this->cnc);
     
     // get counts for 3 period markov model given order
     for (vector<Label*>::const_iterator iter = labels.begin(); iter != labels.end(); iter++) {
@@ -57,7 +93,7 @@ void GMS2Trainer::estimateParamtersCoding(const NumSequence &sequence, const vec
     }
     
     // convert counts to probabilities
-    coding = new PeriodicMarkov(codingOrder, 3, alph, *this->cnc);
+    coding = new PeriodicMarkov(codingOrder, 3, *this->alphabet, *this->cnc);
     coding->construct(&counts, pcounts);
     
 }
@@ -65,8 +101,7 @@ void GMS2Trainer::estimateParamtersCoding(const NumSequence &sequence, const vec
 // this function assumes labels are sorted by "left" in increasing order
 void GMS2Trainer::estimateParamtersNonCoding(const NumSequence &sequence, const vector<Label *> &labels) {
     
-    AlphabetDNA alph;
-    UniformCounts counts(noncodingOrder, alph, *this->cnc);
+    UniformCounts counts(noncodingOrder, *this->alphabet, *this->cnc);
     
     size_t leftNoncoding = 0;       // left position of current noncoding region
     
@@ -87,14 +122,14 @@ void GMS2Trainer::estimateParamtersNonCoding(const NumSequence &sequence, const 
     }
     
     // convert counts to probabilities
-    noncoding = new UniformMarkov(noncodingOrder, alph, *this->cnc);
+    noncoding = new UniformMarkov(noncodingOrder, *this->alphabet, *this->cnc);
     noncoding->construct(&counts, pcounts);
 }
 
 
 void GMS2Trainer::estimateParametersStartContext(const NumSequence &sequence, const vector<Label *> &labels) {
-    AlphabetDNA alph;
-    NonUniformCounts counts(startContextOrder, startContextLength, alph, *this->cnc);
+    
+    NonUniformCounts counts(startContextOrder, startContextLength, *this->alphabet, *this->cnc);
     
     // get counts for start context model
     for (vector<Label*>::const_iterator iter = labels.begin(); iter != labels.end(); iter++) {
@@ -117,7 +152,7 @@ void GMS2Trainer::estimateParametersStartContext(const NumSequence &sequence, co
     }
     
     // convert counts to probabilities
-    startContext = new NonUniformMarkov(startContextOrder, startContextLength, alph, *this->cnc);
+    startContext = new NonUniformMarkov(startContextOrder, startContextLength, *this->alphabet, *this->cnc);
     startContext->construct(&counts, pcounts);
 }
 
@@ -156,13 +191,12 @@ void GMS2Trainer::estimateParametersMotifModel(const NumSequence &sequence, cons
         mfinder.findMotifs(upstreams, positions);
         
         // build RBS model
-        AlphabetDNA alph;
-        NonUniformCounts rbsCounts(optionsMFinder->motifOrder, optionsMFinder->width, alph, *this->cnc);
+        NonUniformCounts rbsCounts(optionsMFinder->motifOrder, optionsMFinder->width, *this->alphabet, *this->cnc);
         for (size_t n = 0; n < upstreams.size(); n++) {
             rbsCounts.count(upstreams[n].begin()+positions[n], upstreams[n].begin()+positions[n]+optionsMFinder->width);
         }
         
-        rbs = new NonUniformMarkov(optionsMFinder->motifOrder, optionsMFinder->width, alph, *this->cnc);
+        rbs = new NonUniformMarkov(optionsMFinder->motifOrder, optionsMFinder->width, *this->alphabet, *this->cnc);
         rbs->construct(&rbsCounts, optionsMFinder->pcounts);
         
         // build spacer distribution
@@ -236,35 +270,35 @@ void GMS2Trainer::toModFile(map<string, string> &toMod) const {
     
     // dealloc public variables for models
     if (noncoding != NULL) {
-        toMod["NONC_ORDER"] = noncoding->getOrder();
-        toMod["NONC_MAT"] = noncoding->toString();
+        toMod["NONC_ORDER"] = boost::lexical_cast<string>(noncoding->getOrder());
+        toMod["NONC_MAT"] =  noncoding->toString();
     }
     
     if (coding != NULL) {
-        toMod["COD_ORDER"] = coding->getOrder();
+        toMod["COD_ORDER"] = boost::lexical_cast<string>(coding->getOrder());
         toMod["COD_MAT"] = coding->toString();
     }
     
     if (startContext != NULL) {
-        toMod["SC_ORDER"] = startContext->getOrder();
+        toMod["SC_ORDER"] = boost::lexical_cast<string>(startContext->getOrder());
         toMod["SC_MAT"] = startContext->toString();
     }
     
     if (rbs != NULL) {
-        toMod["RBS_ORDER"] = rbs->getOrder();
-        toMod["RBS_WIDTH"] = rbs->getLength();
+        toMod["RBS_ORDER"] = boost::lexical_cast<string>(rbs->getOrder());
+        toMod["RBS_WIDTH"] = boost::lexical_cast<string>(rbs->getLength());
         toMod["RBS_MAT"] = rbs->toString();
     }
     
     if (promoter != NULL) {
-        toMod["PROMOTER_ORDER"] = promoter->getOrder();
-        toMod["PROMOTER_WIDTH"] = promoter->getLength();
+        toMod["PROMOTER_ORDER"] = boost::lexical_cast<string>(promoter->getOrder());
+        toMod["PROMOTER_WIDTH"] = boost::lexical_cast<string>(promoter->getLength());
         toMod["PROMOTER_MAT"] = promoter->toString();
     }
     
     if (upstreamSignature != NULL) {
-        toMod["UPSTR_SIG_ORDER"] = upstreamSignature->getOrder();
-        toMod["UPSTR_SIG_WIDTH"] = upstreamSignature->getLength();
+        toMod["UPSTR_SIG_ORDER"] = boost::lexical_cast<string>(upstreamSignature->getOrder());
+        toMod["UPSTR_SIG_WIDTH"] = boost::lexical_cast<string>(upstreamSignature->getLength());
         toMod["UPSTR_SIG_MAT"] = upstreamSignature->toString();
     }
     

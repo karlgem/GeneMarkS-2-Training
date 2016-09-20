@@ -209,8 +209,18 @@ void ModelFile::write(const map<string, string> &keyValue) {
     out.open(params.path.c_str());
     
     for (map<string, string>::const_iterator iter = keyValue.begin(); iter != keyValue.end(); iter++) {
-        out << "$" << iter->first << endl;
-        out << iter->second << endl;
+        out << "$" << iter->first;
+        
+        string second = iter->second;
+        boost::trim(second);
+        
+        // if value doesn't contain new line, print it in the same line as the key
+        if (second.find('\n') == string::npos)
+            out << " " << second << endl;
+        // otherwise, start the value on a new line
+        else
+            out << endl << second << endl << endl;
+        
     }
     
     // close filestream

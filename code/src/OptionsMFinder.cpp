@@ -135,3 +135,47 @@ bool OptionsMFinder::parse(int argc, const char *argv[]) {
     
     
 }
+
+
+
+void OptionsMFinder::addProcessOptions(OptionsMFinder &optionsMFinder, po::options_description &processOptions) {
+    
+    processOptions.add_options()
+    ("width,w", po::value<unsigned>(&optionsMFinder.width)->default_value(6), "Width of motif")
+    ("motif-order,o", po::value<unsigned>(&optionsMFinder.motifOrder)->default_value(0), "Order of the motif's Markov model")
+    ("bkgd-order,b", po::value<unsigned>(&optionsMFinder.bkgdOrder)->default_value(0), "Order of the background's Markov model")
+    ("align", po::value<string>(&optionsMFinder.align)->default_value("none"), "If set, positional information is considered by the model")
+    ("tries", po::value<unsigned>(&optionsMFinder.tries)->default_value(10), "Number of restarts")
+    ("max-iter", po::value<unsigned>(&optionsMFinder.maxIter)->default_value(60), "Number of Gibbs iterations per single try")
+    ("max-em-iter", po::value<unsigned>(&optionsMFinder.maxEMIter)->default_value(10), "Number of EM iterations per single try")
+    ("shift-every", po::value<unsigned>(&optionsMFinder.shiftEvery)->default_value(10), "Number of iterations before shifting motif")
+    ("pcount", po::value<double>(&optionsMFinder.pcounts)->default_value(1), "Pseudocounts")
+    ;
+
+    
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

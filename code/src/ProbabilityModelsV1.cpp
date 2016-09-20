@@ -29,7 +29,7 @@ ProbabilityModelsV1::ProbabilityModelsV1(const AlphabetDNA &alphabet, NumSequenc
     
     // allocate models
     cnc = new CharNumConverter(this->alphabet);
-    mMotif = new NonUniformMarkov(motifOrder, width, alphabet, *cnc);
+    mMotif = new NonUniformMarkov(motifOrder, width, *this->alphabet, *cnc);
     mMotifCounts = new NonUniformCounts(motifOrder, width, alphabet, *cnc);
     mBack = new UniformMarkov(motifOrder, alphabet, *cnc);
     
