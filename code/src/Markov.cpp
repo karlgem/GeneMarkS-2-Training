@@ -151,7 +151,7 @@ void Markov::getLowerOrderJoint(unsigned currentOrder, const vector<double> &cur
 }
 
 
-void Markov::getHigherOrdeJoint(unsigned currentOrder, const vector<double> &current, unsigned newOrder, vector<double> &result) const {
+void Markov::getHigherOrderJoint(unsigned currentOrder, const vector<double> &current, unsigned newOrder, vector<double> &result) const {
     if (newOrder < currentOrder)
         throw std::invalid_argument("New order is less than current order.");
     

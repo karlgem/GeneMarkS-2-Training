@@ -133,7 +133,7 @@ namespace gmsuite {
          *
          * @exception invalid_argument if newOrder < currentOrder
          */
-        void getHigherOrdeJoint(unsigned currentOrder, const vector<double> &current, unsigned newOrder, vector<double> &result) const;
+        void getHigherOrderJoint(unsigned currentOrder, const vector<double> &current, unsigned newOrder, vector<double> &result) const;
         
         /**
          * Convert the array index to the numeric sequence 'located' at that index.
