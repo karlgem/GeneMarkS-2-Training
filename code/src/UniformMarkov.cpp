@@ -180,7 +180,7 @@ string UniformMarkov::toString() const {
         ssm << cnc->convert(numSeq.begin(), numSeq.end());
         
         // add probability of current index
-        ssm << "\t" << this->model[idx] << endl;
+        ssm << "\t" << this->jointProbs[order][idx] << endl;
     }
     
     return ssm.str();
