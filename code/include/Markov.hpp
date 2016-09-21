@@ -123,6 +123,19 @@ namespace gmsuite {
         
         
         /**
+         * Compute higher order joint probabilities.
+         *
+         * @param currentOrder the current order of the joint probabilities
+         * @param current a vector holding the joint probabilities for order <currentOrder>
+         * @param newOrder the new order of joint probabilities
+         * @param result the vector where the result will be stored. That is, the joint probabilities
+         * for order=newOrder
+         *
+         * @exception invalid_argument if newOrder < currentOrder
+         */
+        void getHigherOrdeJoint(unsigned currentOrder, const vector<double> &current, unsigned newOrder, vector<double> &result) const;
+        
+        /**
          * Convert the array index to the numeric sequence 'located' at that index.
          * For example, for index 7 and wordLength 3 (i..e 000111 -> ACT), the numeric
          * sequence will be 013

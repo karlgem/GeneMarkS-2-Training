@@ -151,6 +151,65 @@ void Markov::getLowerOrderJoint(unsigned currentOrder, const vector<double> &cur
 }
 
 
+void Markov::getHigherOrdeJoint(unsigned currentOrder, const vector<double> &current, unsigned newOrder, vector<double> &result) const {
+    if (newOrder < currentOrder)
+        throw std::invalid_argument("New order is less than current order.");
+    
+    if (newOrder == currentOrder) {
+        result = current;
+        return;
+    }
+    
+    // Problem Context:
+    // the probability vector holds elements in the following order:
+    //  index   |   element
+    //     0    |     A1 A2
+    //     1    |     A1 C2
+    //     2    |     A1 G2
+    //     3    |     A1 T2
+    //     4    |     C1 A2
+    //     5    |     C1 C2
+    //     6    |     C1 G2
+    //     7    |     C1 T2
+    //     8    |     ...
+    //
+    // The numbers near the letters indicate the position of the letter in the dinucleotide. E.g.
+    // A1C2 is AC, whereas A2C1 == C1A2 == CA
+    //
+    // To get the joint probabilities of higher order (e.g. from 1 to 3), this means that
+    // P(WXYZ) = P(YZ) for all W,X in alphabet
+    //
+    // Define a block to be the number of  elements that separate the two consecutive P(ABYZ) and P(CDYZ)
+    // in the matrix.
+    size_t currentWordLength = currentOrder+1;
+    size_t blockSize = pow(alphabet->sizeValid(), currentWordLength);
+    
+    
+    
+    // assign probability for higher order
+    size_t newWordLength = newOrder+1;
+    result.resize(pow(alphabet->sizeValid(), newWordLength));
+    
+    size_t numOfBlocks = result.size() / blockSize;         // number of blocks in result
+    // result.size() should be divisible by blockSize
+    if (result.size() % blockSize != 0)
+        throw std::logic_error("Result.size() should be divisible by blockSize");
+    
+    // for every word in existing model
+    for (size_t currentIdx = 0; currentIdx < current.size(); currentIdx++) {
+        
+        // assign it to every corresponding higher order word by jumping through blocks
+        size_t newIdx = currentIdx;                     // newIdx always starts at currentIdx
+        for (size_t b = 0; b < numOfBlocks; b++) {
+            
+            result[newIdx] = current[currentIdx];
+            
+            newIdx += blockSize;
+        }
+    }
+}
+
+
 
 NumSequence Markov::indexToNumSequence(size_t idx, size_t wordLength) const {
     vector<NumSequence::num_t>  numSeq;
@@ -178,6 +237,36 @@ NumSequence Markov::indexToNumSequence(size_t idx, size_t wordLength) const {
     
     return NumSequence(numSeq);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
