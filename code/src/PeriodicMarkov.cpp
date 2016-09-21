@@ -189,6 +189,8 @@ string PeriodicMarkov::toString() const {
     if (jointProbs.size() == 0)
         return "";
     
+    size_t wordLength = order+1;
+    
     // since all frames have the same set of keys, let's start looping over keys and put
     // one per line
     for (size_t idx = 0; idx < jointProbs[0][order].size(); idx++) {
@@ -201,7 +203,13 @@ string PeriodicMarkov::toString() const {
 
         // now that we have the key, loop over each frame and print the probability of that key in the frame
         for (size_t p = 0; p < period; p++) {
-            ssm << "\t" << this->jointProbs[p][order][idx];     // we print the key of "order" since we only care about the highest order
+            // For HMM compatibility, position needs to be transormed into a different frame.
+            // In current version of this code, the right character of a word (e.g. the A in CGA)
+            // determines the frame. In HMM, the leftmost character determines the frame.
+            // Therefore, to convert to HMM, simply do '(frame + (wordLength-1)) % period'
+            
+            size_t convertedFrame = (p + (wordLength-1)) % period;
+            ssm << "\t" << this->jointProbs[convertedFrame][order][idx];     // we print the key of "order" since we only care about the highest order
         }
         
         ssm << endl;
