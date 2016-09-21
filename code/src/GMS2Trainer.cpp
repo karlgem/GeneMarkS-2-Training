@@ -45,7 +45,8 @@ GMS2Trainer::GMS2Trainer(unsigned pcounts,
                          genome_class_t genomeClass,
                          const OptionsMFinder &optionsMFinder,
                          const CharNumConverter &cnc,
-                         const AlphabetDNA &alph) {
+                         const AlphabetDNA &alph,
+                         const NumSequence::size_type MIN_GENE_LEN) {
     
     this->pcounts = pcounts;
     this->codingOrder = codingOrder;
@@ -57,6 +58,7 @@ GMS2Trainer::GMS2Trainer(unsigned pcounts,
     this->optionsMFinder = &optionsMFinder;
     this->cnc = &cnc;
     this->alphabet = &alph;
+    this->MIN_GENE_LEN = MIN_GENE_LEN;
     
     
     // public variables for models
@@ -72,12 +74,23 @@ GMS2Trainer::GMS2Trainer(unsigned pcounts,
     promoterSpacer = NULL;
 }
 
-void GMS2Trainer::estimateParamtersCoding(const NumSequence &sequence, const vector<Label *> &labels) {
+void GMS2Trainer::estimateParamtersCoding(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use) {
+    
+    // check if all labels should be used
+    bool useAll = true;
+    if (use.size() > 0) {
+        useAll = false;
+        if (use.size() != labels.size())
+            throw invalid_argument("Labels and Use vector should have the same length");
+    }
     
     PeriodicCounts counts (codingOrder, 3, *this->alphabet, *this->cnc);
     
     // get counts for 3 period markov model given order
+    size_t n = 0;
     for (vector<Label*>::const_iterator iter = labels.begin(); iter != labels.end(); iter++) {
+        if (!useAll && !use[n++])
+            continue;       // skip unwanted genes
         
         if (*iter == NULL)
             throw invalid_argument("Label can't be NULL");
@@ -99,14 +112,25 @@ void GMS2Trainer::estimateParamtersCoding(const NumSequence &sequence, const vec
 }
 
 // this function assumes labels are sorted by "left" in increasing order
-void GMS2Trainer::estimateParamtersNonCoding(const NumSequence &sequence, const vector<Label *> &labels) {
+void GMS2Trainer::estimateParamtersNonCoding(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use) {
+    
+    // check if all labels should be used
+    bool useAll = true;
+    if (use.size() > 0) {
+        useAll = false;
+        if (use.size() != labels.size())
+            throw invalid_argument("Labels and Use vector should have the same length");
+    }
     
     UniformCounts counts(noncodingOrder, *this->alphabet, *this->cnc);
     
     size_t leftNoncoding = 0;       // left position of current noncoding region
     
     // get counts for 3 period markov model given order
+    size_t n = 0;
     for (vector<Label*>::const_iterator iter = labels.begin(); iter != labels.end(); iter++) {
+        if (!useAll && !use[n++])
+            continue;       // skip unwanted genes
         
         if (*iter == NULL)
             throw invalid_argument("Label can't be NULL");
@@ -127,12 +151,23 @@ void GMS2Trainer::estimateParamtersNonCoding(const NumSequence &sequence, const 
 }
 
 
-void GMS2Trainer::estimateParametersStartContext(const NumSequence &sequence, const vector<Label *> &labels) {
+void GMS2Trainer::estimateParametersStartContext(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use) {
+    // check if all labels should be used
+    bool useAll = true;
+    if (use.size() > 0) {
+        useAll = false;
+        if (use.size() != labels.size())
+            throw invalid_argument("Labels and Use vector should have the same length");
+    }
     
     NonUniformCounts counts(startContextOrder, startContextLength, *this->alphabet, *this->cnc);
     
     // get counts for start context model
+    size_t n = 0;
     for (vector<Label*>::const_iterator iter = labels.begin(); iter != labels.end(); iter++) {
+        if (!useAll && !use[n++])
+            continue;       // skip unwanted genes
+        
         if (*iter == NULL)
             throw invalid_argument("Label can't be NULL");
         
@@ -157,7 +192,13 @@ void GMS2Trainer::estimateParametersStartContext(const NumSequence &sequence, co
 }
 
 
-void GMS2Trainer::estimateParametersMotifModel(const NumSequence &sequence, const vector<Label *> &labels) {
+void GMS2Trainer::estimateParametersMotifModel(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use) {
+    
+    // check if all labels should be used
+    if (use.size() > 0) {
+        if (use.size() != labels.size())
+            throw invalid_argument("Labels and Use vector should have the same length");
+    }
     
     // build motif finder
     MotifFinder::Builder b;
@@ -184,8 +225,8 @@ void GMS2Trainer::estimateParametersMotifModel(const NumSequence &sequence, cons
     if (genomeClass == ProkGeneStartModel::C1) {
         
         // extract upstream of each label
-        vector<NumSequence> upstreams;
-        SequenceParser::extractUpstreamSequences(sequence, labels, *cnc, upstreamLength, upstreams);
+        vector<NumSequence> upstreams; 
+        SequenceParser::extractUpstreamSequences(sequence, labels, *cnc, upstreamLength, upstreams, false, MIN_GENE_LEN, use);
         
         vector<NumSequence::size_type> positions;
         mfinder.findMotifs(upstreams, positions);
@@ -229,17 +270,26 @@ void GMS2Trainer::estimateParameters(const NumSequence &sequence, const vector<g
     deallocAllModels();
     
     // TODO: sort labels by 'left' in increasing order
+    vector<bool> useCoding (labels.size(), true);               // assume all labels should be used for coding model
+    vector<bool> useNonCoding (labels.size(), true);            // assume all labels should be used for noncoding model
+    vector<bool> useStartContext (labels.size(), true);         // assume all labels should be used for startcontext model
+    vector<bool> useMotif (labels.size(), true);                // assume all labels should be used for motif search model
+    
     
     // estimate parameters for coding model
-    estimateParamtersCoding(sequence, labels);
+    selectLabelsForCodingParameters(labels, useCoding);
+    estimateParamtersCoding(sequence, labels, useCoding);
     
     // estimate parameters for noncoding model
+    useNonCoding = useCoding;                           // for now, assume
     estimateParamtersNonCoding(sequence, labels);
     
     // estimate parameters for start context
+    useStartContext = useCoding;
     estimateParametersStartContext(sequence, labels);
     
     // estimate parameters for motif models
+    useMotif = useCoding;
     estimateParametersMotifModel(sequence, labels);
 }
 
@@ -311,6 +361,31 @@ void GMS2Trainer::toModFile(map<string, string> &toMod) const {
     }
     
 }
+
+
+
+
+// assume useCoding is same size as labels vector
+void GMS2Trainer::selectLabelsForCodingParameters(const vector<Label*> &labels, vector<bool> &useCoding) const {
+    
+    if (useCoding.size() != labels.size())
+        throw invalid_argument("Labels and useCoding vectors should have the same size");
+    
+    // "remove" short genes
+    for (size_t n = 0; n < labels.size(); n++) {
+        if (labels[n] == NULL)
+            throw invalid_argument("Label cannot be null");
+        
+        if (labels[n]->right - labels[n]->left + 1 < MIN_GENE_LEN)
+            useCoding[n] = false;
+    }
+    
+    
+    
+}
+
+
+
 
 
 

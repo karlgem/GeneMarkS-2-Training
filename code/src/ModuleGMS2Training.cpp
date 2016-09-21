@@ -41,7 +41,7 @@ void ModuleGMS2Training::run() {
     
     
     // set up trainer
-    GMS2Trainer trainer (options.pcounts, options.codingOrder, options.noncodingOrder, options.startContextOrder, options.upstreamLength, options.startContextLength, options.genomeClass, options.optionsMFinder, cnc, alph);
+    GMS2Trainer trainer (options.pcounts, options.codingOrder, options.noncodingOrder, options.startContextOrder, options.upstreamLength, options.startContextLength, options.genomeClass, options.optionsMFinder, cnc, alph, options.MIN_GENE_LEN);
     
     trainer.estimateParameters(sequence, labels);
     

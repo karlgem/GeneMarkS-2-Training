@@ -14,7 +14,7 @@ using namespace std;
 using namespace gmsuite;
 
 
-void SequenceParser::extractUpstreamSequences(const NumSequence& sequence, const vector<Label*> &labels, const CharNumConverter &cnc, NumSequence::size_type upstrLength, vector<NumSequence> &upstreamRegions, bool allowOverlapWithCDS, size_t minimumGeneLength) {
+void SequenceParser::extractUpstreamSequences(const NumSequence& sequence, const vector<Label*> &labels, const CharNumConverter &cnc, NumSequence::size_type upstrLength, vector<NumSequence> &upstreamRegions, bool allowOverlapWithCDS, size_t minimumGeneLength, const vector<bool> &use) {
     
     if (sequence.size() == 0)
         return;

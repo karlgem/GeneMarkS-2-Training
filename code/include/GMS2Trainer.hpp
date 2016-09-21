@@ -55,7 +55,8 @@ namespace gmsuite {
                     genome_class_t genomeClass,
                     const OptionsMFinder &optionsMFinder,
                     const CharNumConverter &cnc,
-                    const AlphabetDNA &alph);
+                    const AlphabetDNA &alph,
+                    const NumSequence::size_type MIN_GENE_LEN);
         
         ~GMS2Trainer();
         
@@ -64,10 +65,10 @@ namespace gmsuite {
          */
         void estimateParameters(const NumSequence &sequence, const vector<Label*> &labels);
         
-        void estimateParamtersCoding(const NumSequence &sequence, const vector<Label *> &labels);
-        void estimateParamtersNonCoding(const NumSequence &sequence, const vector<Label *> &labels);
-        void estimateParametersStartContext(const NumSequence &sequence, const vector<Label *> &labels);
-        void estimateParametersMotifModel(const NumSequence &sequence, const vector<Label *> &labels);
+        void estimateParamtersCoding(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use = vector<bool>());
+        void estimateParamtersNonCoding(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use = vector<bool>());
+        void estimateParametersStartContext(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use = vector<bool>());
+        void estimateParametersMotifModel(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use = vector<bool>());
         
         // parameters
         unsigned pcounts;
@@ -80,6 +81,7 @@ namespace gmsuite {
         const OptionsMFinder* optionsMFinder;
         const CharNumConverter *cnc;
         const AlphabetDNA *alphabet;
+        NumSequence::size_type MIN_GENE_LEN;            // minimum gene length
         
         // public variables for models
 //        NonUniformMarkov *motif;
@@ -100,6 +102,9 @@ namespace gmsuite {
         
     private:
         void deallocAllModels();
+        
+        
+        void selectLabelsForCodingParameters(const vector<Label*> &labels, vector<bool> &useCoding) const;
     };
 }
 
