@@ -187,52 +187,34 @@ double NonUniformMarkov::evaluate(NumSequence::const_iterator begin, NumSequence
 string NonUniformMarkov::toString() const {
     stringstream ssm;
     
-    // for all positions < order, print each on a line (since they have different keys)
-    for (size_t p = 0; p < order; p++) {
-        ssm << "POS " << p << endl;
-        size_t wordLength = p+1;
-        
-        // for each index in that position
-        for (size_t idx = 0; idx < this->jointProbs[p].size(); idx++) {
-            
-            // convert index to numeric sequence
-            NumSequence numSeq = this->indexToNumSequence(idx, wordLength);
-            
-            // convert numeric sequence to string sequence and add to ssm
-            ssm << cnc->convert(numSeq.begin(), numSeq.end());
-            
-            // print probability
-            ssm << "\t" << this->jointProbs[p][idx] << endl;
-        }
+    // copy all joint probabilities because we may need to modify them by making them all the same order
+    nonunif_joint_t joint = this->jointProbs;
+    
+    // create same set of keys for all positions by increasing the order of the smaller ones
+    for (size_t p = 0; p < joint.size(); p++) {
+        if (p < order)
+            getHigherOrderJoint((unsigned) p, this->jointProbs[p], order, joint[p]);
     }
     
     
-    // if there are any positions left
-    if (length > order) {
+    // get length of "word" for current position (hint: they're all the same by now :))
+    size_t wordLength = order+1;
+    
+    // loop over each key first (of any position, since they're all the same)
+    for (size_t idx = 0; idx < joint[0].size(); idx++) {
         
-        // for all remaining positions (>= order), print them on the "same" line, since they have the same keys
-        ssm << "POS " << order << "-" << length-1 << endl;         // print position
+        // convert index to numeric sequence
+        NumSequence numSeq = this->indexToNumSequence(idx, wordLength);
         
-        // get length of "word" for current position
-        size_t wordLength = order+1;
+        // convert numeric sequence to string sequence and add to ssm
+        ssm << cnc->convert(numSeq.begin(), numSeq.end());
         
-        // loop over each key first (of any position, since they're all the same)
-        for (size_t idx = 0; idx < this->jointProbs[order].size(); idx++) {
-            
-            // convert index to numeric sequence
-            NumSequence numSeq = this->indexToNumSequence(idx, wordLength);
-            
-            // convert numeric sequence to string sequence and add to ssm
-            ssm << cnc->convert(numSeq.begin(), numSeq.end());
-            
-            // loop over all remaining positions, and print probabilities
-            for (size_t p = order; p < length; p++) {
-                ssm << "\t" << jointProbs[p][idx];
-            }
-            
-            ssm << endl;    // goto new line (i.e. new key)
+        // loop over all positions, and print probabilities
+        for (size_t p = 0; p < joint.size(); p++) {
+            ssm << "\t" << joint[p][idx];
         }
         
+        ssm << endl;    // goto new line (i.e. new key)
     }
 
     return ssm.str();
