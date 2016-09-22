@@ -96,8 +96,8 @@ void GMS2Trainer::estimateParamtersCoding(const NumSequence &sequence, const vec
             throw invalid_argument("Label can't be NULL");
         
         // FIXME: Ignore first 12 nucleotides from start
-        size_t left = (*iter)->left;                // get left position of fragment
-        size_t right = (*iter)->right;              // get right position of fragment
+        size_t left = (*iter)->left+3;                // get left position of fragment
+        size_t right = (*iter)->right-3;              // get right position of fragment
         size_t length = right - left + 1;           // compute fragment length
         
         bool reverseComplement = (*iter)->strand == Label::NEG;
@@ -138,12 +138,17 @@ void GMS2Trainer::estimateParamtersNonCoding(const NumSequence &sequence, const 
         size_t left = (*iter)->left;                // get left position of fragment
         size_t right = (*iter)->right;              // get right position of fragment
         
-        if (leftNoncoding < left)
+        if (leftNoncoding < left) {
             counts.count(sequence.begin() + leftNoncoding, sequence.begin() + left);
+        }
         
         // update left position of (possible) non-coding region after current gene
         leftNoncoding = right+1;
+        
     }
+    
+    // add last non-coding sequence
+    counts.count(sequence.begin() + leftNoncoding, sequence.begin() + sequence.size());
     
     // convert counts to probabilities
     noncoding = new UniformMarkov(noncodingOrder, *this->alphabet, *this->cnc);
