@@ -74,7 +74,7 @@ GMS2Trainer::GMS2Trainer(unsigned pcounts,
     promoterSpacer = NULL;
 }
 
-void GMS2Trainer::estimateParamtersCoding(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use) {
+void GMS2Trainer::estimateParamtersCoding(const NumSequence &sequence, const vector<Label *> &labels, NumSequence::size_type scSize, const vector<bool> &use) {
     
     // check if all labels should be used
     bool useAll = true;
@@ -95,14 +95,26 @@ void GMS2Trainer::estimateParamtersCoding(const NumSequence &sequence, const vec
         if (*iter == NULL)
             throw invalid_argument("Label can't be NULL");
         
-        // FIXME: Ignore first 12 nucleotides from start
         size_t left = (*iter)->left+3;                // get left position of fragment
         size_t right = (*iter)->right-3;              // get right position of fragment
+        
+        if (left > right)
+            continue;
+        
         size_t length = right - left + 1;           // compute fragment length
         
         bool reverseComplement = (*iter)->strand == Label::NEG;
         
         counts.count(sequence.begin()+left, sequence.begin() + left +length, reverseComplement);
+        
+        // if start context > 0, remove segement near start
+        if (scSize > 0) {
+            if (reverseComplement)
+                counts.decount(sequence.begin()+right-scSize+1, sequence.begin()+right+1, reverseComplement);
+            else
+                counts.decount(sequence.begin()+left, sequence.begin()+left+scSize);
+        }
+        
     }
     
     // convert counts to probabilities
@@ -283,7 +295,7 @@ void GMS2Trainer::estimateParameters(const NumSequence &sequence, const vector<g
     
     // estimate parameters for coding model
     selectLabelsForCodingParameters(labels, useCoding);
-    estimateParamtersCoding(sequence, labels, useCoding);
+    estimateParamtersCoding(sequence, labels, options.startContextLength, useCoding);
     
     // estimate parameters for noncoding model
     useNonCoding = useCoding;                           // for now, assume
