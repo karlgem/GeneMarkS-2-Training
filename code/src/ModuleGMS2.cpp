@@ -120,6 +120,40 @@ ModuleGMS2::genome_class_t ModuleGMS2::classifyGenome(const NumSequence &numSeq,
     genome_class_t genomeClass;
     
     // TODO: analyze spacer and get class
+    double maxProb = 0;
+    size_t posOfMax = 0;
+    bool maxFound = false;
+    
+    // find max prob
+    for (size_t n = 0; n < spacerDistribution.size(); n++) {
+        if (spacerDistribution[n] > maxProb) {
+            maxProb = spacerDistribution[n];
+            posOfMax = n;
+            maxFound = true;
+        }
+    }
+    
+    // default is class 1
+    if (!maxFound)
+        return ProkGeneStartModel::C1;
+    
+    // decide start class
+    if (maxProb > options.CLASS_PROB_THRESHOLD) {
+        
+        // Class 1: rbs
+        if (posOfMax < options.CLASS_DIST_THRESHOLD)
+            genomeClass = ProkGeneStartModel::C1;
+        
+        // Class 2: promoter
+        else
+            genomeClass = ProkGeneStartModel::C3;
+        
+    }
+    // Class 3
+    else
+        genomeClass = ProkGeneStartModel::C2;
+        
+    
     
     
     return genomeClass;

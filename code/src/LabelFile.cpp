@@ -129,6 +129,7 @@ Label* readNextLabelLST(const char*& current, const char* const end) {
     const char* endOfLine = current;
     
     cmatch match;
+    //                                  gene #     strand      left     right    length     class
     cregex expr = cregex::compile("^\\s*(\\d+)\\s+([+,-])\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+([1,2])\\s*");
     
     Label* label = NULL;
@@ -140,16 +141,23 @@ Label* readNextLabelLST(const char*& current, const char* const end) {
         size_t left;
         size_t right;
         char strandChar;
+        string geneClass;
         
         left = (size_t) strtol(match.str(3).c_str(), NULL, 10)-1;
         right = (size_t) strtol(match.str(4).c_str(), NULL, 10)-1;
         strandChar = match.str(2)[0];
+        geneClass = match.str(6);
         
-        Label::strand_t strand = Label::POS;
-        if (strandChar == '-')
+        Label::strand_t strand;
+        
+        if (strandChar == '+')
+            strand = Label::POS;
+        else if (strandChar == '-')
             strand = Label::NEG;
+        else
+            throw invalid_argument("Invalid gene strand: " + match.str(2));
 
-        label = new Label(left, right, strand);
+        label = new Label(left, right, strand, geneClass);
     }
     
     

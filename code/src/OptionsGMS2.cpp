@@ -42,6 +42,8 @@ bool OptionsGMS2::parse(int argc, const char *argv[]) {
         po::options_description config("Configuration");
         config.add_options()
             ("verbose,v", po::value<int>(&verbose)->default_value(0), "Verbose level")
+            ("CLASS_PROB_THRESHOLD", po::value<double>(&CLASS_PROB_THRESHOLD)->default_value(0.1), "Class probability threshold")
+            ("CLASS_DIST_THRESHOLD", po::value<size_t>(&CLASS_DIST_THRESHOLD)->default_value(22), "Class distance threshold")
         ;
         
         // Create set of hidden arguments (which can correspond to positional arguments). This is used

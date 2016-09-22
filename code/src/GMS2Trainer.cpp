@@ -295,7 +295,7 @@ void GMS2Trainer::estimateParameters(const NumSequence &sequence, const vector<g
     
     // estimate parameters for coding model
     selectLabelsForCodingParameters(labels, useCoding);
-    estimateParamtersCoding(sequence, labels, options.startContextLength, useCoding);
+    estimateParamtersCoding(sequence, labels, startContextLength, useCoding);
     
     // estimate parameters for noncoding model
     useNonCoding = useCoding;                           // for now, assume

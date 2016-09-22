@@ -41,8 +41,9 @@ namespace gmsuite {
          * @param left the index of the left-end of the fragment (inclusive)
          * @param right the index of the right-end of the fragment (inclusive)
          * @param strand the strand (+,-)
+         * @param geneClass the class of the gene
          */
-        Label(size_t left, size_t right, strand_t strand);
+        Label(size_t left, size_t right, strand_t strand, string geneClass = "");
         
         
         /**
@@ -59,6 +60,7 @@ namespace gmsuite {
         size_t left;            /**< left-end of the fragment (inclusive) */
         size_t right;           /**< right-end of the fragment (inclusive) */
         strand_t strand;        /**< Strand of the fragment */
+        string geneClass;       /**< The gene's class */
         
     };
 }
