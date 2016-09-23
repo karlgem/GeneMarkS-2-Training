@@ -19,6 +19,36 @@
 using namespace std;
 using namespace gmsuite;
 
+
+typedef enum {FIRST_OP, NOT_FIRST_OP, IGNORE} GeneStat;         // gene status
+
+void filterNs (const vector<NumSequence> &original, vector<NumSequence> &filtered) {
+    
+    
+    if (original.size() == 0)
+        return;
+    
+    AlphabetDNA alphabet;
+    CharNumConverter cnc(&alphabet);
+    
+    if (alphabet.sizeInvalid() > 0) {
+        
+        // remove all sequences containing N's
+        for (size_t n = 0; n < original.size(); n++) {
+            
+            // if sequence does not contain N
+            if (!original[n].containsInvalid(alphabet, cnc)) {
+                filtered.push_back(original[n]);
+            }
+        }
+    }
+    else {
+        filtered = original;
+    }
+}
+
+
+
 // default constructor
 GMS2Trainer::GMS2Trainer() {
     // DEPRECATED
@@ -209,6 +239,7 @@ void GMS2Trainer::estimateParametersStartContext(const NumSequence &sequence, co
 }
 
 
+// Output: should set "rbsSpacer" and "rbs" variables
 void GMS2Trainer::estimateParametersMotifModel(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use) {
     
     // check if all labels should be used
@@ -272,6 +303,7 @@ void GMS2Trainer::estimateParametersMotifModel(const NumSequence &sequence, cons
     // if genome is class 2, search for weak RBS, and estimate upstream signature pwm
     else if (genomeClass == ProkGeneStartModel::C2) {
         throw logic_error("Code not yet completed.");
+        estimateParametersMotifModel_Promoter(sequence, labels, use);
     }
     // if genome is class 3, search for RBS and promoter
     else {
@@ -280,6 +312,198 @@ void GMS2Trainer::estimateParametersMotifModel(const NumSequence &sequence, cons
     
 }
 
+
+vector<GeneStat> separateLabelsViaOperonStatus(const vector<Label*> &labels, unsigned thresh, unsigned threshNFIO) {
+    
+    
+    vector<GeneStat> result (labels.size());
+    
+    // for every label
+    for (size_t n = 0; n < labels.size(); n++) {
+        
+        // get label
+        const Label* lab = labels[n];
+        
+        // if on positive strand
+        if (lab->strand == Label::POS) {
+            
+            size_t start = lab->left;          // start location
+            
+            // if no gene before it, set as first in operon
+            if (n == 0) {
+                result[n] = FIRST_OP;
+            }
+            // otherwise, check to see if stop of previous gene is nearby
+            else {
+                
+                const Label* prevLab = labels[n-1];         // previous label
+                
+                if (prevLab->strand == Label::POS) {   // should be on positive strand
+                    
+                    size_t prevStop = prevLab->right;
+                    
+                    // if too far away, then current gene is first in op
+                    if (prevStop < start - thresh)
+                        result[n] = FIRST_OP;
+                    // if threshNFIO is set and gene is too close
+                    else if (threshNFIO != 0) {
+                        if (prevStop > start - threshNFIO)
+                            result[n] = NOT_FIRST_OP;
+                        else
+                            result[n] = IGNORE;
+                    }
+                    // otherwise, current gene belongs to same operon as previous
+                    else
+                        result[n] = NOT_FIRST_OP;
+                    
+                }
+                // otherwise it's on negative strand, so first in operon
+                else
+                    result[n] = FIRST_OP;
+            }
+        }
+        
+        // if on negative strand
+        else if (lab->strand == Label::NEG) {
+            
+            size_t start = lab->right;        // start location
+            
+            // if no gene after it, then set as first in operon
+            if (n == labels.size()-1) {
+                result[n] = FIRST_OP;
+            }
+            // otherwise, check to see if stop of previous gene (i.e. to the right) is nearby
+            else {
+                const Label* prevLab = labels[n+1];     // "next" label
+                
+                if (prevLab->strand == Label::NEG) {      // should be on negative strand
+                    
+                    size_t prevStop = prevLab->left;
+                    
+                    // if too far away, then current gene is first in op
+                    if (prevStop > start + thresh)
+                        result[n] = FIRST_OP;
+                    // if threshNFIO is set and gene is too close
+                    else if (threshNFIO != 0) {
+                        if (prevStop < start + threshNFIO)
+                            result[n] = NOT_FIRST_OP;
+                        else
+                            result[n] = IGNORE;
+                    }
+                    // otherwise, current gene belongs to same operon as previous
+                    else
+                        result[n] = NOT_FIRST_OP;
+                }
+                // oterhwise, previous gene is on different strand, so current is first in operon
+                else
+                    result[n] = FIRST_OP;
+            }
+        }
+        
+    }
+    
+    
+    return result;
+    
+}
+
+
+
+void GMS2Trainer::estimateParametersMotifModel_Promoter(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use) {
+    
+    // split sequences into first in operon and the rest
+    
+    // FIXME: make it more efficient
+    
+    // copy only usable labels
+    size_t numUse = labels.size();
+    if (use.size() > 0) {
+        numUse = 0;
+        for (size_t n = 0; n < labels.size(); n++)
+            if (use[n])
+                numUse++;
+    }
+    
+    vector<Label*> useLabels (numUse);
+    size_t pos = 0;
+    for (size_t n = 0; n < labels.size(); n++) {
+        if (use[n])
+            useLabels[pos++] = labels[n];
+    }
+    
+    
+    // get upstream regions
+    vector<NumSequence> upstreamsFGIO_style;
+    vector<NumSequence> upstreamsNFGIO_style;
+    
+    long long upstr_min_value = MIN_UPSTR_LEN_FGIO;
+    NumSequence::size_type upstrLength = this->upstreamLength - upstr_min_value;
+    
+    SequenceParser::extractStartContextSequences(sequence, useLabels, *this->cnc, -this->upstreamLength, upstrLength, upstreamsFGIO_style);
+    
+    if (UPSTR_LEN_NFGIO == 0)
+        upstreamsNFGIO_style = upstreamsFGIO_style;
+    else
+        SequenceParser::extractStartContextSequences(sequence, useLabels, *this->cnc, -this->UPSTR_LEN_NFGIO, this->UPSTR_LEN_NFGIO, upstreamsNFGIO_style);
+    
+    
+    unsigned vThreshNFGIO = NFGIO_DIST_THRES;
+    
+    vector<GeneStat> status = separateLabelsViaOperonStatus(useLabels, FGIO_DIST_THRESH, NFGIO_DIST_THRES);
+    
+    vector<NumSequence> upstreamsFGIO;
+    vector<NumSequence> upstreamsNFGIO;
+    
+    // split sequences
+    for (size_t n = 0; n < status.size(); n++) {
+        if (status[n] == IGNORE)
+            continue;
+        
+        if (status[n] == FIRST_OP)
+            upstreamsFGIO.push_back(upstreamsFGIO_style[n]);
+        else
+            upstreamsNFGIO.push_back(upstreamsNFGIO_style[n]);
+    }
+    
+    
+    // build motif finder
+    MotifFinder::Builder b;
+    if (optionsMFinder->align == "left")
+        b.setAlign(MFinderModelParams::LEFT);
+    else if (optionsMFinder->align == "right")
+        b.setAlign(MFinderModelParams::RIGHT);
+    else
+        b.setAlign(MFinderModelParams::NONE);
+    
+    b.setWidth(optionsMFinder->width);
+    b.setMaxIter(optionsMFinder->maxIter);
+    b.setPcounts(optionsMFinder->pcounts);
+    b.setNumTries(optionsMFinder->tries);
+    b.setBackOrder(optionsMFinder->bkgdOrder);
+    b.setMaxEMIter(optionsMFinder->maxEMIter);
+    b.setMotifOrder(optionsMFinder->motifOrder);
+    b.setShiftEvery(optionsMFinder->shiftEvery);
+    
+    MotifFinder mfinder = b.build();
+    
+    // remove N's
+    vector<NumSequence> upstreamsFGIO_noN;          // upstreams of first genes in operon that don't contain N
+    vector<NumSequence> upstreamsNFGIO_noN;         // upstreams of non-first genes in operon that don't contain N
+    
+    filterNs(upstreamsFGIO, upstreamsFGIO_noN);
+    filterNs(upstreamsNFGIO, upstreamsNFGIO_noN);
+    
+    vector<NumSequence::size_type> positionsFGIO, positionsNFGIO;
+    
+    // run MFinder in operons
+    mfinder.findMotifs(upstreamsFGIO_noN, positionsFGIO);
+    
+    // run MFinder on RBS
+    mfinder.findMotifs(upstreamsNFGIO_noN, positionsNFGIO);
+    
+    
+    
+}
 
 void GMS2Trainer::estimateParameters(const NumSequence &sequence, const vector<gmsuite::Label *> &labels) {
     

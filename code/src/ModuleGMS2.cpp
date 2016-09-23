@@ -119,7 +119,7 @@ ModuleGMS2::genome_class_t ModuleGMS2::classifyGenome(const NumSequence &numSeq,
     
     genome_class_t genomeClass;
     
-    // TODO: analyze spacer and get class
+    // analyze spacer and get class
     double maxProb = 0;
     size_t posOfMax = 0;
     bool maxFound = false;
@@ -152,9 +152,6 @@ ModuleGMS2::genome_class_t ModuleGMS2::classifyGenome(const NumSequence &numSeq,
     // Class 3
     else
         genomeClass = ProkGeneStartModel::C2;
-        
-    
-    
     
     return genomeClass;
 }

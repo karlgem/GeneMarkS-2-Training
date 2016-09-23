@@ -108,6 +108,9 @@ namespace gmsuite {
         void reverseComplement(const CharNumConverter &cnc);
         
         
+        bool containsInvalid(const AlphabetDNA &alph, const CharNumConverter &cnc) const;
+        
+        
         /*************** Sequence Iterators *******************/
         
         // Iterators

@@ -70,6 +70,9 @@ namespace gmsuite {
         void estimateParametersStartContext(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use = vector<bool>());
         void estimateParametersMotifModel(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use = vector<bool>());
         
+        
+        void estimateParametersMotifModel_Promoter(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use = vector<bool>());
+        
         // parameters
         unsigned pcounts;
         unsigned codingOrder;
@@ -82,6 +85,10 @@ namespace gmsuite {
         const CharNumConverter *cnc;
         const AlphabetDNA *alphabet;
         NumSequence::size_type MIN_GENE_LEN;            // minimum gene length
+        NumSequence::size_type MIN_UPSTR_LEN_FGIO;           // minimum upstream length for first-genes-in-operon
+        NumSequence::size_type UPSTR_LEN_NFGIO;
+        unsigned FGIO_DIST_THRESH;
+        unsigned NFGIO_DIST_THRES;
         
         // public variables for models
 //        NonUniformMarkov *motif;

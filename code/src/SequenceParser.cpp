@@ -101,3 +101,92 @@ NumSequence SequenceParser::extractUpstreamSequence(const NumSequence& sequence,
         return upstream;
     }
 }
+
+
+
+
+
+
+
+void SequenceParser::extractStartContextSequences(const NumSequence& sequence, const vector<Label*> &labels, const CharNumConverter &cnc, long long posRelToStart, NumSequence::size_type length, vector<NumSequence> &contexts, const vector<bool> &use) {
+    
+    contexts.clear();
+    
+    bool useAll = true;
+    if (use.size() == labels.size())
+        useAll = false;
+    
+    // for each label
+    for (size_t n = 0; n < labels.size(); n++) {
+        
+        // check to skip
+        if (!useAll && !use[n])
+            continue;
+        
+        size_t left = labels[n]->left;
+        size_t right = labels[n]->right;
+        Label::strand_t strand = labels[n]->strand;
+        
+        if (right >= sequence.size())
+            throw out_of_range("Label 'right' larger than sequence length");
+        
+        // positive strand
+        if (strand == Label::POS) {
+            
+            // if left of fragment doesn't reach past the beginning or end of "sequence"
+            if ((posRelToStart < 0 && abs(posRelToStart) <= left) || (posRelToStart >= 0 && posRelToStart + left < sequence.size())) {
+                // left and right of fragment
+                size_t fragLeft = left + posRelToStart;
+                size_t fragRight = fragLeft + length-1;
+                size_t fragLength = fragRight - fragLeft + 1;
+                // if the right of fragment doesn't reach past the end of "sequence"
+                if (fragRight < sequence.size()) {
+                    contexts.push_back(sequence.subseq(fragLeft,fragLength));
+                }
+            }
+        }
+        else if (strand == Label::NEG) {
+            
+            // if left of fragment doesn't reach past the beginning or end of "sequence"
+            if ((posRelToStart >= 0 && abs(posRelToStart) <= right) || (posRelToStart < 0 && abs(posRelToStart) + right < sequence.size())) {
+                
+                // left and right of fragment
+                size_t fragLeft = right - posRelToStart - length + 1;
+                size_t fragRight = fragLeft + length-1;
+                
+                if (fragRight < sequence.size()) {
+                    NumSequence subseq = sequence.subseq(fragLeft, fragRight - fragLeft + 1);
+                    subseq.reverseComplement(cnc);
+                    contexts.push_back(subseq);
+                }
+            }
+        }
+        else
+            contexts.push_back(NumSequence());
+    }
+}
+
+NumSequence SequenceParser::extractStartContextSequence(const NumSequence& sequence, const Label &labels, const CharNumConverter &cnc, long long posRelToStart, NumSequence::size_type length, const vector<bool> &use) {
+    throw std::logic_error("Function has no implementation");
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
