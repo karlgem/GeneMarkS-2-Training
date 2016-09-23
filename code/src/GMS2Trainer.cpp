@@ -447,8 +447,6 @@ void GMS2Trainer::estimateParametersMotifModel_Promoter(const NumSequence &seque
         SequenceParser::extractStartContextSequences(sequence, useLabels, *this->cnc, -this->UPSTR_LEN_NFGIO, this->UPSTR_LEN_NFGIO, upstreamsNFGIO_style);
     
     
-    unsigned vThreshNFGIO = NFGIO_DIST_THRES;
-    
     vector<GeneStat> status = separateLabelsViaOperonStatus(useLabels, FGIO_DIST_THRESH, NFGIO_DIST_THRES);
     
     vector<NumSequence> upstreamsFGIO;
@@ -498,8 +496,51 @@ void GMS2Trainer::estimateParametersMotifModel_Promoter(const NumSequence &seque
     // run MFinder in operons
     mfinder.findMotifs(upstreamsFGIO_noN, positionsFGIO);
     
+    // build Promoter model
+    NonUniformCounts promoterCounts(optionsMFinder->motifOrder, optionsMFinder->width, *this->alphabet, *this->cnc);
+    for (size_t n = 0; n < upstreamsFGIO_noN.size(); n++) {
+        promoterCounts.count(upstreamsFGIO_noN[n].begin()+positionsFGIO[n], upstreamsFGIO_noN[n].begin()+positionsFGIO[n]+optionsMFinder->width);
+    }
+    
+    promoter = new NonUniformMarkov(optionsMFinder->motifOrder, optionsMFinder->width, *this->alphabet, *this->cnc);
+    promoter->construct(&promoterCounts, optionsMFinder->pcounts);
+    
+    // build spacer distribution
+    // build histogram from positions
+    vector<double> positionCounts_promoter (this->upstreamLength - optionsMFinder->width+1, 0);
+    for (size_t n = 0; n < positionsFGIO.size(); n++) {
+        // FIXME account for LEFT alignment
+        // below is only for right
+        positionCounts_promoter[upstreamLength - optionsMFinder->width - positionsFGIO[n]]++;        // increment position
+    }
+    
+    promoterSpacer = new UnivariatePDF(positionCounts_promoter, false, pcounts);
+    
+    
     // run MFinder on RBS
     mfinder.findMotifs(upstreamsNFGIO_noN, positionsNFGIO);
+    
+    
+    // build RBS model
+    NonUniformCounts rbsCounts(optionsMFinder->motifOrder, optionsMFinder->width, *this->alphabet, *this->cnc);
+    for (size_t n = 0; n < upstreamsNFGIO_noN.size(); n++) {
+        rbsCounts.count(upstreamsNFGIO_noN[n].begin()+positionsNFGIO[n], upstreamsNFGIO_noN[n].begin()+positionsNFGIO[n]+optionsMFinder->width);
+    }
+    
+    rbs = new NonUniformMarkov(optionsMFinder->motifOrder, optionsMFinder->width, *this->alphabet, *this->cnc);
+    rbs->construct(&rbsCounts, optionsMFinder->pcounts);
+    
+    // build spacer distribution
+    // build histogram from positions
+    size_t upstrLenNFGIO = (UPSTR_LEN_NFGIO == 0 ? upstreamLength : UPSTR_LEN_NFGIO);
+    vector<double> positionCounts_rbs (upstrLenNFGIO - optionsMFinder->width+1, 0);
+    for (size_t n = 0; n < positionsNFGIO.size(); n++) {
+        // FIXME account for LEFT alignment
+        // below is only for right
+        positionCounts_rbs[upstrLenNFGIO - optionsMFinder->width - positionsFGIO[n]]++;        // increment position
+    }
+    
+    rbsSpacer = new UnivariatePDF(positionCounts_rbs, false, pcounts);
     
     
     
