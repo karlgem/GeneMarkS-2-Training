@@ -303,11 +303,11 @@ void GMS2Trainer::estimateParametersMotifModel(const NumSequence &sequence, cons
     // if genome is class 2, search for weak RBS, and estimate upstream signature pwm
     else if (genomeClass == ProkGeneStartModel::C2) {
         throw logic_error("Code not yet completed.");
-        estimateParametersMotifModel_Promoter(sequence, labels, use);
     }
     // if genome is class 3, search for RBS and promoter
     else {
         throw logic_error("Code not yet completed.");
+        estimateParametersMotifModel_Promoter(sequence, labels, use);
     }
     
 }
