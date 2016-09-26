@@ -179,9 +179,18 @@ void ModuleUtilities::runStartModelInfo() {
     
     // compute KL of motif versus noncoding, and spacer versus uniform
     KLDivergence klDivergence(trainer.rbs, trainer.noncoding);
-    double kl = klDivergence.computeKL();
+    double klMotif = klDivergence.computeKL();
     
-    cout << kl << endl;
+    // compute kl of spacer vs uniform
+    double klSpacer = 0;
+    for (size_t n = 0; n < trainer.rbsSpacer->size(); n++) {
+        double ratio = (*trainer.rbsSpacer)[n] / (1.0/optTrain->upstreamLength);
+        
+        if (ratio != 0)
+            klSpacer += (*trainer.rbsSpacer)[n] * log2(ratio);
+    }
+    
+    cout << klMotif << "\t" << klSpacer << endl;
     
 }
 

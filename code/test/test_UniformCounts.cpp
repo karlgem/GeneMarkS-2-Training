@@ -7,7 +7,7 @@
 //
 
 #include <stdio.h>
-
+#include <iostream>
 #include "catch.hpp"
 #include "UniformCounts.hpp"
 #include "UniformMarkov.hpp"
@@ -19,7 +19,17 @@ void testOrder(unsigned order) {
     AlphabetDNA alph;
     
     vector<Sequence> sequences;
-    sequences.push_back(Sequence("ACGATTAGCT"));
+    sequences.push_back(Sequence("AGGAGG"));
+    sequences.push_back(Sequence("AGGAGG"));
+    sequences.push_back(Sequence("AGGAGG"));
+    sequences.push_back(Sequence("AGGAGG"));
+    sequences.push_back(Sequence("AGGAGG"));
+    sequences.push_back(Sequence("AGGAGG"));
+    sequences.push_back(Sequence("AGGAGG"));
+    sequences.push_back(Sequence("AGGAGG"));
+    sequences.push_back(Sequence("AGGAGG"));
+    sequences.push_back(Sequence("AGGAGG"));
+    sequences.push_back(Sequence("AGGAGG"));
     CharNumConverter cnc(&alph);
     
     vector<NumSequence> numSequences;
@@ -31,6 +41,10 @@ void testOrder(unsigned order) {
     
     UniformMarkov m(order,alph,cnc);
     m.construct(&counts);
+    
+    NumSequence s = m.emit(10);
+    cout << cnc.convert(s.begin(), s.end()) << endl;
+    
 }
 
 TEST_CASE("Testing Uniform Markovs") {

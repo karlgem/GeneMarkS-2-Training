@@ -252,7 +252,9 @@ NumSequence UniformMarkov::emit(NumSequence::size_type length) const {
     // get CDF of joint probabilities
     vector<vector<double> > cdfJoint = jointProbs;
     for (unsigned p = 0; p < jointProbs.size(); p++) {
-        Markov::getCDFPerConditional(p, cdfJoint[p]);
+        for (size_t n = 1; n < cdfJoint[p].size(); n++) {
+            cdfJoint[p][n] += cdfJoint[p][n-1];
+        }
     }
     
     // get random number generator
@@ -344,7 +346,7 @@ NumSequence UniformMarkov::emit(NumSequence::size_type length) const {
         size_t idx;
         
         for (idx = blockStart; idx < blockStart+blockSize; idx++) {
-            if (u < model[idx])
+            if (u < cdf[idx])
                 break;
         }
         
