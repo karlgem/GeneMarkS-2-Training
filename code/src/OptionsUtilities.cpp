@@ -121,6 +121,7 @@ bool OptionsUtilities::parse(int argc, const char *argv[]) {
             utilDesc.add_options()
                 ("sequence,s", po::value<string>(&startModelInfoUtility.fn_sequence)->required(), "Sequence filename")
                 ("label,l", po::value<string>(&startModelInfoUtility.fn_label)->required(), "Label filename")
+                ("num-sim-noncoding", po::value<size_t>(&startModelInfoUtility.numOfSimNonCoding)->default_value(1000), "Number of simulated non-coding sequences.")
             ;
             
             // gms2 training options

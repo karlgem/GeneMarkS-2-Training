@@ -177,6 +177,62 @@ void ModuleUtilities::runStartModelInfo() {
     
     trainer.estimateParameters(numSequence, labels);
     
+    
+    
+    
+    // Generate non-coding sequences
+    vector<NumSequence> simNonCoding (options.startModelInfoUtility.numOfSimNonCoding);
+    
+    for (size_t n = 0; n < simNonCoding.size(); n++) {
+        simNonCoding[n] = trainer.noncoding->emit(optTrain->upstreamLength);
+//        cout << cnc.convert(simNonCoding[n].begin(), simNonCoding[n].end()) << endl;
+    }
+    
+    // convert align option from string format to align_t format
+    MFinderModelParams::align_t align = MFinderModelParams::NONE;
+    const OptionsMFinder *optionsMFinder = &options.startModelInfoUtility.optionsGMS2Training.optionsMFinder;
+    if (optionsMFinder->align == "left")
+        align = MFinderModelParams::LEFT;
+    else if (optionsMFinder->align == "right")
+        align = MFinderModelParams::RIGHT;
+    else if (optionsMFinder->align == "none")
+        align = MFinderModelParams::NONE;
+    else
+        throw invalid_argument("Align option must be one of: left, right, none");
+    
+    // set motif finder options
+    MotifFinder::Builder b;
+    b.setAlign(align).setWidth(optionsMFinder->width).setMaxIter(optionsMFinder->maxIter).setMaxEMIter(optionsMFinder->maxEMIter).setNumTries(optionsMFinder->tries);
+    b.setPcounts(optionsMFinder->pcounts).setMotifOrder(optionsMFinder->motifOrder).setBackOrder(optionsMFinder->bkgdOrder).setShiftEvery(optionsMFinder->shiftEvery);
+    
+    // build motif finder from above options
+    MotifFinder mfinder = b.build();
+    
+    vector<NumSequence::size_type> positions;
+    mfinder.findMotifs(simNonCoding, positions);
+    
+    // build RBS model
+    NonUniformCounts rbsCounts(optionsMFinder->motifOrder, optionsMFinder->width, alph, cnc);
+    for (size_t n = 0; n < simNonCoding.size(); n++) {
+        rbsCounts.count(simNonCoding[n].begin()+positions[n], simNonCoding[n].begin()+positions[n]+optionsMFinder->width);
+    }
+    
+    NonUniformMarkov rbsSim(optionsMFinder->motifOrder, optionsMFinder->width, alph, cnc);
+    rbsSim.construct(&rbsCounts, optionsMFinder->pcounts);
+    
+    // build spacer distribution
+    // build histogram from positions
+    vector<double> positionCounts (optTrain->upstreamLength - optionsMFinder->width+1, 0);
+    for (size_t n = 0; n < positions.size(); n++) {
+        // FIXME account for LEFT alignment
+        // below is only for right
+        positionCounts[optTrain->upstreamLength - optionsMFinder->width - positions[n]]++;        // increment position
+    }
+    
+    UnivariatePDF rbsSpacerSim(positionCounts, false, optionsMFinder->pcounts);
+
+    
+    
     // compute KL of motif versus noncoding, and spacer versus uniform
     KLDivergence klDivergence(trainer.rbs, trainer.noncoding);
     double klMotif = klDivergence.computeKL();
@@ -190,7 +246,25 @@ void ModuleUtilities::runStartModelInfo() {
             klSpacer += (*trainer.rbsSpacer)[n] * log2(ratio);
     }
     
-    cout << klMotif << "\t" << klSpacer << endl;
+    // compute KL of motif versus noncoding, and spacer versus uniform
+    KLDivergence klDivergenceSim(&rbsSim, trainer.noncoding);
+    double klMotifSim = klDivergenceSim.computeKL();
+    
+    // compute kl of spacer vs uniform
+    double klSpacerSim = 0;
+    for (size_t n = 0; n < rbsSpacerSim.size(); n++) {
+        double ratio = rbsSpacerSim[n] / (1.0/optTrain->upstreamLength);
+        
+        if (ratio != 0)
+            klSpacerSim += rbsSpacerSim[n] * log2(ratio);
+    }
+    
+    
+    
+    
+    cout << klMotif << "\t" << klSpacer << "\t" << klMotifSim << "\t" << klSpacerSim << endl;
+    
+
     
 }
 

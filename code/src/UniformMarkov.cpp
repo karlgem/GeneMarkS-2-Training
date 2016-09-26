@@ -264,7 +264,7 @@ NumSequence UniformMarkov::emit(NumSequence::size_type length) const {
     
     ENG  eng;
     DIST dist(0,1);
-    GEN  gen(eng,dist);
+    static GEN  gen(eng,dist);
     
     
     // if sequence length <= order+1, simply emit from joint
