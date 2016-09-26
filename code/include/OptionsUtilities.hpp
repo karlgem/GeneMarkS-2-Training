@@ -71,10 +71,10 @@ namespace gmsuite {
         struct StartModelInfoUtility : public GenericOptions {
             string fn_sequence;             // sequence filename
             string fn_label;                // label filename
-            string fn_output;               // output filename
-            size_t length;                  // length of upstream regions
+//            string fn_output;               // output filename
+//            size_t length;                  // length of upstream regions
             bool allowOverlaps;             // allow upstream region to overlap coding region
-            size_t minimumGeneLength;       // minimum gene length associated with upstream
+//            size_t minimumGeneLength;       // minimum gene length associated with upstream
             OptionsGMS2Training optionsGMS2Training;            // options for running gms2 training
         }
         startModelInfoUtility;

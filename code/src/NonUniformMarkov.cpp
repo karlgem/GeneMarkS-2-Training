@@ -258,7 +258,8 @@ void NonUniformMarkov::changeOrder(unsigned newOrder) {
             
             // increment order at each position
             for (unsigned p = 0; p < jointProbs.size(); p++) {
-            
+                if (p <= this->order)
+                    continue;
                 unsigned orderForPos = (p <= this->order ? p : this->order);
                 
                 // get joint probs

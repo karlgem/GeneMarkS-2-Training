@@ -8,6 +8,8 @@
 
 #include "ModuleUtilities.hpp"
 
+#include <iostream>
+
 #include "UnivariatePDF.hpp"
 #include "NonUniformMarkov.hpp"
 #include "NonUniformCounts.hpp"
@@ -34,6 +36,8 @@ void ModuleUtilities::run() {
     if (options.utility == EXTRACT_UPSTR) {
         runExtractUpstream();
     }
+    else if (options.utility == START_MODEL_INFO)
+        runStartModelInfo();
     else            // unrecognized utility to run
         throw invalid_argument("Unknown utility function " + options.utility);
     
@@ -174,6 +178,10 @@ void ModuleUtilities::runStartModelInfo() {
     trainer.estimateParameters(numSequence, labels);
     
     // compute KL of motif versus noncoding, and spacer versus uniform
+    KLDivergence klDivergence(trainer.rbs, trainer.noncoding);
+    double kl = klDivergence.computeKL();
+    
+    cout << kl << endl;
     
 }
 

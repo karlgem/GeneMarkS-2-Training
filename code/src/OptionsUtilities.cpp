@@ -119,12 +119,8 @@ bool OptionsUtilities::parse(int argc, const char *argv[]) {
             
             po::options_description utilDesc(string(START_MODEL_INFO) + " options");
             utilDesc.add_options()
-                ("sequence,s", po::value<string>(&extractUpstreamUtility.fn_sequence)->required(), "Sequence filename")
-                ("label,l", po::value<string>(&extractUpstreamUtility.fn_label)->required(), "Label filename")
-                ("output,o", po::value<string>(&extractUpstreamUtility.fn_output)->required(), "Output filename")
-                ("length", po::value<size_t>(&extractUpstreamUtility.length)->required(), "Upstream length")
-                ("allow-overlap-with-cds", "If set, then upstream (non-coding) regions are allowed to overlap with coding regions. If not set, these sequences are ignored.")
-                ("min-gene-length", po::value<size_t>(&extractUpstreamUtility.minimumGeneLength)->default_value(0), "Minimum gene length")
+                ("sequence,s", po::value<string>(&startModelInfoUtility.fn_sequence)->required(), "Sequence filename")
+                ("label,l", po::value<string>(&startModelInfoUtility.fn_label)->required(), "Label filename")
             ;
             
             // gms2 training options
@@ -132,6 +128,8 @@ bool OptionsUtilities::parse(int argc, const char *argv[]) {
             OptionsGMS2Training::addProcessOptions(startModelInfoUtility.optionsGMS2Training, gms2training);
             
             utilDesc.add(gms2training);
+            
+            cmdline_options.add(utilDesc);
             
             // Collect all the unrecognized options from the first pass. This will include the
             // (positional) mode and command name, so we need to erase them
