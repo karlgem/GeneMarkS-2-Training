@@ -210,9 +210,7 @@ void Markov::getHigherOrderJoint(unsigned currentOrder, const vector<double> &cu
 }
 
 
-
-NumSequence Markov::indexToNumSequence(size_t idx, size_t wordLength) const {
-    vector<NumSequence::num_t>  numSeq;
+void Markov::indexToNumSequence(size_t idx, size_t wordLength, vector<NumSequence::num_t> &numSeq) const {
     
     numSeq.resize(wordLength);      // allocate space
     
@@ -234,6 +232,13 @@ NumSequence Markov::indexToNumSequence(size_t idx, size_t wordLength) const {
         
         numSeq[wordLength-n-1] = (NumSequence::num_t) current;       // set current character in numeric sequence
     }
+}
+
+
+NumSequence Markov::indexToNumSequence(size_t idx, size_t wordLength) const {
+    vector<NumSequence::num_t>  numSeq;
+    
+    indexToNumSequence(idx, wordLength, numSeq);
     
     return NumSequence(numSeq);
 }
@@ -285,6 +290,52 @@ void Markov::incrementOrderByOne(unsigned currentOrder, const vector<double> &cu
     }
 }
 
+
+
+void Markov::getCDFPerConditional(unsigned currentOrder, vector<double> &probs) const {
+    
+    // Problem Context:
+    // the probs vector holds elements in the following order: e.g.
+    //  index   |   element
+    //     0    |     A1 A2 (i.e. A2 | A1) ___
+    //     1    |     A1 C2 (i.e. C2 | A1)    |
+    //     2    |     A1 G2 (i.e. G2 | A1)    |--> sums to 1
+    //     3    |     A1 T2 (i.e. T2 | A1) ___|
+    //     4    |     C1 A2 (i.e. A2 | C1) ___
+    //     5    |     C1 C2 (i.e. C2 | C1)    |
+    //     6    |     C1 G2 (i.e. G2 | C1)    |--> sums to 1
+    //     7    |     C1 T2 (i.e. T2 | C1) ___|
+    //     8    |     ...
+    //
+    // The numbers near the letters indicate the position of the letter in the dinucleotide. E.g.
+    // A1C2 is AC, whereas A2C1 == C1A2 == CA
+    //
+    // To get conditional probabilities CDF, note that we just sum consecutive elements
+    // that exists with a block (that sums to 1)
+    //
+    // Define a block to be the number of (consecutive) elements with the same base (that sum to 1)
+    // E.g. in the above example, AA,AC,AG,AT all contribute to a single CDF. So the block size is 4.
+    size_t blockSize = alphabet->sizeValid();
+    size_t numOfBlocks = probs.size() / blockSize;
+    
+    // probs.size() should be divisible by blockSize
+    if (probs.size() % blockSize != 0)
+        throw std::logic_error("Probs.size() should be divisible by blockSize.");
+    
+    
+    // sum for every block
+    for (size_t b = 0; b < numOfBlocks; b++) {
+        
+        // get starting index of current block in probs vector
+        size_t idx = b * blockSize + 1;         // +1 because first element in a block doesn't change
+        
+        // loop over block and sum probabilities
+        for (size_t i = 1; i < blockSize; i++) {
+            probs[idx] += probs[idx-1];         // accumulate sum from previous
+            idx++;
+        }
+    }
+}
 
 
 

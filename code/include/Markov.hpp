@@ -154,6 +154,13 @@ namespace gmsuite {
          */
         void incrementOrderByOne(unsigned currentOrder, const vector<double> &currentProbs, vector<double> &newProbs) const;
         
+        /**
+         * Get cumulative distribution frequency for each conditional probability.
+         *
+         * @param currentOrder the order of the "original" probabilities
+         * @param currentProbs the "original" probabilities
+         */
+        void getCDFPerConditional(unsigned currentOrder, vector<double> &probs) const;
         
         /**
          * Convert the array index to the numeric sequence 'located' at that index.
@@ -161,6 +168,14 @@ namespace gmsuite {
          * sequence will be 013
          */
         NumSequence indexToNumSequence(size_t idx, size_t wordLength) const;
+        
+        
+        /**
+         * Convert the array index to the numeric sequence 'located' at that index.
+         * For example, for index 7 and wordLength 3 (i..e 000111 -> ACT), the numeric
+         * sequence will be 013
+         */
+        void indexToNumSequence(size_t idx, size_t wordLength, vector<NumSequence::num_t> &numSeq) const;
         
     };
     

@@ -84,6 +84,14 @@ namespace gmsuite {
         void changeOrder(unsigned newOrder);
         
         
+        /**
+         * Emit a sequence from the markov model
+         *
+         * @param length the length of the sequence
+         */
+        NumSequence emit(NumSequence::size_type length) const;
+        
+        
     protected:
 
         /**

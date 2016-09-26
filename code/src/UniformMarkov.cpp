@@ -13,6 +13,12 @@
 #include <limits>
 #include <stdexcept>
 #include <sstream>
+#include <iostream>
+
+#include <boost/random/mersenne_twister.hpp>
+#include <boost/random/uniform_real_distribution.hpp>
+#include <boost/random/variate_generator.hpp>
+
 
 using namespace std;
 using namespace gmsuite;
@@ -230,6 +236,138 @@ void UniformMarkov::changeOrder(unsigned newOrder) {
     }
     
 }
+
+
+
+NumSequence UniformMarkov::emit(NumSequence::size_type length) const {
+    
+    if (length == 0)
+        return NumSequence();
+    
+    // get CDF per conditional
+    vector<double> cdf = model;
+    Markov::getCDFPerConditional(this->order, cdf);
+    
+    // to generate first "order+1" elements, or to generate a sequence where length < order+1,
+    // get CDF of joint probabilities
+    vector<vector<double> > cdfJoint = jointProbs;
+    for (unsigned p = 0; p < jointProbs.size(); p++) {
+        Markov::getCDFPerConditional(p, cdfJoint[p]);
+    }
+    
+    // get random number generator
+    typedef boost::mt19937                     ENG;     // Mersenne Twister
+    typedef boost::random::uniform_real_distribution<double> DIST;                // Normal Distribution
+    typedef boost::variate_generator<ENG,DIST> GEN;     // Variate generator
+    
+    ENG  eng;
+    DIST dist(0,1);
+    GEN  gen(eng,dist);
+    
+    
+    // if sequence length <= order+1, simply emit from joint
+    if (length <= this->order + 1) {
+        double u = gen();
+        
+        size_t i;       // index of emitted word
+        
+        // find index
+        for (i = 0; i < cdfJoint[length-1].size(); i++) {
+            if (u < cdfJoint[length-1][i])
+                break;              // sample
+        }
+        
+        if (i == cdfJoint[length-1].size())
+            throw logic_error("Could not sample from CDF. Something is wrong.");
+        
+        // convert word from index
+        return Markov::indexToNumSequence(i, length);
+    }
+    
+    
+    // otherwise, length > order+1. "order+1" elements from joint distribution,
+    // then use conditional to emit one at a time.
+    
+    // Emit first order+1 elements:
+    size_t i;
+    double u = gen();
+    size_t wordLength = order+1;
+    for (i = 0; i < cdfJoint[wordLength-1].size(); i++) {
+        if (u < cdfJoint[wordLength-1][i])
+            break;              // sample
+    }
+    
+    if (i == cdfJoint[wordLength-1].size())
+        throw logic_error("Could not sample from CDF. Something is wrong.");
+
+    // convert word from index
+    vector<NumSequence::num_t> numSeq;
+    Markov::indexToNumSequence(i, wordLength, numSeq);
+    
+    // extend numSeq to allocate spacer of size "length" (i.e. for entire sequence)
+    numSeq.resize(length);
+    
+    // Emit remaining sequence. Take last "order" elements from previous word, and sample new element from CDF
+    // corresponding to that base
+    
+    size_t numElements = alphabet->sizeValid();             // number of elements (ACGT)
+    size_t elementEncodingSize = ceil(log2(numElements));   // bits required to encode all elements
+    size_t maskOne = 0;            // mask single letter
+    size_t maskBase = 0;        // masks the last "order" characters of word, to be used as base for new word
+    size_t blockSize = alphabet->sizeValid();
+    size_t wordIndex = i;           // contains index of the current word (made up of order+1 elements)
+    
+    
+    for (size_t n = 0; n < elementEncodingSize; n++) {
+        maskOne <<= 1;          // shift by one
+        maskOne |= 1;           // set rightmost bit to 1
+    }
+    
+    // get a mask that captures base
+    for (size_t n = 0; n < order; n++) {
+        for (size_t n = 0; n < elementEncodingSize; n++) {
+            maskBase <<= 1;      // shift by one
+            maskBase |= 1;      // set rightmost bit to 1
+        }
+    }
+
+    // loop over remaining "sequence"
+    for (size_t n = wordLength; n < length; n++) {
+        
+        u = gen();      // generate unif(0,1)
+        
+        // get base from previous word
+        size_t base = wordIndex & maskBase;
+        
+        // loop over block of that base, and sample from CDF and u
+        size_t blockStart = base << elementEncodingSize;
+        size_t idx;
+        
+        for (idx = blockStart; idx < blockStart+blockSize; idx++) {
+            if (u < model[idx])
+                break;
+        }
+        
+        if (idx == blockStart+blockSize)
+            throw logic_error("Could not sample from CDF. Something is wrong.");
+        
+        // add letter to numSeq
+        numSeq[n] = (NumSequence::num_t) ( idx & maskOne);
+        
+        // update wordIndex
+        wordIndex = idx;
+    }
+    
+    return NumSequence(numSeq);
+}
+
+
+
+
+
+
+
+
 
 
 
