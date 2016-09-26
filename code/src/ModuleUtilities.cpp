@@ -8,9 +8,16 @@
 
 #include "ModuleUtilities.hpp"
 
+#include "UnivariatePDF.hpp"
+#include "NonUniformMarkov.hpp"
+#include "NonUniformCounts.hpp"
+#include "UniformCounts.hpp"
+#include "UniformMarkov.hpp"
+#include "MotifFinder.hpp"
 #include "LabelFile.hpp"
 #include "SequenceFile.hpp"
 #include "SequenceParser.hpp"
+#include "GMS2Trainer.hpp"
 
 using namespace std;
 using namespace gmsuite;
@@ -69,3 +76,45 @@ void ModuleUtilities::runExtractUpstream() {
     
     
 }
+
+void ModuleUtilities::runStartModelInfo() {
+    
+    // read sequence file
+    SequenceFile sequenceFile (options.startModelInfoUtility.fn_sequence, SequenceFile::READ);
+    Sequence strSequence = sequenceFile.read();
+    
+    // read label file
+    LabelFile labelFile (options.startModelInfoUtility.fn_label, LabelFile::READ);
+    vector<Label*> labels;
+    labelFile.read(labels);
+    
+    // create numeric sequence
+    AlphabetDNA alph;
+    CharNumConverter cnc (&alph);
+    
+    NumSequence numSequence (strSequence, cnc);
+    
+    // run training step
+    const OptionsGMS2Training* optTrain = &options.startModelInfoUtility.optionsGMS2Training;
+    GMS2Trainer trainer (optTrain->pcounts, optTrain->codingOrder, optTrain->noncodingOrder, optTrain->startContextOrder, optTrain->upstreamLength, optTrain->startContextLength, optTrain->genomeClass, optTrain->optionsMFinder, cnc, alph, optTrain->MIN_GENE_LEN);
+    
+    trainer.estimateParameters(numSequence, labels);
+    
+    // compute KL of motif versus noncoding, and spacer versus uniform
+    
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -137,3 +137,25 @@ bool OptionsGMS2Training::parse(int argc, const char *argv[]) {
     
     
 }
+
+
+
+void OptionsGMS2Training::addProcessOptions(OptionsGMS2Training &options, po::options_description &processOptions) {
+ 
+    processOptions.add_options()
+    ("pcounts", po::value<double>(&options.pcounts)->default_value(1), "Pseudocounts for gms2 models")
+    ("coding-order", po::value<unsigned>(&options.codingOrder)->default_value(4), "Order for coding Markov model")
+    ("noncoding-order", po::value<unsigned>(&options.noncodingOrder)->default_value(2), "Order for noncoding Markov model")
+    ("sc-order", po::value<unsigned>(&options.startContextOrder)->default_value(0), "Order for start-context model")
+    ("sc-length", po::value<NumSequence::size_type>(&options.startContextLength)->default_value(12), "Length of start-context model")
+    ("upstream-length", po::value<NumSequence::size_type>(&options.upstreamLength)->default_value(40), "Length of upstream region for motif search")
+    ("MIN_GENE_LEN", po::value<NumSequence::size_type>(&options.MIN_GENE_LEN)->default_value(300), "Minimum gene length allowed in training")
+    ;
+    
+    // mfinder options
+    po::options_description mfinder("Motif Finder");
+    OptionsMFinder::addProcessOptions(options.optionsMFinder, mfinder);
+    processOptions.add(mfinder);
+    
+}
+

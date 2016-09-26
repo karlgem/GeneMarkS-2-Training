@@ -42,6 +42,8 @@ namespace gmsuite {
         bool parse(int argc, const char *argv[]);
         
         
+        static void addProcessOptions(OptionsGMS2Training &options, po::options_description &processOptions);
+        
         // Below, create a variable for each parameter, to make for easy access
     public:
         

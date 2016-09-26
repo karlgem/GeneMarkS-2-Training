@@ -114,6 +114,40 @@ bool OptionsUtilities::parse(int argc, const char *argv[]) {
             // get remaining parameters whose values were not assigned in add_options() above
             extractUpstreamUtility.allowOverlaps = vm.count("allow-overlap-with-cds") > 0;
         }
+        // Utility: Start-Model Info
+        else if (utility == START_MODEL_INFO) {
+            
+            po::options_description utilDesc(string(START_MODEL_INFO) + " options");
+            utilDesc.add_options()
+                ("sequence,s", po::value<string>(&extractUpstreamUtility.fn_sequence)->required(), "Sequence filename")
+                ("label,l", po::value<string>(&extractUpstreamUtility.fn_label)->required(), "Label filename")
+                ("output,o", po::value<string>(&extractUpstreamUtility.fn_output)->required(), "Output filename")
+                ("length", po::value<size_t>(&extractUpstreamUtility.length)->required(), "Upstream length")
+                ("allow-overlap-with-cds", "If set, then upstream (non-coding) regions are allowed to overlap with coding regions. If not set, these sequences are ignored.")
+                ("min-gene-length", po::value<size_t>(&extractUpstreamUtility.minimumGeneLength)->default_value(0), "Minimum gene length")
+            ;
+            
+            // gms2 training options
+            po::options_description gms2training("GMS2 Training");
+            OptionsGMS2Training::addProcessOptions(startModelInfoUtility.optionsGMS2Training, gms2training);
+            
+            utilDesc.add(gms2training);
+            
+            // Collect all the unrecognized options from the first pass. This will include the
+            // (positional) mode and command name, so we need to erase them
+            vector<string> opts = po::collect_unrecognized(parsed.options, po::include_positional);
+            opts.erase(opts.begin());       // erase mode
+            opts.erase(opts.begin());       // erase command name
+            
+            // Parse again...
+            po::store(po::command_line_parser(opts).options(utilDesc).run(), vm);
+            
+            // get remaining parameters whose values were not assigned in add_options() above
+            startModelInfoUtility.allowOverlaps = vm.count("allow-overlap-with-cds") > 0;
+            
+            
+            
+        }
         else                                                                        // unrecognized utility
             throw po::invalid_option_value(utility);
         
