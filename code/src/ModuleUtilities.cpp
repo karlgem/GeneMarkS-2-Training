@@ -264,6 +264,8 @@ void ModuleUtilities::runStartModelInfo() {
     
     cout << klMotif << "\t" << klSpacer << "\t" << klMotifSim << "\t" << klSpacerSim << endl;
     
+    cout << trainer.rbs->toString() << endl;
+    
 
     
 }
