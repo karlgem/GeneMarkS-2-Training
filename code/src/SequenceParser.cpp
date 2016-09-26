@@ -7,7 +7,7 @@
 //
 
 #include "SequenceParser.hpp"
-#include <math.h>
+#include <cstdlib>
 #include <stdexcept>
 #include <iostream>
 
