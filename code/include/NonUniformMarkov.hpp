@@ -80,6 +80,16 @@ namespace gmsuite {
          */
         size_t getLength() const;
         
+        /**
+         * Change the model's order. Note: changing to a lower order model will
+         * incur and irreversable loss of information; i.e. lowering an order then
+         * raising it again will not return the original model, as the distribution
+         * has already been marginalized.
+         *
+         * @param newOrder the new order
+         */
+        void changeOrder(unsigned newOrder);
+        
         
     protected:
         

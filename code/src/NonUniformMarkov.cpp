@@ -241,3 +241,68 @@ void NonUniformMarkov::initialize() {
 size_t NonUniformMarkov::getLength() const {
     return length;
 }
+
+
+
+
+void NonUniformMarkov::changeOrder(unsigned newOrder) {
+    
+    unsigned originalOrder = this->order;
+    
+    // increase order
+    if (newOrder > originalOrder) {
+        unsigned orderDifference = newOrder - originalOrder;        // difference in order
+        
+        // increment order by 1 at a time
+        for (unsigned i = 0; i < orderDifference; i++) {
+            
+            // increment order at each position
+            for (unsigned p = 0; p < jointProbs.size(); p++) {
+            
+                unsigned orderForPos = (p <= this->order ? p : this->order);
+                
+                // get joint probs
+                vector<double> newProbs;
+                incrementOrderByOne(orderForPos, jointProbs[p], newProbs);      // fill new vector
+                jointProbs[p] = newProbs;
+             
+            }
+            
+           this->order++;           // increase order value
+        }
+        
+        // update Markov probabilities from joint
+        this->model = jointProbs;
+        
+        // for each period, convert joint probabilities to Markov (conditional):
+        // e.g. P(ACG) -> P(G|AC)
+        for (size_t p = 0; p < length; p++)
+            jointToMarkov(model[p]);
+        
+        
+        
+        
+    }
+    // decrease order
+    else if (newOrder < originalOrder) {
+        throw logic_error("Decreasing Order functionality not yet implemented.");
+    }
+    
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

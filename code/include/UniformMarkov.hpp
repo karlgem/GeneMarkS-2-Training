@@ -91,14 +91,6 @@ namespace gmsuite {
          */
         void initialize();
         
-        /**
-         * Increment order of joint probabilities by one.
-         *
-         * @param currentOrder the order of the "original" probabilities
-         * @param currentProbs the "original" probabilities
-         * @param newProbs a vector where the new probabilities (of order currentOrder+1) will be stored
-         */
-        void incrementOrderByOne(unsigned currentOrder, const vector<double> &currentProbs, vector<double> &newProbs) const;
         
         
         // The structure of the model 'm' is a vector of doubles, where m holds

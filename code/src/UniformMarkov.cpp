@@ -233,49 +233,7 @@ void UniformMarkov::changeOrder(unsigned newOrder) {
 
 
 
-void UniformMarkov::incrementOrderByOne(unsigned currentOrder, const vector<double> &currentProbs, vector<double> &newProbs) const {
-    
-    size_t numElements = alphabet->sizeValid();                 // number of (valid) elements in alphabet (e.g. A,C,G,T)
-    
-    // set the size of the new probability space
-    size_t newOrder = currentOrder+1;
-    size_t wordSize = newOrder+1;                   // number of elements that make up a word
-    size_t numWords = pow(numElements, wordSize);   // number of words in the new probability space
-    newProbs.resize(numWords, 0);                   // allocate space for set new probability 
-    
-    // for each key of the current probabilities, the probability value needs to be copied
-    // to all keys of "higher" order. Example, since our working representation is in bits,
-    // suppose that the element encoding size is 2 (i.e. 2 bits needed to encode a single element).
-    // If A = 00, C = 01, G = 10, T = 11, then the key GC=1001
-    // In higher order, we have AGC=001001, CGC=011001, GGC=101001, TGC=111001
-    // So we bit representations of intergers from 0 up to alphabet size (i.e. 4 in this case),
-    // and we add them to GC, but shifted by 2 * element encoding size.
-    //
-    // Ex: To get TGC:
-    // Representation of T:         11
-    // Shift T by 2 * 2:        110000
-    // Representation of GC:      1001
-    // Add shifted T to GC:     111001
-    
-    size_t elementEncodingSize = ceil(log2(numElements));       // number of bits to encode an element (e.g. 2 bits for A,C,G,T)
-    size_t bitsToShift = elementEncodingSize * currentOrder+1;
-    
-    // for each key in current probability space
-    for (size_t key = 0; key < currentProbs.size(); key++) {
-        
-        // for each element to be added to the current key
-        for (size_t e = 0; e < numElements; e++) {
-            // shift the element by the number of letters already in the key, times the element encoding size
-            size_t newKey = e << bitsToShift;
-            
-            // add existing key to new partial key; this gives the new full key
-            newKey += key;
-            
-            // set probability value of new key to that of old key
-            newProbs[newKey] = currentProbs[key];
-        }
-    }
-}
+
 
 
 

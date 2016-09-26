@@ -94,6 +94,16 @@ namespace gmsuite {
         virtual string toString() const = 0;
         
         
+        /**
+         * Compute the KL-divergence of two Markov models
+         *
+         * @param P first markov model
+         * @param Q second markov model
+         * @return KL(P || Q)
+         */
+        friend double KLDivergence(const Markov* P, const Markov* Q);
+        
+        
     protected:
         
         unsigned order;                             /**< the model's order */
@@ -134,6 +144,16 @@ namespace gmsuite {
          * @exception invalid_argument if newOrder < currentOrder
          */
         void getHigherOrderJoint(unsigned currentOrder, const vector<double> &current, unsigned newOrder, vector<double> &result) const;
+        
+        /**
+         * Increment order of joint probabilities by one.
+         *
+         * @param currentOrder the order of the "original" probabilities
+         * @param currentProbs the "original" probabilities
+         * @param newProbs a vector where the new probabilities (of order currentOrder+1) will be stored
+         */
+        void incrementOrderByOne(unsigned currentOrder, const vector<double> &currentProbs, vector<double> &newProbs) const;
+        
         
         /**
          * Convert the array index to the numeric sequence 'located' at that index.

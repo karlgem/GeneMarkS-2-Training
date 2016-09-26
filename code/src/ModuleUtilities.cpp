@@ -77,6 +77,79 @@ void ModuleUtilities::runExtractUpstream() {
     
 }
 
+
+
+
+
+
+
+
+
+
+
+// a class to compute KL divergence (until I can figure out a better method of doing it)
+class KLDivergence : public UniformMarkov, public NonUniformMarkov {
+    
+public:
+    KLDivergence(const NonUniformMarkov *P, const UniformMarkov *Q) : NonUniformMarkov(*P), UniformMarkov(*Q)  {
+        
+        unsigned maxOrder = max(P->getOrder(), Q->getOrder());
+        
+        // raise order of background model to that of motif model
+        UniformMarkov::changeOrder(maxOrder);
+        NonUniformMarkov::changeOrder(maxOrder);
+        
+        if (this->UniformMarkov::order != this->NonUniformMarkov::order)
+            throw logic_error("ScoreComputer: Orders of models should be the same.");
+    }
+    
+    double computeKL() const {
+        double score = 0;
+        unsigned order = this->NonUniformMarkov::order;
+        
+        // for uniform model, get conditional pdf for every order <= "motif model order"
+        vector<vector<double> > mBackConditionals (order+1);
+        for (size_t n = 0; n < mBackConditionals.size()-1; n++) {
+            mBackConditionals[n] = this->UniformMarkov::jointProbs[n];      // copy joint
+            UniformMarkov::jointToMarkov(mBackConditionals[n]);             // convert joint to markov
+        }
+        
+        // for last one, just copy it
+        mBackConditionals[mBackConditionals.size()-1] = this->UniformMarkov::model;
+        
+        
+        
+        // for each position in motif model
+        for (NonUniformMarkov::nonunif_markov_t::size_type pos = 0; pos < this->NonUniformMarkov::model.size(); pos++) {
+            
+            // get size of word (i.e. depending on order and position)
+            size_t wordSize = order+1;
+            if (pos < order)
+                wordSize = pos+1;
+            
+            
+            
+            // for every word in that position
+            for (size_t word = 0; word < this->NonUniformMarkov::model[pos].size(); word++) {
+                double ratio = 0;
+                if (mBackConditionals[wordSize-1][word] != 0) {
+                    ratio = this->NonUniformMarkov::model[pos][word] / mBackConditionals[wordSize-1][word];
+                }
+                
+                if (ratio != 0)
+                    score += this->NonUniformMarkov::model[pos][word] * log(ratio);
+            }
+        }
+        
+        return score;
+    }
+    
+};
+
+
+
+
+
 void ModuleUtilities::runStartModelInfo() {
     
     // read sequence file

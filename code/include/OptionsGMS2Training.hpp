@@ -30,7 +30,7 @@ namespace gmsuite {
         
     public:
         
-        OptionsGMS2Training(string mode);
+        OptionsGMS2Training(string mode="gms2-training");
         
         /**
          * Parse the command-line words into arguments
