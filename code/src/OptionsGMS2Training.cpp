@@ -143,6 +143,7 @@ bool OptionsGMS2Training::parse(int argc, const char *argv[]) {
 void OptionsGMS2Training::addProcessOptions(OptionsGMS2Training &options, po::options_description &processOptions) {
  
     processOptions.add_options()
+    ("genome-class", po::value<int>()->required(), "The genome's class: 1,2,3")
     ("pcounts", po::value<double>(&options.pcounts)->default_value(1), "Pseudocounts for gms2 models")
     ("coding-order", po::value<unsigned>(&options.codingOrder)->default_value(4), "Order for coding Markov model")
     ("noncoding-order", po::value<unsigned>(&options.noncodingOrder)->default_value(2), "Order for noncoding Markov model")
