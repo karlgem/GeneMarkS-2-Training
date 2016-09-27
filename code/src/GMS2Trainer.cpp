@@ -74,8 +74,7 @@ GMS2Trainer::GMS2Trainer(unsigned pcounts,
                          NumSequence::size_type startContextLength,
                          genome_class_t genomeClass,
                          const OptionsMFinder &optionsMFinder,
-                         const CharNumConverter &cnc,
-                         const AlphabetDNA &alph,
+                         const NumAlphabetDNA &alph,
                          const NumSequence::size_type MIN_GENE_LEN) {
     
     this->pcounts = pcounts;
@@ -86,7 +85,6 @@ GMS2Trainer::GMS2Trainer(unsigned pcounts,
     this->startContextLength = startContextLength;
     this->genomeClass = genomeClass;
     this->optionsMFinder = &optionsMFinder;
-    this->cnc = &cnc;
     this->alphabet = &alph;
     this->MIN_GENE_LEN = MIN_GENE_LEN;
     
@@ -114,7 +112,7 @@ void GMS2Trainer::estimateParamtersCoding(const NumSequence &sequence, const vec
             throw invalid_argument("Labels and Use vector should have the same length");
     }
     
-    PeriodicCounts counts (codingOrder, 3, *this->alphabet, *this->cnc);
+    PeriodicCounts counts (codingOrder, 3, *this->alphabet);
     
     // get counts for 3 period markov model given order
     size_t n = 0;
@@ -148,7 +146,7 @@ void GMS2Trainer::estimateParamtersCoding(const NumSequence &sequence, const vec
     }
     
     // convert counts to probabilities
-    coding = new PeriodicMarkov(codingOrder, 3, *this->alphabet, *this->cnc);
+    coding = new PeriodicMarkov(codingOrder, 3, *this->alphabet);
     coding->construct(&counts, pcounts);
     
 }
@@ -164,7 +162,7 @@ void GMS2Trainer::estimateParamtersNonCoding(const NumSequence &sequence, const 
             throw invalid_argument("Labels and Use vector should have the same length");
     }
     
-    UniformCounts counts(noncodingOrder, *this->alphabet, *this->cnc);
+    UniformCounts counts(noncodingOrder, *this->alphabet);
     
     size_t leftNoncoding = 0;       // left position of current noncoding region
     
@@ -193,7 +191,7 @@ void GMS2Trainer::estimateParamtersNonCoding(const NumSequence &sequence, const 
     counts.count(sequence.begin() + leftNoncoding, sequence.begin() + sequence.size());
     
     // convert counts to probabilities
-    noncoding = new UniformMarkov(noncodingOrder, *this->alphabet, *this->cnc);
+    noncoding = new UniformMarkov(noncodingOrder, *this->alphabet);
     noncoding->construct(&counts, pcounts);
 }
 
@@ -207,7 +205,7 @@ void GMS2Trainer::estimateParametersStartContext(const NumSequence &sequence, co
             throw invalid_argument("Labels and Use vector should have the same length");
     }
     
-    NonUniformCounts counts(startContextOrder, startContextLength, *this->alphabet, *this->cnc);
+    NonUniformCounts counts(startContextOrder, startContextLength, *this->alphabet);
     
     // get counts for start context model
     size_t n = 0;
@@ -234,7 +232,7 @@ void GMS2Trainer::estimateParametersStartContext(const NumSequence &sequence, co
     }
     
     // convert counts to probabilities
-    startContext = new NonUniformMarkov(startContextOrder, startContextLength, *this->alphabet, *this->cnc);
+    startContext = new NonUniformMarkov(startContextOrder, startContextLength, *this->alphabet);
     startContext->construct(&counts, pcounts);
 }
 
@@ -274,18 +272,18 @@ void GMS2Trainer::estimateParametersMotifModel(const NumSequence &sequence, cons
         
         // extract upstream of each label
         vector<NumSequence> upstreams; 
-        SequenceParser::extractUpstreamSequences(sequence, labels, *cnc, upstreamLength, upstreams, false, MIN_GENE_LEN, use);
+        SequenceParser::extractUpstreamSequences(sequence, labels, *alphabet->getCNC(), upstreamLength, upstreams, false, MIN_GENE_LEN, use);
         
         vector<NumSequence::size_type> positions;
         mfinder.findMotifs(upstreams, positions);
         
         // build RBS model
-        NonUniformCounts rbsCounts(optionsMFinder->motifOrder, optionsMFinder->width, *this->alphabet, *this->cnc);
+        NonUniformCounts rbsCounts(optionsMFinder->motifOrder, optionsMFinder->width, *this->alphabet);
         for (size_t n = 0; n < upstreams.size(); n++) {
             rbsCounts.count(upstreams[n].begin()+positions[n], upstreams[n].begin()+positions[n]+optionsMFinder->width);
         }
         
-        rbs = new NonUniformMarkov(optionsMFinder->motifOrder, optionsMFinder->width, *this->alphabet, *this->cnc);
+        rbs = new NonUniformMarkov(optionsMFinder->motifOrder, optionsMFinder->width, *this->alphabet);
         rbs->construct(&rbsCounts, optionsMFinder->pcounts);
         
         // build spacer distribution
@@ -439,12 +437,12 @@ void GMS2Trainer::estimateParametersMotifModel_Promoter(const NumSequence &seque
     long long upstr_min_value = MIN_UPSTR_LEN_FGIO;
     NumSequence::size_type upstrLength = this->upstreamLength - upstr_min_value;
     
-    SequenceParser::extractStartContextSequences(sequence, useLabels, *this->cnc, -this->upstreamLength, upstrLength, upstreamsFGIO_style);
+    SequenceParser::extractStartContextSequences(sequence, useLabels, *alphabet->getCNC(), -this->upstreamLength, upstrLength, upstreamsFGIO_style);
     
     if (UPSTR_LEN_NFGIO == 0)
         upstreamsNFGIO_style = upstreamsFGIO_style;
     else
-        SequenceParser::extractStartContextSequences(sequence, useLabels, *this->cnc, -this->UPSTR_LEN_NFGIO, this->UPSTR_LEN_NFGIO, upstreamsNFGIO_style);
+        SequenceParser::extractStartContextSequences(sequence, useLabels, *alphabet->getCNC(), -this->UPSTR_LEN_NFGIO, this->UPSTR_LEN_NFGIO, upstreamsNFGIO_style);
     
     
     vector<GeneStat> status = separateLabelsViaOperonStatus(useLabels, FGIO_DIST_THRESH, NFGIO_DIST_THRES);
@@ -497,12 +495,12 @@ void GMS2Trainer::estimateParametersMotifModel_Promoter(const NumSequence &seque
     mfinder.findMotifs(upstreamsFGIO_noN, positionsFGIO);
     
     // build Promoter model
-    NonUniformCounts promoterCounts(optionsMFinder->motifOrder, optionsMFinder->width, *this->alphabet, *this->cnc);
+    NonUniformCounts promoterCounts(optionsMFinder->motifOrder, optionsMFinder->width, *this->alphabet);
     for (size_t n = 0; n < upstreamsFGIO_noN.size(); n++) {
         promoterCounts.count(upstreamsFGIO_noN[n].begin()+positionsFGIO[n], upstreamsFGIO_noN[n].begin()+positionsFGIO[n]+optionsMFinder->width);
     }
     
-    promoter = new NonUniformMarkov(optionsMFinder->motifOrder, optionsMFinder->width, *this->alphabet, *this->cnc);
+    promoter = new NonUniformMarkov(optionsMFinder->motifOrder, optionsMFinder->width, *this->alphabet);
     promoter->construct(&promoterCounts, optionsMFinder->pcounts);
     
     // build spacer distribution
@@ -522,12 +520,12 @@ void GMS2Trainer::estimateParametersMotifModel_Promoter(const NumSequence &seque
     
     
     // build RBS model
-    NonUniformCounts rbsCounts(optionsMFinder->motifOrder, optionsMFinder->width, *this->alphabet, *this->cnc);
+    NonUniformCounts rbsCounts(optionsMFinder->motifOrder, optionsMFinder->width, *this->alphabet);
     for (size_t n = 0; n < upstreamsNFGIO_noN.size(); n++) {
         rbsCounts.count(upstreamsNFGIO_noN[n].begin()+positionsNFGIO[n], upstreamsNFGIO_noN[n].begin()+positionsNFGIO[n]+optionsMFinder->width);
     }
     
-    rbs = new NonUniformMarkov(optionsMFinder->motifOrder, optionsMFinder->width, *this->alphabet, *this->cnc);
+    rbs = new NonUniformMarkov(optionsMFinder->motifOrder, optionsMFinder->width, *this->alphabet);
     rbs->construct(&rbsCounts, optionsMFinder->pcounts);
     
     // build spacer distribution

@@ -18,7 +18,7 @@ using namespace std;
 using namespace gmsuite;
 
 // Constructor:
-PeriodicMarkov::PeriodicMarkov(unsigned order, size_t period, const AlphabetDNA &alph, const CharNumConverter &cnc) : Markov(order, alph, cnc) {
+PeriodicMarkov::PeriodicMarkov(unsigned order, size_t period, const NumAlphabetDNA &alph) : Markov(order, alph) {
     this->period = period;
     initialize();
 }
@@ -28,7 +28,7 @@ PeriodicMarkov::PeriodicMarkov(unsigned order, size_t period, const AlphabetDNA 
 void PeriodicMarkov::construct(const vector<NumSequence> &sequences, int pcount) {
     
     // get counts
-    PeriodicCounts counts (order, period, *alphabet, *cnc);
+    PeriodicCounts counts (order, period, *alphabet);
     counts.construct(sequences);
     
     // construct probabilities from counts
@@ -199,7 +199,7 @@ string PeriodicMarkov::toString() const {
         NumSequence numSeq = this->indexToNumSequence(idx, order+1);
         
         // convert numeric sequence to string sequence and add to ssm
-        ssm << cnc->convert(numSeq.begin(), numSeq.end());
+        ssm << alphabet->getCNC()->convert(numSeq.begin(), numSeq.end());
 
         // now that we have the key, loop over each frame and print the probability of that key in the frame
         for (size_t p = 0; p < period; p++) {

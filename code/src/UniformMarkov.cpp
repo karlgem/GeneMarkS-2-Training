@@ -24,7 +24,7 @@ using namespace std;
 using namespace gmsuite;
 
 // Constructor:
-UniformMarkov::UniformMarkov(unsigned order, const AlphabetDNA &alph, const CharNumConverter &cnc) : Markov(order, alph, cnc) {
+UniformMarkov::UniformMarkov(unsigned order, const NumAlphabetDNA &alph) : Markov(order, alph) {
     initialize();
 }
 
@@ -32,7 +32,7 @@ UniformMarkov::UniformMarkov(unsigned order, const AlphabetDNA &alph, const Char
 // Construct the model probabilities from a list of sequences
 void UniformMarkov::construct(const vector<NumSequence> &sequences, int pcount) {
     // get counts
-    UniformCounts counts(order, *alphabet, *cnc);
+    UniformCounts counts(order, *alphabet);
     counts.construct(sequences);
     
     // construct probabilities from counts
@@ -183,7 +183,7 @@ string UniformMarkov::toString() const {
         NumSequence numSeq = this->indexToNumSequence(idx, this->order+1);
         
         // convert numeric sequence to string sequence and add to ssm
-        ssm << cnc->convert(numSeq.begin(), numSeq.end());
+        ssm << alphabet->getCNC()->convert(numSeq.begin(), numSeq.end());
         
         // add probability of current index
         ssm << "\t" << this->jointProbs[order][idx] << endl;

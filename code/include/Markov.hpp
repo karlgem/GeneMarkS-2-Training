@@ -13,7 +13,7 @@
 
 #include "Counts.hpp"
 #include "NumSequence.hpp"
-#include "AlphabetDNA.hpp"
+#include "NumAlphabetDNA.hpp"
 
 namespace gmsuite {
     
@@ -35,7 +35,7 @@ namespace gmsuite {
          *
          * @throw invalid_argument if alph is NULL
          */
-        Markov(unsigned order, const AlphabetDNA &alph, const CharNumConverter &cnc);
+        Markov(unsigned order, const NumAlphabetDNA &alph);
         
         
         /**
@@ -83,7 +83,7 @@ namespace gmsuite {
          *
          * @return the model's alphabet
          */
-        const AlphabetDNA* getAlphabet() const;
+        const NumAlphabetDNA* getAlphabet() const;
         
         
         /**
@@ -107,7 +107,7 @@ namespace gmsuite {
     protected:
         
         unsigned order;                             /**< the model's order */
-        const AlphabetDNA* alphabet;                /**< the alphabet */
+        const NumAlphabetDNA* alphabet;                /**< the alphabet */
         const CharNumConverter *cnc;                /**< the char-number converter; for reverse complementation */
         
         /**

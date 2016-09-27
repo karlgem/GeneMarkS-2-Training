@@ -101,6 +101,7 @@ namespace gmsuite {
         const_iterator beginInvalid() const { return alphAmbiguous.begin(); }        /**< Begin iterator over ambiguous characters */
         const_iterator endInvalid() const { return alphAmbiguous.end(); }            /**< Begin const iterator over ambiguous characters */
         
+        const CharNumConverter* getCNC() const;
         
     private:
         const CharNumConverter *cnc;

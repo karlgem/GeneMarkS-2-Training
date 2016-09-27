@@ -90,7 +90,9 @@ NumAlphabetDNA::element_t NumAlphabetDNA::complement(element_t c) const {
 
 
 
-
+const CharNumConverter* NumAlphabetDNA::getCNC() const {
+    return cnc;
+}
 
 
 

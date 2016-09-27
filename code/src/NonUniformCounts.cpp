@@ -14,7 +14,7 @@ using namespace std;;
 using namespace gmsuite;
 
 // constructor
-NonUniformCounts::NonUniformCounts(unsigned order, size_t length, const AlphabetDNA &alph, const CharNumConverter &cnc) : Counts(order, alph, cnc) {
+NonUniformCounts::NonUniformCounts(unsigned order, size_t length, const NumAlphabetDNA &alph) : Counts(order, alph) {
     
     if (length == 0)
         throw std::invalid_argument("Length cannot be 0.");
@@ -98,7 +98,7 @@ void NonUniformCounts::updateCounts(NumSequence::const_iterator begin, NumSequen
     for (size_t i = 0; i <= order; i++) {
         wordIndex <<= elementEncodingSize;      // create space at lower bits for a new element
         if (reverseComplement)
-            wordIndex += cnc->complement(*currentElement);           // complement element then add to the wordIndex
+            wordIndex += alphabet->complement(*currentElement);           // complement element then add to the wordIndex
         else
             wordIndex += *currentElement;                           // add element to the wordIndex
 
@@ -142,7 +142,7 @@ void NonUniformCounts::updateCounts(NumSequence::const_iterator begin, NumSequen
         // add new element to the wordIndex
         wordIndex <<= elementEncodingSize;      // create space at lower bits for a new element
         if (reverseComplement)
-            wordIndex += cnc->complement(*currentElement);           // complement element then add to the wordIndex
+            wordIndex += alphabet->complement(*currentElement);           // complement element then add to the wordIndex
         else
             wordIndex += *currentElement;                           // add element to the wordIndex
         

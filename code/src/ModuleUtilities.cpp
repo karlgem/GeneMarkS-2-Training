@@ -168,12 +168,13 @@ void ModuleUtilities::runStartModelInfo() {
     // create numeric sequence
     AlphabetDNA alph;
     CharNumConverter cnc (&alph);
+    NumAlphabetDNA numAlph(alph, cnc);
     
     NumSequence numSequence (strSequence, cnc);
     
     // run training step
     const OptionsGMS2Training* optTrain = &options.startModelInfoUtility.optionsGMS2Training;
-    GMS2Trainer trainer (optTrain->pcounts, optTrain->codingOrder, optTrain->noncodingOrder, optTrain->startContextOrder, optTrain->upstreamLength, optTrain->startContextLength, optTrain->genomeClass, optTrain->optionsMFinder, cnc, alph, optTrain->MIN_GENE_LEN);
+    GMS2Trainer trainer (optTrain->pcounts, optTrain->codingOrder, optTrain->noncodingOrder, optTrain->startContextOrder, optTrain->upstreamLength, optTrain->startContextLength, optTrain->genomeClass, optTrain->optionsMFinder, numAlph, optTrain->MIN_GENE_LEN);
     
     trainer.estimateParameters(numSequence, labels);
     
@@ -212,12 +213,12 @@ void ModuleUtilities::runStartModelInfo() {
     mfinder.findMotifs(simNonCoding, positions);
     
     // build RBS model
-    NonUniformCounts rbsCounts(optionsMFinder->motifOrder, optionsMFinder->width, alph, cnc);
+    NonUniformCounts rbsCounts(optionsMFinder->motifOrder, optionsMFinder->width, numAlph);
     for (size_t n = 0; n < simNonCoding.size(); n++) {
         rbsCounts.count(simNonCoding[n].begin()+positions[n], simNonCoding[n].begin()+positions[n]+optionsMFinder->width);
     }
     
-    NonUniformMarkov rbsSim(optionsMFinder->motifOrder, optionsMFinder->width, alph, cnc);
+    NonUniformMarkov rbsSim(optionsMFinder->motifOrder, optionsMFinder->width, numAlph);
     rbsSim.construct(&rbsCounts, optionsMFinder->pcounts);
     
     // build spacer distribution
