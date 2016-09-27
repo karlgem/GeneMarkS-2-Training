@@ -41,17 +41,17 @@ NumAlphabetDNA::NumAlphabetDNA(const AlphabetDNA &alph, const CharNumConverter &
 
 
 // Get the total number of characters in the alphabet.
-NumAlphabetDNA::size_type AlphabetDNA::size() const {
+NumAlphabetDNA::size_type NumAlphabetDNA::size() const {
     return alph.size();
 }
 
 // Get the total number of valid characters.
-NumAlphabetDNA::size_type AlphabetDNA::sizeValid() const {
+NumAlphabetDNA::size_type NumAlphabetDNA::sizeValid() const {
     return alphValid.size();
 }
 
 // Get the total number of ambiguous characters.
-NumAlphabetDNA::size_type AlphabetDNA::sizeInvalid() const {
+NumAlphabetDNA::size_type NumAlphabetDNA::sizeInvalid() const {
     return alphAmbiguous.size();
 }
 
