@@ -94,13 +94,25 @@ void NonUniformCounts::updateCounts(NumSequence::const_iterator begin, NumSequen
     
     size_t wordIndex = 0;       // contains the index of the current word (made up of order+1 elements)
     
+    size_t lifeOfN = 0;         // how many characters to skip before N "leaves" the word (e.g. ACN, CNG, NGA, GAC) <- life = 3
+    
     // loop over first "order" elements to store them as part of the initial word index
     for (size_t i = 0; i <= order; i++) {
         wordIndex <<= elementEncodingSize;      // create space at lower bits for a new element
-        if (reverseComplement)
-            wordIndex += alphabet->complement(*currentElement);           // complement element then add to the wordIndex
-        else
-            wordIndex += *currentElement;                           // add element to the wordIndex
+        
+        // if current letter is N
+        if (alphabet->isAmbiguous(*currentElement)) {
+            lifeOfN = order+1;
+        }
+        else {
+            if (lifeOfN > 0)
+                lifeOfN--;
+            
+            if (reverseComplement)
+                wordIndex += alphabet->complement(*currentElement);           // complement element then add to the wordIndex
+            else
+                wordIndex += *currentElement;                           // add element to the wordIndex
+        }
 
         
         // set the mask to read word of 'i+1' elements
@@ -112,16 +124,18 @@ void NonUniformCounts::updateCounts(NumSequence::const_iterator begin, NumSequen
         // mask to remove old junk characters (doesn't affect wordIndex here. I do it just for consistency with remaining code)
         wordIndex = wordIndex & mask;
         
-        // increment or decrement
-        if (operation == "increment") {
-            model[position][wordIndex]++;              // increment count by 1
-        }
-        else {
-            // update count at new word index
-            if (model[position][wordIndex] == 0)
-                throw out_of_range("Cannot decrement sequence counts below 0");
-            
-            model[position][wordIndex]--;              // decrement count by 1
+        if (lifeOfN == 0) {
+            // increment or decrement
+            if (operation == "increment") {
+                model[position][wordIndex]++;              // increment count by 1
+            }
+            else {
+                // update count at new word index
+                if (model[position][wordIndex] == 0)
+                    throw out_of_range("Cannot decrement sequence counts below 0");
+                
+                model[position][wordIndex]--;              // decrement count by 1
+            }
         }
 
         position++;                                 // increment position
@@ -141,23 +155,35 @@ void NonUniformCounts::updateCounts(NumSequence::const_iterator begin, NumSequen
         
         // add new element to the wordIndex
         wordIndex <<= elementEncodingSize;      // create space at lower bits for a new element
-        if (reverseComplement)
-            wordIndex += alphabet->complement(*currentElement);           // complement element then add to the wordIndex
-        else
-            wordIndex += *currentElement;                           // add element to the wordIndex
+        
+        // if current letter is N
+        if (alphabet->isAmbiguous(*currentElement)) {
+            lifeOfN = order+1;
+        }
+        else {
+            if (lifeOfN > 0)
+                lifeOfN--;
+
+            if (reverseComplement)
+                wordIndex += alphabet->complement(*currentElement);           // complement element then add to the wordIndex
+            else
+                wordIndex += *currentElement;                           // add element to the wordIndex
+        }
         
         wordIndex = wordIndex & mask;           // mask to remove old junk characters
         
-        // increment or decrement
-        if (operation == "increment") {
-            model[position][wordIndex]++;              // increment count by 1
-        }
-        else {
-            // update count at new word index
-            if (model[position][wordIndex] == 0)
-                throw out_of_range("Cannot decrement sequence counts below 0");
-            
-            model[position][wordIndex]--;              // decrement count by 1
+        if (lifeOfN == 0) {
+            // increment or decrement
+            if (operation == "increment") {
+                model[position][wordIndex]++;              // increment count by 1
+            }
+            else {
+                // update count at new word index
+                if (model[position][wordIndex] == 0)
+                    throw out_of_range("Cannot decrement sequence counts below 0");
+                
+                model[position][wordIndex]--;              // decrement count by 1
+            }
         }
         
         position++;                                // increment position
