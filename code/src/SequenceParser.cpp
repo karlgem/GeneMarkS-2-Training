@@ -20,6 +20,11 @@ void SequenceParser::extractUpstreamSequences(const NumSequence& sequence, const
     if (sequence.size() == 0)
         return;
     
+    bool useAll = true;
+    if (use.size() == labels.size()) {
+        useAll = false;
+    }
+    
     // extract upstream region, and reverse complement when on negative strand
     upstreamRegions.resize(labels.size());
     
@@ -53,6 +58,9 @@ void SequenceParser::extractUpstreamSequences(const NumSequence& sequence, const
                         skip = true;
                 }
             }
+            
+            if (!useAll && !use[n])
+                skip = true;
             
             if (skip)
                 numSkipped++;

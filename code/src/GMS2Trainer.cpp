@@ -30,6 +30,7 @@ void filterNs (const vector<NumSequence> &original, vector<NumSequence> &filtere
     
     AlphabetDNA alphabet;
     CharNumConverter cnc(&alphabet);
+    NumAlphabetDNA numAlph(alphabet, cnc);
     
     if (alphabet.sizeInvalid() > 0) {
         
@@ -37,7 +38,7 @@ void filterNs (const vector<NumSequence> &original, vector<NumSequence> &filtere
         for (size_t n = 0; n < original.size(); n++) {
             
             // if sequence does not contain N
-            if (!original[n].containsInvalid(alphabet, cnc)) {
+            if (!original[n].containsInvalid(numAlph)) {
                 filtered.push_back(original[n]);
             }
         }
@@ -246,6 +247,10 @@ void GMS2Trainer::estimateParametersMotifModel(const NumSequence &sequence, cons
             throw invalid_argument("Labels and Use vector should have the same length");
     }
     
+    AlphabetDNA alph;
+    CharNumConverter cnc(&alph);
+    NumAlphabetDNA numAlph(alph, cnc);
+    
     // build motif finder
     MotifFinder::Builder b;
     if (optionsMFinder->align == "left")
@@ -271,8 +276,14 @@ void GMS2Trainer::estimateParametersMotifModel(const NumSequence &sequence, cons
     if (genomeClass == ProkGeneStartModel::C1) {
         
         // extract upstream of each label
-        vector<NumSequence> upstreams; 
-        SequenceParser::extractUpstreamSequences(sequence, labels, *alphabet->getCNC(), upstreamLength, upstreams, false, MIN_GENE_LEN, use);
+        vector<NumSequence> upstreamsRaw;
+        SequenceParser::extractUpstreamSequences(sequence, labels, *alphabet->getCNC(), upstreamLength, upstreamsRaw, false, MIN_GENE_LEN, use);
+        
+        vector<NumSequence> upstreams;
+        for (size_t n = 0; n < upstreamsRaw.size(); n++) {
+            if (!upstreamsRaw[n].containsInvalid(numAlph))
+                upstreams.push_back(upstreamsRaw[n]);
+        }
         
         vector<NumSequence::size_type> positions;
         mfinder.findMotifs(upstreams, positions);

@@ -110,9 +110,9 @@ NumSequence::size_type NumSequence::size() const {
 
 
 
-bool NumSequence::containsInvalid(const AlphabetDNA &alph, const CharNumConverter &cnc) const {
+bool NumSequence::containsInvalid(const NumAlphabetDNA &alph) const {
     for (size_t n = 0; n < numSeq.size(); n++) {
-        if (alph.isAmbiguous(cnc.convert(numSeq[n])))
+        if (alph.isAmbiguous(numSeq[n]))
             return true;
     }
     
