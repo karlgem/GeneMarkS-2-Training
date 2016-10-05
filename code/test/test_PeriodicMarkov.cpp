@@ -21,8 +21,9 @@ TEST_CASE("Testing PeriodicMarkovs") {
     
     AlphabetDNA alph;
     CharNumConverter cnc(&alph);
+    NumAlphabetDNA numAlph(alph, cnc);
     
-    PeriodicCounts p (1, 1, alph, cnc);
+    PeriodicCounts p (1, 1, numAlph);
     
     vector<Sequence> sequences;
     sequences.push_back(Sequence("ACGT"));
@@ -36,6 +37,6 @@ TEST_CASE("Testing PeriodicMarkovs") {
     
     p.construct(numSequences);
     
-    PeriodicMarkov m(1,1,alph, cnc);
+    PeriodicMarkov m(1,1,numAlph);
     m.construct(&p);
 }

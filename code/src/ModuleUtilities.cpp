@@ -10,6 +10,7 @@
 
 #include <iostream>
 
+#include "SequenceAlgorithms.hpp"
 #include "UnivariatePDF.hpp"
 #include "NonUniformMarkov.hpp"
 #include "NonUniformCounts.hpp"
@@ -38,6 +39,8 @@ void ModuleUtilities::run() {
     }
     else if (options.utility == START_MODEL_INFO)
         runStartModelInfo();
+    else if (options.utility == MATCH_SEQ_TO_UPSTREAM)
+        runMatchSeqToUpstream();
     else            // unrecognized utility to run
         throw invalid_argument("Unknown utility function " + options.utility);
     
@@ -274,7 +277,42 @@ void ModuleUtilities::runStartModelInfo() {
 
 
 
+void ModuleUtilities::runMatchSeqToUpstream() {
+    // read sequence file
+    SequenceFile sequenceFile (options.matchSeqWithUpstream.fn_sequence, SequenceFile::READ);
+    Sequence strSequence = sequenceFile.read();
+    
+    // read label file
+    LabelFile labelFile (options.matchSeqWithUpstream.fn_label, LabelFile::READ);
+    vector<Label*> labels;
+    labelFile.read(labels);
+    
+    // create numeric sequence
+    AlphabetDNA alph;
+    CharNumConverter cnc (&alph);
+    
+    NumSequence numSequence (strSequence, cnc);
+    
+    // extract upstream regions from numeric sequence
+    vector<NumSequence> upstreams;
+    SequenceParser::extractUpstreamSequences(numSequence, labels, cnc, options.matchSeqWithUpstream.length, upstreams, options.matchSeqWithUpstream.allowOverlaps, options.matchSeqWithUpstream.minimumGeneLength);
+    
+    // get sequence to match with
+    Sequence strMatchSeq (options.matchSeqWithUpstream.matchTo);
+    NumSequence matchSeq (strMatchSeq, cnc);
+    
+    // for each upstream sequence, match it against strMatchSeq
+    for (size_t i = 0; i < upstreams.size(); i++) {
+        
+        NumSequence match = SequenceAlgorithms::longestCommonSubstring(matchSeq, upstreams[i]);
+        
+        // print match and size
+        if (match.size() > 0)
+            cout << cnc.convert(match.begin(), match.end()) << "\t" << match.size() << endl;
+    }
+    
 
+}
 
 
 
