@@ -41,6 +41,8 @@ void ModuleUtilities::run() {
         runStartModelInfo();
     else if (options.utility == MATCH_SEQ_TO_UPSTREAM)
         runMatchSeqToUpstream();
+    else if (options.utility == MATCH_SEQ_TO_NONCODING)
+        runMatchSeqToNoncoding();
     else            // unrecognized utility to run
         throw invalid_argument("Unknown utility function " + options.utility);
     
