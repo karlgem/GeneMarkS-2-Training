@@ -193,6 +193,8 @@ bool OptionsUtilities::parse(int argc, const char *argv[]) {
             po::options_description startModelInfoOptions(string(START_MODEL_INFO) + " options");
             addProcessOptions_StartModelInfo(matchSeqWithNoncoding, startModelInfoOptions);
             
+            utilDesc.add(startModelInfoOptions);
+            
             cmdline_options.add(utilDesc);
             
             // Collect all the unrecognized options from the first pass. This will include the
