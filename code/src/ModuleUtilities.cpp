@@ -316,6 +316,55 @@ void ModuleUtilities::runMatchSeqToUpstream() {
 
 
 
+void ModuleUtilities::runMatchSeqToNoncoding() {
+    
+    // read sequence file
+    SequenceFile sequenceFile (options.matchSeqWithNoncoding.fn_sequence, SequenceFile::READ);
+    Sequence strSequence = sequenceFile.read();
+    
+    // read label file
+    LabelFile labelFile (options.matchSeqWithNoncoding.fn_label, LabelFile::READ);
+    vector<Label*> labels;
+    labelFile.read(labels);
+    
+    // create numeric sequence
+    AlphabetDNA alph;
+    CharNumConverter cnc (&alph);
+    NumAlphabetDNA numAlph(alph, cnc);
+    
+    NumSequence numSequence (strSequence, cnc);
+    
+    // run training step
+    const OptionsGMS2Training* optTrain = &options.matchSeqWithNoncoding.optionsGMS2Training;
+    GMS2Trainer trainer (optTrain->pcounts, optTrain->codingOrder, optTrain->noncodingOrder, optTrain->startContextOrder, optTrain->upstreamLength, optTrain->startContextLength, optTrain->genomeClass, optTrain->optionsMFinder, numAlph, optTrain->MIN_GENE_LEN);
+    
+    trainer.estimateParameters(numSequence, labels);
+    
+    // Generate non-coding sequences
+    vector<NumSequence> simNonCoding (options.matchSeqWithNoncoding.numOfSimNonCoding);
+    
+    for (size_t n = 0; n < simNonCoding.size(); n++) {
+        simNonCoding[n] = trainer.noncoding->emit(optTrain->upstreamLength);
+    }
+    
+    
+    // get sequence to match with
+    Sequence strMatchSeq (options.matchSeqWithUpstream.matchTo);
+    NumSequence matchSeq (strMatchSeq, cnc);
+    
+    // for each upstream sequence, match it against strMatchSeq
+    for (size_t i = 0; i < simNonCoding.size(); i++) {
+        
+        NumSequence match = SequenceAlgorithms::longestCommonSubstring(matchSeq, simNonCoding[i]);
+        
+        // print match and size
+        if (match.size() > 0)
+            cout << cnc.convert(match.begin(), match.end()) << "\t" << match.size() << endl;
+    }
+    
+}
+
+
 
 
 

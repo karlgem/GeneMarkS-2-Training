@@ -31,6 +31,7 @@ namespace gmsuite {
         #define EXTRACT_UPSTR "extract_upstream"
         #define START_MODEL_INFO "start-model-info"
         #define MATCH_SEQ_TO_UPSTREAM "match-seq-to-upstream"
+        #define MATCH_SEQ_TO_NONCODING "match-seq-to-noncoding"
         
         OptionsUtilities(string mode);
         
@@ -85,8 +86,15 @@ namespace gmsuite {
         }
         matchSeqWithUpstream;
         
+        // match-seq-to-noncoding
+        struct MatchSeqWithNoncoding : public StartModelInfoUtility {
+            string matchTo;                 // the sequence to be matched
+        }
+        matchSeqWithNoncoding;
+        
         
         static void addProcessOptions_ExtractUpstream(ExtractUpstreamUtility &options, po::options_description &processOptions);
+        static void addProcessOptions_StartModelInfo(StartModelInfoUtility &options, po::options_description &processOptions);
         
     };
 }

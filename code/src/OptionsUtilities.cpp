@@ -182,6 +182,31 @@ bool OptionsUtilities::parse(int argc, const char *argv[]) {
             extractUpstreamUtility.allowOverlaps = vm.count("allow-overlap-with-cds") > 0;
             
         }
+        // Utility: Match sequence to noncoding
+        else if (utility == MATCH_SEQ_TO_NONCODING) {
+            po::options_description utilDesc(string(MATCH_SEQ_TO_NONCODING) + " options");
+            utilDesc.add_options()
+                ("match-to", po::value<string>(&matchSeqWithNoncoding.matchTo)->required(), "Sequence to be matched to")
+            ;
+            
+            // add start-model-info
+            po::options_description startModelInfoOptions(string(START_MODEL_INFO) + " options");
+            addProcessOptions_StartModelInfo(matchSeqWithNoncoding, startModelInfoOptions);
+            
+            cmdline_options.add(utilDesc);
+            
+            // Collect all the unrecognized options from the first pass. This will include the
+            // (positional) mode and command name, so we need to erase them
+            vector<string> opts = po::collect_unrecognized(parsed.options, po::include_positional);
+            opts.erase(opts.begin());       // erase mode
+            opts.erase(opts.begin());       // erase command name
+            
+            // Parse again...
+            po::store(po::command_line_parser(opts).options(utilDesc).run(), vm);
+            
+            // get remaining parameters whose values were not assigned in add_options() above
+            matchSeqWithNoncoding.allowOverlaps = vm.count("allow-overlap-with-cds") > 0;
+        }
         // empty utility
         else if (utility.empty()) {
             
@@ -225,7 +250,20 @@ void OptionsUtilities::addProcessOptions_ExtractUpstream(ExtractUpstreamUtility 
 
 
 
-
+void OptionsUtilities::addProcessOptions_StartModelInfo(StartModelInfoUtility &options, po::options_description &processOptions) {
+    
+    processOptions.add_options()
+        ("sequence,s", po::value<string>(&options.fn_sequence)->required(), "Sequence filename")
+        ("label,l", po::value<string>(&options.fn_label)->required(), "Label filename")
+        ("num-sim-noncoding", po::value<size_t>(&options.numOfSimNonCoding)->default_value(1000), "Number of simulated non-coding sequences.")
+    ;
+    
+    // gms2 training options
+    po::options_description gms2training("GMS2 Training");
+    OptionsGMS2Training::addProcessOptions(options.optionsGMS2Training, gms2training);
+    
+    processOptions.add(gms2training);
+}
 
 
 
