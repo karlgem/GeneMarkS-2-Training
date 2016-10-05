@@ -351,7 +351,7 @@ void ModuleUtilities::runMatchSeqToNoncoding() {
     
     
     // get sequence to match with
-    Sequence strMatchSeq (options.matchSeqWithUpstream.matchTo);
+    Sequence strMatchSeq (options.matchSeqWithNoncoding.matchTo);
     NumSequence matchSeq (strMatchSeq, cnc);
     
     // for each upstream sequence, match it against strMatchSeq
