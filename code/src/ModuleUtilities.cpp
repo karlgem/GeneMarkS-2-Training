@@ -327,7 +327,7 @@ void ModuleUtilities::runMatchSeqToUpstream() {
     vector<NumSequence::size_type> positions;
     mfinder.findMotifs(nonRBS, positions);
     
-    cout << "The number of remaining sequences is:" << endl;
+    cout << "The number of remaining sequences is: " << nonRBS.size() << endl;
     // print positions
     for (size_t n = 0; n < nonRBS.size(); n++) {
         cout << cnc.convert(nonRBS[n].begin() + positions[n], nonRBS[n].begin() + positions[n] + 6);
