@@ -303,6 +303,8 @@ void ModuleUtilities::runMatchSeqToUpstream() {
     Sequence strMatchSeq (options.matchSeqWithUpstream.matchTo);
     NumSequence matchSeq (strMatchSeq, cnc);
     
+    vector<NumSequence> nonRBS;
+    
     // for each upstream sequence, match it against strMatchSeq
     for (size_t i = 0; i < upstreams.size(); i++) {
         
@@ -311,7 +313,26 @@ void ModuleUtilities::runMatchSeqToUpstream() {
         // print match and size
         if (match.size() > 0)
             cout << cnc.convert(match.begin(), match.end()) << "\t" << match.size() << endl;
+        
+        if (match.size() <= 2)
+            nonRBS.push_back(upstreams[i]);
     }
+    
+    
+    MotifFinder::Builder b;
+    b.setAlign(MFinderModelParams::RIGHT);
+    
+    MotifFinder mfinder = b.build();
+    
+    vector<NumSequence::size_type> positions;
+    mfinder.findMotifs(nonRBS, positions);
+    
+    // print positions
+    for (size_t n = 0; n < nonRBS.size(); n++) {
+        cout << cnc.convert(nonRBS[n].begin() + positions[n], nonRBS[n].begin() + positions[n] + 6);
+        cout << "\t" << positions[n] + 1 << "\t" << nonRBS[n].size() << endl;
+    }
+
     
 
 }
