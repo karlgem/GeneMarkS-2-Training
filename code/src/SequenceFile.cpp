@@ -8,6 +8,10 @@
 
 #include "SequenceFile.hpp"
 #include <assert.h>
+
+#include <fstream>
+
+using namespace std;
 using namespace gmsuite;
 
 
@@ -39,8 +43,11 @@ SequenceFile::SequenceFile(string path, access_t access, format_t format) {
     // open new file
     openfile();
     
+    if (this->format == AUTO && access == WRITE)
+        this->format = PLAIN;
+    
     // if format not specified (i.e. AUTO), try to guess what it is
-    if (this->format == AUTO)
+    if (this->format == AUTO && access == READ)
         this->format = detectFormat();
     
     
@@ -70,9 +77,10 @@ SequenceFile::format_t SequenceFile::getFormat() const {
 
 void SequenceFile::write(const vector<Sequence> &sequences) const {
     
-    assert(false);                      // don't use: still not complete
     if (this->format == FASTA)
         write_fasta(sequences);
+    else if (this->format == PLAIN)
+        write_plain(sequences);
 }
 
 // read sequences from file
@@ -81,6 +89,8 @@ void SequenceFile::read(vector<Sequence> &output) const {
     // read based of format set
     if (this->format == FASTA)
         read_fasta(output);
+    else if (this->format == PLAIN)
+        read_plain(output);
     
 }
 
@@ -124,17 +134,16 @@ void SequenceFile::openfile() {
         mfile.close();
     }
     
-    // open file
-    mfile.open(params);
-    
     // reset pointers
     if (access == READ) {
+        // open file
+        mfile.open(params);
         begin_read = mfile.const_data();
         end_read = begin_read + mfile.size();
     }
     else if (access == WRITE) {
-        begin_write = mfile.data();
-        end_write = begin_write + mfile.size();
+//        begin_write = mfile.data();
+//        end_write = begin_write + mfile.size();
     }
     
     
@@ -145,14 +154,30 @@ void SequenceFile::openfile() {
 
 void SequenceFile::write_fasta(const vector<Sequence> &sequences) const {
     
+    // open a file using fstream
+    ofstream out;
+    out.open(params.path.c_str());
     
     for (size_t n = 0; n < sequences.size(); n++) {
-        
-        // write fasta definition
-        
+        out << ">" << sequences[n].getMetaData() << endl;       // write fasta definition
+        out << sequences[n].toString() << endl;                 // write sequence
     }
+    
+    out.close();
 }
 
+
+void SequenceFile::write_plain(const vector<Sequence> &sequences) const {
+    // open a file using fstream
+    ofstream out;
+    out.open(params.path.c_str());
+    
+    for (size_t n = 0; n < sequences.size(); n++) {
+        out << sequences[n].toString() << endl;                 // write sequence
+    }
+    
+    out.close();
+}
 
 
 
@@ -207,7 +232,39 @@ void SequenceFile::read_fasta(vector<Sequence> &output) const{
 
 
 
+void SequenceFile::read_plain(vector<Sequence> &output) const {
+    
+    string seq;        // stores single sequence
+    
+    output.clear();         // clear output vector (sanity check)
+    
+    // point to start of data
+    const char *  current = begin_read;
+    
+    // loop over all file
+    while (current != end_read) {
+        
+        // skip all newline characters
+        while (current != end_read && isspace(*current))
+            current++;
+        
+        // if reached end of file, break
+        if (current == end_read)
+            break;
+        
+        // otherwise, read line
+        const char* startOfLine = current;
+        while (current != end_read && *current != '\n' && *current != '\r')
+            current++;
+        
+        const char* endOfLine = current;
+        
+        // create new sequence and add it to the output vector
+        output.push_back(Sequence(string(startOfLine, endOfLine)));
+    }
 
+    
+}
 
 
 

@@ -1,12 +1,12 @@
 //
-//  OptionsGMS2.cpp
+//  OptionsMFinder.cpp
 //  GeneMark Suite
 //
-//  Created by Karl Gemayel on 8/15/16.
+//  Created by Karl Gemayel on 9/5/16.
 //  Copyright © 2016 Karl Gemayel. All rights reserved.
 //
 
-#include "OptionsGMS2.hpp"
+#include "OptionsMFinder.hpp"
 
 #include <vector>
 #include <fstream>
@@ -17,13 +17,13 @@ using namespace std;
 using namespace gmsuite;
 namespace po = boost::program_options;
 
-OptionsGMS2::OptionsGMS2(string mode) : Options(mode), optionsMFinder(mode) {
+OptionsMFinder::OptionsMFinder(string mode) : Options(mode) {
     
 }
 
+
 // parse CMD options
-bool OptionsGMS2::parse(int argc, const char *argv[]) {
-    
+bool OptionsMFinder::parse(int argc, const char *argv[]) {
     
     try {
         vector<string> config_fnames;                           // holds names of all configuration files (specified by user)
@@ -32,18 +32,25 @@ bool OptionsGMS2::parse(int argc, const char *argv[]) {
         // only on the command line (CML)
         po::options_description generic("General Options");
         generic.add_options()
-            ("version", "Print version string")
-            ("help,h", "Display help message")
-            ("config", po::value(&config_fnames), "Config file where options may be specified (can be specified more than once)")
+        ("version", "Print version string")
+        ("help,h", "Display help message")
+        ("config", po::value(&config_fnames), "Config file where options may be specified (can be specified more than once)")
         ;
         
         // Declare a group of options that will be allowed
         // on both CML and in the config files
         po::options_description config("Configuration");
         config.add_options()
-            ("verbose,v", po::value<int>(&verbose)->default_value(0), "Verbose level")
-            ("CLASS_PROB_THRESHOLD", po::value<double>(&CLASS_PROB_THRESHOLD)->default_value(0.1), "Class probability threshold")
-            ("CLASS_DIST_THRESHOLD", po::value<size_t>(&CLASS_DIST_THRESHOLD)->default_value(22), "Class distance threshold")
+        ("verbose,v", po::value<int>(&verbose)->default_value(0), "Verbose level")
+        ("width,w", po::value<unsigned>(&width)->default_value(6), "Width of motif")
+        ("motif-order,o", po::value<unsigned>(&motifOrder)->default_value(0), "Order of the motif's Markov model")
+        ("bkgd-order,b", po::value<unsigned>(&bkgdOrder)->default_value(0), "Order of the background's Markov model")
+        ("align", po::value<string>(&align)->default_value("none"), "If set, positional information is considered by the model")
+        ("tries", po::value<unsigned>(&tries)->default_value(10), "Number of restarts")
+        ("max-iter", po::value<unsigned>(&maxIter)->default_value(60), "Number of Gibbs iterations per single try")
+        ("max-em-iter", po::value<unsigned>(&maxEMIter)->default_value(10), "Number of EM iterations per single try")
+        ("shift-every", po::value<unsigned>(&shiftEvery)->default_value(10), "Number of iterations before shifting motif")
+        ("pcount", po::value<double>(&pcounts)->default_value(1), "Pseudocounts")
         ;
         
         // Create set of hidden arguments (which can correspond to positional arguments). This is used
@@ -51,8 +58,8 @@ bool OptionsGMS2::parse(int argc, const char *argv[]) {
         // Hidden options are allowed in both CML and config files
         po::options_description hidden;
         hidden.add_options()
-            ("mode", po::value<string>(&mode)->required(), "Program Mode")
-            ("fname", po::value<string>(&fname_in)->required(), "Name of sequence file");
+        ("mode", po::value<string>(&mode)->required(), "Program Mode")
+        ("fname", po::value<string>(&fname_in)->required(), "Name of sequence file");
         ;
         
         // Congregate options into further groups
@@ -123,7 +130,52 @@ bool OptionsGMS2::parse(int argc, const char *argv[]) {
         return false;
     }
     
+    
     return true;
+    
+    
+}
+
+
+
+void OptionsMFinder::addProcessOptions(OptionsMFinder &optionsMFinder, po::options_description &processOptions) {
+    
+    processOptions.add_options()
+    ("width,w", po::value<unsigned>(&optionsMFinder.width)->default_value(6), "Width of motif")
+    ("motif-order,o", po::value<unsigned>(&optionsMFinder.motifOrder)->default_value(0), "Order of the motif's Markov model")
+    ("bkgd-order,b", po::value<unsigned>(&optionsMFinder.bkgdOrder)->default_value(0), "Order of the background's Markov model")
+    ("align", po::value<string>(&optionsMFinder.align)->default_value("none"), "If set, positional information is considered by the model")
+    ("tries", po::value<unsigned>(&optionsMFinder.tries)->default_value(10), "Number of restarts")
+    ("max-iter", po::value<unsigned>(&optionsMFinder.maxIter)->default_value(60), "Number of Gibbs iterations per single try")
+    ("max-em-iter", po::value<unsigned>(&optionsMFinder.maxEMIter)->default_value(10), "Number of EM iterations per single try")
+    ("shift-every", po::value<unsigned>(&optionsMFinder.shiftEvery)->default_value(10), "Number of iterations before shifting motif")
+    ("pcount", po::value<double>(&optionsMFinder.pcounts)->default_value(1), "Pseudocounts")
+    ;
 
     
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

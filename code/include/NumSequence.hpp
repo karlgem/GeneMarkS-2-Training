@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "Sequence.hpp"
+#include "NumAlphabetDNA.hpp"
 #include "CharNumConverter.hpp"
 
 using std::vector;
@@ -42,8 +43,6 @@ namespace gmsuite {
         typedef vector<int>::size_type size_type;                       // type for numeric sequence size
         typedef CharNumConverter::element_t num_t;                      /**< define generic type for number @see CharNumConverter */
         
-        vector<num_t> numSeq;                                           /**< Numeric sequence */
-        
         /**
          * Default constructor: create an empty numeric sequence.
          */
@@ -59,6 +58,15 @@ namespace gmsuite {
         
         
         /**
+         * Constructor: create a numeric sequence a vector of num_t elements. This simply
+         * copies the vector into the NumSequence class.
+         *
+         * @param numSequence the vector of num_t elements constituting the sequence
+         */
+        NumSequence(const vector<num_t> &numSequence);
+        
+        
+        /**
          * Access an element from a const numeric sequence (i.e. cannot be modified)
          *
          * @param idx the index of the element
@@ -71,9 +79,57 @@ namespace gmsuite {
          * @param idx the index of the element
          */
         int& operator[](size_type idx);
+        
+        /**
+         * Get the size of the sequence (equivalent to sequence length()).
+         *
+         * @return the size of the sequence.
+         */
+        virtual size_type size() const;
+        
+        
+        /**
+         * Get a subsequence
+         *
+         * @param n the start index of the subsequence (inclusive)
+         * @param length the length of the subsequence
+         *
+         * @exception std::invalid_argument thrown if n is larger than the sequence's
+         * length, or if n + length is larger than the sequence's length.
+         */
+        NumSequence subseq(size_type n, size_type length) const;
+        
+        
+        /**
+         * Reverse complement the numeric sequence
+         *
+         * @param cnc the char-num converter that holds the DNA-complement information for the 
+         * alphabet used by this sequence.
+         */
+        void reverseComplement(const CharNumConverter &cnc);
+        
+        
+        bool containsInvalid(const NumAlphabetDNA &alph) const;
+        
+        
+        /*************** Sequence Iterators *******************/
+        
+        // Iterators
+        typedef vector<num_t>::iterator iterator;                   /**< Sequence iterator */
+        
+        virtual iterator begin();                                   /**< Start of iterator */
+        virtual iterator end();                                     /**< End of iterator   */
+        
+        
+        // Const Iterators
+        typedef vector<num_t>::const_iterator const_iterator;       /**< Const sequence iterator */
+        
+        virtual const_iterator begin() const;                       /**< Start of const iterator */
+        virtual const_iterator end() const;                         /**< End of const iterator   */
     
     private:
-
+        
+        vector<num_t> numSeq;                                           /**< Numeric sequence */
     };
     
 }

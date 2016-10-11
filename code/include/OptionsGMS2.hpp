@@ -11,13 +11,11 @@
 
 #include <stdio.h>
 #include <string>
-#include <boost/program_options.hpp>
 
 #include "Options.hpp"
+#include "OptionsMFinder.hpp"
 
 using std::string;
-
-namespace po = boost::program_options;
 
 namespace gmsuite {
     
@@ -30,7 +28,7 @@ namespace gmsuite {
         
     public:
         
-        OptionsGMS2(string mode) { this->mode = mode; }
+        OptionsGMS2(string mode);
         
         /**
          * Parse the command-line words into arguments
@@ -45,7 +43,11 @@ namespace gmsuite {
     // Below, create a variable for each parameter, to make for easy access
     public:
         
+        OptionsMFinder optionsMFinder;  /**< Option for motif finder */
         string fname_in;                /**< Input filename containing DNA sequence */
+        size_t upstrLength;             /**< Length of upstream sequences for motif search */
+        double CLASS_PROB_THRESHOLD;    /**< Probability threshold for deciding class type */
+        size_t CLASS_DIST_THRESHOLD;    /**< Distance threshold for deciding class type */
     };
 }
 

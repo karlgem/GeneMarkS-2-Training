@@ -1,0 +1,103 @@
+//
+//  OptionsUtilities.hpp
+//  GeneMark Suite
+//
+//  Created by Karl Gemayel on 9/15/16.
+//  Copyright © 2016 Karl Gemayel. All rights reserved.
+//
+
+#ifndef OptionsUtilities_hpp
+#define OptionsUtilities_hpp
+
+#include <stdio.h>
+#include <string>
+
+#include "Options.hpp"
+#include "OptionsGMS2Training.hpp"
+
+using std::string;
+
+namespace gmsuite {
+    
+    /**
+     * @class OptionsUtilities
+     * @brief A class that deals with parsing command-line options for Utilities module
+     */
+    class OptionsUtilities : public Options {
+        
+        
+    public:
+        
+        #define EXTRACT_UPSTR "extract_upstream"
+        #define START_MODEL_INFO "start-model-info"
+        #define MATCH_SEQ_TO_UPSTREAM "match-seq-to-upstream"
+        #define MATCH_SEQ_TO_NONCODING "match-seq-to-noncoding"
+        
+        OptionsUtilities(string mode);
+        
+        /**
+         * Parse the command-line words into arguments
+         *
+         * @param argc the number of command-line words
+         * @param argv a vector of the words
+         * @return true if the parse is successful, false otherwise
+         */
+        bool parse(int argc, const char *argv[]);
+        
+        
+        // Below, create a variable for each parameter, to make for easy access
+    public:
+        
+        string utility;             // the chosen utility
+        
+        // below you'll fine utility-based options
+        
+        // generic options
+        struct GenericOptions {
+            bool debug;
+        };
+        
+        // extract-upstream options
+        struct ExtractUpstreamUtility : public GenericOptions {
+            string fn_sequence;             // sequence filename
+            string fn_label;                // label filename
+            string fn_output;               // output filename
+            size_t length;                  // length of upstream regions
+            bool allowOverlaps;             // allow upstream region to overlap coding region
+            size_t minimumGeneLength;       // minimum gene length associated with upstream
+        }
+        extractUpstreamUtility;
+        
+        
+        // start-model-info options
+        struct StartModelInfoUtility : public GenericOptions {
+            string fn_sequence;             // sequence filename
+            string fn_label;                // label filename
+            bool allowOverlaps;             // allow upstream region to overlap coding region
+            size_t numOfSimNonCoding;       // number of simulated non-coding sequences
+            OptionsGMS2Training optionsGMS2Training;            // options for running gms2 training
+        }
+        startModelInfoUtility;
+        
+        
+        // match-seq-with-upstream
+        struct MatchSeqWithUpstream : public ExtractUpstreamUtility {
+            string matchTo;                 // the sequence to be matched
+        }
+        matchSeqWithUpstream;
+        
+        // match-seq-to-noncoding
+        struct MatchSeqWithNoncoding : public StartModelInfoUtility {
+            string matchTo;                 // the sequence to be matched
+        }
+        matchSeqWithNoncoding;
+        
+        
+        static void addProcessOptions_ExtractUpstream(ExtractUpstreamUtility &options, po::options_description &processOptions);
+        static void addProcessOptions_StartModelInfo(StartModelInfoUtility &options, po::options_description &processOptions);
+        
+    };
+}
+
+
+#endif /* OptionsUtilities_hpp */

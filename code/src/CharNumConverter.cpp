@@ -111,6 +111,9 @@ void CharNumConverter::complement(const seq_t &original, seq_t &result) const {
     }
 }
 
+CharNumConverter::element_t CharNumConverter::complement(element_t original) const {
+    return complementDNA.at(original);
+}
 
 
 
