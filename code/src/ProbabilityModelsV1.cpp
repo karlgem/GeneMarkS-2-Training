@@ -19,7 +19,7 @@ using namespace gmsuite;
 /**
  * Constructor
  */
-ProbabilityModelsV1::ProbabilityModelsV1(const AlphabetDNA &alphabet, NumSequence::size_type width, unsigned motifOrder, unsigned backOrder, double pcounts, MFinderModelParams::align_t align) {
+ProbabilityModelsV1::ProbabilityModelsV1(const NumAlphabetDNA &alphabet, NumSequence::size_type width, unsigned motifOrder, unsigned backOrder, double pcounts, MFinderModelParams::align_t align) {
     this->alphabet = &alphabet;
     this->width = width;
     this->motifOrder = motifOrder;
@@ -28,10 +28,9 @@ ProbabilityModelsV1::ProbabilityModelsV1(const AlphabetDNA &alphabet, NumSequenc
     this->align = align;
     
     // allocate models
-    cnc = new CharNumConverter(this->alphabet);
-    mMotif = new NonUniformMarkov(motifOrder, width, *this->alphabet, *cnc);
-    mMotifCounts = new NonUniformCounts(motifOrder, width, alphabet, *cnc);
-    mBack = new UniformMarkov(motifOrder, alphabet, *cnc);
+    mMotif = new NonUniformMarkov(motifOrder, width, *this->alphabet);
+    mMotifCounts = new NonUniformCounts(motifOrder, width, alphabet);
+    mBack = new UniformMarkov(motifOrder, alphabet);
     
     // if alignment is set, create length distribution
     positionDistribution = NULL;
@@ -53,7 +52,6 @@ ProbabilityModelsV1::ProbabilityModelsV1(const ProbabilityModelsV1 &obj) {
     positionCounts = obj.positionCounts;
     
     // deep copy
-    cnc = new CharNumConverter(*obj.cnc);
     mMotif = new NonUniformMarkov(*obj.mMotif);
     mMotifCounts = new NonUniformCounts(*obj.mMotifCounts);
     mBack = new UniformMarkov(*obj.mBack);
@@ -76,8 +74,6 @@ ProbabilityModelsV1& ProbabilityModelsV1::operator=(const ProbabilityModelsV1& o
     positionCounts = other.positionCounts;
     
     // deep copy
-    if (cnc != NULL)
-        delete cnc;
     if (mMotif != NULL)
         delete mMotif;
     if (mMotifCounts != NULL)
@@ -87,7 +83,6 @@ ProbabilityModelsV1& ProbabilityModelsV1::operator=(const ProbabilityModelsV1& o
     if (positionDistribution != NULL)
         delete positionDistribution;
     
-    cnc = new CharNumConverter(*other.cnc);
     mMotif = new NonUniformMarkov(*other.mMotif);
     mMotifCounts = new NonUniformCounts(*other.mMotifCounts);
     mBack = new UniformMarkov(*other.mBack);
@@ -102,7 +97,6 @@ ProbabilityModelsV1& ProbabilityModelsV1::operator=(const ProbabilityModelsV1& o
  * Destructor
  */
 ProbabilityModelsV1::~ProbabilityModelsV1() {
-    delete cnc;
     delete mMotif;
     delete mBack;
     delete mMotifCounts;

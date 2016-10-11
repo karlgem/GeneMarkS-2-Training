@@ -34,13 +34,15 @@ TEST_CASE("Testing toString of Markovs") {
     for (size_t n = 0; n < sequences.size(); n++)
         numSequences.push_back(NumSequence(sequences[n], cnc));
     
+    NumAlphabetDNA numAlph(alph, cnc);
+    
     SECTION("Uniform") {
         
-        UniformMarkov m0 (0, alph, cnc);
+        UniformMarkov m0 (0, numAlph);
         m0.construct(numSequences);
         cout << m0.toString() << endl;
         
-        UniformMarkov m1 (1, alph, cnc);
+        UniformMarkov m1 (1, numAlph);
         m1.construct(numSequences);
         cout << m1.toString() << endl;
     }
@@ -48,11 +50,11 @@ TEST_CASE("Testing toString of Markovs") {
     SECTION("NonUniform") {
         
         size_t length = numSequences[0].size();
-        NonUniformMarkov m0 (0, length, alph, cnc);
+        NonUniformMarkov m0 (0, length, numAlph);
         m0.construct(numSequences);
         cout << m0.toString() << endl;
         
-        NonUniformMarkov m1 (1, length, alph, cnc);
+        NonUniformMarkov m1 (1, length, numAlph);
         m1.construct(numSequences);
         cout << m1.toString() << endl;
     }
@@ -60,11 +62,11 @@ TEST_CASE("Testing toString of Markovs") {
     SECTION("Periodic") {
         
         size_t period = 3; //numSequences[0].size();
-        PeriodicMarkov m0 (0, period, alph, cnc);
+        PeriodicMarkov m0 (0, period, numAlph);
         m0.construct(numSequences);
         cout << m0.toString() << endl;
         
-        PeriodicMarkov m1 (2, period, alph, cnc);
+        PeriodicMarkov m1 (2, period, numAlph);
         m1.construct(numSequences);
         cout << m1.toString() << endl;
     }

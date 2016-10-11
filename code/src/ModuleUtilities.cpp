@@ -10,6 +10,7 @@
 
 #include <iostream>
 
+#include "SequenceAlgorithms.hpp"
 #include "UnivariatePDF.hpp"
 #include "NonUniformMarkov.hpp"
 #include "NonUniformCounts.hpp"
@@ -38,6 +39,10 @@ void ModuleUtilities::run() {
     }
     else if (options.utility == START_MODEL_INFO)
         runStartModelInfo();
+    else if (options.utility == MATCH_SEQ_TO_UPSTREAM)
+        runMatchSeqToUpstream();
+    else if (options.utility == MATCH_SEQ_TO_NONCODING)
+        runMatchSeqToNoncoding();
     else            // unrecognized utility to run
         throw invalid_argument("Unknown utility function " + options.utility);
     
@@ -168,12 +173,13 @@ void ModuleUtilities::runStartModelInfo() {
     // create numeric sequence
     AlphabetDNA alph;
     CharNumConverter cnc (&alph);
+    NumAlphabetDNA numAlph(alph, cnc);
     
     NumSequence numSequence (strSequence, cnc);
     
     // run training step
     const OptionsGMS2Training* optTrain = &options.startModelInfoUtility.optionsGMS2Training;
-    GMS2Trainer trainer (optTrain->pcounts, optTrain->codingOrder, optTrain->noncodingOrder, optTrain->startContextOrder, optTrain->upstreamLength, optTrain->startContextLength, optTrain->genomeClass, optTrain->optionsMFinder, cnc, alph, optTrain->MIN_GENE_LEN);
+    GMS2Trainer trainer (optTrain->pcounts, optTrain->codingOrder, optTrain->noncodingOrder, optTrain->startContextOrder, optTrain->upstreamLength, optTrain->startContextLength, optTrain->genomeClass, optTrain->optionsMFinder, numAlph, optTrain->MIN_GENE_LEN);
     
     trainer.estimateParameters(numSequence, labels);
     
@@ -212,12 +218,12 @@ void ModuleUtilities::runStartModelInfo() {
     mfinder.findMotifs(simNonCoding, positions);
     
     // build RBS model
-    NonUniformCounts rbsCounts(optionsMFinder->motifOrder, optionsMFinder->width, alph, cnc);
+    NonUniformCounts rbsCounts(optionsMFinder->motifOrder, optionsMFinder->width, numAlph);
     for (size_t n = 0; n < simNonCoding.size(); n++) {
         rbsCounts.count(simNonCoding[n].begin()+positions[n], simNonCoding[n].begin()+positions[n]+optionsMFinder->width);
     }
     
-    NonUniformMarkov rbsSim(optionsMFinder->motifOrder, optionsMFinder->width, alph, cnc);
+    NonUniformMarkov rbsSim(optionsMFinder->motifOrder, optionsMFinder->width, numAlph);
     rbsSim.construct(&rbsCounts, optionsMFinder->pcounts);
     
     // build spacer distribution
@@ -273,8 +279,114 @@ void ModuleUtilities::runStartModelInfo() {
 
 
 
+void ModuleUtilities::runMatchSeqToUpstream() {
+    // read sequence file
+    SequenceFile sequenceFile (options.matchSeqWithUpstream.fn_sequence, SequenceFile::READ);
+    Sequence strSequence = sequenceFile.read();
+    
+    // read label file
+    LabelFile labelFile (options.matchSeqWithUpstream.fn_label, LabelFile::READ);
+    vector<Label*> labels;
+    labelFile.read(labels);
+    
+    // create numeric sequence
+    AlphabetDNA alph;
+    CharNumConverter cnc (&alph);
+    
+    NumSequence numSequence (strSequence, cnc);
+    
+    // extract upstream regions from numeric sequence
+    vector<NumSequence> upstreams;
+    SequenceParser::extractUpstreamSequences(numSequence, labels, cnc, options.matchSeqWithUpstream.length, upstreams, options.matchSeqWithUpstream.allowOverlaps, options.matchSeqWithUpstream.minimumGeneLength);
+    
+    // get sequence to match with
+    Sequence strMatchSeq (options.matchSeqWithUpstream.matchTo);
+    NumSequence matchSeq (strMatchSeq, cnc);
+    
+    vector<NumSequence> nonRBS;
+    
+    // for each upstream sequence, match it against strMatchSeq
+    for (size_t i = 0; i < upstreams.size(); i++) {
+        
+        NumSequence match = SequenceAlgorithms::longestCommonSubstring(matchSeq, upstreams[i]);
+        
+        // print match and size
+        if (match.size() > 0)
+            cout << cnc.convert(match.begin(), match.end()) << "\t" << match.size() << endl;
+        
+        if (match.size() <= 2)
+            nonRBS.push_back(upstreams[i]);
+    }
+    
+    
+    MotifFinder::Builder b;
+    b.setAlign(MFinderModelParams::RIGHT);
+    
+    MotifFinder mfinder = b.build();
+    
+    vector<NumSequence::size_type> positions;
+    mfinder.findMotifs(nonRBS, positions);
+    
+    cout << "The number of remaining sequences is: " << nonRBS.size() << endl;
+    // print positions
+    for (size_t n = 0; n < nonRBS.size(); n++) {
+        cout << cnc.convert(nonRBS[n].begin() + positions[n], nonRBS[n].begin() + positions[n] + 6);
+        cout << "\t" << positions[n] + 1 << "\t" << nonRBS[n].size() << endl;
+    }
+
+    
+
+}
 
 
+
+void ModuleUtilities::runMatchSeqToNoncoding() {
+    
+    // read sequence file
+    SequenceFile sequenceFile (options.matchSeqWithNoncoding.fn_sequence, SequenceFile::READ);
+    Sequence strSequence = sequenceFile.read();
+    
+    // read label file
+    LabelFile labelFile (options.matchSeqWithNoncoding.fn_label, LabelFile::READ);
+    vector<Label*> labels;
+    labelFile.read(labels);
+    
+    // create numeric sequence
+    AlphabetDNA alph;
+    CharNumConverter cnc (&alph);
+    NumAlphabetDNA numAlph(alph, cnc);
+    
+    NumSequence numSequence (strSequence, cnc);
+    
+    // run training step
+    const OptionsGMS2Training* optTrain = &options.matchSeqWithNoncoding.optionsGMS2Training;
+    GMS2Trainer trainer (optTrain->pcounts, optTrain->codingOrder, optTrain->noncodingOrder, optTrain->startContextOrder, optTrain->upstreamLength, optTrain->startContextLength, optTrain->genomeClass, optTrain->optionsMFinder, numAlph, optTrain->MIN_GENE_LEN);
+    
+    trainer.estimateParameters(numSequence, labels);
+    
+    // Generate non-coding sequences
+    vector<NumSequence> simNonCoding (options.matchSeqWithNoncoding.numOfSimNonCoding);
+    
+    for (size_t n = 0; n < simNonCoding.size(); n++) {
+        simNonCoding[n] = trainer.noncoding->emit(optTrain->upstreamLength);
+    }
+    
+    
+    // get sequence to match with
+    Sequence strMatchSeq (options.matchSeqWithNoncoding.matchTo);
+    NumSequence matchSeq (strMatchSeq, cnc);
+    
+    // for each upstream sequence, match it against strMatchSeq
+    for (size_t i = 0; i < simNonCoding.size(); i++) {
+        
+        NumSequence match = SequenceAlgorithms::longestCommonSubstring(matchSeq, simNonCoding[i]);
+        
+        // print match and size
+        if (match.size() > 0)
+            cout << cnc.convert(match.begin(), match.end()) << "\t" << match.size() << endl;
+    }
+    
+}
 
 
 

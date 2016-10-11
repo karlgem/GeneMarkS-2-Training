@@ -20,7 +20,8 @@ TEST_CASE("Testing PeriodicCounts") {
     
     AlphabetDNA alph;
     CharNumConverter cnc(&alph);
-    PeriodicCounts p (1, 3, alph, cnc);
+    NumAlphabetDNA numAlph(alph, cnc);
+    PeriodicCounts p (1, 3, numAlph);
     
     vector<Sequence> sequences;
     sequences.push_back(Sequence("ACGT"));

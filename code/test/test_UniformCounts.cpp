@@ -36,10 +36,12 @@ void testOrder(unsigned order) {
     for (size_t n = 0; n < sequences.size(); n++)
         numSequences.push_back(NumSequence(sequences[n], cnc));
     
-    UniformCounts counts (order, alph, cnc);
+    NumAlphabetDNA numAlph(alph, cnc);
+    
+    UniformCounts counts (order, numAlph);
     counts.construct(numSequences);
     
-    UniformMarkov m(order,alph,cnc);
+    UniformMarkov m(order,numAlph);
     m.construct(&counts);
     
     NumSequence s = m.emit(10);

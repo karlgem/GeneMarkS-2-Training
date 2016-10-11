@@ -84,6 +84,13 @@ bool OptionsUtilities::parse(int argc, const char *argv[]) {
         
         po::store(parsed,vm);
         
+//        if (utility.empty())
+//            // if help specified, print usage message and quit
+//            if (vm.count("help")) {
+//                cout << make_usage_string(basename(argv[0]), cmdline_options, pos) << endl;
+//                return false;
+//            }
+        
         // try parsing arguments.
         po::notify(vm);
         
@@ -147,6 +154,65 @@ bool OptionsUtilities::parse(int argc, const char *argv[]) {
             
             
         }
+        // Utility: Match sequence to upstream
+        else if (utility == MATCH_SEQ_TO_UPSTREAM) {
+            po::options_description utilDesc(string(MATCH_SEQ_TO_UPSTREAM) + " options");
+            utilDesc.add_options()
+                ("match-to", po::value<string>(&matchSeqWithUpstream.matchTo)->required(), "Sequence to be matched to")
+            ;
+            
+            // add extract upstream process
+            po::options_description extractUpstreamOptions(string(EXTRACT_UPSTR) + " options");
+            addProcessOptions_ExtractUpstream(matchSeqWithUpstream, extractUpstreamOptions);
+            
+            utilDesc.add(extractUpstreamOptions);
+            
+            cmdline_options.add(utilDesc);
+            
+            // Collect all the unrecognized options from the first pass. This will include the
+            // (positional) mode and command name, so we need to erase them
+            vector<string> opts = po::collect_unrecognized(parsed.options, po::include_positional);
+            opts.erase(opts.begin());       // erase mode
+            opts.erase(opts.begin());       // erase command name
+            
+            // Parse again...
+            po::store(po::command_line_parser(opts).options(utilDesc).run(), vm);
+            
+            // get remaining parameters whose values were not assigned in add_options() above
+            extractUpstreamUtility.allowOverlaps = vm.count("allow-overlap-with-cds") > 0;
+            
+        }
+        // Utility: Match sequence to noncoding
+        else if (utility == MATCH_SEQ_TO_NONCODING) {
+            po::options_description utilDesc(string(MATCH_SEQ_TO_NONCODING) + " options");
+            utilDesc.add_options()
+                ("match-to", po::value<string>(&matchSeqWithNoncoding.matchTo)->required(), "Sequence to be matched to")
+            ;
+            
+            // add start-model-info
+            po::options_description startModelInfoOptions(string(START_MODEL_INFO) + " options");
+            addProcessOptions_StartModelInfo(matchSeqWithNoncoding, startModelInfoOptions);
+            
+            utilDesc.add(startModelInfoOptions);
+            
+            cmdline_options.add(utilDesc);
+            
+            // Collect all the unrecognized options from the first pass. This will include the
+            // (positional) mode and command name, so we need to erase them
+            vector<string> opts = po::collect_unrecognized(parsed.options, po::include_positional);
+            opts.erase(opts.begin());       // erase mode
+            opts.erase(opts.begin());       // erase command name
+            
+            // Parse again...
+            po::store(po::command_line_parser(opts).options(utilDesc).run(), vm);
+            
+            // get remaining parameters whose values were not assigned in add_options() above
+            matchSeqWithNoncoding.allowOverlaps = vm.count("allow-overlap-with-cds") > 0;
+        }
+        // empty utility
+        else if (utility.empty()) {
+            
+        }
         else                                                                        // unrecognized utility
             throw po::invalid_option_value(utility);
         
@@ -168,3 +234,51 @@ bool OptionsUtilities::parse(int argc, const char *argv[]) {
     
     
 }
+
+
+void OptionsUtilities::addProcessOptions_ExtractUpstream(ExtractUpstreamUtility &options, po::options_description &processOptions) {
+    
+    processOptions.add_options()
+        ("sequence,s", po::value<string>(&options.fn_sequence)->required(), "Sequence filename")
+        ("label,l", po::value<string>(&options.fn_label)->required(), "Label filename")
+        ("output,o", po::value<string>(&options.fn_output)->required(), "Output filename")
+        ("length", po::value<size_t>(&options.length)->required(), "Upstream length")
+        ("allow-overlap-with-cds", "If set, then upstream (non-coding) regions are allowed to overlap with coding regions. If not set, these sequences are ignored.")
+        ("min-gene-length", po::value<size_t>(&options.minimumGeneLength)->default_value(0), "Minimum gene length")
+    ;
+}
+
+
+
+
+
+void OptionsUtilities::addProcessOptions_StartModelInfo(StartModelInfoUtility &options, po::options_description &processOptions) {
+    
+    processOptions.add_options()
+        ("sequence,s", po::value<string>(&options.fn_sequence)->required(), "Sequence filename")
+        ("label,l", po::value<string>(&options.fn_label)->required(), "Label filename")
+        ("num-sim-noncoding", po::value<size_t>(&options.numOfSimNonCoding)->default_value(1000), "Number of simulated non-coding sequences.")
+    ;
+    
+    // gms2 training options
+    po::options_description gms2training("GMS2 Training");
+    OptionsGMS2Training::addProcessOptions(options.optionsGMS2Training, gms2training);
+    
+    processOptions.add(gms2training);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

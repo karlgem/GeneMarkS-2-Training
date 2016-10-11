@@ -30,6 +30,8 @@ namespace gmsuite {
         
         #define EXTRACT_UPSTR "extract_upstream"
         #define START_MODEL_INFO "start-model-info"
+        #define MATCH_SEQ_TO_UPSTREAM "match-seq-to-upstream"
+        #define MATCH_SEQ_TO_NONCODING "match-seq-to-noncoding"
         
         OptionsUtilities(string mode);
         
@@ -71,14 +73,28 @@ namespace gmsuite {
         struct StartModelInfoUtility : public GenericOptions {
             string fn_sequence;             // sequence filename
             string fn_label;                // label filename
-//            string fn_output;               // output filename
-//            size_t length;                  // length of upstream regions
             bool allowOverlaps;             // allow upstream region to overlap coding region
             size_t numOfSimNonCoding;       // number of simulated non-coding sequences
-//            size_t minimumGeneLength;       // minimum gene length associated with upstream
             OptionsGMS2Training optionsGMS2Training;            // options for running gms2 training
         }
         startModelInfoUtility;
+        
+        
+        // match-seq-with-upstream
+        struct MatchSeqWithUpstream : public ExtractUpstreamUtility {
+            string matchTo;                 // the sequence to be matched
+        }
+        matchSeqWithUpstream;
+        
+        // match-seq-to-noncoding
+        struct MatchSeqWithNoncoding : public StartModelInfoUtility {
+            string matchTo;                 // the sequence to be matched
+        }
+        matchSeqWithNoncoding;
+        
+        
+        static void addProcessOptions_ExtractUpstream(ExtractUpstreamUtility &options, po::options_description &processOptions);
+        static void addProcessOptions_StartModelInfo(StartModelInfoUtility &options, po::options_description &processOptions);
         
     };
 }

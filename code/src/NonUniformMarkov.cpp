@@ -18,7 +18,7 @@ using namespace std;
 using namespace gmsuite;
 
 // Constructor:
-NonUniformMarkov::NonUniformMarkov(unsigned order, size_t length, const AlphabetDNA &alph, const CharNumConverter &cnc) : Markov(order, alph, cnc) {
+NonUniformMarkov::NonUniformMarkov(unsigned order, size_t length, const NumAlphabetDNA &alph) : Markov(order, alph) {
     this->length = length;
     initialize();
 }
@@ -28,7 +28,7 @@ NonUniformMarkov::NonUniformMarkov(unsigned order, size_t length, const Alphabet
 void NonUniformMarkov::construct(const vector<NumSequence> &sequences, int pcount) {
     
     // get counts
-    NonUniformCounts counts (order, length, *alphabet, *cnc);
+    NonUniformCounts counts (order, length, *alphabet);
     counts.construct(sequences);
     
     // construct probabilities from counts
@@ -207,7 +207,7 @@ string NonUniformMarkov::toString() const {
         NumSequence numSeq = this->indexToNumSequence(idx, wordLength);
         
         // convert numeric sequence to string sequence and add to ssm
-        ssm << cnc->convert(numSeq.begin(), numSeq.end());
+        ssm << alphabet->getCNC()->convert(numSeq.begin(), numSeq.end());
         
         // loop over all positions, and print probabilities
         for (size_t p = 0; p < joint.size(); p++) {
