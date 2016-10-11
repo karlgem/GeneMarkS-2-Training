@@ -33,7 +33,7 @@ namespace gmsuite {
         /**
          * Constructor
          */
-        ProbabilityModelsV1(const AlphabetDNA &alphabet, NumSequence::size_type width, unsigned motifOrder, unsigned backOrder, double pcounts, MFinderModelParams::align_t align);
+        ProbabilityModelsV1(const NumAlphabetDNA &alphabet, NumSequence::size_type width, unsigned motifOrder, unsigned backOrder, double pcounts, MFinderModelParams::align_t align);
         
         /**
          * Copy constructor
@@ -112,7 +112,7 @@ namespace gmsuite {
         
     private:
         
-        const AlphabetDNA *alphabet;               /**< alphabet */
+        const NumAlphabetDNA *alphabet;               /**< alphabet */
         NumSequence::size_type width;              /**< motif width */
         unsigned motifOrder;                    /**< order for motif model */
         unsigned backOrder;                     /**< order for background model */

@@ -79,6 +79,13 @@ namespace gmsuite {
         format_t detectFormat() const;
         
         /**
+         * Check if the file is in LST format. This assumes an already opened file
+         *
+         * @return true if the file is in LST format; false otherwise
+         */
+        bool detectLST(const char* const begin, const char* const end) const;
+        
+        /**
          * Open the file and set start/end pointers to the data.
          */
         void openFile();

@@ -91,9 +91,12 @@ void LabelFile::read_lst(vector<Label*> &output) const {
     // loop over all the file
     while (current != end_read) {
         
-        // skip all new-lines
-        while (current != end_read && (*current == '\n' || *current == '\r'))
+        // skip all white spaces
+        while (current != end_read && isspace(*current))
             current++;
+        
+        if (current == end_read)
+            break;
         
         // read next label
         currlabel = readNextLabelLST(current, end_read);
@@ -126,7 +129,8 @@ Label* readNextLabelLST(const char*& current, const char* const end) {
     const char* endOfLine = current;
     
     cmatch match;
-    cregex expr = cregex::compile("^\\s*(\\d+)\\s+([+,-])\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+([1,2])\\s*");
+    //                                  gene #     strand      left     right    length     class
+    cregex expr = cregex::compile("^\\s*(\\d+)\\s+([+,-])\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+(\\S+)\\s*");
     
     Label* label = NULL;
     
@@ -137,16 +141,23 @@ Label* readNextLabelLST(const char*& current, const char* const end) {
         size_t left;
         size_t right;
         char strandChar;
+        string geneClass;
         
-        left = (size_t) strtol(match.str(3).c_str(), NULL, 10);
-        right = (size_t) strtol(match.str(4).c_str(), NULL, 10);
+        left = (size_t) strtol(match.str(3).c_str(), NULL, 10)-1;
+        right = (size_t) strtol(match.str(4).c_str(), NULL, 10)-1;
         strandChar = match.str(2)[0];
+        geneClass = match.str(6);
         
-        Label::strand_t strand = Label::POS;
-        if (strandChar == '-')
+        Label::strand_t strand;
+        
+        if (strandChar == '+')
+            strand = Label::POS;
+        else if (strandChar == '-')
             strand = Label::NEG;
+        else
+            throw invalid_argument("Invalid gene strand: " + match.str(2));
 
-        label = new Label(left, right, strand);
+        label = new Label(left, right, strand, geneClass);
     }
     
     
@@ -190,8 +201,49 @@ void gotoKey(const char*& current, const char* const end, string key) {
  * @return the file's format.
  */
 LabelFile::format_t LabelFile::detectFormat() const {
-    return LST;     // FIXME: detect format
+    if (detectLST(begin_read, end_read))
+        return LST;
+    
+    // if no format detected, throw exception
+    throw logic_error("File format could not be detected.");
 }
+
+
+bool LabelFile::detectLST(const char* const begin, const char* const end) const {
+    
+    const char* current = begin;
+    
+    while (current != end) {
+        
+        // skip whitespaces
+        while (current != end && isspace(*current))
+            current++;
+        
+        // start of line
+        const char* startOfLine = current;
+        
+        // read the remainder of the line
+        while (current != end && *current != '\n' && *current != '\r')
+            current++;
+        
+        const char* endOfLine = current;
+        
+        cmatch match;
+        cregex expr = cregex::compile("Predicted genes");
+        
+        // check if key found
+        if (regex_search(startOfLine, endOfLine, match, expr)) {
+            return true;
+        }
+    }
+    
+    return false;
+
+}
+
+
+
+
 
 /**
  * Open the file and set start/end pointers to the data.
@@ -202,17 +254,16 @@ void LabelFile::openFile() {
     if (mfile.is_open())
         mfile.close();
     
-    // open file
-    mfile.open(params);
-    
     // (re)set pointers
     if (access == READ) {
+        // open file
+        mfile.open(params);
         begin_read = mfile.const_data();
         end_read = begin_read + mfile.size();
     }
     else if (access == WRITE) {
-        begin_write = mfile.data();
-        end_write = begin_write + mfile.size();
+//        begin_write = mfile.data();
+//        end_write = begin_write + mfile.size();
     }
 }
 
@@ -232,6 +283,36 @@ void LabelFile::closeFile() {
 
 void LabelFile::write_lst(const vector<Label *> &labels) const {
     
+    ofstream out;
+    out.open(params.path.c_str());
+    
+    // FIXME: add correct header information
+    out << "GeneMark.hmm PROKARYOTIC (Version 3.4.4)" << endl;
+    out << "Date: Tue Jun  7 11:17:04 2016" << endl;
+    out << "" << endl;
+    out << "Sequence file name: /storage2/starter/data/Escherichia_coli_K_12_substr__MG1655_uid57779/NC_000913.fa" << endl;
+    out << "Model file name: itr_6.rbs.mod" << endl;
+    out << "RBS: true" << endl;
+    out << "Model information: GeneMarkS_gcode_11" << endl;
+    out << endl;
+    out << "FASTA definition line: NC_000913" << endl;
+    out << "Predicted genes" << endl;
+    out << "Gene    Strand    LeftEnd    RightEnd       Gene     Class     RBS      RBS" << endl;
+    out << "#                                         Length            position  score" << endl;
+    out << endl;
+    
+    // FIXME: need to incorporate incomplete genes
+    // loop over all labels
+    for (size_t n = 0; n < labels.size(); n++) {
+        out << n+1 << "\t";                                                 // gene
+        out << (labels[n]->strand == Label::POS ? "+" : "-") << "\t";       // strand
+        out << labels[n]->left+1 << "\t";                                   // left
+        out << labels[n]->right+1 << "\t";                                  // right
+        out << labels[n]->right - labels[n]->left + 1 << "\t";              // length
+        out << 1 << endl;
+    }
+    
+    out.close();
 }
 
 

@@ -30,7 +30,7 @@ namespace gmsuite {
          * @param order the model's order
          * @param alph the alphabet used by the model
          */
-        UniformCounts(unsigned order, const AlphabetDNA &alph);
+        UniformCounts(unsigned order, const NumAlphabetDNA &alph);
         
         
         /**
@@ -74,7 +74,7 @@ namespace gmsuite {
          *
          * @throw invalid_argument if operation is neither "increment" or "decrement"
          */
-        void updateCounts(NumSequence::const_iterator begin, NumSequence::const_iterator end, string operation);
+        void updateCounts(NumSequence::const_iterator begin, NumSequence::const_iterator end, string operation, bool reverseComplement = false);
         
         
         // The structure of the model 'm' is a vector of doubles, where m holds

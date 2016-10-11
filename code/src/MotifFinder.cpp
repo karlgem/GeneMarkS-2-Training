@@ -10,13 +10,16 @@
 
 #include <float.h>              // DBL_MAX
 #include <stdlib.h>             // rand
-
+#include <iostream>
+#include <algorithm>
 #include "CountModels.hpp"
 #include "CountModelsV1.hpp"
 #include "UnivariatePDF.hpp"
+#include "NumAlphabetDNA.hpp"
 #include "ProbabilityModels.hpp"
 #include "ProbabilityModelsV1.hpp"
 
+using namespace std;
 using namespace gmsuite;
 
 
@@ -29,6 +32,7 @@ MotifFinder::MotifFinder(
                          MFinderModelParams::align_t align,
                          unsigned tries,
                          unsigned maxIter,
+                         unsigned maxEMIter,
                          unsigned shiftEvery) {
     
     this->width = width;
@@ -38,6 +42,7 @@ MotifFinder::MotifFinder(
     this->align = align;
     this->tries = tries;
     this->maxIter = maxIter;
+    this->maxEMIter = maxEMIter;
     this->shiftEvery = shiftEvery;
 }
 
@@ -87,13 +92,16 @@ double MotifFinder::gibbsFinder(const vector<NumSequence> &sequences, vector<Num
         tempPositions[n] = rand() % (sequences[n].size() - width + 1);
     }
     
+    CharNumConverter cnc(&this->alphabet);
+    NumAlphabetDNA numAlphabet(this->alphabet, cnc);
+    
     
     /***** Construct initial count models *****/
-    CountModels* counts = new CountModelsV1(this->alphabet, width, motifOrder, backOrder, align);
+    CountModels* counts = new CountModelsV1(numAlphabet, width, motifOrder, backOrder, align);
     counts->construct(sequences, tempPositions);
     
     // allocate space for probability models
-    ProbabilityModels *probs = new ProbabilityModelsV1(this->alphabet, width, motifOrder, backOrder, pcounts, align);
+    ProbabilityModels *probs = new ProbabilityModelsV1(numAlphabet, width, motifOrder, backOrder, pcounts, align);
     
     double maxScore = -DBL_MAX;                 // maximum alignment score
     vector<Sequence::size_type> maxPositions;   // maximum alignment positions
@@ -117,7 +125,6 @@ double MotifFinder::gibbsFinder(const vector<NumSequence> &sequences, vector<Num
         
         for (vector<NumSequence>::size_type k = 0; k < numSeqs; k++) {
             
-            
             Sequence::size_type zIndex = shuffled[k];                                       // select sequence z
             
             counts->decount(sequences[zIndex], tempPositions[zIndex]);                      // remove z from counts
@@ -140,7 +147,7 @@ double MotifFinder::gibbsFinder(const vector<NumSequence> &sequences, vector<Num
                 shiftPositions(tempPositions, amountToShift, sequences, shiftedPositions);  // shift positions by amountToShift
                 
                 tempPositions = shiftedPositions;                                           // assign new positions
-                counts->construct(sequences, tempPositions);                               // construct new counts
+                counts->construct(sequences, tempPositions);                                // construct new counts
             }
         }
         
@@ -162,7 +169,7 @@ double MotifFinder::gibbsFinder(const vector<NumSequence> &sequences, vector<Num
     counts->construct(sequences, tempPositions);
     
     // perform EM on best configuration
-    for (size_t iter = 0; iter < 10; iter++) {
+    for (size_t iter = 0; iter < maxEMIter; iter++) {
         
         // shuffle indeces to select sequences in random order
         random_shuffle(shuffled.begin(), shuffled.end());
@@ -174,20 +181,6 @@ double MotifFinder::gibbsFinder(const vector<NumSequence> &sequences, vector<Num
             tempPositions[zIndex] = probs->samplePosition(sequences[zIndex], true);         // find new motif location in z (get max since it's EM)
             counts->count(sequences[zIndex], tempPositions[zIndex]);                        // add new z info back to counts
         }
-        
-        //        // try shifting motifs left and right to find better locations
-        //        if (!EM && iter > 0 && iter % shiftEvery == 0) {
-        //            int amountToShift = attemptShift(sequences, tempPositions);                                     // try shifting
-        //
-        //            if (amountToShift != 0) {
-        //                vector<Sequence::size_type> shiftedPositions;
-        //                shiftPositions(tempPositions, amountToShift, sequences, shiftedPositions);           // shift positions by amountToShift
-        //
-        //                tempPositions = shiftedPositions;                                                   // assign new positions
-        //                counts->construct(&sequences, tempPositions);                                       // construct new counts
-        //            }
-        //        }
-        
         
         probs->construct(counts);
         
@@ -262,6 +255,9 @@ int MotifFinder::attemptShift(const vector<NumSequence> &sequences, const vector
     
     int numShifts = abs(minShift) + abs(maxShift) + 1;      // number of shifts to perform
     
+    CharNumConverter cnc(&this->alphabet);
+    NumAlphabetDNA numAlphabet(this->alphabet, cnc);
+    
     // hold shift scores (to sample from)
     vector<double> shiftScores (numShifts, 0);
     
@@ -276,7 +272,7 @@ int MotifFinder::attemptShift(const vector<NumSequence> &sequences, const vector
         shiftPositions(positions, shift, sequences, shiftedPositions);
         
         // construct new probability models from shifts
-        ProbabilityModels* probs = new ProbabilityModelsV1(this->alphabet, width, motifOrder, backOrder, pcounts, align);
+        ProbabilityModels* probs = new ProbabilityModelsV1(numAlphabet, width, motifOrder, backOrder, pcounts, align);
         probs->construct(sequences, shiftedPositions);
         
         // compute shift score

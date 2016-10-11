@@ -21,9 +21,19 @@ TEST_CASE("Testing Motif Finder") {
     srand(1);
     
     OptionsMFinder options("mfinder");
+    options.align = "right";
+    options.width = 6;
+    options.motifOrder = 0;
+    options.bkgdOrder = 0;
+    options.pcounts = 1;
+    options.tries = 10;
+    options.maxIter = 60;
+    options.shiftEvery = 10;
+    options.maxEMIter = 10;
+    
     options.fname_in = "/Users/Karl/repos/GeneMarkS-2/code/tmp/ecoli-motifs.fa";
 //    options.fname_in = "/Users/Karl/repos/GeneMarkS-2/code/tmp/sample-motifs.fa";
-    options.pcounts = 1;
+//    options.fname_in = "/Users/Karl/repos/GeneMarkS-2/code/tmp/sample-rand-motifs.fa";
     
     ModuleMFinder mfinder (options);
     

@@ -19,13 +19,15 @@ using namespace gmsuite;
 TEST_CASE("Testing PeriodicCounts") {
     
     AlphabetDNA alph;
-    PeriodicCounts p (1, 3, alph);
+    CharNumConverter cnc(&alph);
+    NumAlphabetDNA numAlph(alph, cnc);
+    PeriodicCounts p (1, 3, numAlph);
     
     vector<Sequence> sequences;
     sequences.push_back(Sequence("ACGT"));
     sequences.push_back(Sequence("AGAG"));
     
-    CharNumConverter cnc(&alph);
+    
     
     vector<NumSequence> numSequences;
     for (size_t n = 0; n < sequences.size(); n++)

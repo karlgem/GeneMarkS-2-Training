@@ -11,9 +11,11 @@
 #include <algorithm>
 #include <stdexcept>
 #include <stdlib.h>
+#include <sstream>
 #include <math.h>
 
 using namespace gmsuite;
+using namespace std;
 
 // default constructor
 UnivariatePDF::UnivariatePDF() {
@@ -139,6 +141,15 @@ size_t UnivariatePDF::size() const {
 }
 
 
+string UnivariatePDF::toString() const {
+    stringstream ssm;
+    
+    for (size_t n = 0; n < probabilities.size(); n++) {
+        ssm << n << "\t" << probabilities[n] << endl;
+    }
+    
+    return ssm.str();
+}
 
 
 

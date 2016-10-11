@@ -13,7 +13,7 @@
 
 #include "Counts.hpp"
 #include "NumSequence.hpp"
-#include "AlphabetDNA.hpp"
+#include "NumAlphabetDNA.hpp"
 
 namespace gmsuite {
     
@@ -35,7 +35,7 @@ namespace gmsuite {
          *
          * @throw invalid_argument if alph is NULL
          */
-        Markov(unsigned order, const AlphabetDNA &alph);
+        Markov(unsigned order, const NumAlphabetDNA &alph);
         
         
         /**
@@ -83,7 +83,7 @@ namespace gmsuite {
          *
          * @return the model's alphabet
          */
-        const AlphabetDNA* getAlphabet() const;
+        const NumAlphabetDNA* getAlphabet() const;
         
         
         /**
@@ -94,11 +94,21 @@ namespace gmsuite {
         virtual string toString() const = 0;
         
         
+        /**
+         * Compute the KL-divergence of two Markov models
+         *
+         * @param P first markov model
+         * @param Q second markov model
+         * @return KL(P || Q)
+         */
+        friend double KLDivergence(const Markov* P, const Markov* Q);
+        
+        
     protected:
         
         unsigned order;                             /**< the model's order */
-        const AlphabetDNA* alphabet;                /**< the alphabet */
-        
+        const NumAlphabetDNA* alphabet;                /**< the alphabet */
+        const CharNumConverter *cnc;                /**< the char-number converter; for reverse complementation */
         
         /**
          * Convert joing probabilities to Markov (conditional) probabilities.
@@ -121,6 +131,51 @@ namespace gmsuite {
          */
         void getLowerOrderJoint(unsigned currentOrder, const vector<double> &current, vector<double> &result) const;
         
+        
+        /**
+         * Compute higher order joint probabilities.
+         *
+         * @param currentOrder the current order of the joint probabilities
+         * @param current a vector holding the joint probabilities for order <currentOrder>
+         * @param newOrder the new order of joint probabilities
+         * @param result the vector where the result will be stored. That is, the joint probabilities
+         * for order=newOrder
+         *
+         * @exception invalid_argument if newOrder < currentOrder
+         */
+        void getHigherOrderJoint(unsigned currentOrder, const vector<double> &current, unsigned newOrder, vector<double> &result) const;
+        
+        /**
+         * Increment order of joint probabilities by one.
+         *
+         * @param currentOrder the order of the "original" probabilities
+         * @param currentProbs the "original" probabilities
+         * @param newProbs a vector where the new probabilities (of order currentOrder+1) will be stored
+         */
+        void incrementOrderByOne(unsigned currentOrder, const vector<double> &currentProbs, vector<double> &newProbs) const;
+        
+        /**
+         * Get cumulative distribution frequency for each conditional probability.
+         *
+         * @param currentOrder the order of the "original" probabilities
+         * @param currentProbs the "original" probabilities
+         */
+        void getCDFPerConditional(unsigned currentOrder, vector<double> &probs) const;
+        
+        /**
+         * Convert the array index to the numeric sequence 'located' at that index.
+         * For example, for index 7 and wordLength 3 (i..e 000111 -> ACT), the numeric
+         * sequence will be 013
+         */
+        NumSequence indexToNumSequence(size_t idx, size_t wordLength) const;
+        
+        
+        /**
+         * Convert the array index to the numeric sequence 'located' at that index.
+         * For example, for index 7 and wordLength 3 (i..e 000111 -> ACT), the numeric
+         * sequence will be 013
+         */
+        void indexToNumSequence(size_t idx, size_t wordLength, vector<NumSequence::num_t> &numSeq) const;
         
     };
     

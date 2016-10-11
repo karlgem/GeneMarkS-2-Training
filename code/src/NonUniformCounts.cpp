@@ -8,12 +8,13 @@
 
 #include "NonUniformCounts.hpp"
 #include <math.h>
+#include <stdexcept>
 
 using namespace std;;
 using namespace gmsuite;
 
 // constructor
-NonUniformCounts::NonUniformCounts(unsigned order, size_t length, const AlphabetDNA &alph) : Counts(order, alph) {
+NonUniformCounts::NonUniformCounts(unsigned order, size_t length, const NumAlphabetDNA &alph) : Counts(order, alph) {
     
     if (length == 0)
         throw std::invalid_argument("Length cannot be 0.");
@@ -51,19 +52,20 @@ void NonUniformCounts::initialize() {
     
     size_t numElements = alphabet->sizeValid();     // the number of elements that can make up valid words (e.g. A,C,G,T)
     
-    size_t wordSize = (order+1);                    // the size of a word
-    size_t numWords = pow(numElements, wordSize);   // number of possible words of size 'wordSize' with given alphabet
-    
     model.resize(length);
     
     // for each period, allocate space of size 'numWords', and set all elements to zero
-    for (size_t p = 0; p < length; p++) 
+    for (size_t p = 0; p < length; p++) {
+        size_t wordSize = (p < order ? p+1 : order+1);                    // the size of a word
+        size_t numWords = pow(numElements, wordSize);   // number of possible words of size 'wordSize' with given alphabet
+        
         model[p].resize(numWords, 0);
+    }
 }
 
 
 // Update counts for a given sequence, by either incrementing or decrementing them
-void NonUniformCounts::updateCounts(NumSequence::const_iterator begin, NumSequence::const_iterator end, string operation) {
+void NonUniformCounts::updateCounts(NumSequence::const_iterator begin, NumSequence::const_iterator end, string operation, bool reverseComplement) {
     
     if (operation != "increment" && operation != "decrement")
         throw invalid_argument("Operation must either be 'increment' or 'decrement'.");
@@ -82,14 +84,36 @@ void NonUniformCounts::updateCounts(NumSequence::const_iterator begin, NumSequen
     // of bits required to encode a word of 'order+1' elements
     // A word is made up of elementEncondingSize * (order+1) bits. Set them to 1 by simply looping that many times
     
+    size_t seqSize = distance(begin, end);          // total number of nucleotides in sequence
+    size_t remainingSize = seqSize;                 // number of nucleotides still to be counted
+    
+    
     NumSequence::const_iterator currentElement = begin;
+    if (reverseComplement)
+        currentElement = end-1;
     
     size_t wordIndex = 0;       // contains the index of the current word (made up of order+1 elements)
     
+    size_t lifeOfN = 0;         // how many characters to skip before N "leaves" the word (e.g. ACN, CNG, NGA, GAC) <- life = 3
+    
     // loop over first "order" elements to store them as part of the initial word index
-    for (size_t i = 0; i <= order; i++, currentElement++) {
+    for (size_t i = 0; i <= order; i++) {
         wordIndex <<= elementEncodingSize;      // create space at lower bits for a new element
-        wordIndex += *currentElement;           // add new element to the wordIndex
+        
+        // if current letter is N
+        if (alphabet->isAmbiguous(*currentElement)) {
+            lifeOfN = order+1;
+        }
+        else {
+            if (lifeOfN > 0)
+                lifeOfN--;
+            
+            if (reverseComplement)
+                wordIndex += alphabet->complement(*currentElement);           // complement element then add to the wordIndex
+            else
+                wordIndex += *currentElement;                           // add element to the wordIndex
+        }
+
         
         // set the mask to read word of 'i+1' elements
         for (size_t n = 0; n < elementEncodingSize; n++) {
@@ -100,50 +124,76 @@ void NonUniformCounts::updateCounts(NumSequence::const_iterator begin, NumSequen
         // mask to remove old junk characters (doesn't affect wordIndex here. I do it just for consistency with remaining code)
         wordIndex = wordIndex & mask;
         
-        // increment or decrement
-        if (operation == "increment") {
-            model[position][wordIndex]++;              // increment count by 1
-        }
-        else {
-            // update count at new word index
-            if (model[position][wordIndex] == 0)
-                throw out_of_range("Cannot decrement sequence counts below 0");
-            
-            model[position][wordIndex]--;              // decrement count by 1
+        if (lifeOfN == 0) {
+            // increment or decrement
+            if (operation == "increment") {
+                model[position][wordIndex]++;              // increment count by 1
+            }
+            else {
+                // update count at new word index
+                if (model[position][wordIndex] == 0)
+                    throw out_of_range("Cannot decrement sequence counts below 0");
+                
+                model[position][wordIndex]--;              // decrement count by 1
+            }
         }
 
         position++;                                 // increment position
         if (position == length)
             break;                                  // exit loop when reached length of markov model
+        
+        // move to next element on negative or positive strand
+        (reverseComplement ? currentElement-- : currentElement++);
+        
+        remainingSize--;
+        
     }
     
     
     // for every word, add a count in the pwm
-    while (currentElement != end) {
+    while (remainingSize != 0) {
         
         // add new element to the wordIndex
         wordIndex <<= elementEncodingSize;      // create space at lower bits for a new element
-        wordIndex += *currentElement;           // add new element to the wordIndex
+        
+        // if current letter is N
+        if (alphabet->isAmbiguous(*currentElement)) {
+            lifeOfN = order+1;
+        }
+        else {
+            if (lifeOfN > 0)
+                lifeOfN--;
+
+            if (reverseComplement)
+                wordIndex += alphabet->complement(*currentElement);           // complement element then add to the wordIndex
+            else
+                wordIndex += *currentElement;                           // add element to the wordIndex
+        }
         
         wordIndex = wordIndex & mask;           // mask to remove old junk characters
         
-        // increment or decrement
-        if (operation == "increment") {
-            model[position][wordIndex]++;              // increment count by 1
-        }
-        else {
-            // update count at new word index
-            if (model[position][wordIndex] == 0)
-                throw out_of_range("Cannot decrement sequence counts below 0");
-            
-            model[position][wordIndex]--;              // decrement count by 1
+        if (lifeOfN == 0) {
+            // increment or decrement
+            if (operation == "increment") {
+                model[position][wordIndex]++;              // increment count by 1
+            }
+            else {
+                // update count at new word index
+                if (model[position][wordIndex] == 0)
+                    throw out_of_range("Cannot decrement sequence counts below 0");
+                
+                model[position][wordIndex]--;              // decrement count by 1
+            }
         }
         
-        position++;                                // increment frame
+        position++;                                // increment position
         if (position == length)
-            break;                              // quit if frame reaches length of model
+            break;                              // quit if position reaches length of model
         
-        currentElement++;                       // move to next letter
+        // move to next element on negative or positive strand
+        (reverseComplement ? currentElement-- : currentElement++);
+        
+        remainingSize--;
     }
 }
 

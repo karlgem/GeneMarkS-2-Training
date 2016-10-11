@@ -7,11 +7,11 @@
 //
 
 #include "CountModelsV1.hpp"
-
+#include <stdexcept>
 using namespace gmsuite;
 
 // constructor
-CountModelsV1::CountModelsV1(const AlphabetDNA &alphabet, Sequence::size_type width, unsigned motifOrder, unsigned backOrder, MFinderModelParams::align_t align) {
+CountModelsV1::CountModelsV1(const NumAlphabetDNA &alphabet, Sequence::size_type width, unsigned motifOrder, unsigned backOrder, MFinderModelParams::align_t align) {
     this->alphabet = &alphabet;
     this->width = width;
     this->motifOrder = motifOrder;

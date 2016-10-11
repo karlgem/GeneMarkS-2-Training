@@ -34,7 +34,7 @@ namespace gmsuite {
          * @param length the model's length
          * @param alphabet the alphabet used by the model
          */
-        NonUniformMarkov(unsigned order, size_t length, const AlphabetDNA &alph);
+        NonUniformMarkov(unsigned order, size_t length, const NumAlphabetDNA &alph);
         
         
         /**
@@ -73,6 +73,23 @@ namespace gmsuite {
          */
         string toString() const;
         
+        /**
+         * Get the length of the non-uniform Markov model
+         *
+         * @return the model's length
+         */
+        size_t getLength() const;
+        
+        /**
+         * Change the model's order. Note: changing to a lower order model will
+         * incur and irreversable loss of information; i.e. lowering an order then
+         * raising it again will not return the original model, as the distribution
+         * has already been marginalized.
+         *
+         * @param newOrder the new order
+         */
+        void changeOrder(unsigned newOrder);
+        
         
     protected:
         
@@ -97,7 +114,16 @@ namespace gmsuite {
         //                BBB   BBB
         typedef vector<vector<double> > nonunif_markov_t;              // for probabilities
         
+        
+        // For order 2, to compute P(ACGT), we can break it down into
+        // P(ACGT) = P(AC) * P(G|AC) * P(T|CG)
+        // These joint probabilities P(AC) are stored in the below model,
+        // since they don't fit easily in the above structure. Since this is a nonuniform model,
+        // each position has its own set of joint probability distributions
+        typedef vector<vector<double> > nonunif_joint_t;   // for joint probabilities of each position
+        
         nonunif_markov_t model;             // to store probabilities
+        nonunif_joint_t jointProbs;         // to store joint probabilities
         size_t length;                      // model length
         
     };

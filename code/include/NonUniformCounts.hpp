@@ -37,7 +37,7 @@ namespace gmsuite {
          * @param length the model's length; i.e. the number of different count models
          * @param alph the alphabet used by the model
          */
-        NonUniformCounts(unsigned order, size_t length, const AlphabetDNA &alph);
+        NonUniformCounts(unsigned order, size_t length, const NumAlphabetDNA &alph);
         
         
         /**
@@ -88,7 +88,7 @@ namespace gmsuite {
          *
          * @throw invalid_argument if operation is neither "increment" or "decrement"
          */
-        void updateCounts(NumSequence::const_iterator begin, NumSequence::const_iterator end, string operation);
+        void updateCounts(NumSequence::const_iterator begin, NumSequence::const_iterator end, string operation, bool reverseComplement = false);
         
         
         // The structure of the model 'm' is a vector of vectors, where m[p] holds

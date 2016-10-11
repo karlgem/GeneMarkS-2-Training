@@ -13,6 +13,7 @@
 #include <string>
 
 #include "Options.hpp"
+#include "OptionsMFinder.hpp"
 
 using std::string;
 
@@ -42,7 +43,11 @@ namespace gmsuite {
     // Below, create a variable for each parameter, to make for easy access
     public:
         
+        OptionsMFinder optionsMFinder;  /**< Option for motif finder */
         string fname_in;                /**< Input filename containing DNA sequence */
+        size_t upstrLength;             /**< Length of upstream sequences for motif search */
+        double CLASS_PROB_THRESHOLD;    /**< Probability threshold for deciding class type */
+        size_t CLASS_DIST_THRESHOLD;    /**< Distance threshold for deciding class type */
     };
 }
 

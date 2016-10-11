@@ -10,13 +10,15 @@
 #include "PeriodicCounts.hpp"
 
 #include <math.h>
+#include <limits>
+#include <sstream>
 #include <stdexcept>
 
-using std::invalid_argument;
+using namespace std;
 using namespace gmsuite;
 
 // Constructor:
-PeriodicMarkov::PeriodicMarkov(unsigned order, size_t period, const AlphabetDNA &alph) : Markov(order, alph) {
+PeriodicMarkov::PeriodicMarkov(unsigned order, size_t period, const NumAlphabetDNA &alph) : Markov(order, alph) {
     this->period = period;
     initialize();
 }
@@ -131,13 +133,15 @@ double PeriodicMarkov::evaluate(NumSequence::const_iterator begin, NumSequence::
     size_t wordIndex = 0;       // contains the index of the current word (made up of order+1 elements)
     
     // loop over first "order" elements to store them as part of the initial word index
-    for (size_t i = 0; i < order; i++, currentElement++) {
+    for (size_t i = 0; i <= order; i++, currentElement++) {
         wordIndex <<= elementEncodingSize;      // create space at lower bits for a new element
         wordIndex += *currentElement;           // add new element to the wordIndex
         
         // set the mask to read word of 'i+1' elements
-        mask <<= 1;         // shift by one position
-        mask |= 1;          // set lowest bit to one
+        for (size_t n = 0; n < elementEncodingSize; n++) {
+            mask <<= 1;         // shift by one position
+            mask |= 1;          // set lowest bit to one
+        }
         
         // mask to remove old junk characters (doesn't affect wordIndex here. I do it just for consistency with remaining code)
         wordIndex = wordIndex & mask;
@@ -180,7 +184,38 @@ double PeriodicMarkov::evaluate(NumSequence::const_iterator begin, NumSequence::
 
 // Generate a string representation of the model
 string PeriodicMarkov::toString() const {
-    return "";
+    stringstream ssm;
+    
+    if (jointProbs.size() == 0)
+        return "";
+    
+    size_t wordLength = order+1;
+    
+    // since all frames have the same set of keys, let's start looping over keys and put
+    // one per line
+    for (size_t idx = 0; idx < jointProbs[0][order].size(); idx++) {
+        
+        // convert index to numeric sequence
+        NumSequence numSeq = this->indexToNumSequence(idx, order+1);
+        
+        // convert numeric sequence to string sequence and add to ssm
+        ssm << alphabet->getCNC()->convert(numSeq.begin(), numSeq.end());
+
+        // now that we have the key, loop over each frame and print the probability of that key in the frame
+        for (size_t p = 0; p < period; p++) {
+            // For HMM compatibility, position needs to be transormed into a different frame.
+            // In current version of this code, the right character of a word (e.g. the A in CGA)
+            // determines the frame. In HMM, the leftmost character determines the frame.
+            // Therefore, to convert to HMM, simply do '(frame + (wordLength-1)) % period'
+            
+            size_t convertedFrame = (p + (wordLength-1)) % period;
+            ssm << "\t" << this->jointProbs[convertedFrame][order][idx];     // we print the key of "order" since we only care about the highest order
+        }
+        
+        ssm << endl;
+    }
+        
+    return ssm.str();
 }
 
 

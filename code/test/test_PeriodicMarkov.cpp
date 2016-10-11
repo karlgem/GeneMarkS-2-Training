@@ -20,13 +20,16 @@ using namespace gmsuite;
 TEST_CASE("Testing PeriodicMarkovs") {
     
     AlphabetDNA alph;
-    PeriodicCounts p (1, 1, alph);
+    CharNumConverter cnc(&alph);
+    NumAlphabetDNA numAlph(alph, cnc);
+    
+    PeriodicCounts p (1, 1, numAlph);
     
     vector<Sequence> sequences;
     sequences.push_back(Sequence("ACGT"));
     sequences.push_back(Sequence("AGAG"));
     
-    CharNumConverter cnc(&alph);
+    
     
     vector<NumSequence> numSequences;
     for (size_t n = 0; n < sequences.size(); n++)
@@ -34,6 +37,6 @@ TEST_CASE("Testing PeriodicMarkovs") {
     
     p.construct(numSequences);
     
-    PeriodicMarkov m(1,1,alph);
+    PeriodicMarkov m(1,1,numAlph);
     m.construct(&p);
 }

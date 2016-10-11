@@ -12,6 +12,9 @@
 #include <stdio.h>
 #include "Options.hpp"
 
+#include <boost/program_options.hpp>
+namespace po = boost::program_options;
+
 namespace gmsuite {
     
     /**
@@ -23,7 +26,7 @@ namespace gmsuite {
         
     public:
         
-        OptionsMFinder(string mode);
+        OptionsMFinder(string mode = "mfinder");
         
         /**
          * Parse the command-line words into arguments
@@ -35,11 +38,24 @@ namespace gmsuite {
         bool parse(int argc, const char *argv[]);
         
         
+        static void addProcessOptions(OptionsMFinder &optionsMFinder, po::options_description &processOptions);
+        
+        
         // Below, create a variable for each parameter, to make for easy access
     public:
         
         string fname_in;                /**< Input filename containing DNA sequence */
         double pcounts;                 /**< The pseudocount value */
+        unsigned width;                 /**< The width of the motif */
+        unsigned motifOrder;            /**< Order for motif Markov model */
+        unsigned bkgdOrder;             /**< Order of background Markov model */
+        string align;                   /**< Set to left, right, or none, to indicate whether positional distribution should be used, and from which direction */
+        unsigned tries;                 /**< Number of restarts; i.e. number of times the algorithm is executed with new random initialization */
+        unsigned maxIter;               /**< Number of Gibbs iterations per single try */
+        unsigned maxEMIter;             /**< Number of EM iterations per single try */
+        unsigned shiftEvery;            /**< Number of iterations before attempting to shift the motif left and right */
+        
+        
     };
     
 }

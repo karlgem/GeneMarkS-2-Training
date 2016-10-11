@@ -9,6 +9,8 @@
 #include "ProbabilityModelsV1.hpp"
 #include "CountModelsV1.hpp"
 #include <math.h>
+#include <stdexcept>
+#include <algorithm>
 
 using namespace std;
 using namespace gmsuite;
@@ -17,7 +19,7 @@ using namespace gmsuite;
 /**
  * Constructor
  */
-ProbabilityModelsV1::ProbabilityModelsV1(const AlphabetDNA &alphabet, NumSequence::size_type width, unsigned motifOrder, unsigned backOrder, double pcounts, MFinderModelParams::align_t align) {
+ProbabilityModelsV1::ProbabilityModelsV1(const NumAlphabetDNA &alphabet, NumSequence::size_type width, unsigned motifOrder, unsigned backOrder, double pcounts, MFinderModelParams::align_t align) {
     this->alphabet = &alphabet;
     this->width = width;
     this->motifOrder = motifOrder;
@@ -26,7 +28,7 @@ ProbabilityModelsV1::ProbabilityModelsV1(const AlphabetDNA &alphabet, NumSequenc
     this->align = align;
     
     // allocate models
-    mMotif = new NonUniformMarkov(motifOrder, width, alphabet);
+    mMotif = new NonUniformMarkov(motifOrder, width, *this->alphabet);
     mMotifCounts = new NonUniformCounts(motifOrder, width, alphabet);
     mBack = new UniformMarkov(motifOrder, alphabet);
     
@@ -195,7 +197,7 @@ public:
                 }
                 
                 if (ratio != 0)
-                    score += this->NonUniformCounts::model[pos][word] * log2(ratio);
+                    score += this->NonUniformCounts::model[pos][word] * log(ratio);
             }
         }
         

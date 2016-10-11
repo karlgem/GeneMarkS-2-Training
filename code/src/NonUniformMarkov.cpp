@@ -10,13 +10,15 @@
 #include "NonUniformCounts.hpp"
 
 #include <math.h>
+#include <limits>
+#include <sstream>
 #include <stdexcept>
 
-using std::invalid_argument;
+using namespace std;
 using namespace gmsuite;
 
 // Constructor:
-NonUniformMarkov::NonUniformMarkov(unsigned order, size_t length, const AlphabetDNA &alph) : Markov(order, alph) {
+NonUniformMarkov::NonUniformMarkov(unsigned order, size_t length, const NumAlphabetDNA &alph) : Markov(order, alph) {
     this->length = length;
     initialize();
 }
@@ -76,6 +78,24 @@ void NonUniformMarkov::construct(const Counts* counts, int pcount) {
         for (size_t n = 0; n < model[p].size(); n++)            // for each word
             if (sums[p] != 0)                                   // check for division by zero
                 model[p][n] /= sums[p];                         // normalize word counts on sum
+    
+    // store joint probabilities
+    jointProbs = model;
+//    // create a set of joint distributions for each position
+//    jointProbs.resize(this->length);
+//    
+//    // for each position
+//    for (size_t p = 0; p < this->length; p++) {
+//        
+//        // create a joint distribution for all orders less than or equal to this->order
+//        jointProbs[p].resize(this->order + 1);          // for order, order-1, order-2, ... 0
+//        jointProbs[p][this->order] = model[p];          // the joint for 'order' is in 'model'
+//        
+//        // derive remaining joint probabilities for 'order-1' and lower. This is used to compute words of length shorter than 'order+1'
+//        for (unsigned o = this->order; o > 0; o--)
+//            this->getLowerOrderJoint(o, jointProbs[p][o], jointProbs[p][o-1]);        //  take previous joint probs and reduce (marginalize) it by one
+//    }
+    
     
     
     // for each period, convert joint probabilities to Markov (conditional):
@@ -165,7 +185,39 @@ double NonUniformMarkov::evaluate(NumSequence::const_iterator begin, NumSequence
 
 // Generate a string representation of the model
 string NonUniformMarkov::toString() const {
-    return "";
+    stringstream ssm;
+    
+    // copy all joint probabilities because we may need to modify them by making them all the same order
+    nonunif_joint_t joint = this->jointProbs;
+    
+    // create same set of keys for all positions by increasing the order of the smaller ones
+    for (size_t p = 0; p < joint.size(); p++) {
+        if (p < order)
+            getHigherOrderJoint((unsigned) p, this->jointProbs[p], order, joint[p]);
+    }
+    
+    
+    // get length of "word" for current position (hint: they're all the same by now :))
+    size_t wordLength = order+1;
+    
+    // loop over each key first (of any position, since they're all the same)
+    for (size_t idx = 0; idx < joint[0].size(); idx++) {
+        
+        // convert index to numeric sequence
+        NumSequence numSeq = this->indexToNumSequence(idx, wordLength);
+        
+        // convert numeric sequence to string sequence and add to ssm
+        ssm << alphabet->getCNC()->convert(numSeq.begin(), numSeq.end());
+        
+        // loop over all positions, and print probabilities
+        for (size_t p = 0; p < joint.size(); p++) {
+            ssm << "\t" << joint[p][idx];
+        }
+        
+        ssm << endl;    // goto new line (i.e. new key)
+    }
+
+    return ssm.str();
 }
 
 
@@ -184,3 +236,74 @@ void NonUniformMarkov::initialize() {
         model[p].resize(numWords, 0);
     }
 }
+
+
+size_t NonUniformMarkov::getLength() const {
+    return length;
+}
+
+
+
+
+void NonUniformMarkov::changeOrder(unsigned newOrder) {
+    
+    unsigned originalOrder = this->order;
+    
+    // increase order
+    if (newOrder > originalOrder) {
+        unsigned orderDifference = newOrder - originalOrder;        // difference in order
+        
+        // increment order by 1 at a time
+        for (unsigned i = 0; i < orderDifference; i++) {
+            
+            // increment order at each position
+            for (unsigned p = 0; p < jointProbs.size(); p++) {
+                if (p <= this->order)
+                    continue;
+                unsigned orderForPos = (p <= this->order ? p : this->order);
+                
+                // get joint probs
+                vector<double> newProbs;
+                incrementOrderByOne(orderForPos, jointProbs[p], newProbs);      // fill new vector
+                jointProbs[p] = newProbs;
+             
+            }
+            
+           this->order++;           // increase order value
+        }
+        
+        // update Markov probabilities from joint
+        this->model = jointProbs;
+        
+        // for each period, convert joint probabilities to Markov (conditional):
+        // e.g. P(ACG) -> P(G|AC)
+        for (size_t p = 0; p < length; p++)
+            jointToMarkov(model[p]);
+        
+        
+        
+        
+    }
+    // decrease order
+    else if (newOrder < originalOrder) {
+        throw logic_error("Decreasing Order functionality not yet implemented.");
+    }
+    
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

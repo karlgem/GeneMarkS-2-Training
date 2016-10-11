@@ -11,9 +11,14 @@
 
 #include <stdio.h>
 
+#include "Label.hpp"
 #include "Module.hpp"
 #include "Sequence.hpp"
+#include "GMS2Trainer.hpp"
+#include "NumSequence.hpp"
 #include "OptionsGMS2.hpp"
+#include "CharNumConverter.hpp"
+#include "ProkGeneStartModel.hpp"
 
 namespace gmsuite {
     
@@ -24,6 +29,8 @@ namespace gmsuite {
     class ModuleGMS2 : public Module {
         
     public:
+        
+        typedef ProkGeneStartModel::genome_class_t genome_class_t;
         
         /**
          * Constructor: initialize the GMS2 module with option parameters
@@ -36,6 +43,13 @@ namespace gmsuite {
          * Run the GMS2 module according to the provided options.
          */
         void run();
+        
+        
+        /**
+         * Estimate parameters for GMS2 where, given parsing (labels) of the sequence and the genome class,
+         * parameters are estimated for the corresponding models
+         */
+        void estimateModelParameters(const NumSequence &sequence, const vector<Label*> &labels, genome_class_t genomeClass, GMS2Trainer &trainer);
         
     private:
         
@@ -52,6 +66,8 @@ namespace gmsuite {
         Sequence readInputSequence(string filename) const;
         
         
+        
+        genome_class_t classifyGenome(const NumSequence &numSeq, const CharNumConverter &cnc, const vector<Label*> labels, NumSequence::size_type upstrLength) const;
         
     };
     
