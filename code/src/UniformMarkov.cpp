@@ -13,12 +13,18 @@
 #include <limits>
 #include <stdexcept>
 #include <sstream>
+#include <iostream>
+
+#include <boost/random/mersenne_twister.hpp>
+#include <boost/random/uniform_real_distribution.hpp>
+#include <boost/random/variate_generator.hpp>
+
 
 using namespace std;
 using namespace gmsuite;
 
 // Constructor:
-UniformMarkov::UniformMarkov(unsigned order, const AlphabetDNA &alph, const CharNumConverter &cnc) : Markov(order, alph, cnc) {
+UniformMarkov::UniformMarkov(unsigned order, const NumAlphabetDNA &alph) : Markov(order, alph) {
     initialize();
 }
 
@@ -26,7 +32,7 @@ UniformMarkov::UniformMarkov(unsigned order, const AlphabetDNA &alph, const Char
 // Construct the model probabilities from a list of sequences
 void UniformMarkov::construct(const vector<NumSequence> &sequences, int pcount) {
     // get counts
-    UniformCounts counts(order, *alphabet, *cnc);
+    UniformCounts counts(order, *alphabet);
     counts.construct(sequences);
     
     // construct probabilities from counts
@@ -177,7 +183,7 @@ string UniformMarkov::toString() const {
         NumSequence numSeq = this->indexToNumSequence(idx, this->order+1);
         
         // convert numeric sequence to string sequence and add to ssm
-        ssm << cnc->convert(numSeq.begin(), numSeq.end());
+        ssm << alphabet->getCNC()->convert(numSeq.begin(), numSeq.end());
         
         // add probability of current index
         ssm << "\t" << this->jointProbs[order][idx] << endl;
@@ -233,49 +239,141 @@ void UniformMarkov::changeOrder(unsigned newOrder) {
 
 
 
-void UniformMarkov::incrementOrderByOne(unsigned currentOrder, const vector<double> &currentProbs, vector<double> &newProbs) const {
+NumSequence UniformMarkov::emit(NumSequence::size_type length) const {
     
-    size_t numElements = alphabet->sizeValid();                 // number of (valid) elements in alphabet (e.g. A,C,G,T)
+    if (length == 0)
+        return NumSequence();
     
-    // set the size of the new probability space
-    size_t newOrder = currentOrder+1;
-    size_t wordSize = newOrder+1;                   // number of elements that make up a word
-    size_t numWords = pow(numElements, wordSize);   // number of words in the new probability space
-    newProbs.resize(numWords, 0);                   // allocate space for set new probability 
+    // get CDF per conditional
+    vector<double> cdf = model;
+    Markov::getCDFPerConditional(this->order, cdf);
     
-    // for each key of the current probabilities, the probability value needs to be copied
-    // to all keys of "higher" order. Example, since our working representation is in bits,
-    // suppose that the element encoding size is 2 (i.e. 2 bits needed to encode a single element).
-    // If A = 00, C = 01, G = 10, T = 11, then the key GC=1001
-    // In higher order, we have AGC=001001, CGC=011001, GGC=101001, TGC=111001
-    // So we bit representations of intergers from 0 up to alphabet size (i.e. 4 in this case),
-    // and we add them to GC, but shifted by 2 * element encoding size.
-    //
-    // Ex: To get TGC:
-    // Representation of T:         11
-    // Shift T by 2 * 2:        110000
-    // Representation of GC:      1001
-    // Add shifted T to GC:     111001
-    
-    size_t elementEncodingSize = ceil(log2(numElements));       // number of bits to encode an element (e.g. 2 bits for A,C,G,T)
-    size_t bitsToShift = elementEncodingSize * currentOrder+1;
-    
-    // for each key in current probability space
-    for (size_t key = 0; key < currentProbs.size(); key++) {
-        
-        // for each element to be added to the current key
-        for (size_t e = 0; e < numElements; e++) {
-            // shift the element by the number of letters already in the key, times the element encoding size
-            size_t newKey = e << bitsToShift;
-            
-            // add existing key to new partial key; this gives the new full key
-            newKey += key;
-            
-            // set probability value of new key to that of old key
-            newProbs[newKey] = currentProbs[key];
+    // to generate first "order+1" elements, or to generate a sequence where length < order+1,
+    // get CDF of joint probabilities
+    vector<vector<double> > cdfJoint = jointProbs;
+    for (unsigned p = 0; p < jointProbs.size(); p++) {
+        for (size_t n = 1; n < cdfJoint[p].size(); n++) {
+            cdfJoint[p][n] += cdfJoint[p][n-1];
         }
     }
+    
+    // get random number generator
+    typedef boost::mt19937                     ENG;     // Mersenne Twister
+    typedef boost::random::uniform_real_distribution<double> DIST;                // Normal Distribution
+    typedef boost::variate_generator<ENG,DIST> GEN;     // Variate generator
+    
+    ENG  eng;
+    DIST dist(0,1);
+    static GEN  gen(eng,dist);
+    
+    
+    // if sequence length <= order+1, simply emit from joint
+    if (length <= this->order + 1) {
+        double u = gen();
+        
+        size_t i;       // index of emitted word
+        
+        // find index
+        for (i = 0; i < cdfJoint[length-1].size(); i++) {
+            if (u < cdfJoint[length-1][i])
+                break;              // sample
+        }
+        
+        if (i == cdfJoint[length-1].size())
+            throw logic_error("Could not sample from CDF. Something is wrong.");
+        
+        // convert word from index
+        return Markov::indexToNumSequence(i, length);
+    }
+    
+    
+    // otherwise, length > order+1. "order+1" elements from joint distribution,
+    // then use conditional to emit one at a time.
+    
+    // Emit first order+1 elements:
+    size_t i;
+    double u = gen();
+    size_t wordLength = order+1;
+    for (i = 0; i < cdfJoint[wordLength-1].size(); i++) {
+        if (u < cdfJoint[wordLength-1][i])
+            break;              // sample
+    }
+    
+    if (i == cdfJoint[wordLength-1].size())
+        throw logic_error("Could not sample from CDF. Something is wrong.");
+
+    // convert word from index
+    vector<NumSequence::num_t> numSeq;
+    Markov::indexToNumSequence(i, wordLength, numSeq);
+    
+    // extend numSeq to allocate spacer of size "length" (i.e. for entire sequence)
+    numSeq.resize(length);
+    
+    // Emit remaining sequence. Take last "order" elements from previous word, and sample new element from CDF
+    // corresponding to that base
+    
+    size_t numElements = alphabet->sizeValid();             // number of elements (ACGT)
+    size_t elementEncodingSize = ceil(log2(numElements));   // bits required to encode all elements
+    size_t maskOne = 0;            // mask single letter
+    size_t maskBase = 0;        // masks the last "order" characters of word, to be used as base for new word
+    size_t blockSize = alphabet->sizeValid();
+    size_t wordIndex = i;           // contains index of the current word (made up of order+1 elements)
+    
+    
+    for (size_t n = 0; n < elementEncodingSize; n++) {
+        maskOne <<= 1;          // shift by one
+        maskOne |= 1;           // set rightmost bit to 1
+    }
+    
+    // get a mask that captures base
+    for (size_t n = 0; n < order; n++) {
+        for (size_t n = 0; n < elementEncodingSize; n++) {
+            maskBase <<= 1;      // shift by one
+            maskBase |= 1;      // set rightmost bit to 1
+        }
+    }
+
+    // loop over remaining "sequence"
+    for (size_t n = wordLength; n < length; n++) {
+        
+        u = gen();      // generate unif(0,1)
+        
+        // get base from previous word
+        size_t base = wordIndex & maskBase;
+        
+        // loop over block of that base, and sample from CDF and u
+        size_t blockStart = base << elementEncodingSize;
+        size_t idx;
+        
+        for (idx = blockStart; idx < blockStart+blockSize; idx++) {
+            if (u < cdf[idx])
+                break;
+        }
+        
+        if (idx == blockStart+blockSize)
+            throw logic_error("Could not sample from CDF. Something is wrong.");
+        
+        // add letter to numSeq
+        numSeq[n] = (NumSequence::num_t) ( idx & maskOne);
+        
+        // update wordIndex
+        wordIndex = idx;
+    }
+    
+    return NumSequence(numSeq);
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -30,7 +30,7 @@ namespace gmsuite {
          * @param order the model's order
          * @param alphabet the alphabet used by the model
          */
-        UniformMarkov(unsigned order, const AlphabetDNA &alph, const CharNumConverter &cnc);
+        UniformMarkov(unsigned order, const NumAlphabetDNA &alph);
         
         
         /**
@@ -84,6 +84,14 @@ namespace gmsuite {
         void changeOrder(unsigned newOrder);
         
         
+        /**
+         * Emit a sequence from the markov model
+         *
+         * @param length the length of the sequence
+         */
+        NumSequence emit(NumSequence::size_type length) const;
+        
+        
     protected:
 
         /**
@@ -91,14 +99,6 @@ namespace gmsuite {
          */
         void initialize();
         
-        /**
-         * Increment order of joint probabilities by one.
-         *
-         * @param currentOrder the order of the "original" probabilities
-         * @param currentProbs the "original" probabilities
-         * @param newProbs a vector where the new probabilities (of order currentOrder+1) will be stored
-         */
-        void incrementOrderByOne(unsigned currentOrder, const vector<double> &currentProbs, vector<double> &newProbs) const;
         
         
         // The structure of the model 'm' is a vector of doubles, where m holds

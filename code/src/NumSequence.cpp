@@ -108,3 +108,13 @@ NumSequence::size_type NumSequence::size() const {
 }
 
 
+
+
+bool NumSequence::containsInvalid(const NumAlphabetDNA &alph) const {
+    for (size_t n = 0; n < numSeq.size(); n++) {
+        if (alph.isAmbiguous(numSeq[n]))
+            return true;
+    }
+    
+    return false;
+}

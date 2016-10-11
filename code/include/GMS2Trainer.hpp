@@ -54,8 +54,7 @@ namespace gmsuite {
                     NumSequence::size_type startContextLength,
                     genome_class_t genomeClass,
                     const OptionsMFinder &optionsMFinder,
-                    const CharNumConverter &cnc,
-                    const AlphabetDNA &alph,
+                    const NumAlphabetDNA &alph,
                     const NumSequence::size_type MIN_GENE_LEN);
         
         ~GMS2Trainer();
@@ -70,6 +69,9 @@ namespace gmsuite {
         void estimateParametersStartContext(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use = vector<bool>());
         void estimateParametersMotifModel(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use = vector<bool>());
         
+        
+        void estimateParametersMotifModel_Promoter(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use = vector<bool>());
+        
         // parameters
         unsigned pcounts;
         unsigned codingOrder;
@@ -79,9 +81,12 @@ namespace gmsuite {
         NumSequence::size_type startContextLength;
         genome_class_t genomeClass;
         const OptionsMFinder* optionsMFinder;
-        const CharNumConverter *cnc;
-        const AlphabetDNA *alphabet;
+        const NumAlphabetDNA *alphabet;
         NumSequence::size_type MIN_GENE_LEN;            // minimum gene length
+        NumSequence::size_type MIN_UPSTR_LEN_FGIO;           // minimum upstream length for first-genes-in-operon
+        NumSequence::size_type UPSTR_LEN_NFGIO;
+        unsigned FGIO_DIST_THRESH;
+        unsigned NFGIO_DIST_THRES;
         
         // public variables for models
 //        NonUniformMarkov *motif;

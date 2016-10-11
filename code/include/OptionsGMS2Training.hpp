@@ -30,7 +30,7 @@ namespace gmsuite {
         
     public:
         
-        OptionsGMS2Training(string mode);
+        OptionsGMS2Training(string mode="gms2-training");
         
         /**
          * Parse the command-line words into arguments
@@ -41,6 +41,8 @@ namespace gmsuite {
          */
         bool parse(int argc, const char *argv[]);
         
+        
+        static void addProcessOptions(OptionsGMS2Training &options, po::options_description &processOptions);
         
         // Below, create a variable for each parameter, to make for easy access
     public:

@@ -12,6 +12,12 @@
 #include <fstream>
 #include <iostream>
 #include <boost/program_options.hpp>
+#include <boost/xpressive/xpressive.hpp>
+#include <boost/lexical_cast.hpp>
+#include <boost/any.hpp>
+
+
+using namespace boost::xpressive;
 
 using namespace std;
 using namespace gmsuite;
@@ -20,6 +26,49 @@ namespace po = boost::program_options;
 OptionsGMS2Training::OptionsGMS2Training(string mode) : Options(mode), optionsMFinder(mode) {
     
 }
+
+namespace gmsuite {
+std::istream& operator>>(std::istream& in, ProkGeneStartModel::genome_class_t& unit)
+{
+    std::string token;
+    in >> token;
+    if (token == "1")
+        unit = ProkGeneStartModel::C1;
+    else if (token == "2")
+        unit = ProkGeneStartModel::C2;
+    else if (token == "3")
+        unit = ProkGeneStartModel::C3;
+//    else
+//        throw boost::program_options::validation_error("Invalid genome class");
+    
+    return in;
+}
+}
+
+void validate(boost::any& v,
+              const std::vector<std::string>& values,
+              ProkGeneStartModel::genome_class_t * target_type, int)
+{
+    static sregex expr = sregex::compile("^\\s*(\\d)*");
+    using namespace boost::program_options;
+    
+    // Make sure no previous assignment to 'a' was made.
+    validators::check_first_occurrence(v);
+    // Extract the first string from 'values'. If there is more than
+    // one string, it's an error, and exception will be thrown.
+    const string& s = validators::get_single_string(values);
+    
+    // Do regex match and convert the interesting part to
+    // int.
+    smatch match;
+    if (regex_search(s, match, expr)) {
+//        v = boost::any(ProkGeneStartModel::genome_class_t(boost::lexical_cast<int>(match[1])));
+    } else {
+        throw validation_error(validation_error::invalid_option_value);
+    }
+}
+
+
 
 // parse CMD options
 bool OptionsGMS2Training::parse(int argc, const char *argv[]) {
@@ -45,9 +94,10 @@ bool OptionsGMS2Training::parse(int argc, const char *argv[]) {
         ("fn-sequence,s", po::value<string>(&fn_sequence)->required(), "Name of sequence file")
         ("fn-labels,l", po::value<string>(&fn_labels)->required(), "Name of labels file")
         ("fn-mod,m", po::value<string>(&fn_outmod)->required(), "Name of output model file")
-        ("genome-class", po::value<int>()->required(), "The genome's class: 1,2,3")
+        
         
         // GMS2 model parameters
+        ("genome-class", po::value<ProkGeneStartModel::genome_class_t>(&genomeClass)->required(), "The genome's class: 1,2,3")
         ("pcounts", po::value<double>(&pcounts)->default_value(1), "Pseudocounts for gms2 models")
         ("coding-order", po::value<unsigned>(&codingOrder)->default_value(4), "Order for coding Markov model")
         ("noncoding-order", po::value<unsigned>(&noncodingOrder)->default_value(2), "Order for noncoding Markov model")
@@ -113,19 +163,19 @@ bool OptionsGMS2Training::parse(int argc, const char *argv[]) {
         // try parsing arguments.
         po::notify(vm);
         
-        // get genome sequence
-        switch (vm["genome-class"].as<int>()) {
-            case 1:
-                genomeClass = ProkGeneStartModel::C1;
-                break;
-            case 2:
-                genomeClass = ProkGeneStartModel::C2;
-            case 3:
-                genomeClass = ProkGeneStartModel::C3;
-                
-            default:
-                throw invalid_argument("Unknown genome class");
-        }
+//        // get genome sequence
+//        switch (vm["genome-class"].as<int>()) {
+//            case 1:
+//                genomeClass = ProkGeneStartModel::C1;
+//                break;
+//            case 2:
+//                genomeClass = ProkGeneStartModel::C2;
+//            case 3:
+//                genomeClass = ProkGeneStartModel::C3;
+//                
+//            default:
+//                throw invalid_argument("Unknown genome class");
+//        }
         
     }
     catch (exception &ex) {
@@ -137,3 +187,26 @@ bool OptionsGMS2Training::parse(int argc, const char *argv[]) {
     
     
 }
+
+
+
+void OptionsGMS2Training::addProcessOptions(OptionsGMS2Training &options, po::options_description &processOptions) {
+ 
+    processOptions.add_options()
+    ("genome-class", po::value<ProkGeneStartModel::genome_class_t>(&options.genomeClass)->required(), "The genome's class: 1,2,3")
+    ("pcounts", po::value<double>(&options.pcounts)->default_value(1), "Pseudocounts for gms2 models")
+    ("coding-order", po::value<unsigned>(&options.codingOrder)->default_value(4), "Order for coding Markov model")
+    ("noncoding-order", po::value<unsigned>(&options.noncodingOrder)->default_value(2), "Order for noncoding Markov model")
+    ("sc-order", po::value<unsigned>(&options.startContextOrder)->default_value(0), "Order for start-context model")
+    ("sc-length", po::value<NumSequence::size_type>(&options.startContextLength)->default_value(12), "Length of start-context model")
+    ("upstream-length", po::value<NumSequence::size_type>(&options.upstreamLength)->default_value(40), "Length of upstream region for motif search")
+    ("MIN_GENE_LEN", po::value<NumSequence::size_type>(&options.MIN_GENE_LEN)->default_value(300), "Minimum gene length allowed in training")
+    ;
+    
+    // mfinder options
+    po::options_description mfinder("Motif Finder");
+    OptionsMFinder::addProcessOptions(options.optionsMFinder, mfinder);
+    processOptions.add(mfinder);
+    
+}
+

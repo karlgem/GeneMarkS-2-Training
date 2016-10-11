@@ -15,7 +15,7 @@ using namespace std;;
 using namespace gmsuite;
 
 // constructor
-PeriodicCounts::PeriodicCounts(unsigned order, size_t period, const AlphabetDNA &alph, const CharNumConverter &cnc) : Counts(order, alph, cnc) {
+PeriodicCounts::PeriodicCounts(unsigned order, size_t period, const NumAlphabetDNA &alph) : Counts(order, alph) {
     
     if (period == 0)
         throw std::invalid_argument("Period cannot be 0.");
@@ -98,14 +98,25 @@ void PeriodicCounts::updateCounts(NumSequence::const_iterator begin, NumSequence
     
     size_t wordIndex = 0;       // contains the index of the current word (made up of order+1 elements)
     
+    size_t lifeOfN = 0;         // how many characters to skip before N "leaves" the word (e.g. ACN, CNG, NGA, GAC) <- life = 3
+    
     // loop over first "order" elements to store them as part of the initial word index
     for (size_t i = 0; i < order; i++) {
         
         wordIndex <<= elementEncodingSize;      // create space at lower bits for a new element
-        if (reverseComplement)
-            wordIndex += cnc->complement(*currentElement);           // complement element then add to the wordIndex
-        else
-            wordIndex += *currentElement;                           // add element to the wordIndex
+        
+        // if current letter is N
+        if (alphabet->isAmbiguous(*currentElement)) {
+            lifeOfN = order+1;
+        }
+        else {
+            if (lifeOfN > 0)
+                lifeOfN--;
+            if (reverseComplement)
+                wordIndex += alphabet->complement(*currentElement);           // complement element then add to the wordIndex
+            else
+                wordIndex += *currentElement;                           // add element to the wordIndex
+        }
         
         frame++;                                // increment frame
         if (frame == period)
@@ -124,23 +135,33 @@ void PeriodicCounts::updateCounts(NumSequence::const_iterator begin, NumSequence
         // add new element to the wordIndex
         wordIndex <<= elementEncodingSize;      // create space at lower bits for a new element
         
-        if (reverseComplement)
-            wordIndex += cnc->complement(*currentElement);           // complement element then add to the wordIndex
-        else
-            wordIndex += *currentElement;                           // add element to the wordIndex
+        // if current letter is N
+        if (alphabet->isAmbiguous(*currentElement)) {
+            lifeOfN = order+1;
+        }
+        else {
+            if (lifeOfN > 0)
+                lifeOfN--;
+            if (reverseComplement)
+                wordIndex += alphabet->complement(*currentElement);           // complement element then add to the wordIndex
+            else
+                wordIndex += *currentElement;                           // add element to the wordIndex
+        }
         
         wordIndex = wordIndex & mask;           // mask to remove old junk characters
         
-        // increment or decrement
-        if (operation == "increment") {
-            model[frame][wordIndex]++;              // increment count by 1
-        }
-        else {
-            // update count at new word index
-            if (model[frame][wordIndex] == 0)
-                throw out_of_range("Cannot decrement sequence counts below 0");
-            
-            model[frame][wordIndex]--;              // decrement count by 1
+        if (lifeOfN == 0) {
+            // increment or decrement
+            if (operation == "increment") {
+                model[frame][wordIndex]++;              // increment count by 1
+            }
+            else {
+                // update count at new word index
+                if (model[frame][wordIndex] == 0)
+                    throw out_of_range("Cannot decrement sequence counts below 0");
+                
+                model[frame][wordIndex]--;              // decrement count by 1
+            }
         }
         
         frame++;                                // increment frame

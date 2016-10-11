@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "Sequence.hpp"
+#include "NumAlphabetDNA.hpp"
 #include "CharNumConverter.hpp"
 
 using std::vector;
@@ -106,6 +107,9 @@ namespace gmsuite {
          * alphabet used by this sequence.
          */
         void reverseComplement(const CharNumConverter &cnc);
+        
+        
+        bool containsInvalid(const NumAlphabetDNA &alph) const;
         
         
         /*************** Sequence Iterators *******************/

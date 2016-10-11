@@ -14,7 +14,7 @@ using namespace std;
 using namespace gmsuite;
 
 // Constructor: Create a uniform count model by defining it's order and alphabet
-UniformCounts::UniformCounts(unsigned order, const AlphabetDNA &alph, const CharNumConverter &cnc) : Counts(order, alph, cnc) {
+UniformCounts::UniformCounts(unsigned order, const NumAlphabetDNA &alph) : Counts(order, alph) {
     initialize();
 }
 
@@ -79,10 +79,23 @@ void UniformCounts::updateCounts(NumSequence::const_iterator begin, NumSequence:
     
     size_t wordIndex = 0;       // contains the index of the current word (made up of order+1 elements)
     
+    size_t lifeOfN = 0;         // how many characters to skip before N "leaves" the word (e.g. ACN, CNG, NGA, GAC) <- life = 3
+
+    
     // loop over first "order" elements to store them as part of the initial word index
     for (size_t i = 0; i < order; i++, currentElement++) {
         wordIndex <<= elementEncodingSize;      // create space at lower bits for a new element
-        wordIndex += *currentElement;           // add new element to the wordIndex
+        
+        // if current letter is N
+        if (alphabet->isAmbiguous(*currentElement)) {
+            lifeOfN = order+1;
+        }
+        else {
+            if (lifeOfN > 0)
+                lifeOfN--;
+            
+            wordIndex += *currentElement;           // add new element to the wordIndex
+        }
     }
     
     
@@ -91,20 +104,33 @@ void UniformCounts::updateCounts(NumSequence::const_iterator begin, NumSequence:
         
         // add new element to the wordIndex
         wordIndex <<= elementEncodingSize;      // create space at lower bits for a new element
-        wordIndex += *currentElement;           // add new element to the wordIndex
+        
+        // if current letter is N
+        if (alphabet->isAmbiguous(*currentElement)) {
+            lifeOfN = order+1;
+        }
+        else {
+            if (lifeOfN > 0)
+                lifeOfN--;
+            
+            wordIndex += *currentElement;           // add new element to the wordIndex
+        }
         
         wordIndex = wordIndex & mask;           // mask to remove old junk characters
         
-        // increment or decrement
-        if (operation == "increment") {
-            model[wordIndex]++;              // increment count by 1
-        }
-        else {
-            // update count at new word index
-            if (model[wordIndex] == 0)
-                throw out_of_range("Cannot decrement sequence counts below 0");
-            
-            model[wordIndex]--;              // decrement count by 1
+        if (lifeOfN == 0) {
+
+            // increment or decrement
+            if (operation == "increment") {
+                model[wordIndex]++;              // increment count by 1
+            }
+            else {
+                // update count at new word index
+                if (model[wordIndex] == 0)
+                    throw out_of_range("Cannot decrement sequence counts below 0");
+                
+                model[wordIndex]--;              // decrement count by 1
+            }
         }
         
         currentElement++;                       // move to next letter

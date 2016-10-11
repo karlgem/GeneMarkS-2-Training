@@ -19,6 +19,37 @@
 using namespace std;
 using namespace gmsuite;
 
+
+typedef enum {FIRST_OP, NOT_FIRST_OP, IGNORE} GeneStat;         // gene status
+
+void filterNs (const vector<NumSequence> &original, vector<NumSequence> &filtered) {
+    
+    
+    if (original.size() == 0)
+        return;
+    
+    AlphabetDNA alphabet;
+    CharNumConverter cnc(&alphabet);
+    NumAlphabetDNA numAlph(alphabet, cnc);
+    
+    if (alphabet.sizeInvalid() > 0) {
+        
+        // remove all sequences containing N's
+        for (size_t n = 0; n < original.size(); n++) {
+            
+            // if sequence does not contain N
+            if (!original[n].containsInvalid(numAlph)) {
+                filtered.push_back(original[n]);
+            }
+        }
+    }
+    else {
+        filtered = original;
+    }
+}
+
+
+
 // default constructor
 GMS2Trainer::GMS2Trainer() {
     // DEPRECATED
@@ -44,8 +75,7 @@ GMS2Trainer::GMS2Trainer(unsigned pcounts,
                          NumSequence::size_type startContextLength,
                          genome_class_t genomeClass,
                          const OptionsMFinder &optionsMFinder,
-                         const CharNumConverter &cnc,
-                         const AlphabetDNA &alph,
+                         const NumAlphabetDNA &alph,
                          const NumSequence::size_type MIN_GENE_LEN) {
     
     this->pcounts = pcounts;
@@ -56,7 +86,6 @@ GMS2Trainer::GMS2Trainer(unsigned pcounts,
     this->startContextLength = startContextLength;
     this->genomeClass = genomeClass;
     this->optionsMFinder = &optionsMFinder;
-    this->cnc = &cnc;
     this->alphabet = &alph;
     this->MIN_GENE_LEN = MIN_GENE_LEN;
     
@@ -84,7 +113,7 @@ void GMS2Trainer::estimateParamtersCoding(const NumSequence &sequence, const vec
             throw invalid_argument("Labels and Use vector should have the same length");
     }
     
-    PeriodicCounts counts (codingOrder, 3, *this->alphabet, *this->cnc);
+    PeriodicCounts counts (codingOrder, 3, *this->alphabet);
     
     // get counts for 3 period markov model given order
     size_t n = 0;
@@ -118,7 +147,7 @@ void GMS2Trainer::estimateParamtersCoding(const NumSequence &sequence, const vec
     }
     
     // convert counts to probabilities
-    coding = new PeriodicMarkov(codingOrder, 3, *this->alphabet, *this->cnc);
+    coding = new PeriodicMarkov(codingOrder, 3, *this->alphabet);
     coding->construct(&counts, pcounts);
     
 }
@@ -134,7 +163,7 @@ void GMS2Trainer::estimateParamtersNonCoding(const NumSequence &sequence, const 
             throw invalid_argument("Labels and Use vector should have the same length");
     }
     
-    UniformCounts counts(noncodingOrder, *this->alphabet, *this->cnc);
+    UniformCounts counts(noncodingOrder, *this->alphabet);
     
     size_t leftNoncoding = 0;       // left position of current noncoding region
     
@@ -163,7 +192,7 @@ void GMS2Trainer::estimateParamtersNonCoding(const NumSequence &sequence, const 
     counts.count(sequence.begin() + leftNoncoding, sequence.begin() + sequence.size());
     
     // convert counts to probabilities
-    noncoding = new UniformMarkov(noncodingOrder, *this->alphabet, *this->cnc);
+    noncoding = new UniformMarkov(noncodingOrder, *this->alphabet);
     noncoding->construct(&counts, pcounts);
 }
 
@@ -177,7 +206,7 @@ void GMS2Trainer::estimateParametersStartContext(const NumSequence &sequence, co
             throw invalid_argument("Labels and Use vector should have the same length");
     }
     
-    NonUniformCounts counts(startContextOrder, startContextLength, *this->alphabet, *this->cnc);
+    NonUniformCounts counts(startContextOrder, startContextLength, *this->alphabet);
     
     // get counts for start context model
     size_t n = 0;
@@ -204,11 +233,12 @@ void GMS2Trainer::estimateParametersStartContext(const NumSequence &sequence, co
     }
     
     // convert counts to probabilities
-    startContext = new NonUniformMarkov(startContextOrder, startContextLength, *this->alphabet, *this->cnc);
+    startContext = new NonUniformMarkov(startContextOrder, startContextLength, *this->alphabet);
     startContext->construct(&counts, pcounts);
 }
 
 
+// Output: should set "rbsSpacer" and "rbs" variables
 void GMS2Trainer::estimateParametersMotifModel(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use) {
     
     // check if all labels should be used
@@ -216,6 +246,10 @@ void GMS2Trainer::estimateParametersMotifModel(const NumSequence &sequence, cons
         if (use.size() != labels.size())
             throw invalid_argument("Labels and Use vector should have the same length");
     }
+    
+    AlphabetDNA alph;
+    CharNumConverter cnc(&alph);
+    NumAlphabetDNA numAlph(alph, cnc);
     
     // build motif finder
     MotifFinder::Builder b;
@@ -242,19 +276,25 @@ void GMS2Trainer::estimateParametersMotifModel(const NumSequence &sequence, cons
     if (genomeClass == ProkGeneStartModel::C1) {
         
         // extract upstream of each label
-        vector<NumSequence> upstreams; 
-        SequenceParser::extractUpstreamSequences(sequence, labels, *cnc, upstreamLength, upstreams, false, MIN_GENE_LEN, use);
+        vector<NumSequence> upstreamsRaw;
+        SequenceParser::extractUpstreamSequences(sequence, labels, *alphabet->getCNC(), upstreamLength, upstreamsRaw, false, MIN_GENE_LEN, use);
+        
+        vector<NumSequence> upstreams;
+        for (size_t n = 0; n < upstreamsRaw.size(); n++) {
+            if (!upstreamsRaw[n].containsInvalid(numAlph))
+                upstreams.push_back(upstreamsRaw[n]);
+        }
         
         vector<NumSequence::size_type> positions;
         mfinder.findMotifs(upstreams, positions);
         
         // build RBS model
-        NonUniformCounts rbsCounts(optionsMFinder->motifOrder, optionsMFinder->width, *this->alphabet, *this->cnc);
+        NonUniformCounts rbsCounts(optionsMFinder->motifOrder, optionsMFinder->width, *this->alphabet);
         for (size_t n = 0; n < upstreams.size(); n++) {
             rbsCounts.count(upstreams[n].begin()+positions[n], upstreams[n].begin()+positions[n]+optionsMFinder->width);
         }
         
-        rbs = new NonUniformMarkov(optionsMFinder->motifOrder, optionsMFinder->width, *this->alphabet, *this->cnc);
+        rbs = new NonUniformMarkov(optionsMFinder->motifOrder, optionsMFinder->width, *this->alphabet);
         rbs->construct(&rbsCounts, optionsMFinder->pcounts);
         
         // build spacer distribution
@@ -276,10 +316,244 @@ void GMS2Trainer::estimateParametersMotifModel(const NumSequence &sequence, cons
     // if genome is class 3, search for RBS and promoter
     else {
         throw logic_error("Code not yet completed.");
+        estimateParametersMotifModel_Promoter(sequence, labels, use);
     }
     
 }
 
+
+vector<GeneStat> separateLabelsViaOperonStatus(const vector<Label*> &labels, unsigned thresh, unsigned threshNFIO) {
+    
+    
+    vector<GeneStat> result (labels.size());
+    
+    // for every label
+    for (size_t n = 0; n < labels.size(); n++) {
+        
+        // get label
+        const Label* lab = labels[n];
+        
+        // if on positive strand
+        if (lab->strand == Label::POS) {
+            
+            size_t start = lab->left;          // start location
+            
+            // if no gene before it, set as first in operon
+            if (n == 0) {
+                result[n] = FIRST_OP;
+            }
+            // otherwise, check to see if stop of previous gene is nearby
+            else {
+                
+                const Label* prevLab = labels[n-1];         // previous label
+                
+                if (prevLab->strand == Label::POS) {   // should be on positive strand
+                    
+                    size_t prevStop = prevLab->right;
+                    
+                    // if too far away, then current gene is first in op
+                    if (prevStop < start - thresh)
+                        result[n] = FIRST_OP;
+                    // if threshNFIO is set and gene is too close
+                    else if (threshNFIO != 0) {
+                        if (prevStop > start - threshNFIO)
+                            result[n] = NOT_FIRST_OP;
+                        else
+                            result[n] = IGNORE;
+                    }
+                    // otherwise, current gene belongs to same operon as previous
+                    else
+                        result[n] = NOT_FIRST_OP;
+                    
+                }
+                // otherwise it's on negative strand, so first in operon
+                else
+                    result[n] = FIRST_OP;
+            }
+        }
+        
+        // if on negative strand
+        else if (lab->strand == Label::NEG) {
+            
+            size_t start = lab->right;        // start location
+            
+            // if no gene after it, then set as first in operon
+            if (n == labels.size()-1) {
+                result[n] = FIRST_OP;
+            }
+            // otherwise, check to see if stop of previous gene (i.e. to the right) is nearby
+            else {
+                const Label* prevLab = labels[n+1];     // "next" label
+                
+                if (prevLab->strand == Label::NEG) {      // should be on negative strand
+                    
+                    size_t prevStop = prevLab->left;
+                    
+                    // if too far away, then current gene is first in op
+                    if (prevStop > start + thresh)
+                        result[n] = FIRST_OP;
+                    // if threshNFIO is set and gene is too close
+                    else if (threshNFIO != 0) {
+                        if (prevStop < start + threshNFIO)
+                            result[n] = NOT_FIRST_OP;
+                        else
+                            result[n] = IGNORE;
+                    }
+                    // otherwise, current gene belongs to same operon as previous
+                    else
+                        result[n] = NOT_FIRST_OP;
+                }
+                // oterhwise, previous gene is on different strand, so current is first in operon
+                else
+                    result[n] = FIRST_OP;
+            }
+        }
+        
+    }
+    
+    
+    return result;
+    
+}
+
+
+
+void GMS2Trainer::estimateParametersMotifModel_Promoter(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use) {
+    
+    // split sequences into first in operon and the rest
+    
+    // FIXME: make it more efficient
+    
+    // copy only usable labels
+    size_t numUse = labels.size();
+    if (use.size() > 0) {
+        numUse = 0;
+        for (size_t n = 0; n < labels.size(); n++)
+            if (use[n])
+                numUse++;
+    }
+    
+    vector<Label*> useLabels (numUse);
+    size_t pos = 0;
+    for (size_t n = 0; n < labels.size(); n++) {
+        if (use[n])
+            useLabels[pos++] = labels[n];
+    }
+    
+    
+    // get upstream regions
+    vector<NumSequence> upstreamsFGIO_style;
+    vector<NumSequence> upstreamsNFGIO_style;
+    
+    long long upstr_min_value = MIN_UPSTR_LEN_FGIO;
+    NumSequence::size_type upstrLength = this->upstreamLength - upstr_min_value;
+    
+    SequenceParser::extractStartContextSequences(sequence, useLabels, *alphabet->getCNC(), -this->upstreamLength, upstrLength, upstreamsFGIO_style);
+    
+    if (UPSTR_LEN_NFGIO == 0)
+        upstreamsNFGIO_style = upstreamsFGIO_style;
+    else
+        SequenceParser::extractStartContextSequences(sequence, useLabels, *alphabet->getCNC(), -this->UPSTR_LEN_NFGIO, this->UPSTR_LEN_NFGIO, upstreamsNFGIO_style);
+    
+    
+    vector<GeneStat> status = separateLabelsViaOperonStatus(useLabels, FGIO_DIST_THRESH, NFGIO_DIST_THRES);
+    
+    vector<NumSequence> upstreamsFGIO;
+    vector<NumSequence> upstreamsNFGIO;
+    
+    // split sequences
+    for (size_t n = 0; n < status.size(); n++) {
+        if (status[n] == IGNORE)
+            continue;
+        
+        if (status[n] == FIRST_OP)
+            upstreamsFGIO.push_back(upstreamsFGIO_style[n]);
+        else
+            upstreamsNFGIO.push_back(upstreamsNFGIO_style[n]);
+    }
+    
+    
+    // build motif finder
+    MotifFinder::Builder b;
+    if (optionsMFinder->align == "left")
+        b.setAlign(MFinderModelParams::LEFT);
+    else if (optionsMFinder->align == "right")
+        b.setAlign(MFinderModelParams::RIGHT);
+    else
+        b.setAlign(MFinderModelParams::NONE);
+    
+    b.setWidth(optionsMFinder->width);
+    b.setMaxIter(optionsMFinder->maxIter);
+    b.setPcounts(optionsMFinder->pcounts);
+    b.setNumTries(optionsMFinder->tries);
+    b.setBackOrder(optionsMFinder->bkgdOrder);
+    b.setMaxEMIter(optionsMFinder->maxEMIter);
+    b.setMotifOrder(optionsMFinder->motifOrder);
+    b.setShiftEvery(optionsMFinder->shiftEvery);
+    
+    MotifFinder mfinder = b.build();
+    
+    // remove N's
+    vector<NumSequence> upstreamsFGIO_noN;          // upstreams of first genes in operon that don't contain N
+    vector<NumSequence> upstreamsNFGIO_noN;         // upstreams of non-first genes in operon that don't contain N
+    
+    filterNs(upstreamsFGIO, upstreamsFGIO_noN);
+    filterNs(upstreamsNFGIO, upstreamsNFGIO_noN);
+    
+    vector<NumSequence::size_type> positionsFGIO, positionsNFGIO;
+    
+    // run MFinder in operons
+    mfinder.findMotifs(upstreamsFGIO_noN, positionsFGIO);
+    
+    // build Promoter model
+    NonUniformCounts promoterCounts(optionsMFinder->motifOrder, optionsMFinder->width, *this->alphabet);
+    for (size_t n = 0; n < upstreamsFGIO_noN.size(); n++) {
+        promoterCounts.count(upstreamsFGIO_noN[n].begin()+positionsFGIO[n], upstreamsFGIO_noN[n].begin()+positionsFGIO[n]+optionsMFinder->width);
+    }
+    
+    promoter = new NonUniformMarkov(optionsMFinder->motifOrder, optionsMFinder->width, *this->alphabet);
+    promoter->construct(&promoterCounts, optionsMFinder->pcounts);
+    
+    // build spacer distribution
+    // build histogram from positions
+    vector<double> positionCounts_promoter (this->upstreamLength - optionsMFinder->width+1, 0);
+    for (size_t n = 0; n < positionsFGIO.size(); n++) {
+        // FIXME account for LEFT alignment
+        // below is only for right
+        positionCounts_promoter[upstreamLength - optionsMFinder->width - positionsFGIO[n]]++;        // increment position
+    }
+    
+    promoterSpacer = new UnivariatePDF(positionCounts_promoter, false, pcounts);
+    
+    
+    // run MFinder on RBS
+    mfinder.findMotifs(upstreamsNFGIO_noN, positionsNFGIO);
+    
+    
+    // build RBS model
+    NonUniformCounts rbsCounts(optionsMFinder->motifOrder, optionsMFinder->width, *this->alphabet);
+    for (size_t n = 0; n < upstreamsNFGIO_noN.size(); n++) {
+        rbsCounts.count(upstreamsNFGIO_noN[n].begin()+positionsNFGIO[n], upstreamsNFGIO_noN[n].begin()+positionsNFGIO[n]+optionsMFinder->width);
+    }
+    
+    rbs = new NonUniformMarkov(optionsMFinder->motifOrder, optionsMFinder->width, *this->alphabet);
+    rbs->construct(&rbsCounts, optionsMFinder->pcounts);
+    
+    // build spacer distribution
+    // build histogram from positions
+    size_t upstrLenNFGIO = (UPSTR_LEN_NFGIO == 0 ? upstreamLength : UPSTR_LEN_NFGIO);
+    vector<double> positionCounts_rbs (upstrLenNFGIO - optionsMFinder->width+1, 0);
+    for (size_t n = 0; n < positionsNFGIO.size(); n++) {
+        // FIXME account for LEFT alignment
+        // below is only for right
+        positionCounts_rbs[upstrLenNFGIO - optionsMFinder->width - positionsFGIO[n]]++;        // increment position
+    }
+    
+    rbsSpacer = new UnivariatePDF(positionCounts_rbs, false, pcounts);
+    
+    
+    
+}
 
 void GMS2Trainer::estimateParameters(const NumSequence &sequence, const vector<gmsuite::Label *> &labels) {
     

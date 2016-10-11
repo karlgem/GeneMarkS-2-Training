@@ -11,7 +11,7 @@
 
 #include <stdio.h>
 
-#include "AlphabetDNA.hpp"
+#include "NumAlphabetDNA.hpp"
 #include "NumSequence.hpp"
 
 namespace gmsuite {
@@ -36,7 +36,7 @@ namespace gmsuite {
          *
          * @throw invalid_argument if alph is NULL
          */
-        Counts(unsigned order, const AlphabetDNA &alph, const CharNumConverter &cnc);
+        Counts(unsigned order, const NumAlphabetDNA &alph);
         
         
         /**
@@ -72,7 +72,7 @@ namespace gmsuite {
          *
          * @return the model's alphabet
          */
-        const AlphabetDNA* getAlphabet() const;
+        const NumAlphabetDNA* getAlphabet() const;
         
         
         /**
@@ -99,8 +99,7 @@ namespace gmsuite {
     protected:
         
         unsigned order;                     /**< The model's order */
-        const AlphabetDNA *alphabet;        /**< The alphabet */
-        const CharNumConverter *cnc;        /**< The character-number converter. Contains info on complementation */
+        const NumAlphabetDNA *alphabet;        /**< The alphabet */
         
         
         /**

@@ -30,7 +30,7 @@ namespace gmsuite {
         /**
          * Constructor
          */
-        CountModelsV1(const AlphabetDNA &alphabet, Sequence::size_type width, unsigned motifOrder, unsigned backOrder, MFinderModelParams::align_t align);
+        CountModelsV1(const NumAlphabetDNA &alphabet, Sequence::size_type width, unsigned motifOrder, unsigned backOrder, MFinderModelParams::align_t align);
         
         /**
          * Copy constructor
@@ -87,8 +87,7 @@ namespace gmsuite {
         
     private:
         
-        const AlphabetDNA* alphabet;                /**< alphabet */
-        const CharNumConverter* cnc;                /**< character number converter */
+        const NumAlphabetDNA* alphabet;                /**< alphabet */
         NumSequence::size_type width;               /**< motif width */
         unsigned motifOrder;                        /**< order for motif model */
         unsigned backOrder;                         /**< order for background model */

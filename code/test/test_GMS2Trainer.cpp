@@ -44,7 +44,8 @@ TEST_CASE("Test GMS2 Trainer") {
     trainer.genomeClass = ProkGeneStartModel::C1;       // genome class 1 for ecoli
     AlphabetDNA alph;
     CharNumConverter cnc(&alph);
-    trainer.cnc = &cnc;
+    NumAlphabetDNA numAlph(alph, cnc);
+    trainer.alphabet = &numAlph;
     
     // read sequence from file
     SequenceFile seqFile ("/Users/Karl/repos/GeneMarkS-2/code/tmp/ecoli.fa", SequenceFile::READ);        // open sequence file for reading

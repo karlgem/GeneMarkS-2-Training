@@ -15,6 +15,7 @@
 #include "CountModels.hpp"
 #include "CountModelsV1.hpp"
 #include "UnivariatePDF.hpp"
+#include "NumAlphabetDNA.hpp"
 #include "ProbabilityModels.hpp"
 #include "ProbabilityModelsV1.hpp"
 
@@ -91,13 +92,16 @@ double MotifFinder::gibbsFinder(const vector<NumSequence> &sequences, vector<Num
         tempPositions[n] = rand() % (sequences[n].size() - width + 1);
     }
     
+    CharNumConverter cnc(&this->alphabet);
+    NumAlphabetDNA numAlphabet(this->alphabet, cnc);
+    
     
     /***** Construct initial count models *****/
-    CountModels* counts = new CountModelsV1(this->alphabet, width, motifOrder, backOrder, align);
+    CountModels* counts = new CountModelsV1(numAlphabet, width, motifOrder, backOrder, align);
     counts->construct(sequences, tempPositions);
     
     // allocate space for probability models
-    ProbabilityModels *probs = new ProbabilityModelsV1(this->alphabet, width, motifOrder, backOrder, pcounts, align);
+    ProbabilityModels *probs = new ProbabilityModelsV1(numAlphabet, width, motifOrder, backOrder, pcounts, align);
     
     double maxScore = -DBL_MAX;                 // maximum alignment score
     vector<Sequence::size_type> maxPositions;   // maximum alignment positions
@@ -251,6 +255,9 @@ int MotifFinder::attemptShift(const vector<NumSequence> &sequences, const vector
     
     int numShifts = abs(minShift) + abs(maxShift) + 1;      // number of shifts to perform
     
+    CharNumConverter cnc(&this->alphabet);
+    NumAlphabetDNA numAlphabet(this->alphabet, cnc);
+    
     // hold shift scores (to sample from)
     vector<double> shiftScores (numShifts, 0);
     
@@ -265,7 +272,7 @@ int MotifFinder::attemptShift(const vector<NumSequence> &sequences, const vector
         shiftPositions(positions, shift, sequences, shiftedPositions);
         
         // construct new probability models from shifts
-        ProbabilityModels* probs = new ProbabilityModelsV1(this->alphabet, width, motifOrder, backOrder, pcounts, align);
+        ProbabilityModels* probs = new ProbabilityModelsV1(numAlphabet, width, motifOrder, backOrder, pcounts, align);
         probs->construct(sequences, shiftedPositions);
         
         // compute shift score

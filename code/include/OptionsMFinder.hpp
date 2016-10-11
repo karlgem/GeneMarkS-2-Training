@@ -26,7 +26,7 @@ namespace gmsuite {
         
     public:
         
-        OptionsMFinder(string mode);
+        OptionsMFinder(string mode = "mfinder");
         
         /**
          * Parse the command-line words into arguments
