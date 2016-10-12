@@ -28,10 +28,18 @@ namespace gmsuite {
         
     public:
         
-        #define EXTRACT_UPSTR "extract_upstream"
-        #define START_MODEL_INFO "start-model-info"
-        #define MATCH_SEQ_TO_UPSTREAM "match-seq-to-upstream"
-        #define MATCH_SEQ_TO_NONCODING "match-seq-to-noncoding"
+        typedef enum {
+            EXTRACT_UPSTR,
+            START_MODEL_INFO,
+            MATCH_SEQ_TO_UPSTREAM,
+            MATCH_SEQ_TO_NONCODING
+        }
+        utility_t;
+        
+//        #define EXTRACT_UPSTR "extract_upstream"
+//        #define START_MODEL_INFO "start-model-info"
+//        #define MATCH_SEQ_TO_UPSTREAM "match-seq-to-upstream"
+//        #define MATCH_SEQ_TO_NONCODING "match-seq-to-noncoding"
         
         OptionsUtilities(string mode);
         
@@ -48,7 +56,7 @@ namespace gmsuite {
         // Below, create a variable for each parameter, to make for easy access
     public:
         
-        string utility;             // the chosen utility
+        utility_t utility;             // the chosen utility
         
         // below you'll fine utility-based options
         

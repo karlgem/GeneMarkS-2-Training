@@ -34,17 +34,17 @@ ModuleUtilities::ModuleUtilities(const OptionsUtilities& opt) : options(opt) {
 // Run module according to the provided options.
 void ModuleUtilities::run() {
     
-    if (options.utility == EXTRACT_UPSTR) {
+    if (options.utility == OptionsUtilities::EXTRACT_UPSTR) {
         runExtractUpstream();
     }
-    else if (options.utility == START_MODEL_INFO)
+    else if (options.utility == OptionsUtilities::START_MODEL_INFO)
         runStartModelInfo();
-    else if (options.utility == MATCH_SEQ_TO_UPSTREAM)
+    else if (options.utility == OptionsUtilities::MATCH_SEQ_TO_UPSTREAM)
         runMatchSeqToUpstream();
-    else if (options.utility == MATCH_SEQ_TO_NONCODING)
+    else if (options.utility == OptionsUtilities::MATCH_SEQ_TO_NONCODING)
         runMatchSeqToNoncoding();
-    else            // unrecognized utility to run
-        throw invalid_argument("Unknown utility function " + options.utility);
+//    else            // unrecognized utility to run
+//        throw invalid_argument("Unknown utility function " + options.utility);
     
 }
 
