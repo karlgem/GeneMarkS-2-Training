@@ -36,11 +36,6 @@ namespace gmsuite {
         }
         utility_t;
         
-//        #define EXTRACT_UPSTR "extract_upstream"
-//        #define START_MODEL_INFO "start-model-info"
-//        #define MATCH_SEQ_TO_UPSTREAM "match-seq-to-upstream"
-//        #define MATCH_SEQ_TO_NONCODING "match-seq-to-noncoding"
-        
         OptionsUtilities(string mode);
         
         /**
@@ -58,7 +53,7 @@ namespace gmsuite {
         
         utility_t utility;             // the chosen utility
         
-        // below you'll fine utility-based options
+        // below you'll find utility-based options
         
         // generic options
         struct GenericOptions {

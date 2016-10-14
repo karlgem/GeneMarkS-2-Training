@@ -16,6 +16,7 @@
 #include "OptionsGMS2.hpp"
 #include "OptionsMFinder.hpp"
 #include "OptionsUtilities.hpp"
+#include "OptionsExperiment.hpp"
 #include "OptionsGMS2Training.hpp"
 
 #include "Module.hpp"
@@ -30,6 +31,7 @@ using namespace gmsuite;
 #define MOD_GMS2 "gms2"
 #define MOD_MFINDER "mfinder"
 #define MOD_UTILITIES "utilities"
+#define MOD_EXPERIMENT "experiment"
 #define MOD_GMS2_TRAINING "gms2-training"
 
 string usage_message(string progName) {
@@ -83,6 +85,15 @@ int main(int argc, const char * argv[]) {
         
         ModuleUtilities module (options);               // create module with options
         module.run();                                   // run module
+    }
+    else if (aMode == MOD_EXPERIMENT) {
+        OptionsExperiment options(aMode);               // Experiment
+        
+        if (!options.parse(argc, argv))                 // parse input arguments
+            return 1;
+        
+//        ModuleExperiment module (options);               // create module with options
+//        module.run();                                   // run module
     }
     else if (aMode == MOD_GMS2_TRAINING) {
         OptionsGMS2Training options(aMode);             // GMS2 Training

@@ -126,11 +126,8 @@ bool OptionsUtilities::parse(int argc, const char *argv[]) {
         po::store(parsed,vm);
         
         if (!vm.count("utility")){
-            // if help specified, print usage message and quit
-//            if (vm.count("help")) {
                 cout << make_usage_string(basename(argv[0]), cmdline_options, pos) << endl;
                 return false;
-//            }
         }
         
         // try parsing arguments.
