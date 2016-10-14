@@ -123,7 +123,7 @@ bool OptionsExperiment::parse(int argc, const char **argv) {
         
         
         // if help specified, print usage message and quit
-        if (vm.count("help")) {
+        if (vm["help"].as<bool>()) {
             cout << make_usage_string(basename(argv[0]), cmdline_options, pos) << endl;
             return false;
         }
