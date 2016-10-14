@@ -67,12 +67,13 @@ void ModuleExperiment::runMatchSeqToUpstream() {
     Sequence strMatchSeq (expOptions.matchTo);
     NumSequence matchSeq (strMatchSeq, cnc);
     
-    unsigned matchThresh = 3;            // threshold for nonmatches
+    unsigned matchThresh = 4;            // threshold for nonmatches
     vector<NumSequence> nonMatch;           // keep track of 'non matching'
     
     // for each upstream sequence, match it against strMatchSeq
     for (size_t i = 0; i < upstreams.size(); i++) {
-        NumSequence match = SequenceAlgorithms::longestCommonSubstring(matchSeq, upstreams[i]);
+        NumSequence sub = upstreams[i].subseq(expOptions.length - 20, 20);
+        NumSequence match = SequenceAlgorithms::longestCommonSubstring(matchSeq, sub);
         
         // print match and size
         if (match.size() > 0)
