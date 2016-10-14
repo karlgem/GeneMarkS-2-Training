@@ -16,6 +16,7 @@
 #include "SequenceParser.hpp"
 #include "SequenceAlgorithms.hpp"
 #include "MotifFinder.hpp"
+#include "GMS2Trainer.hpp"
 
 #include <iostream>
 
@@ -33,6 +34,9 @@ void ModuleExperiment::run() {
     
     if (options.experiment == OptionsExperiment::MATCH_SEQ_TO_UPSTREAM)
         runMatchSeqToUpstream();
+    else if (options.experiment == OptionsExperiment::MATCH_SEQ_TO_NONCODING)
+        runMatchSeqToNoncoding();
+    
 }
 
 // match query to upstream regions
@@ -98,4 +102,89 @@ void ModuleExperiment::runMatchSeqToUpstream() {
 // match query to simulated noncoding sequences
 void ModuleExperiment::runMatchSeqToNoncoding() {
     
+    OptionsExperiment::MatchSeqToNoncodingOptions expOptions = options.matchSeqToNoncoding;
+    
+    // read sequence file
+    SequenceFile sequenceFile (expOptions.fn_seqeuence, SequenceFile::READ);
+    Sequence strSequence = sequenceFile.read();
+    
+    // read label file
+    LabelFile labelFile (expOptions.fn_labels, LabelFile::READ);
+    vector<Label*> labels;
+    labelFile.read(labels);
+    
+    // create numeric sequence
+    AlphabetDNA alph;
+    CharNumConverter cnc (&alph);
+    NumAlphabetDNA numAlph(alph, cnc);
+    
+    NumSequence numSequence (strSequence, cnc);
+    
+    OptionsMFinder optionsMFinder;
+    
+    // run training step
+    GMS2Trainer trainer((unsigned) expOptions.pcounts, 0, expOptions.order, 0, 40, 0, ProkGeneStartModel::C1, optionsMFinder, numAlph, 300);
+    
+    trainer.estimateParameters(numSequence, labels);
+    
+    // Generate non-coding sequences
+    vector<NumSequence> simNonCoding (expOptions.numNoncoding);
+    
+    for (size_t n = 0; n < simNonCoding.size(); n++)
+        simNonCoding[n] = trainer.noncoding->emit(expOptions.length);
+    
+    // get sequence to match with
+    Sequence strMatchSeq (expOptions.matchTo);
+    NumSequence matchSeq (strMatchSeq, cnc);
+    
+    // for each noncoding sequence, match it
+    for (size_t i = 0; i < simNonCoding.size(); i++) {
+        NumSequence match = SequenceAlgorithms::longestCommonSubstring(matchSeq, simNonCoding[i]);
+        
+        // print match and size
+        if (match.size() > 0)
+            cout << cnc.convert(match.begin(), match.end()) << "\t" << match.size() << endl;
+    }
+        
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

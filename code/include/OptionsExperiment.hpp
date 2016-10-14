@@ -69,6 +69,7 @@ namespace gmsuite {
             size_t length;                  // length of noncoding sequences
             size_t numNoncoding;            // number of simulated non-coding
             unsigned order;                 // order of noncoding model
+            double pcounts;                 // pseudocounts
         }
         matchSeqToNoncoding;
         

@@ -159,5 +159,6 @@ void OptionsExperiment::addProcessOptions_MatchSeqToNoncodingOptions(MatchSeqToN
         ("length", po::value<size_t>(&options.length)->default_value(40), "Length of noncoding sequences")
         ("num-noncoding", po::value<size_t>(&options.numNoncoding)->default_value(1000), "Number of non-coding sequences.")
         ("order-nonc", po::value<unsigned>(&options.order)->default_value(0), "Order of non-coding model")
+        ("pcounts", po::value<double>(&options.pcounts)->default_value(1), "Pseudocounts for noncoding model")
     ;
 }
