@@ -79,6 +79,8 @@ namespace gmsuite {
         // build-start-models options
         struct BuildStartModelsOptions : public GenExtractUpstreamsOptions {
             string matchTo;                 // the sequence to be matched
+            unsigned min16SMatch;           // the minimum accepted match length with 16S tail
+            bool allowAGSubstitution;       // whether A and G can be substituted while matching
             OptionsMFinder mfinderOptions;  // options for motif finder
         }
         buildStartModels;

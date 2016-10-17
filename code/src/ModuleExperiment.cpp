@@ -183,8 +183,8 @@ void ModuleExperiment::runBuildStartModels() {
     Sequence strMatchSeq (expOptions.matchTo);
     NumSequence matchSeq (strMatchSeq, cnc);
     
-    unsigned matchThresh = 4;            // threshold for nonmatches
-    vector<NumSequence> nonMatch;           // keep track of 'non matching'
+    unsigned matchThresh = expOptions.min16SMatch;          // threshold for nonmatches
+    vector<NumSequence> nonMatch;                           // keep track of 'non matching'
     
     // for each upstream sequence, match it against strMatchSeq
     for (size_t i = 0; i < upstreams.size(); i++) {

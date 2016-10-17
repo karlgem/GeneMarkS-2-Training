@@ -111,7 +111,7 @@ bool OptionsExperiment::parse(int argc, const char **argv) {
         if (experiment == MATCH_SEQ_TO_NONCODING) {
             addProcessOptions_MatchSeqToNoncodingOptions(matchSeqToNoncoding, expDesc);
         }
-        // Experiment: build start models 
+        // Experiment: build start models
         if (experiment == BUILD_START_MODELS) {
             addProcessOptions_BuildStartModelsOptions(buildStartModels, expDesc);
         }
@@ -173,6 +173,8 @@ void OptionsExperiment::addProcessOptions_BuildStartModelsOptions(BuildStartMode
     Options::addProcessOptions_GenExtractUpstreamsOptions(options, processOptions);
     processOptions.add_options()
         ("match-to", po::value<string>(&options.matchTo)->required(), "Sequence to match to.")
+        ("min-match", po::value<unsigned>(&options.min16SMatch)->default_value(4), "Minimum accepted match length from upstream to 16S tail")
+        ("allow-ag-sub", po::bool_switch(&options.allowAGSubstitution)->default_value(false), "Allow G to be substituted for A when matching to 16S tail")
     ;
     
     // mfinder options
