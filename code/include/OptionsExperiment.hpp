@@ -12,6 +12,7 @@
 #include <stdio.h>
 
 #include "Options.hpp"
+#include "OptionsMFinder.hpp"
 
 namespace gmsuite {
     
@@ -26,7 +27,8 @@ namespace gmsuite {
         // experiment types
         typedef enum {
             MATCH_SEQ_TO_UPSTREAM,
-            MATCH_SEQ_TO_NONCODING
+            MATCH_SEQ_TO_NONCODING,
+            BUILD_START_MODELS
         }
         experiment_t;
         
@@ -74,6 +76,13 @@ namespace gmsuite {
         }
         matchSeqToNoncoding;
         
+        // build-start-models options
+        struct BuildStartModelsOptions : public GenExtractUpstreamsOptions {
+            string matchTo;                 // the sequence to be matched
+            OptionsMFinder mfinderOptions;  // options for motif finder
+        }
+        buildStartModels;
+        
         
         
         /**********************************************\
@@ -82,7 +91,7 @@ namespace gmsuite {
         
         static void addProcessOptions_MatchSeqToUpstreamOptions(MatchSeqToUpstreamOptions &options, po::options_description &processOptions);
         static void addProcessOptions_MatchSeqToNoncodingOptions(MatchSeqToNoncodingOptions &options, po::options_description &processOptions);
-        
+        static void addProcessOptions_BuildStartModelsOptions(BuildStartModelsOptions &options, po::options_description &processOptions);
         
         
         

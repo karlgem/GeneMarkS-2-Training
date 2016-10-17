@@ -162,3 +162,20 @@ void OptionsExperiment::addProcessOptions_MatchSeqToNoncodingOptions(MatchSeqToN
         ("pcounts", po::value<double>(&options.pcounts)->default_value(1), "Pseudocounts for noncoding model")
     ;
 }
+
+void OptionsExperiment::addProcessOptions_BuildStartModelsOptions(BuildStartModelsOptions &options, po::options_description &processOptions) {
+    Options::addProcessOptions_GenExtractUpstreamsOptions(options, processOptions);
+    processOptions.add_options()
+        ("match-to", po::value<string>(&options.matchTo)->required(), "Sequence to match to.")
+    ;
+    
+    // mfinder options
+    po::options_description mfinder ("Motif Finder");
+    OptionsMFinder::addProcessOptions(options.mfinderOptions, mfinder);
+    processOptions.add(mfinder);
+}
+
+
+
+
+

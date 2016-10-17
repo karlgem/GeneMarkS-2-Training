@@ -43,6 +43,7 @@ namespace gmsuite {
         // Each experiment requires a separate run command
         void runMatchSeqToUpstream();
         void runMatchSeqToNoncoding();
+        void runBuildStartModels();
     };
 }
 
