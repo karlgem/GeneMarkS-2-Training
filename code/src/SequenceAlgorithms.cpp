@@ -10,7 +10,7 @@
 
 using namespace gmsuite;
 
-NumSequence SequenceAlgorithms::longestCommonSubstring(const NumSequence &A, const NumSequence &B) {
+NumSequence SequenceAlgorithms::longestCommonSubstring(const NumSequence &A, const NumSequence &B, const std::vector<std::pair<NumSequence::num_t, NumSequence::num_t> >& subs) {
     
     // allocate space for LCS matrix
     int** LCS = new int*[A.size()+1];
@@ -29,6 +29,12 @@ NumSequence SequenceAlgorithms::longestCommonSubstring(const NumSequence &A, con
     for (size_t i = 1; i <= A.size(); i++) {
         for (size_t j = 1; j <= B.size(); j++) {
             // match
+            bool match = (A[i-1] == B[j-1]);
+            for (size_t n = 0; n < subs.size(); n++) {
+                if (A[i-1] == subs[n].first && B[j-1] == subs[n].second)
+                    match |= true;
+            }
+            
             if (A[i-1] == B[j-1]) {
                 LCS[i][j] = LCS[i-1][j-1] + 1;
             }

@@ -36,7 +36,7 @@ void ModuleExperiment::run() {
         runMatchSeqToUpstream();
     else if (options.experiment == OptionsExperiment::MATCH_SEQ_TO_NONCODING)
         runMatchSeqToNoncoding();
-    else if (options.experiment == OptionsExperiment::BuildStartModelsOptions)
+    else if (options.experiment == OptionsExperiment::BUILD_START_MODELS)
         runBuildStartModels();
     
 }
