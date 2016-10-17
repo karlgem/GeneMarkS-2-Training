@@ -12,8 +12,9 @@
 using namespace std;
 using namespace gmsuite;
 
-#define STR_MATCH_SEQ_TO_UPSTREAM  "match-seq-to-upstream"
-#define STR_MATCH_SEQ_TO_NONCODING "match-seq-to-noncoding"
+#define STR_MATCH_SEQ_TO_UPSTREAM   "match-seq-to-upstream"
+#define STR_MATCH_SEQ_TO_NONCODING  "match-seq-to-noncoding"
+#define STR_BUILD_START_MODELS      "build-start-models"
 
 namespace gmsuite {
     // convert string to experiment_t
@@ -23,6 +24,7 @@ namespace gmsuite {
         
         if      (token == STR_MATCH_SEQ_TO_UPSTREAM)    unit = OptionsExperiment::MATCH_SEQ_TO_UPSTREAM;
         else if (token == STR_MATCH_SEQ_TO_NONCODING)   unit = OptionsExperiment::MATCH_SEQ_TO_NONCODING;
+        else if (token == STR_BUILD_START_MODELS)       unit = OptionsExperiment::BUILD_START_MODELS;
         else
             throw boost::program_options::invalid_option_value(token);
         
@@ -108,6 +110,10 @@ bool OptionsExperiment::parse(int argc, const char **argv) {
         // Experiment: match sequence to simulated noncoding regions
         if (experiment == MATCH_SEQ_TO_NONCODING) {
             addProcessOptions_MatchSeqToNoncodingOptions(matchSeqToNoncoding, expDesc);
+        }
+        // Experiment: build start models 
+        if (experiment == BUILD_START_MODELS) {
+            addProcessOptions_BuildStartModelsOptions(buildStartModels, expDesc);
         }
         
         cmdline_options.add(expDesc);
