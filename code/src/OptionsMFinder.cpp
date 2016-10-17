@@ -17,6 +17,28 @@ using namespace std;
 using namespace gmsuite;
 namespace po = boost::program_options;
 
+
+namespace gmsuite {
+    // convert string to genome_class_t
+    std::istream& operator>>(std::istream& in, OptionsMFinder::align_t& unit) {
+        string token;
+        in >> token;
+        
+        if (token == "none")
+            unit = MFinderModelParams::NONE;
+        else if (token == "left")
+            unit = MFinderModelParams::LEFT;
+        else if (token == "right")
+            unit = MFinderModelParams::RIGHT;
+        else
+            throw po::invalid_option_value(token);
+        
+        return in;
+        
+    }
+}
+
+
 OptionsMFinder::OptionsMFinder(string mode) : Options(mode) {
     
 }
@@ -41,17 +63,10 @@ bool OptionsMFinder::parse(int argc, const char *argv[]) {
         // on both CML and in the config files
         po::options_description config("Configuration");
         config.add_options()
-        ("verbose,v", po::value<int>(&verbose)->default_value(0), "Verbose level")
-        ("width,w", po::value<unsigned>(&width)->default_value(6), "Width of motif")
-        ("motif-order,o", po::value<unsigned>(&motifOrder)->default_value(0), "Order of the motif's Markov model")
-        ("bkgd-order,b", po::value<unsigned>(&bkgdOrder)->default_value(0), "Order of the background's Markov model")
-        ("align", po::value<string>(&align)->default_value("none"), "If set, positional information is considered by the model")
-        ("tries", po::value<unsigned>(&tries)->default_value(10), "Number of restarts")
-        ("max-iter", po::value<unsigned>(&maxIter)->default_value(60), "Number of Gibbs iterations per single try")
-        ("max-em-iter", po::value<unsigned>(&maxEMIter)->default_value(10), "Number of EM iterations per single try")
-        ("shift-every", po::value<unsigned>(&shiftEvery)->default_value(10), "Number of iterations before shifting motif")
-        ("pcount", po::value<double>(&pcounts)->default_value(1), "Pseudocounts")
+            ("verbose,v", po::value<int>(&verbose)->default_value(0), "Verbose level")
         ;
+        
+        addProcessOptions(*this, config);
         
         // Create set of hidden arguments (which can correspond to positional arguments). This is used
         // to add positional arguments, while not putting their description in the "options" section.
@@ -144,15 +159,13 @@ void OptionsMFinder::addProcessOptions(OptionsMFinder &optionsMFinder, po::optio
     ("width,w", po::value<unsigned>(&optionsMFinder.width)->default_value(6), "Width of motif")
     ("motif-order,o", po::value<unsigned>(&optionsMFinder.motifOrder)->default_value(0), "Order of the motif's Markov model")
     ("bkgd-order,b", po::value<unsigned>(&optionsMFinder.bkgdOrder)->default_value(0), "Order of the background's Markov model")
-    ("align", po::value<string>(&optionsMFinder.align)->default_value("none"), "If set, positional information is considered by the model")
+    ("align", po::value<align_t>(&optionsMFinder.align)->default_value(MFinderModelParams::NONE), "If set, positional information is considered by the model")
     ("tries", po::value<unsigned>(&optionsMFinder.tries)->default_value(10), "Number of restarts")
     ("max-iter", po::value<unsigned>(&optionsMFinder.maxIter)->default_value(60), "Number of Gibbs iterations per single try")
     ("max-em-iter", po::value<unsigned>(&optionsMFinder.maxEMIter)->default_value(10), "Number of EM iterations per single try")
     ("shift-every", po::value<unsigned>(&optionsMFinder.shiftEvery)->default_value(10), "Number of iterations before shifting motif")
     ("pcount", po::value<double>(&optionsMFinder.pcounts)->default_value(1), "Pseudocounts")
     ;
-
-    
 }
 
 

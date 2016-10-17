@@ -59,6 +59,7 @@ namespace gmsuite {
         // match-seq-to-upstream options
         struct MatchSeqToUpstreamOptions : public GenExtractUpstreamsOptions {
             string matchTo;                 // the sequence to be matched
+            
         }
         matchSeqToUpstream;
         

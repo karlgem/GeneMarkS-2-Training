@@ -195,20 +195,13 @@ void ModuleUtilities::runStartModelInfo() {
     }
     
     // convert align option from string format to align_t format
-    MFinderModelParams::align_t align = MFinderModelParams::NONE;
+    
     const OptionsMFinder *optionsMFinder = &options.startModelInfoUtility.optionsGMS2Training.optionsMFinder;
-    if (optionsMFinder->align == "left")
-        align = MFinderModelParams::LEFT;
-    else if (optionsMFinder->align == "right")
-        align = MFinderModelParams::RIGHT;
-    else if (optionsMFinder->align == "none")
-        align = MFinderModelParams::NONE;
-    else
-        throw invalid_argument("Align option must be one of: left, right, none");
+    
     
     // set motif finder options
     MotifFinder::Builder b;
-    b.setAlign(align).setWidth(optionsMFinder->width).setMaxIter(optionsMFinder->maxIter).setMaxEMIter(optionsMFinder->maxEMIter).setNumTries(optionsMFinder->tries);
+    b.setAlign(optionsMFinder->align).setWidth(optionsMFinder->width).setMaxIter(optionsMFinder->maxIter).setMaxEMIter(optionsMFinder->maxEMIter).setNumTries(optionsMFinder->tries);
     b.setPcounts(optionsMFinder->pcounts).setMotifOrder(optionsMFinder->motifOrder).setBackOrder(optionsMFinder->bkgdOrder).setShiftEvery(optionsMFinder->shiftEvery);
     
     // build motif finder from above options
