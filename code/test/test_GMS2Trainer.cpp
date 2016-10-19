@@ -20,7 +20,7 @@ TEST_CASE("Test GMS2 Trainer") {
     
     // setup mfinder options
     OptionsMFinder optionsMFinder("mfinder");
-    optionsMFinder.align = "right";
+    optionsMFinder.align = MFinderModelParams::RIGHT;
     optionsMFinder.width = 6;
     optionsMFinder.motifOrder = 0;
     optionsMFinder.bkgdOrder = 0;

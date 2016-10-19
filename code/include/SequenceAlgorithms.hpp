@@ -22,6 +22,10 @@ namespace gmsuite {
         static NumSequence longestCommonSubstring(const NumSequence &A, const NumSequence &B,
                                                   const std::vector<std::pair<NumSequence::num_t, NumSequence::num_t> >& subs = std::vector<std::pair<NumSequence::num_t, NumSequence::num_t> > ());
         
+        
+        static NumSequence longestMatchTo16S(const NumSequence &A, const NumSequence &B,
+                                                  const std::vector<std::pair<NumSequence::num_t, NumSequence::num_t> >& subs = std::vector<std::pair<NumSequence::num_t, NumSequence::num_t> > ());
+        
     };
     
     
