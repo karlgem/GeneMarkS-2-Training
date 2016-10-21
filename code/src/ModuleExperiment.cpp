@@ -188,13 +188,15 @@ void ModuleExperiment::runBuildStartModels() {
     unsigned matchThresh = expOptions.min16SMatch;          // threshold for nonmatches
     vector<NumSequence> nonMatch;                           // keep track of 'non matching'
     
+    vector<pair<NumSequence::size_type, NumSequence::size_type> > positionsOfMatches (upstreams.size());
+
     vector<pair<NumSequence::num_t, NumSequence::num_t> > substitutions;
     substitutions.push_back(pair<NumSequence::num_t, NumSequence::num_t> (cnc.convert('A'), cnc.convert('G')));
     
     // for each upstream sequence, match it against strMatchSeq
     for (size_t i = 0; i < upstreams.size(); i++) {
         NumSequence sub = upstreams[i].subseq(expOptions.length - 20, 20);
-        NumSequence match = SequenceAlgorithms::longestMatchTo16S(matchSeq, sub, substitutions);
+        NumSequence match = SequenceAlgorithms::longestMatchTo16S(matchSeq, sub, positionsOfMatches[i], substitutions);
         
         // print match and size
         if (match.size() > 0)
@@ -282,7 +284,7 @@ void ModuleExperiment::runBuildStartModels2() {
     // for each upstream sequence, match it against strMatchSeq
     for (size_t i = 0; i < upstreams.size(); i++) {
         NumSequence sub = upstreams[i].subseq(expOptions.length - 20, 20);
-        NumSequence match = SequenceAlgorithms::longestMatchTo16S(matchSeq, sub, substitutions, positionsOfMatches[i]);
+        NumSequence match = SequenceAlgorithms::longestMatchTo16S(matchSeq, sub, positionsOfMatches[i], substitutions);
         
         // print match and size
         if (match.size() > 0)

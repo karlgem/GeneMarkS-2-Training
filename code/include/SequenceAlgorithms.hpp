@@ -24,8 +24,8 @@ namespace gmsuite {
         
         
         static NumSequence longestMatchTo16S(const NumSequence &A, const NumSequence &B,
-                                                  const std::vector<std::pair<NumSequence::num_t, NumSequence::num_t> >& subs = std::vector<std::pair<NumSequence::num_t, NumSequence::num_t> > (),
-                                                std::pair<NumSequence::size_type, NumSequence::size_type>& positionsOfMatches = std::pair<NumSequence::size_type, NumSequence::size_type> ()
+                                            std::pair<NumSequence::size_type, NumSequence::size_type>& positionsOfMatches,
+                                            const std::vector<std::pair<NumSequence::num_t, NumSequence::num_t> >& subs = std::vector<std::pair<NumSequence::num_t, NumSequence::num_t> > ()
                                              );
         
     };
