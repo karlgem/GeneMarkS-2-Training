@@ -44,6 +44,7 @@ namespace gmsuite {
         void runMatchSeqToUpstream();
         void runMatchSeqToNoncoding();
         void runBuildStartModels();
+        void runBuildStartModels2();
     };
 }
 

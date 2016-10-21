@@ -38,6 +38,8 @@ void ModuleExperiment::run() {
         runMatchSeqToNoncoding();
     else if (options.experiment == OptionsExperiment::BUILD_START_MODELS)
         runBuildStartModels();
+    else if (options.experiment == OptionsExperiment::BUILD_START_MODELS2)
+        runBuildStartModels2();
     
 }
 
@@ -213,6 +215,120 @@ void ModuleExperiment::runBuildStartModels() {
     
     cout << "The number of remaining sequences is: " << nonMatch.size() << endl;
     for (size_t n = 0; n < nonMatch.size(); n++) {
+        cout << cnc.convert(nonMatch[n].begin() + positions[n], nonMatch[n].begin() + positions[n] + expOptions.mfinderOptions.width);
+        cout << "\t" << positions[n] + 1 << "\t" << nonMatch[n].size() << endl;
+    }
+}
+
+bool isNull(Label* l) { return l == NULL; }
+
+// match query to upstream regions
+void ModuleExperiment::runBuildStartModels2() {
+    
+    OptionsExperiment::BuildStartModels2Options expOptions = options.buildStartModels2;
+    
+    // read sequence file
+    SequenceFile sequenceFile (expOptions.fn_seqeuence, SequenceFile::READ);
+    Sequence strSequence = sequenceFile.read();
+    
+    // read label file
+    LabelFile labelFile (expOptions.fn_labels, LabelFile::READ);
+    vector<Label*> labels;
+    labelFile.read(labels);
+    
+    
+    if (expOptions.minGeneLength > 0) {
+        for (size_t i = 0; i < labels.size(); i++) {
+            size_t length = labels[i]->right - labels[i]->left + 1;
+            if (length < expOptions.minGeneLength) {
+                delete labels[i];
+                labels[i] = NULL;
+            }
+        }
+        
+        size_t sizeBefore = labels.size();
+        
+        // erase from vector
+        
+        vector<Label*>::iterator toRem = remove_if(labels.begin(), labels.end(), isNull);
+        labels.erase(toRem, labels.end());
+        
+        cout << "Num Filtered by Gene Length: " << sizeBefore - labels.size() << endl;
+    }
+    
+    
+    // create numeric sequence
+    AlphabetDNA alph;
+    CharNumConverter cnc (&alph);
+    
+    NumSequence numSequence (strSequence, cnc);
+    
+    // extractlk upstream regions from numeric sequence
+    vector<NumSequence> upstreams;
+    SequenceParser::extractUpstreamSequences(numSequence, labels, cnc, expOptions.length, upstreams, expOptions.allowOverlaps, expOptions.minGeneLength);
+    
+    // get query
+    Sequence strMatchSeq (expOptions.matchTo);
+    NumSequence matchSeq (strMatchSeq, cnc);
+    
+    unsigned matchThresh = expOptions.min16SMatch;          // threshold for nonmatches
+    vector<NumSequence> nonMatch;                           // keep track of 'non matching'
+    vector<NumSequence> matchUpstreams;                     // keep track of matched upstreams
+    
+    vector<pair<NumSequence::num_t, NumSequence::num_t> > substitutions;
+    substitutions.push_back(pair<NumSequence::num_t, NumSequence::num_t> (cnc.convert('A'), cnc.convert('G')));
+    
+    // for each upstream sequence, match it against strMatchSeq
+    for (size_t i = 0; i < upstreams.size(); i++) {
+        NumSequence sub = upstreams[i].subseq(expOptions.length - 20, 20);
+        NumSequence match = SequenceAlgorithms::longestMatchTo16S(matchSeq, sub, substitutions);
+        
+        // print match and size
+        if (match.size() > 0)
+            cout << cnc.convert(match.begin(), match.end()) << "\t" << match.size() << endl;
+        
+        // keep track of nonmatches
+        if (match.size() < matchThresh)
+            nonMatch.push_back(upstreams[i]);
+        else
+            matchUpstreams.push_back(sub);
+    }
+    
+    cout << "TOTAL = MATCHED + UNMATCHED" << endl;
+    cout << upstreams.size() << " = " << matchUpstreams.size() << " + " << nonMatch.size() << endl;
+    
+    
+    /************************************ MATCH ************************************/
+    
+    cout << "EXPERIMENT: MOTIF SEARCH FOR MATCHED UPSTREAMS" << endl;
+    
+    MotifFinder::Builder bMatch;
+    MotifFinder mfinderForMatch = bMatch.build(expOptions.mfinderOptions);
+    
+    vector<NumSequence::size_type> positionsForMatch;
+    mfinderForMatch.findMotifs(matchUpstreams, positionsForMatch);
+    
+    for (size_t n = 0; n < matchUpstreams.size(); n++) {
+        cout << cnc.convert(matchUpstreams[n].begin(), matchUpstreams[n].end()) << "\t";
+        cout << cnc.convert(matchUpstreams[n].begin() + positionsForMatch[n], matchUpstreams[n].begin() + positionsForMatch[n] + expOptions.mfinderOptions.width);
+        cout << "\t" << positionsForMatch[n] + 1 << "\t" << matchUpstreams[n].size() << endl;
+    }
+    
+    
+    /************************************ NON MATCH ************************************/
+    
+    cout << "EXPERIMENT: MOTIF SEARCH FOR UNMATCHED UPSTREAMS" << endl;
+
+    // run motif search on non-match
+    MotifFinder::Builder b;
+    
+    MotifFinder mfinder = b.build(expOptions.mfinderOptions);
+    
+    vector<NumSequence::size_type> positions;
+    mfinder.findMotifs(nonMatch, positions);
+    
+    for (size_t n = 0; n < nonMatch.size(); n++) {
+        cout << cnc.convert(nonMatch[n].begin(), nonMatch[n].end()) << "\t";
         cout << cnc.convert(nonMatch[n].begin() + positions[n], nonMatch[n].begin() + positions[n] + expOptions.mfinderOptions.width);
         cout << "\t" << positions[n] + 1 << "\t" << nonMatch[n].size() << endl;
     }

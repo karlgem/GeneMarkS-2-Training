@@ -15,6 +15,7 @@ using namespace gmsuite;
 #define STR_MATCH_SEQ_TO_UPSTREAM   "match-seq-to-upstream"
 #define STR_MATCH_SEQ_TO_NONCODING  "match-seq-to-noncoding"
 #define STR_BUILD_START_MODELS      "build-start-models"
+#define STR_BUILD_START_MODELS2     "build-start-models2"
 
 namespace gmsuite {
     // convert string to experiment_t
@@ -25,6 +26,7 @@ namespace gmsuite {
         if      (token == STR_MATCH_SEQ_TO_UPSTREAM)    unit = OptionsExperiment::MATCH_SEQ_TO_UPSTREAM;
         else if (token == STR_MATCH_SEQ_TO_NONCODING)   unit = OptionsExperiment::MATCH_SEQ_TO_NONCODING;
         else if (token == STR_BUILD_START_MODELS)       unit = OptionsExperiment::BUILD_START_MODELS;
+        else if (token == STR_BUILD_START_MODELS2)      unit = OptionsExperiment::BUILD_START_MODELS2;
         else
             throw boost::program_options::invalid_option_value(token);
         
@@ -115,6 +117,10 @@ bool OptionsExperiment::parse(int argc, const char **argv) {
         if (experiment == BUILD_START_MODELS) {
             addProcessOptions_BuildStartModelsOptions(buildStartModels, expDesc);
         }
+        // Experiment: build start models2
+        if (experiment == BUILD_START_MODELS2) {
+            addProcessOptions_BuildStartModels2Options(buildStartModels2, expDesc);
+        }
         
         cmdline_options.add(expDesc);
         
@@ -172,9 +178,23 @@ void OptionsExperiment::addProcessOptions_MatchSeqToNoncodingOptions(MatchSeqToN
 void OptionsExperiment::addProcessOptions_BuildStartModelsOptions(BuildStartModelsOptions &options, po::options_description &processOptions) {
     Options::addProcessOptions_GenExtractUpstreamsOptions(options, processOptions);
     processOptions.add_options()
-        ("match-to", po::value<string>(&options.matchTo)->required(), "Sequence to match to.")
-        ("min-match", po::value<unsigned>(&options.min16SMatch)->default_value(4), "Minimum accepted match length from upstream to 16S tail")
-        ("allow-ag-sub", po::bool_switch(&options.allowAGSubstitution)->default_value(false), "Allow G to be substituted for A when matching to 16S tail")
+    ("match-to", po::value<string>(&options.matchTo)->required(), "Sequence to match to.")
+    ("min-match", po::value<unsigned>(&options.min16SMatch)->default_value(4), "Minimum accepted match length from upstream to 16S tail")
+    ("allow-ag-sub", po::bool_switch(&options.allowAGSubstitution)->default_value(false), "Allow G to be substituted for A when matching to 16S tail")
+    ;
+    
+    // mfinder options
+    po::options_description mfinder ("Motif Finder");
+    OptionsMFinder::addProcessOptions(options.mfinderOptions, mfinder);
+    processOptions.add(mfinder);
+}
+
+void OptionsExperiment::addProcessOptions_BuildStartModels2Options(BuildStartModels2Options &options, po::options_description &processOptions) {
+    Options::addProcessOptions_GenExtractUpstreamsOptions(options, processOptions);
+    processOptions.add_options()
+    ("match-to", po::value<string>(&options.matchTo)->required(), "Sequence to match to.")
+    ("min-match", po::value<unsigned>(&options.min16SMatch)->default_value(4), "Minimum accepted match length from upstream to 16S tail")
+    ("allow-ag-sub", po::bool_switch(&options.allowAGSubstitution)->default_value(false), "Allow G to be substituted for A when matching to 16S tail")
     ;
     
     // mfinder options

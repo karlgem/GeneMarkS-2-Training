@@ -28,7 +28,8 @@ namespace gmsuite {
         typedef enum {
             MATCH_SEQ_TO_UPSTREAM,
             MATCH_SEQ_TO_NONCODING,
-            BUILD_START_MODELS
+            BUILD_START_MODELS,
+            BUILD_START_MODELS2
         }
         experiment_t;
         
@@ -86,6 +87,16 @@ namespace gmsuite {
         buildStartModels;
         
         
+        // build-start-models options
+        struct BuildStartModels2Options : public GenExtractUpstreamsOptions {
+            string matchTo;                 // the sequence to be matched
+            unsigned min16SMatch;           // the minimum accepted match length with 16S tail
+            bool allowAGSubstitution;       // whether A and G can be substituted while matching
+            OptionsMFinder mfinderOptions;  // options for motif finder
+        }
+        buildStartModels2;
+        
+        
         
         /**********************************************\
          *              Option Processing             *
@@ -94,6 +105,7 @@ namespace gmsuite {
         static void addProcessOptions_MatchSeqToUpstreamOptions(MatchSeqToUpstreamOptions &options, po::options_description &processOptions);
         static void addProcessOptions_MatchSeqToNoncodingOptions(MatchSeqToNoncodingOptions &options, po::options_description &processOptions);
         static void addProcessOptions_BuildStartModelsOptions(BuildStartModelsOptions &options, po::options_description &processOptions);
+        static void addProcessOptions_BuildStartModels2Options(BuildStartModels2Options &options, po::options_description &processOptions);
         
         
         
