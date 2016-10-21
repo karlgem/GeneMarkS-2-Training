@@ -136,8 +136,8 @@ NumSequence SequenceAlgorithms::longestMatchTo16S(const NumSequence &A, const Nu
     }
     
     // set matched positions
-    positionsOfMatches.first = posOfMaxInA;
-    positionsOfMatches.second = posOfMaxInB;
+    positionsOfMatches.first = posOfMaxInA - (maxSubstringSize-1);
+    positionsOfMatches.second = posOfMaxInB - (maxSubstringSize-1);
     
     // delete LCS allocation
     for (size_t i = 0; i < A.size(); i++)
