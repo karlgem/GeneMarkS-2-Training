@@ -275,17 +275,18 @@ void ModuleExperiment::runBuildStartModels2() {
     vector<NumSequence> nonMatch;                           // keep track of 'non matching'
     vector<NumSequence> matchUpstreams;                     // keep track of matched upstreams
     
+    vector<pair<NumSequence::size_type, NumSequence::size_type> > positionsOfMatches (upstreams.size());
     vector<pair<NumSequence::num_t, NumSequence::num_t> > substitutions;
     substitutions.push_back(pair<NumSequence::num_t, NumSequence::num_t> (cnc.convert('A'), cnc.convert('G')));
     
     // for each upstream sequence, match it against strMatchSeq
     for (size_t i = 0; i < upstreams.size(); i++) {
         NumSequence sub = upstreams[i].subseq(expOptions.length - 20, 20);
-        NumSequence match = SequenceAlgorithms::longestMatchTo16S(matchSeq, sub, substitutions);
+        NumSequence match = SequenceAlgorithms::longestMatchTo16S(matchSeq, sub, substitutions, positionsOfMatches[i]);
         
         // print match and size
         if (match.size() > 0)
-            cout << cnc.convert(match.begin(), match.end()) << "\t" << match.size() << endl;
+            cout << cnc.convert(match.begin(), match.end()) << "\t" << match.size() << "\t" << positionsOfMatches[i].first << "\t" << positionsOfMatches[i].second << "\t" << 20 << endl;
         
         // keep track of nonmatches
         if (match.size() < matchThresh)

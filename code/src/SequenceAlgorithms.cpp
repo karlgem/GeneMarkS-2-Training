@@ -77,7 +77,8 @@ NumSequence SequenceAlgorithms::longestCommonSubstring(const NumSequence &A, con
 
 
 
-NumSequence SequenceAlgorithms::longestMatchTo16S(const NumSequence &A, const NumSequence &B, const std::vector<std::pair<NumSequence::num_t, NumSequence::num_t> >& subs) {
+NumSequence SequenceAlgorithms::longestMatchTo16S(const NumSequence &A, const NumSequence &B, const std::vector<std::pair<NumSequence::num_t, NumSequence::num_t> >& subs,
+                                                  std::pair<NumSequence::size_type, NumSequence::size_type>& positionsOfMatches) {
     
     // allocate space for LCS matrix
     int** LCS = new int*[A.size()+1];
@@ -132,6 +133,10 @@ NumSequence SequenceAlgorithms::longestMatchTo16S(const NumSequence &A, const Nu
     for (size_t i = 0; i < maxSubstringSize; i++) {
         result[i] = B[posOfMaxInB - (maxSubstringSize-1) + i];
     }
+    
+    // set matched positions
+    positionsOfMatches.first = posOfMaxInA;
+    positionsOfMatches.second = posOfMaxInB;
     
     // delete LCS allocation
     for (size_t i = 0; i < A.size(); i++)
