@@ -288,7 +288,7 @@ void ModuleExperiment::runBuildStartModels2() {
         
         // print match and size
         if (match.size() > 0)
-            cout << cnc.convert(match.begin(), match.end()) << "\t" << match.size() << "\t" << positionsOfMatches[i].first << "\t" << positionsOfMatches[i].second << "\t" << 20 << endl;
+            cout << cnc.convert(sub.begin(), sub.end()) << "\t" << cnc.convert(match.begin(), match.end()) << "\t" << match.size() << "\t" << positionsOfMatches[i].first << "\t" << positionsOfMatches[i].second << "\t" << 20 << endl;
         
         // keep track of nonmatches
         if (match.size() < matchThresh)
