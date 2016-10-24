@@ -58,7 +58,7 @@ void Options::addProcessOptions_GenExtractUpstreamsOptions(GenExtractUpstreamsOp
     addProcessOptions_GenReadSeqAndLabelsOptions(options, processOptions);
     processOptions.add_options()
         ("length", po::value<size_t>(&options.length)->required(), "Upstream length")
-        ("allow-overlap-with-cds", po::bool_switch()->default_value(false), "Allow upstream sequences to overlap with previous CDS")
+        ("allow-overlap-with-cds", po::bool_switch(&options.allowOverlaps)->default_value(false), "Allow upstream sequences to overlap with previous CDS")
         ("min-gene-length", po::value<size_t>(&options.minGeneLength)->default_value(0), "Minimum gene length")
     ;
 }
