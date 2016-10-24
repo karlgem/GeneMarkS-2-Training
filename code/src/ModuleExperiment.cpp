@@ -279,7 +279,8 @@ void ModuleExperiment::runBuildStartModels2() {
     
     vector<pair<NumSequence::size_type, NumSequence::size_type> > positionsOfMatches (upstreams.size());
     vector<pair<NumSequence::num_t, NumSequence::num_t> > substitutions;
-    substitutions.push_back(pair<NumSequence::num_t, NumSequence::num_t> (cnc.convert('A'), cnc.convert('G')));
+    if (expOptions.allowAGSubstitution)
+        substitutions.push_back(pair<NumSequence::num_t, NumSequence::num_t> (cnc.convert('A'), cnc.convert('G')));
     
     // for each upstream sequence, match it against strMatchSeq
     for (size_t i = 0; i < upstreams.size(); i++) {
