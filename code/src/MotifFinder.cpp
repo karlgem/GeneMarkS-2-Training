@@ -33,7 +33,8 @@ MotifFinder::MotifFinder(
                          unsigned tries,
                          unsigned maxIter,
                          unsigned maxEMIter,
-                         unsigned shiftEvery) {
+                         unsigned shiftEvery,
+                         double filterThresh) {
     
     this->width = width;
     this->motifOrder = motifOrder;
@@ -44,6 +45,7 @@ MotifFinder::MotifFinder(
     this->maxIter = maxIter;
     this->maxEMIter = maxEMIter;
     this->shiftEvery = shiftEvery;
+    this->filterThresh = filterThresh;
 }
 
 
@@ -111,6 +113,10 @@ double MotifFinder::gibbsFinder(const vector<NumSequence> &sequences, vector<Num
     for (size_t k = 0; k < numSeqs; k++)
         shuffled[k] = k;
     
+    bool filteringEnabled = false;
+    double tempFilterThresh = this->filterThresh;
+    this->filterThresh = -std::numeric_limits<double>::infinity();
+    
     // run all iterations until maximum iteration number is reached
     for (size_t iter = 0; iter < maxIter; iter++) {
         
@@ -132,6 +138,9 @@ double MotifFinder::gibbsFinder(const vector<NumSequence> &sequences, vector<Num
             probs->construct(counts);                                                       // build models from remaining sequences counts
             
             tempPositions[zIndex] = probs->samplePosition(sequences[zIndex]);               // find new motif location in z
+            
+            if (probs->computePositionScore(sequences[zIndex], tempPositions[zIndex]) < filterThresh)
+                tempPositions[zIndex] = NumSequence::npos;
             
             counts->count(sequences[zIndex], tempPositions[zIndex]);                        // add new z info back to counts
             
@@ -161,6 +170,13 @@ double MotifFinder::gibbsFinder(const vector<NumSequence> &sequences, vector<Num
             maxScore = tempScore;
             maxPositions = tempPositions;
         }
+        
+        // reset iter and enable filtering if not done already
+        if (iter == maxIter-1 && !filteringEnabled) {
+            iter = 0;
+            filteringEnabled = true;
+            this->filterThresh = tempFilterThresh;
+        }
     }
     
     
@@ -179,6 +195,8 @@ double MotifFinder::gibbsFinder(const vector<NumSequence> &sequences, vector<Num
             counts->decount(sequences[zIndex], tempPositions[zIndex]);                      // remove z from counts
             probs->construct(counts);                                                       // build models from remaining sequences counts
             tempPositions[zIndex] = probs->samplePosition(sequences[zIndex], true);         // find new motif location in z (get max since it's EM)
+            if (probs->computePositionScore(sequences[zIndex], tempPositions[zIndex]) < filterThresh)
+                tempPositions[zIndex] = NumSequence::npos;
             counts->count(sequences[zIndex], tempPositions[zIndex]);                        // add new z info back to counts
         }
         
@@ -217,6 +235,9 @@ void MotifFinder::shiftPositions(const vector<NumSequence::size_type> &original,
     result.resize(numSeqs);
     
     for (size_t i = 0; i < numSeqs; i++) {
+        
+        if (original[i] == NumSequence::npos)       // can't shift what isn't there :)
+            continue;
         
         Sequence::size_type maxMotifPos = sequences[i].size() - width + 1;     // get maximum valid motif position in sequence
         

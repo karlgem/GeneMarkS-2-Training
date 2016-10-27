@@ -57,6 +57,7 @@ namespace gmsuite {
         unsigned maxIter;               /**< Number of Gibbs iterations per single try */
         unsigned maxEMIter;             /**< Number of EM iterations per single try */
         unsigned shiftEvery;            /**< Number of iterations before attempting to shift the motif left and right */
+        double filterThresh;            /**< Threshold used to filter unwanted */
         
         
     };

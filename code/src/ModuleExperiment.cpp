@@ -313,6 +313,8 @@ void ModuleExperiment::runBuildStartModels2() {
     mfinderForMatch.findMotifs(matchUpstreams, positionsForMatch);
     
     for (size_t n = 0; n < matchUpstreams.size(); n++) {
+        if (positionsForMatch[n] == NumSequence::npos)
+            continue;
         cout << cnc.convert(matchUpstreams[n].begin(), matchUpstreams[n].end()) << "\t";
         cout << cnc.convert(matchUpstreams[n].begin() + positionsForMatch[n], matchUpstreams[n].begin() + positionsForMatch[n] + expOptions.mfinderOptions.width);
         cout << "\t" << positionsForMatch[n] + 1 << "\t" << matchUpstreams[n].size() << endl;
