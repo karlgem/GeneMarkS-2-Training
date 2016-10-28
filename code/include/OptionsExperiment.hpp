@@ -29,7 +29,8 @@ namespace gmsuite {
             MATCH_SEQ_TO_UPSTREAM,
             MATCH_SEQ_TO_NONCODING,
             BUILD_START_MODELS,
-            BUILD_START_MODELS2
+            BUILD_START_MODELS2,
+            BUILD_START_MODELS3
         }
         experiment_t;
         
@@ -96,6 +97,16 @@ namespace gmsuite {
         }
         buildStartModels2;
         
+        // build-start-models3 options
+        struct BuildStartModels3Options : public GenExtractUpstreamsOptions {
+            string matchTo;                 // the sequence to be matched
+            unsigned min16SMatch;           // the minimum accepted match length with 16S tail
+            size_t nfgioThresh;             // non-first-gene-in-operon threshold
+            bool allowAGSubstitution;       // whether A and G can be substituted while matching
+            OptionsMFinder mfinderOptions;  // options for motif finder
+        }
+        buildStartModels3;
+        
         
         
         /**********************************************\
@@ -106,6 +117,7 @@ namespace gmsuite {
         static void addProcessOptions_MatchSeqToNoncodingOptions(MatchSeqToNoncodingOptions &options, po::options_description &processOptions);
         static void addProcessOptions_BuildStartModelsOptions(BuildStartModelsOptions &options, po::options_description &processOptions);
         static void addProcessOptions_BuildStartModels2Options(BuildStartModels2Options &options, po::options_description &processOptions);
+        static void addProcessOptions_BuildStartModels3Options(BuildStartModels3Options &options, po::options_description &processOptions);
         
         
         
