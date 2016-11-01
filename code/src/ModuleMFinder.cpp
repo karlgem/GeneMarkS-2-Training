@@ -67,6 +67,9 @@ void ModuleMFinder::run() {
     vector<NumSequence::size_type> positions;
     mfinder.findMotifs(numSequences, positions);
     
+    printf("NAME MotifFinder\n");
+    printf("VERSION 1.0\n");
+    
     // print positions
     for (size_t n = 0; n < numSequences.size(); n++) {
         cout << cnc.convert(numSequences[n].begin() + positions[n], numSequences[n].begin() + positions[n] + 6);
