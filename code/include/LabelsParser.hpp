@@ -10,6 +10,11 @@
 #define LabelsParser_hpp
 
 #include <stdio.h>
+#include <vector>
+
+#include "Label.hpp"
+
+using std::vector;
 
 namespace gmsuite {
     
@@ -21,7 +26,10 @@ namespace gmsuite {
         
     public:
         
+        typedef enum {FGIO, NFGIO, AMBIG} operon_status_t;
         
+        static void partitionBasedOnOperonStatus(const vector<Label*> &labels, size_t fgioThresh, size_t nfgioThresh,
+                                                 vector<operon_status_t> &status);
         
     };
 }
