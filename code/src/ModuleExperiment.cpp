@@ -17,11 +17,15 @@
 #include "SequenceAlgorithms.hpp"
 #include "MotifFinder.hpp"
 #include "GMS2Trainer.hpp"
+#include "NonUniformCounts.hpp"
+#include "UniformCounts.hpp"
 
 #include <iostream>
+#include <boost/shared_ptr.hpp>
 
 using namespace std;
 using namespace gmsuite;
+using boost::shared_ptr;
 
 
 ModuleExperiment::ModuleExperiment(const OptionsExperiment& opt) : options(opt) {
@@ -533,6 +537,247 @@ void ModuleExperiment::runBuildStartModels3() {
     }
 }
 
+
+typedef struct MotifModel {
+    boost::shared_ptr<NonUniformMarkov> motif;
+    boost::shared_ptr<UnivariatePDF> spacer;
+    boost::shared_ptr<UniformMarkov> background;
+} MotifModel;
+
+MotifModel estimateMotifModel(const vector<NumSequence> &upstreams, const vector<NumSequence::size_type> &positions,
+                              unsigned motifOrder, unsigned backOrder,
+                              size_t width, double pcounts,
+                              const NumAlphabetDNA &alph) {
+    
+    // get max upstream length
+    size_t maxUpstreamLength = 0;
+    for (size_t n = 0; n < upstreams.size(); n++)
+        if (upstreams[n].size() > maxUpstreamLength)
+            maxUpstreamLength = upstreams[n].size();
+    
+    // get counts
+    NonUniformCounts motifCounts(motifOrder, width, alph);
+    UniformCounts backCounts(backOrder, alph);
+    vector<double> positionCounts(maxUpstreamLength, 0);
+    
+    for (size_t n = 0; n < upstreams.size(); n++) {
+        size_t pos = positions[n];
+        
+        motifCounts.count(upstreams[n].begin()+pos, upstreams[n].begin()+pos+width);        // motif count
+        
+        // count background
+        if (pos > 0)
+            backCounts.count(upstreams[n].begin(), upstreams[n].begin() + pos);
+        if (pos < upstreams[n].size() - width)
+            backCounts.count(upstreams[n].begin() + pos + width, upstreams[n].end());
+        
+        // count spacer
+        positionCounts[upstreams[n].size() - width - pos]++;
+    }
+    
+    // construct probability from counts
+    MotifModel model;
+    
+    model.motif = boost::shared_ptr<NonUniformMarkov> (new NonUniformMarkov(motifOrder, width, alph));
+    model.motif->construct(&motifCounts, pcounts);
+    
+    model.background = boost::shared_ptr<UniformMarkov> (new UniformMarkov(backOrder, alph));
+    model.background->construct(&backCounts, pcounts);
+    
+    model.spacer = boost::shared_ptr<UnivariatePDF> (new UnivariatePDF(positionCounts, pcounts));
+
+    return model;
+}
+
+
+void ModuleExperiment::runScoreStarts() {
+    
+    
+    OptionsExperiment::ScoreStarts expOptions = options.scoreStarts;
+    
+    // read sequence file
+    SequenceFile sequenceFile (expOptions.fn_seqeuence, SequenceFile::READ);
+    Sequence strSequence = sequenceFile.read();
+    
+    // read label file
+    LabelFile labelFile (expOptions.fn_labels, LabelFile::READ);
+    vector<Label*> labels;
+    labelFile.read(labels);
+    
+    // filter short genes
+    if (expOptions.minGeneLength > 0) {
+        for (size_t i = 0; i < labels.size(); i++) {
+            size_t length = labels[i]->right - labels[i]->left + 1;
+            if (length < expOptions.minGeneLength) {
+                delete labels[i];
+                labels[i] = NULL;
+            }
+        }
+        
+        size_t sizeBefore = labels.size();
+        
+        // erase from vector
+        
+        vector<Label*>::iterator toRem = remove_if(labels.begin(), labels.end(), isNull);
+        labels.erase(toRem, labels.end());
+        
+        cout << "Num Filtered by Gene Length: " << sizeBefore - labels.size() << endl;
+    }
+    
+    
+    // create numeric sequence
+    AlphabetDNA alph;
+    CharNumConverter cnc (&alph);
+    NumSequence numSequence (strSequence, cnc);
+    
+    // separate labels of first genes in operon from rest
+    vector<Label*> labels_fgio;
+    vector<Label*> labels_nfgio;
+    vector<Label*> labels_ambig;
+    
+    
+    
+    // extractl upstream regions from numeric sequence
+    vector<NumSequence> upstreams;
+    vector<NumSequence> upstreamsForProm;
+    SequenceParser::extractUpstreamSequences(numSequence, labels, cnc, expOptions.length, upstreams, expOptions.allowOverlaps, expOptions.minGeneLength);
+    SequenceParser::extractUpstreamSequences(numSequence, labels, cnc, expOptions.length, upstreamsForProm, false, expOptions.minGeneLength);
+    
+    // get query
+    Sequence strMatchSeq (expOptions.matchTo);
+    NumSequence matchSeq (strMatchSeq, cnc);
+    
+    unsigned matchThresh = expOptions.min16SMatch;          // threshold for nonmatches
+    vector<NumSequence> nonMatch;                           // keep track of 'non matching'
+    vector<NumSequence> matchUpstreams;                     // keep track of matched upstreams
+    
+    vector<pair<NumSequence::size_type, NumSequence::size_type> > positionsOfMatches (upstreams.size());
+    vector<pair<NumSequence::num_t, NumSequence::num_t> > substitutions;
+    if (expOptions.allowAGSubstitution)
+        substitutions.push_back(pair<NumSequence::num_t, NumSequence::num_t> (cnc.convert('A'), cnc.convert('G')));
+    
+    size_t upstrLen_RBSSearch = 20;
+    
+    vector<int> distanceToPreviousGene;
+    
+    // extract Set of inner-genes in operon
+    vector<NumSequence> nonFGIO_upstreams;
+    vector<NumSequence> FGIO_upstreams;
+    
+    for (size_t n = 0; n < upstreams.size(); n++) {
+        if (labels[n]->strand == Label::NEG) {
+            NumSequence::size_type start = labels[n]->right;
+            
+            // if last gene
+            if (n == upstreams.size()-1) {
+                if (numSequence.size() > start + upstrLen_RBSSearch)
+                    nonFGIO_upstreams.push_back(upstreams[n]);
+            }
+            // if not last gene
+            else {
+                int distToPrev = (int)labels[n+1]->left - (int)start - 1;
+                distanceToPreviousGene.push_back(distToPrev);
+                
+                // if next gene close by, include
+                if (start + expOptions.nfgioThresh >= labels[n+1]->left)
+                    nonFGIO_upstreams.push_back(upstreams[n]);
+                else
+                    FGIO_upstreams.push_back(upstreams[n]);
+            }
+        }
+        // positive strand
+        else {
+            NumSequence::size_type start = labels[n]->left;
+            
+            // if first gene
+            if (n == 0) {
+                if (start > upstrLen_RBSSearch)
+                    nonFGIO_upstreams.push_back(upstreams[n]);
+            }
+            // if not first gene
+            else {
+                int distToPrev = (int)start - (int)labels[n-1]->right - 1;
+                distanceToPreviousGene.push_back(distToPrev);
+                
+                if (labels[n-1]->right + expOptions.nfgioThresh >= start)
+                    nonFGIO_upstreams.push_back(upstreams[n]);
+                else
+                    FGIO_upstreams.push_back(upstreams[n]);
+            }
+        }
+    }
+    
+    // for each upstream sequence for non-FGIO, match it against strMatchSeq
+    for (size_t i = 0; i < nonFGIO_upstreams.size(); i++) {
+        NumSequence sub = nonFGIO_upstreams[i].subseq(expOptions.length - 20, 20);
+        NumSequence match = SequenceAlgorithms::longestMatchTo16S(matchSeq, sub, positionsOfMatches[i], substitutions);
+        
+        // keep track of nonmatches
+        if (match.size() < matchThresh)
+            nonMatch.push_back(nonFGIO_upstreams[i]);
+        else
+            matchUpstreams.push_back(sub);
+    }
+    
+    
+    
+    /************************************ MATCH ************************************/
+    
+    //  "EXPERIMENT: MOTIF SEARCH FOR MATCHED UPSTREAMS"
+    
+    NumAlphabetDNA numAlph(alph, cnc);
+    
+    MotifFinder::Builder bMatch;
+    MotifFinder mfinderForMatch = bMatch.build(expOptions.mfinderRBSOptions);
+    
+    vector<NumSequence::size_type> positionsForMatch;
+    mfinderForMatch.findMotifs(matchUpstreams, positionsForMatch);
+    
+    // build model RBS
+    MotifModel modelRBS = estimateMotifModel(
+            matchUpstreams, positionsForMatch,
+            expOptions.mfinderRBSOptions.motifOrder, expOptions.mfinderRBSOptions.bkgdOrder,
+            expOptions.mfinderRBSOptions.width, expOptions.mfinderRBSOptions.pcounts,
+            numAlph);
+    
+    
+    /************************************ NON MATCH ************************************/
+    
+    nonMatch.clear();
+    positionsOfMatches.clear();
+    
+    // for each upstream sequence for non-FGIO, match it against strMatchSeq
+    for (size_t i = 0; i < upstreamsForProm.size(); i++) {
+        NumSequence sub = upstreamsForProm[i].subseq(expOptions.length - 20, 20);
+        NumSequence match = SequenceAlgorithms::longestMatchTo16S(matchSeq, sub, positionsOfMatches[i], substitutions);
+
+        // keep track of nonmatches
+        if (match.size() < matchThresh)
+            nonMatch.push_back(upstreamsForProm[i]);
+        else
+            matchUpstreams.push_back(sub);
+    }
+    
+    // "EXPERIMENT: MOTIF SEARCH FOR UNMATCHED UPSTREAMS"
+    
+    // run motif search on non-match
+    MotifFinder::Builder b;
+    
+    MotifFinder mfinder = b.build(expOptions.mfinderPromoterOptions);
+    
+    vector<NumSequence::size_type> positionsForPromoter;
+    mfinder.findMotifs(nonMatch, positionsForPromoter);
+    
+    // build model RBS
+    MotifModel modelPromoter = estimateMotifModel(
+                                             nonMatch, positionsForPromoter,
+                                             expOptions.mfinderPromoterOptions.motifOrder, expOptions.mfinderPromoterOptions.bkgdOrder,
+                                             expOptions.mfinderPromoterOptions.width, expOptions.mfinderPromoterOptions.pcounts,
+                                             numAlph);
+    
+    
+    
+}
 
 
 

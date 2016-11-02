@@ -227,6 +227,26 @@ void OptionsExperiment::addProcessOptions_BuildStartModels3Options(BuildStartMod
 }
 
 
+void OptionsExperiment::addProcessOptions_ScoreStarts(ScoreStarts &options, po::options_description &processOptions) {
+    Options::addProcessOptions_GenExtractUpstreamsOptions(options, processOptions);
+    processOptions.add_options()
+    ("match-to", po::value<string>(&options.matchTo)->required(), "Sequence to match to.")
+    ("min-match", po::value<unsigned>(&options.min16SMatch)->default_value(4), "Minimum accepted match length from upstream to 16S tail")
+    ("allow-ag-sub", po::bool_switch(&options.allowAGSubstitution)->default_value(false), "Allow G to be substituted for A when matching to 16S tail")
+    ("nfgio-thresh", po::value<size_t>(&options.nfgioThresh)->default_value(20), "Used to extract second genes in operon")
+    ("fgio-thresh", po::value<size_t>(&options.fgioThresh)->default_value(40), "Used to extract first genes in operon")
+    ;
+    
+    // mfinder options
+    po::options_description mfinderRBS ("Motif Finder - RBS");
+    OptionsMFinder::addProcessOptions(options.mfinderRBSOptions, mfinderRBS);
+    processOptions.add(mfinderRBS);
+    
+    // mfinder options
+    po::options_description mfinderPromoter ("Motif Finder - Promoter");
+    OptionsMFinder::addProcessOptions(options.mfinderPromoterOptions, mfinderPromoter);
+    processOptions.add(mfinderPromoter);
+}
 
 
 

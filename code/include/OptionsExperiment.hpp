@@ -107,6 +107,18 @@ namespace gmsuite {
         }
         buildStartModels3;
         
+        // score-starts options
+        struct ScoreStarts : public GenExtractUpstreamsOptions {
+            string matchTo;                     // sequence to be matched
+            unsigned min16SMatch;               // the minimum accepted match length with 16S tail
+            size_t nfgioThresh;                 // non-first-gene-in-operon threshold
+            size_t fgioThresh;                  // first-gene-in-operon threshold
+            bool allowAGSubstitution;           // whether A and G can be subsituted while matching
+            OptionsMFinder mfinderRBSOptions;   // RBS
+            OptionsMFinder mfinderPromoterOptions;  // Promoter
+        }
+        scoreStarts;
+        
         
         
         /**********************************************\
@@ -118,6 +130,8 @@ namespace gmsuite {
         static void addProcessOptions_BuildStartModelsOptions(BuildStartModelsOptions &options, po::options_description &processOptions);
         static void addProcessOptions_BuildStartModels2Options(BuildStartModels2Options &options, po::options_description &processOptions);
         static void addProcessOptions_BuildStartModels3Options(BuildStartModels3Options &options, po::options_description &processOptions);
+        
+        static void addProcessOptions_ScoreStarts(ScoreStarts &options, po::options_description &processOptions);
         
         
         
