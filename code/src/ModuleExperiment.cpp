@@ -684,6 +684,8 @@ void scoreAllStarts(const NumSequence &sequence, const NumGeneticCode &gc, const
     
 }
 
+typedef enum {RBS, PROMOTER, NONE} training_class_t;
+
 
 void ModuleExperiment::runScoreStarts() {
     
@@ -736,7 +738,6 @@ void ModuleExperiment::runScoreStarts() {
     LabelsParser::partitionBasedOnOperonStatus(labels, expOptions.fgioThresh, expOptions.nfgioThresh, operonStatus);
     
     // separate genes to those for promoter VS rbs training
-    typedef enum {RBS, PROMOTER, NONE} training_class_t;
     vector<training_class_t> geneTrainingClass (labels.size(), NONE);
     
     vector<pair<NumSequence::size_type, NumSequence::size_type> > positionsOfMatches (labels.size());
