@@ -30,7 +30,8 @@ namespace gmsuite {
             MATCH_SEQ_TO_NONCODING,
             BUILD_START_MODELS,
             BUILD_START_MODELS2,
-            BUILD_START_MODELS3
+            BUILD_START_MODELS3,
+            SCORE_STARTS
         }
         experiment_t;
         
@@ -113,9 +114,11 @@ namespace gmsuite {
             unsigned min16SMatch;               // the minimum accepted match length with 16S tail
             size_t nfgioThresh;                 // non-first-gene-in-operon threshold
             size_t fgioThresh;                  // first-gene-in-operon threshold
+            size_t searchUpstrLen;              // the upstream length in which to search for 16S match
             bool allowAGSubstitution;           // whether A and G can be subsituted while matching
-            OptionsMFinder mfinderRBSOptions;   // RBS
-            OptionsMFinder mfinderPromoterOptions;  // Promoter
+            size_t upstreamLenRBS;              // upstream length for RBS search
+            size_t upstreamLenPromoter;         // upstream length for promoter search
+            OptionsMFinder mfinderOptions;      // RBS
         }
         scoreStarts;
         

@@ -19,7 +19,10 @@
 #include "GMS2Trainer.hpp"
 #include "NonUniformCounts.hpp"
 #include "UniformCounts.hpp"
+#include "LabelsParser.hpp"
+#include "NumGeneticCode.hpp"
 
+#include <algorithm>
 #include <iostream>
 #include <boost/shared_ptr.hpp>
 
@@ -46,6 +49,8 @@ void ModuleExperiment::run() {
         runBuildStartModels2();
     else if (options.experiment == OptionsExperiment::BUILD_START_MODELS3)
         runBuildStartModels3();
+    else if (options.experiment == OptionsExperiment::SCORE_STARTS)
+        runScoreStarts();
     
 }
 
@@ -590,6 +595,96 @@ MotifModel estimateMotifModel(const vector<NumSequence> &upstreams, const vector
 }
 
 
+double scoreMotifAtAllPositions(const MotifModel &model, const NumSequence &sequence, size_t width) {
+    
+    if (sequence.size() < width)
+        throw std::invalid_argument("Sequence length cannot be shorter than motif width.");
+    
+    Sequence::size_type numPositions = sequence.size() - width + 1;
+    
+    vector<double> scores (numPositions, 0);
+    
+    for (Sequence::size_type pos = 0; pos < numPositions; pos++) {
+        
+        // compute motif score
+        double motifScore = model.motif->evaluate(sequence.begin()+pos, sequence.begin()+pos+width);
+        
+        // compute background scores of motif
+        double backScore = model.background->evaluate(sequence.begin()+pos, sequence.begin()+pos+width);;
+        
+        // compute combined score
+        if (backScore == 0)
+            continue;
+        
+        double score = motifScore / backScore;
+        score *= (*model.spacer)[sequence.size() - width - pos];
+        
+        scores[pos] = score;
+    }
+    
+    return *std::max_element(scores.begin(), scores.end());
+}
+
+
+void scoreAllStarts(const NumSequence &sequence, const NumGeneticCode &gc, const MotifModel &mRBS, const MotifModel &mPromoter,
+                    size_t upstreamLengthRBS, size_t upstreamLengthPromoter) {
+    
+    for (size_t n = 0; n < sequence.size(); n++) {
+        
+        // get upstreams used for RBS and promoter
+        NumSequence upstreamRBS, upstreamPromoter;
+        
+        // check if start on positive strand
+        if (n < sequence.size() - 3 && gc.isStart(CharNumConverter::seq_t(sequence.begin()+n, sequence.begin()+n+3))) {
+            
+            // get RBS upstream
+            size_t upstrLeft = 0;
+            if (n > upstreamLengthRBS)
+                upstrLeft = n - upstreamLengthRBS;
+            
+             upstreamRBS = sequence.subseq(upstrLeft, upstreamLengthRBS);
+            
+            // get promoter upstream
+            upstrLeft = 0;
+            if (n > upstreamLengthPromoter)
+                upstrLeft = n - upstreamLengthPromoter;
+            
+            upstreamPromoter = sequence.subseq(upstrLeft, upstreamLengthPromoter);
+            
+        }
+        // check if start on negative strand
+        if (n >= 3 && gc.isStart(CharNumConverter::seq_t(sequence.begin()+n-3, sequence.begin()+n))) {
+            
+            // get RBS upstream
+            size_t upstrLeft = n+1;
+            size_t upstrLen = upstreamLengthRBS;
+            size_t distToEnd = sequence.size() - n - 1;
+            if (distToEnd < upstreamLengthRBS)
+                upstrLen = distToEnd;
+            
+            upstreamRBS = sequence.subseq(upstrLeft, upstrLen);
+            
+            // get Promoter upstream
+            upstrLeft = n+1;
+            upstrLen = upstreamLengthPromoter;
+            distToEnd = sequence.size() - n - 1;
+            if (distToEnd < upstreamLengthPromoter)
+                upstrLen = distToEnd;
+            
+            upstreamPromoter = sequence.subseq(upstrLeft, upstrLen);
+        }
+        
+        double rbsScore = scoreMotifAtAllPositions(mRBS, upstreamRBS, mRBS.motif->getLength());
+        double promoterScore = scoreMotifAtAllPositions(mPromoter, upstreamPromoter, mPromoter.motif->getLength());
+        
+        double maxScore = std::max(rbsScore, promoterScore);
+        
+        cout << n+1 << "\t" << maxScore << endl;
+    }
+    
+}
+
+
 void ModuleExperiment::runScoreStarts() {
     
     
@@ -628,152 +723,106 @@ void ModuleExperiment::runScoreStarts() {
     // create numeric sequence
     AlphabetDNA alph;
     CharNumConverter cnc (&alph);
+    NumAlphabetDNA numAlph(alph, cnc);
     NumSequence numSequence (strSequence, cnc);
-    
-    // separate labels of first genes in operon from rest
-    vector<Label*> labels_fgio;
-    vector<Label*> labels_nfgio;
-    vector<Label*> labels_ambig;
-    
-    
-    
-    // extractl upstream regions from numeric sequence
-    vector<NumSequence> upstreams;
-    vector<NumSequence> upstreamsForProm;
-    SequenceParser::extractUpstreamSequences(numSequence, labels, cnc, expOptions.length, upstreams, expOptions.allowOverlaps, expOptions.minGeneLength);
-    SequenceParser::extractUpstreamSequences(numSequence, labels, cnc, expOptions.length, upstreamsForProm, false, expOptions.minGeneLength);
     
     // get query
     Sequence strMatchSeq (expOptions.matchTo);
     NumSequence matchSeq (strMatchSeq, cnc);
+
     
-    unsigned matchThresh = expOptions.min16SMatch;          // threshold for nonmatches
-    vector<NumSequence> nonMatch;                           // keep track of 'non matching'
-    vector<NumSequence> matchUpstreams;                     // keep track of matched upstreams
+    // separate labels of first genes in operon from rest
+    vector<LabelsParser::operon_status_t> operonStatus;
+    LabelsParser::partitionBasedOnOperonStatus(labels, expOptions.fgioThresh, expOptions.nfgioThresh, operonStatus);
     
-    vector<pair<NumSequence::size_type, NumSequence::size_type> > positionsOfMatches (upstreams.size());
+    // separate genes to those for promoter VS rbs training
+    typedef enum {RBS, PROMOTER, NONE} training_class_t;
+    vector<training_class_t> geneTrainingClass (labels.size(), NONE);
+    
+    vector<pair<NumSequence::size_type, NumSequence::size_type> > positionsOfMatches (labels.size());
     vector<pair<NumSequence::num_t, NumSequence::num_t> > substitutions;
     if (expOptions.allowAGSubstitution)
         substitutions.push_back(pair<NumSequence::num_t, NumSequence::num_t> (cnc.convert('A'), cnc.convert('G')));
-    
-    size_t upstrLen_RBSSearch = 20;
-    
-    vector<int> distanceToPreviousGene;
-    
-    // extract Set of inner-genes in operon
-    vector<NumSequence> nonFGIO_upstreams;
-    vector<NumSequence> FGIO_upstreams;
-    
-    for (size_t n = 0; n < upstreams.size(); n++) {
-        if (labels[n]->strand == Label::NEG) {
-            NumSequence::size_type start = labels[n]->right;
-            
-            // if last gene
-            if (n == upstreams.size()-1) {
-                if (numSequence.size() > start + upstrLen_RBSSearch)
-                    nonFGIO_upstreams.push_back(upstreams[n]);
-            }
-            // if not last gene
-            else {
-                int distToPrev = (int)labels[n+1]->left - (int)start - 1;
-                distanceToPreviousGene.push_back(distToPrev);
-                
-                // if next gene close by, include
-                if (start + expOptions.nfgioThresh >= labels[n+1]->left)
-                    nonFGIO_upstreams.push_back(upstreams[n]);
-                else
-                    FGIO_upstreams.push_back(upstreams[n]);
-            }
-        }
-        // positive strand
-        else {
-            NumSequence::size_type start = labels[n]->left;
-            
-            // if first gene
-            if (n == 0) {
-                if (start > upstrLen_RBSSearch)
-                    nonFGIO_upstreams.push_back(upstreams[n]);
-            }
-            // if not first gene
-            else {
-                int distToPrev = (int)start - (int)labels[n-1]->right - 1;
-                distanceToPreviousGene.push_back(distToPrev);
-                
-                if (labels[n-1]->right + expOptions.nfgioThresh >= start)
-                    nonFGIO_upstreams.push_back(upstreams[n]);
-                else
-                    FGIO_upstreams.push_back(upstreams[n]);
-            }
-        }
-    }
-    
-    // for each upstream sequence for non-FGIO, match it against strMatchSeq
-    for (size_t i = 0; i < nonFGIO_upstreams.size(); i++) {
-        NumSequence sub = nonFGIO_upstreams[i].subseq(expOptions.length - 20, 20);
-        NumSequence match = SequenceAlgorithms::longestMatchTo16S(matchSeq, sub, positionsOfMatches[i], substitutions);
+
+    // For each gene, figure out whether it should be used for RBS or promoter building
+    for (size_t n = 0; n < labels.size(); n++) {
         
-        // keep track of nonmatches
-        if (match.size() < matchThresh)
-            nonMatch.push_back(nonFGIO_upstreams[i]);
-        else
-            matchUpstreams.push_back(sub);
+        // extract upstream for match
+        NumSequence sub = SequenceParser::extractUpstreamSequence(numSequence, *labels[n], cnc, expOptions.searchUpstrLen);
+        // match against 16S tail
+        NumSequence match = SequenceAlgorithms::longestMatchTo16S(matchSeq, sub, positionsOfMatches[n], substitutions);
+        
+        // if gene is FGIO
+        if (operonStatus[n] == LabelsParser::FGIO) {
+            
+            // if match length less than threshold, then this is used for promoter search
+            if (match.size() < expOptions.min16SMatch)
+                geneTrainingClass[n] = PROMOTER;
+        }
+        // if gene is NFGIO
+        else if (operonStatus[n] == LabelsParser::NFGIO) {
+            
+            // if match length greater than threshold, then use for RBS search
+            if (match.size() >= expOptions.min16SMatch)
+                geneTrainingClass[n] = RBS;
+        }
+        // if gene status is ambiguous
+        else {
+            
+        }
     }
     
     
+    vector<NumSequence> upstreamsForRBS;
+    vector<NumSequence> upstreamsForPromoter;
     
-    /************************************ MATCH ************************************/
+    for (size_t n = 0; n < labels.size(); n++) {
+        // for RBS genes
+        if (geneTrainingClass[n] == RBS) {
+            // get upstream
+            NumSequence upstream = SequenceParser::extractUpstreamSequence(numSequence, *labels[n], cnc, expOptions.upstreamLenRBS);
+            upstreamsForRBS.push_back(upstream);
+        }
+        // for promoter genes
+        else if (geneTrainingClass[n] == PROMOTER) {
+            
+            // get upstream
+            NumSequence upstream = SequenceParser::extractUpstreamSequence(numSequence, *labels[n], cnc, expOptions.upstreamLenPromoter);
+            upstreamsForPromoter.push_back(upstream);
+        }
+    }
     
-    //  "EXPERIMENT: MOTIF SEARCH FOR MATCHED UPSTREAMS"
     
-    NumAlphabetDNA numAlph(alph, cnc);
+    //  "EXPERIMENT: MOTIF SEARCH FOR RBS"
     
-    MotifFinder::Builder bMatch;
-    MotifFinder mfinderForMatch = bMatch.build(expOptions.mfinderRBSOptions);
+    MotifFinder::Builder bRBS;
+    MotifFinder mfinderForRBS = bRBS.build(expOptions.mfinderOptions);
     
-    vector<NumSequence::size_type> positionsForMatch;
-    mfinderForMatch.findMotifs(matchUpstreams, positionsForMatch);
+    vector<NumSequence::size_type> positionsForRBS;
+    mfinderForRBS.findMotifs(upstreamsForRBS, positionsForRBS);
     
     // build model RBS
-    MotifModel modelRBS = estimateMotifModel(
-            matchUpstreams, positionsForMatch,
-            expOptions.mfinderRBSOptions.motifOrder, expOptions.mfinderRBSOptions.bkgdOrder,
-            expOptions.mfinderRBSOptions.width, expOptions.mfinderRBSOptions.pcounts,
-            numAlph);
-    
-    
-    /************************************ NON MATCH ************************************/
-    
-    nonMatch.clear();
-    positionsOfMatches.clear();
-    
-    // for each upstream sequence for non-FGIO, match it against strMatchSeq
-    for (size_t i = 0; i < upstreamsForProm.size(); i++) {
-        NumSequence sub = upstreamsForProm[i].subseq(expOptions.length - 20, 20);
-        NumSequence match = SequenceAlgorithms::longestMatchTo16S(matchSeq, sub, positionsOfMatches[i], substitutions);
+    MotifModel rbsModel = estimateMotifModel(upstreamsForRBS, positionsForRBS, expOptions.mfinderOptions.motifOrder, expOptions.mfinderOptions.bkgdOrder, expOptions.mfinderOptions.width, expOptions.mfinderOptions.pcounts, numAlph);
 
-        // keep track of nonmatches
-        if (match.size() < matchThresh)
-            nonMatch.push_back(upstreamsForProm[i]);
-        else
-            matchUpstreams.push_back(sub);
-    }
     
-    // "EXPERIMENT: MOTIF SEARCH FOR UNMATCHED UPSTREAMS"
+    //  "EXPERIMENT: MOTIF SEARCH FOR Promoter"
     
-    // run motif search on non-match
-    MotifFinder::Builder b;
-    
-    MotifFinder mfinder = b.build(expOptions.mfinderPromoterOptions);
+    MotifFinder::Builder bPromoter;
+    MotifFinder mfinderForPromoter = bPromoter.build(expOptions.mfinderOptions);
     
     vector<NumSequence::size_type> positionsForPromoter;
-    mfinder.findMotifs(nonMatch, positionsForPromoter);
+    mfinderForPromoter.findMotifs(upstreamsForPromoter, positionsForPromoter);
     
     // build model RBS
-    MotifModel modelPromoter = estimateMotifModel(
-                                             nonMatch, positionsForPromoter,
-                                             expOptions.mfinderPromoterOptions.motifOrder, expOptions.mfinderPromoterOptions.bkgdOrder,
-                                             expOptions.mfinderPromoterOptions.width, expOptions.mfinderPromoterOptions.pcounts,
-                                             numAlph);
+    MotifModel promoterModel = estimateMotifModel(upstreamsForPromoter, positionsForPromoter, expOptions.mfinderOptions.motifOrder, expOptions.mfinderOptions.bkgdOrder, expOptions.mfinderOptions.width, expOptions.mfinderOptions.pcounts, numAlph);
+
+    
+    GeneticCode gc(GeneticCode::ELEVEN);
+    NumGeneticCode numGC(gc, cnc);
+    
+    scoreAllStarts(numSequence, numGC, rbsModel, promoterModel, expOptions.upstreamLenRBS, expOptions.upstreamLenPromoter);
+    
+    
     
     
     

@@ -17,6 +17,7 @@ using namespace gmsuite;
 #define STR_BUILD_START_MODELS      "build-start-models"
 #define STR_BUILD_START_MODELS2     "build-start-models2"
 #define STR_BUILD_START_MODELS3     "build-start-models3"
+#define STR_SCORE_STARTS            "score-starts"
 
 namespace gmsuite {
     // convert string to experiment_t
@@ -29,6 +30,7 @@ namespace gmsuite {
         else if (token == STR_BUILD_START_MODELS)       unit = OptionsExperiment::BUILD_START_MODELS;
         else if (token == STR_BUILD_START_MODELS2)      unit = OptionsExperiment::BUILD_START_MODELS2;
         else if (token == STR_BUILD_START_MODELS3)      unit = OptionsExperiment::BUILD_START_MODELS3;
+        else if (token == STR_SCORE_STARTS)             unit = OptionsExperiment::SCORE_STARTS;
         else
             throw boost::program_options::invalid_option_value(token);
         
@@ -126,6 +128,10 @@ bool OptionsExperiment::parse(int argc, const char **argv) {
         // Experiment: build start models3
         if (experiment == BUILD_START_MODELS3) {
             addProcessOptions_BuildStartModels3Options(buildStartModels3, expDesc);
+        }
+        // Experiment: score starts
+        if (experiment == SCORE_STARTS){
+            addProcessOptions_ScoreStarts(scoreStarts, expDesc);
         }
         
         cmdline_options.add(expDesc);
@@ -235,17 +241,18 @@ void OptionsExperiment::addProcessOptions_ScoreStarts(ScoreStarts &options, po::
     ("allow-ag-sub", po::bool_switch(&options.allowAGSubstitution)->default_value(false), "Allow G to be substituted for A when matching to 16S tail")
     ("nfgio-thresh", po::value<size_t>(&options.nfgioThresh)->default_value(20), "Used to extract second genes in operon")
     ("fgio-thresh", po::value<size_t>(&options.fgioThresh)->default_value(40), "Used to extract first genes in operon")
+    ("search-len", po::value<size_t>(&options.searchUpstrLen)->default_value(20), "Determines search window for 16S match")
+    ("upstr-len-rbs", po::value<size_t>(&options.upstreamLenRBS)->default_value(20), "Length of upstream for RBS motif search")
+    ("upstr-len-promoter", po::value<size_t>(&options.upstreamLenPromoter)->default_value(40), "Length of upstream for Promoter motif search")
     ;
     
-    // mfinder options
-    po::options_description mfinderRBS ("Motif Finder - RBS");
-    OptionsMFinder::addProcessOptions(options.mfinderRBSOptions, mfinderRBS);
-    processOptions.add(mfinderRBS);
     
     // mfinder options
-    po::options_description mfinderPromoter ("Motif Finder - Promoter");
-    OptionsMFinder::addProcessOptions(options.mfinderPromoterOptions, mfinderPromoter);
-    processOptions.add(mfinderPromoter);
+    po::options_description mfinder ("Motif Finder ");
+    OptionsMFinder::addProcessOptions(options.mfinderOptions, mfinder);
+    processOptions.add(mfinder);
+    
+    
 }
 
 
