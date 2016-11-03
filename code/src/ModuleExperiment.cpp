@@ -674,8 +674,18 @@ void scoreAllStarts(const NumSequence &sequence, const NumGeneticCode &gc, const
             upstreamPromoter = sequence.subseq(upstrLeft, upstrLen);
         }
         
-        double rbsScore = scoreMotifAtAllPositions(mRBS, upstreamRBS, mRBS.motif->getLength());
-        double promoterScore = scoreMotifAtAllPositions(mPromoter, upstreamPromoter, mPromoter.motif->getLength());
+        double rbsScore = -10000;
+        double promoterScore = -10000;
+        
+        try {
+            rbsScore = scoreMotifAtAllPositions(mRBS, upstreamRBS, mRBS.motif->getLength());
+        }
+        catch (exception) {}
+        
+        try {
+            promoterScore = scoreMotifAtAllPositions(mPromoter, upstreamPromoter, mPromoter.motif->getLength());
+        }
+        catch (exception) {}
         
         double maxScore = std::max(rbsScore, promoterScore);
         
@@ -717,8 +727,6 @@ void ModuleExperiment::runScoreStarts() {
         
         vector<Label*>::iterator toRem = remove_if(labels.begin(), labels.end(), isNull);
         labels.erase(toRem, labels.end());
-        
-        cout << "Num Filtered by Gene Length: " << sizeBefore - labels.size() << endl;
     }
     
     
