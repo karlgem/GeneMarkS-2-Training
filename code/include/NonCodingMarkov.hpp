@@ -12,8 +12,11 @@
 #include <stdio.h>
 #include "UniformMarkov.hpp"
 #include <string>
+#include <vector>
 
+using std::vector;
 using std::string;
+using std::pair;
 
 namespace gmsuite {
     
@@ -21,7 +24,7 @@ namespace gmsuite {
         
     public:
         
-        NonCodingMarkov(string filename, const NumAlphabetDNA &alph);
+        NonCodingMarkov(const vector<pair<string, double> > &keyValue, const NumAlphabetDNA &alph, const CharNumConverter &cnc);
         
         
         
