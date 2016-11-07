@@ -546,12 +546,13 @@ void ModuleExperiment::runBuildStartModels3() {
 typedef struct MotifModel {
     boost::shared_ptr<NonUniformMarkov> motif;
     boost::shared_ptr<UnivariatePDF> spacer;
+    boost::shared_ptr<UnivariatePDF> noncLengthDist;
     boost::shared_ptr<UniformMarkov> background;
 } MotifModel;
 
 MotifModel estimateMotifModel(const vector<NumSequence> &upstreams, const vector<NumSequence::size_type> &positions,
                               unsigned motifOrder, unsigned backOrder,
-                              size_t width, double pcounts,
+                              size_t width, double pcounts, double NDEC,
                               const NumAlphabetDNA &alph) {
     
     // get max upstream length
@@ -590,6 +591,16 @@ MotifModel estimateMotifModel(const vector<NumSequence> &upstreams, const vector
     model.background->construct(&backCounts, pcounts);
     
     model.spacer = boost::shared_ptr<UnivariatePDF> (new UnivariatePDF(positionCounts, pcounts));
+    
+    // construct noncoding length distribution
+    vector<double> noncodingLengthDistribution (model.spacer->size(), 0);
+    for (size_t n = 0; n < model.spacer->size(); n++) {
+        //        int l = (int) (numRBSPositions - n - 1);
+        int k = (int) width;
+        noncodingLengthDistribution[n] = exp(- ((int)n + k) / (double)NDEC);
+    }
+    
+    model.noncLengthDist = boost::shared_ptr<UnivariatePDF> (new UnivariatePDF(noncodingLengthDistribution));
 
     return model;
 }
@@ -616,8 +627,8 @@ double scoreMotifAtAllPositions(const MotifModel &model, const NumSequence &sequ
         if (backScore == 0)
             continue;
         
-        double score = motifScore / backScore;
-        score *= (*model.spacer)[sequence.size() - width - pos];
+        double score = log(motifScore) - log(backScore);
+        score += log((*model.spacer)[sequence.size() - width - pos]) - log((*model.noncLengthDist)[sequence.size() - width - pos]);
         
         scores[pos] = score;
     }
@@ -627,12 +638,15 @@ double scoreMotifAtAllPositions(const MotifModel &model, const NumSequence &sequ
 
 
 void scoreAllStarts(const NumSequence &sequence, const NumGeneticCode &gc, const MotifModel &mRBS, const MotifModel &mPromoter,
-                    size_t upstreamLengthRBS, size_t upstreamLengthPromoter) {
+                    size_t upstreamLengthRBS, size_t upstreamLengthPromoter, const CharNumConverter &cnc) {
     
     for (size_t n = 0; n < sequence.size(); n++) {
         
         // get upstreams used for RBS and promoter
         NumSequence upstreamRBS, upstreamPromoter;
+        
+        bool isStart = false;
+        string strand = "";
         
         // check if start on positive strand
         if (n < sequence.size() - 3 && gc.isStart(CharNumConverter::seq_t(sequence.begin()+n, sequence.begin()+n+3))) {
@@ -651,9 +665,16 @@ void scoreAllStarts(const NumSequence &sequence, const NumGeneticCode &gc, const
             
             upstreamPromoter = sequence.subseq(upstrLeft, upstreamLengthPromoter);
             
+            isStart = true;
+            strand = "+";
+            
         }
         // check if start on negative strand
-        if (n >= 3 && gc.isStart(CharNumConverter::seq_t(sequence.begin()+n-3, sequence.begin()+n))) {
+        CharNumConverter::seq_t cand(sequence.begin()+n-3, sequence.begin()+n);
+        NumSequence s (cand); s.reverseComplement(cnc);
+        CharNumConverter::seq_t revCand (s.begin(), s.end());
+        
+        if (n >= 3 && gc.isStart(revCand)) {
             
             // get RBS upstream
             size_t upstrLeft = n+1;
@@ -672,24 +693,29 @@ void scoreAllStarts(const NumSequence &sequence, const NumGeneticCode &gc, const
                 upstrLen = distToEnd;
             
             upstreamPromoter = sequence.subseq(upstrLeft, upstrLen);
+            isStart = true;
+            strand = "-";
         }
         
-        double rbsScore = -10000;
-        double promoterScore = -10000;
-        
-        try {
-            rbsScore = scoreMotifAtAllPositions(mRBS, upstreamRBS, mRBS.motif->getLength());
+        if (isStart) {
+            
+            double rbsScore = -10000;
+            double promoterScore = -10000;
+            
+            try {
+                rbsScore = scoreMotifAtAllPositions(mRBS, upstreamRBS, mRBS.motif->getLength());
+            }
+            catch (exception) {}
+            
+            try {
+                promoterScore = scoreMotifAtAllPositions(mPromoter, upstreamPromoter, mPromoter.motif->getLength());
+            }
+            catch (exception) {}
+            
+            double maxScore = std::max(rbsScore, promoterScore);
+            
+            cout << n+1 << "\t" << strand << "\t" << maxScore << endl;
         }
-        catch (exception) {}
-        
-        try {
-            promoterScore = scoreMotifAtAllPositions(mPromoter, upstreamPromoter, mPromoter.motif->getLength());
-        }
-        catch (exception) {}
-        
-        double maxScore = std::max(rbsScore, promoterScore);
-        
-        cout << n+1 << "\t" << maxScore << endl;
     }
     
 }
@@ -720,8 +746,6 @@ void ModuleExperiment::runScoreStarts() {
                 labels[i] = NULL;
             }
         }
-        
-        size_t sizeBefore = labels.size();
         
         // erase from vector
         
@@ -801,6 +825,10 @@ void ModuleExperiment::runScoreStarts() {
         }
     }
     
+    // estimate noncoding model
+    unsigned noncOrder = 2;
+    GMS2Trainer trainer(1, 0, noncOrder, 0, 40, 12, ProkGeneStartModel::C1, expOptions.mfinderOptions, numAlph, expOptions.minGeneLength);
+    trainer.estimateParamtersNonCoding(numSequence, labels);
     
     //  "EXPERIMENT: MOTIF SEARCH FOR RBS"
     
@@ -811,8 +839,7 @@ void ModuleExperiment::runScoreStarts() {
     mfinderForRBS.findMotifs(upstreamsForRBS, positionsForRBS);
     
     // build model RBS
-    MotifModel rbsModel = estimateMotifModel(upstreamsForRBS, positionsForRBS, expOptions.mfinderOptions.motifOrder, expOptions.mfinderOptions.bkgdOrder, expOptions.mfinderOptions.width, expOptions.mfinderOptions.pcounts, numAlph);
-
+    MotifModel rbsModel = estimateMotifModel(upstreamsForRBS, positionsForRBS, expOptions.mfinderOptions.motifOrder, expOptions.mfinderOptions.bkgdOrder, expOptions.mfinderOptions.width, expOptions.mfinderOptions.pcounts, expOptions.NDEC, numAlph);
     
     //  "EXPERIMENT: MOTIF SEARCH FOR Promoter"
     
@@ -822,14 +849,18 @@ void ModuleExperiment::runScoreStarts() {
     vector<NumSequence::size_type> positionsForPromoter;
     mfinderForPromoter.findMotifs(upstreamsForPromoter, positionsForPromoter);
     
-    // build model RBS
-    MotifModel promoterModel = estimateMotifModel(upstreamsForPromoter, positionsForPromoter, expOptions.mfinderOptions.motifOrder, expOptions.mfinderOptions.bkgdOrder, expOptions.mfinderOptions.width, expOptions.mfinderOptions.pcounts, numAlph);
+    // build model promoter
+    MotifModel promoterModel = estimateMotifModel(upstreamsForPromoter, positionsForPromoter, expOptions.mfinderOptions.motifOrder, expOptions.mfinderOptions.bkgdOrder, expOptions.mfinderOptions.width, expOptions.mfinderOptions.pcounts, expOptions.NDEC, numAlph);
 
+    
+    // set background as noncoding
+    rbsModel.background = boost::shared_ptr<UniformMarkov> (new UniformMarkov(*trainer.noncoding));
+    promoterModel.background = boost::shared_ptr<UniformMarkov> (new UniformMarkov(*trainer.noncoding));
     
     GeneticCode gc(GeneticCode::ELEVEN);
     NumGeneticCode numGC(gc, cnc);
     
-    scoreAllStarts(numSequence, numGC, rbsModel, promoterModel, expOptions.upstreamLenRBS, expOptions.upstreamLenPromoter);
+    scoreAllStarts(numSequence, numGC, rbsModel, promoterModel, expOptions.upstreamLenRBS, expOptions.upstreamLenPromoter, cnc);
     
     
     
