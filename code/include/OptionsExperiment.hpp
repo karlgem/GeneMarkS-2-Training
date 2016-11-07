@@ -118,7 +118,7 @@ namespace gmsuite {
             bool allowAGSubstitution;           // whether A and G can be subsituted while matching
             size_t upstreamLenRBS;              // upstream length for RBS search
             size_t upstreamLenPromoter;         // upstream length for promoter search
-            int NDEC;
+            string gms2mod;                     // gms2 mod file
             OptionsMFinder mfinderOptions;      // RBS
         }
         scoreStarts;

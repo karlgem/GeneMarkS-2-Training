@@ -244,7 +244,7 @@ void OptionsExperiment::addProcessOptions_ScoreStarts(ScoreStarts &options, po::
     ("search-len", po::value<size_t>(&options.searchUpstrLen)->default_value(20), "Determines search window for 16S match")
     ("upstr-len-rbs", po::value<size_t>(&options.upstreamLenRBS)->default_value(20), "Length of upstream for RBS motif search")
     ("upstr-len-promoter", po::value<size_t>(&options.upstreamLenPromoter)->default_value(40), "Length of upstream for Promoter motif search")
-    ("NDEC", po::value<int>(&options.NDEC)->default_value(300))
+    ("gms2-mod", po::value<string>(&options.gms2mod)->required(), "Name of GMS2 mod file containing noncoding model")
     ;
     
     
