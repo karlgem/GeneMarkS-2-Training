@@ -41,6 +41,7 @@ namespace gmsuite {
     public:
         
         typedef vector<int>::size_type size_type;                       // type for numeric sequence size
+        static const size_type npos = Sequence::npos;                   /**< Returned to indicate no matches */
         typedef CharNumConverter::element_t num_t;                      /**< define generic type for number @see CharNumConverter */
         
         /**

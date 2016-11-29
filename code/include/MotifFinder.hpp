@@ -10,6 +10,7 @@
 #define MotifFinder_hpp
 
 #include <stdio.h>
+#include <limits.h>
 #include "AlphabetDNA.hpp"
 #include "NumSequence.hpp"
 #include "MFinderModelParams.hpp"
@@ -52,7 +53,8 @@ namespace gmsuite {
                     unsigned tries          =   10,
                     unsigned maxIter        =   100,
                     unsigned maxEMIter      =   10,
-                    unsigned shiftEvery     =   20);
+                    unsigned shiftEvery     =   20,
+                    double filterThresh     =   -std::numeric_limits<double>::infinity());
         
         
         /**
@@ -100,6 +102,7 @@ namespace gmsuite {
         unsigned shiftEvery                         ;       /**< number of iterations between every shift-operation */
         AlphabetDNA alphabet                        ;       /**< the alphabet used by the sampler; at the moment, only DNA is available */
         MFinderModelParams::align_t align           ;       /**< whether to align sequences first and use length distribution */
+        double filterThresh                         ;       /**< allows filtering of sequences with low scores */
         
     };
     
@@ -121,6 +124,7 @@ namespace gmsuite {
         double      pcounts;
         bool        allSeqsPerIter;
         MFinderModelParams::align_t align;
+        double        filterThresh;
         
         
     public:
@@ -136,6 +140,7 @@ namespace gmsuite {
             pcounts         =   1;
             align           =   MFinderModelParams::NONE;
             allSeqsPerIter  =   true;
+            filterThresh    =   -std::numeric_limits<double>::infinity();
         }
         
         
@@ -150,17 +155,19 @@ namespace gmsuite {
         Builder& setWidth       (const unsigned v)                          { this->width = v;      return *this;   }
         Builder& setPcounts     (const unsigned v)                          { this->pcounts = v;    return *this;   }
         Builder& setAlign       (const MFinderModelParams::align_t v)       { this->align = v;      return *this;   }
-        Builder& fullLoopPerIter(const bool v)                              { this->allSeqsPerIter = v; return *this;   }
+        Builder& fullLoopPerIter(const bool v)                              { this->allSeqsPerIter = v; return *this; }
+        Builder& setFilterThresh(const double v)                            { this->filterThresh = v; return *this; }
         
         // build motif finder with set parameters
         MotifFinder build() {
-            return MotifFinder(width, motifOrder, backOrder, pcounts, align, tries, MAX_ITER, MAX_EM_ITER, shiftEvery);
+            return MotifFinder(width, motifOrder, backOrder, pcounts, align, tries, MAX_ITER, MAX_EM_ITER, shiftEvery, filterThresh);
         }
         
         MotifFinder build(OptionsMFinder &options) {
             this->setNumTries(options.tries).setMaxIter(options.maxIter).setMaxEMIter(options.maxEMIter).setShiftEvery(options.shiftEvery);
             this->setMotifOrder(options.motifOrder).setBackOrder(options.bkgdOrder).setWidth(options.width).setPcounts(options.pcounts);
             this->setAlign(options.align);
+            this->setFilterThresh(options.filterThresh);
             return build();
         }
     };

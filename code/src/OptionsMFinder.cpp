@@ -9,6 +9,7 @@
 #include "OptionsMFinder.hpp"
 
 #include <vector>
+#include <limits.h>
 #include <fstream>
 #include <iostream>
 #include <boost/program_options.hpp>
@@ -165,6 +166,7 @@ void OptionsMFinder::addProcessOptions(OptionsMFinder &optionsMFinder, po::optio
     ("max-em-iter", po::value<unsigned>(&optionsMFinder.maxEMIter)->default_value(10), "Number of EM iterations per single try")
     ("shift-every", po::value<unsigned>(&optionsMFinder.shiftEvery)->default_value(10), "Number of iterations before shifting motif")
     ("pcount", po::value<double>(&optionsMFinder.pcounts)->default_value(1), "Pseudocounts")
+    ("filter-thresh", po::value<double>(&optionsMFinder.filterThresh)->default_value(-std::numeric_limits<double>::infinity()), "Value for filtering out motifs with low score")
     ;
 }
 

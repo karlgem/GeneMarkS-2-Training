@@ -293,6 +293,8 @@ double ProbabilityModelsV1::computePositionScore(const NumSequence &sequence, Nu
             score *= (*positionDistribution)[pos];
         else if (align == MFinderModelParams::RIGHT)
             score *= (*positionDistribution)[sequence.size() - width - pos];
+        
+        score /= (1.0 / positionDistribution->size());          // normalize on uniform distribution
     }
     
     return score;

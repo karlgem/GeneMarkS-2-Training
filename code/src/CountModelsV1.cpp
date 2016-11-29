@@ -104,6 +104,10 @@ void CountModelsV1::construct(const vector<NumSequence> &sequences, const vector
 // Decount a motif
 void CountModelsV1::decount(const NumSequence &sequence, NumSequence::size_type pos) {
     
+    // if 'out of range'
+    if (pos == NumSequence::npos)
+        return;
+    
     // decount motif model
     mMotif->decount(sequence.begin() + pos, sequence.begin() + pos + width);
     
@@ -144,10 +148,15 @@ void CountModelsV1::decount(const NumSequence &sequence, NumSequence::size_type 
  * @exception invalid_argument if pos is not a valid motif location in the sequence
  */
 void CountModelsV1::count(const NumSequence &sequence, NumSequence::size_type pos) {
+    
+    // if 'out-of-range'
+    if (pos == NumSequence::npos)
+        return;
+    
     // count motif model
     mMotif->count(sequence.begin() + pos, sequence.begin() + pos + width);
     
-    // count position model
+    // count background model
     if (pos > 0)
         mBack->count(sequence.begin(), sequence.begin() + pos);
     if (pos < sequence.size() - width)
