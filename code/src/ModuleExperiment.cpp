@@ -21,6 +21,8 @@
 #include "UniformCounts.hpp"
 #include "LabelsParser.hpp"
 #include "NumGeneticCode.hpp"
+#include "OldGMS2ModelFile.hpp"
+#include "NonCodingMarkov.hpp"
 
 #include <algorithm>
 #include <iostream>
@@ -825,13 +827,18 @@ void ModuleExperiment::runScoreStarts() {
         }
     }
     
-    // estimate noncoding model
-    unsigned noncOrder = 2;
-    GMS2Trainer trainer(1, 0, noncOrder, 0, 40, 12, ProkGeneStartModel::C1, expOptions.mfinderOptions, numAlph, expOptions.minGeneLength);
-    trainer.estimateParamtersNonCoding(numSequence, labels);
+//    // estimate noncoding model
+//    unsigned noncOrder = 2;
+//    GMS2Trainer trainer(1, 0, noncOrder, 0, 40, 12, ProkGeneStartModel::C1, expOptions.mfinderOptions, numAlph, expOptions.minGeneLength);
+//    trainer.estimateParamtersNonCoding(numSequence, labels);
+    
+    // Read noncoding model
+    OldGMS2ModelFile oldMod (expOptions.gms2mod);
+    size_t NDEC = oldMod.getNDEC();                                         // get NDEC parameter
+    boost::shared_ptr<NonCodingMarkov> noncoding = boost::shared_ptr<NonCodingMarkov> ( new NonCodingMarkov(oldMod.getNoncoding(), numAlph, cnc));         // create noncoding markov model from mod file
+    
     
     //  "EXPERIMENT: MOTIF SEARCH FOR RBS"
-    
     MotifFinder::Builder bRBS;
     MotifFinder mfinderForRBS = bRBS.build(expOptions.mfinderOptions);
     
@@ -839,7 +846,7 @@ void ModuleExperiment::runScoreStarts() {
     mfinderForRBS.findMotifs(upstreamsForRBS, positionsForRBS);
     
     // build model RBS
-    MotifModel rbsModel = estimateMotifModel(upstreamsForRBS, positionsForRBS, expOptions.mfinderOptions.motifOrder, expOptions.mfinderOptions.bkgdOrder, expOptions.mfinderOptions.width, expOptions.mfinderOptions.pcounts, expOptions.NDEC, numAlph);
+    MotifModel rbsModel = estimateMotifModel(upstreamsForRBS, positionsForRBS, expOptions.mfinderOptions.motifOrder, expOptions.mfinderOptions.bkgdOrder, expOptions.mfinderOptions.width, expOptions.mfinderOptions.pcounts, NDEC, numAlph);
     
     //  "EXPERIMENT: MOTIF SEARCH FOR Promoter"
     
@@ -850,12 +857,12 @@ void ModuleExperiment::runScoreStarts() {
     mfinderForPromoter.findMotifs(upstreamsForPromoter, positionsForPromoter);
     
     // build model promoter
-    MotifModel promoterModel = estimateMotifModel(upstreamsForPromoter, positionsForPromoter, expOptions.mfinderOptions.motifOrder, expOptions.mfinderOptions.bkgdOrder, expOptions.mfinderOptions.width, expOptions.mfinderOptions.pcounts, expOptions.NDEC, numAlph);
+    MotifModel promoterModel = estimateMotifModel(upstreamsForPromoter, positionsForPromoter, expOptions.mfinderOptions.motifOrder, expOptions.mfinderOptions.bkgdOrder, expOptions.mfinderOptions.width, expOptions.mfinderOptions.pcounts, NDEC, numAlph);
 
     
     // set background as noncoding
-    rbsModel.background = boost::shared_ptr<UniformMarkov> (new UniformMarkov(*trainer.noncoding));
-    promoterModel.background = boost::shared_ptr<UniformMarkov> (new UniformMarkov(*trainer.noncoding));
+    rbsModel.background = noncoding;                // boost::shared_ptr<UniformMarkov> (new UniformMarkov(*trainer.noncoding));
+    promoterModel.background = noncoding;           // boost::shared_ptr<UniformMarkov> (new UniformMarkov(*trainer.noncoding));
     
     GeneticCode gc(GeneticCode::ELEVEN);
     NumGeneticCode numGC(gc, cnc);
