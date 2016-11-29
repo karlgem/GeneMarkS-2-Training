@@ -9,9 +9,10 @@
 #ifndef OptionsMFinder_hpp
 #define OptionsMFinder_hpp
 
-#include <stdio.h>
 #include "Options.hpp"
+#include "MFinderModelParams.hpp"
 
+#include <stdio.h>
 #include <boost/program_options.hpp>
 namespace po = boost::program_options;
 
@@ -44,12 +45,14 @@ namespace gmsuite {
         // Below, create a variable for each parameter, to make for easy access
     public:
         
+        typedef MFinderModelParams::align_t align_t;
+        
         string fname_in;                /**< Input filename containing DNA sequence */
         double pcounts;                 /**< The pseudocount value */
         unsigned width;                 /**< The width of the motif */
         unsigned motifOrder;            /**< Order for motif Markov model */
         unsigned bkgdOrder;             /**< Order of background Markov model */
-        string align;                   /**< Set to left, right, or none, to indicate whether positional distribution should be used, and from which direction */
+        align_t align;                  /**< Set to left, right, or none, to indicate whether positional distribution should be used, and from which direction */
         unsigned tries;                 /**< Number of restarts; i.e. number of times the algorithm is executed with new random initialization */
         unsigned maxIter;               /**< Number of Gibbs iterations per single try */
         unsigned maxEMIter;             /**< Number of EM iterations per single try */

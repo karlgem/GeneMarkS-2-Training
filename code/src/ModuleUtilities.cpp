@@ -34,17 +34,17 @@ ModuleUtilities::ModuleUtilities(const OptionsUtilities& opt) : options(opt) {
 // Run module according to the provided options.
 void ModuleUtilities::run() {
     
-    if (options.utility == EXTRACT_UPSTR) {
+    if (options.utility == OptionsUtilities::EXTRACT_UPSTR) {
         runExtractUpstream();
     }
-    else if (options.utility == START_MODEL_INFO)
+    else if (options.utility == OptionsUtilities::START_MODEL_INFO)
         runStartModelInfo();
-    else if (options.utility == MATCH_SEQ_TO_UPSTREAM)
+    else if (options.utility == OptionsUtilities::MATCH_SEQ_TO_UPSTREAM)
         runMatchSeqToUpstream();
-    else if (options.utility == MATCH_SEQ_TO_NONCODING)
+    else if (options.utility == OptionsUtilities::MATCH_SEQ_TO_NONCODING)
         runMatchSeqToNoncoding();
-    else            // unrecognized utility to run
-        throw invalid_argument("Unknown utility function " + options.utility);
+//    else            // unrecognized utility to run
+//        throw invalid_argument("Unknown utility function " + options.utility);
     
 }
 
@@ -195,20 +195,13 @@ void ModuleUtilities::runStartModelInfo() {
     }
     
     // convert align option from string format to align_t format
-    MFinderModelParams::align_t align = MFinderModelParams::NONE;
+    
     const OptionsMFinder *optionsMFinder = &options.startModelInfoUtility.optionsGMS2Training.optionsMFinder;
-    if (optionsMFinder->align == "left")
-        align = MFinderModelParams::LEFT;
-    else if (optionsMFinder->align == "right")
-        align = MFinderModelParams::RIGHT;
-    else if (optionsMFinder->align == "none")
-        align = MFinderModelParams::NONE;
-    else
-        throw invalid_argument("Align option must be one of: left, right, none");
+    
     
     // set motif finder options
     MotifFinder::Builder b;
-    b.setAlign(align).setWidth(optionsMFinder->width).setMaxIter(optionsMFinder->maxIter).setMaxEMIter(optionsMFinder->maxEMIter).setNumTries(optionsMFinder->tries);
+    b.setAlign(optionsMFinder->align).setWidth(optionsMFinder->width).setMaxIter(optionsMFinder->maxIter).setMaxEMIter(optionsMFinder->maxEMIter).setNumTries(optionsMFinder->tries);
     b.setPcounts(optionsMFinder->pcounts).setMotifOrder(optionsMFinder->motifOrder).setBackOrder(optionsMFinder->bkgdOrder).setShiftEvery(optionsMFinder->shiftEvery);
     
     // build motif finder from above options

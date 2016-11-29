@@ -28,20 +28,10 @@ ModuleMFinder::ModuleMFinder(const OptionsMFinder& opt) : options(opt) {
 
 void ModuleMFinder::run() {
     
-    // convert align option from string format to align_t format
-    MFinderModelParams::align_t align = MFinderModelParams::NONE;
-    if (options.align == "left")
-        align = MFinderModelParams::LEFT;
-    else if (options.align == "right")
-        align = MFinderModelParams::RIGHT;
-    else if (options.align == "none")
-        align = MFinderModelParams::NONE;
-    else
-        throw invalid_argument("Align option must be one of: left, right, none");
     
     // set motif finder options
     MotifFinder::Builder b;
-    b.setAlign(align).setWidth(options.width).setMaxIter(options.maxIter).setMaxEMIter(options.maxEMIter).setNumTries(options.tries);
+    b.setAlign(options.align).setWidth(options.width).setMaxIter(options.maxIter).setMaxEMIter(options.maxEMIter).setNumTries(options.tries);
     b.setPcounts(options.pcounts).setMotifOrder(options.motifOrder).setBackOrder(options.bkgdOrder).setShiftEvery(options.shiftEvery);
     
     // build motif finder from above options
@@ -76,6 +66,9 @@ void ModuleMFinder::run() {
     
     vector<NumSequence::size_type> positions;
     mfinder.findMotifs(numSequences, positions);
+    
+    printf("NAME MotifFinder\n");
+    printf("VERSION 1.0\n");
     
     // print positions
     for (size_t n = 0; n < numSequences.size(); n++) {

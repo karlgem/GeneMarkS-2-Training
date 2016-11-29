@@ -251,15 +251,8 @@ void GMS2Trainer::estimateParametersMotifModel(const NumSequence &sequence, cons
     CharNumConverter cnc(&alph);
     NumAlphabetDNA numAlph(alph, cnc);
     
-    // build motif finder
     MotifFinder::Builder b;
-    if (optionsMFinder->align == "left")
-        b.setAlign(MFinderModelParams::LEFT);
-    else if (optionsMFinder->align == "right")
-        b.setAlign(MFinderModelParams::RIGHT);
-    else
-        b.setAlign(MFinderModelParams::NONE);
-    
+    b.setAlign(optionsMFinder->align);
     b.setWidth(optionsMFinder->width);
     b.setMaxIter(optionsMFinder->maxIter);
     b.setPcounts(optionsMFinder->pcounts);
@@ -475,13 +468,8 @@ void GMS2Trainer::estimateParametersMotifModel_Promoter(const NumSequence &seque
     
     // build motif finder
     MotifFinder::Builder b;
-    if (optionsMFinder->align == "left")
-        b.setAlign(MFinderModelParams::LEFT);
-    else if (optionsMFinder->align == "right")
-        b.setAlign(MFinderModelParams::RIGHT);
-    else
-        b.setAlign(MFinderModelParams::NONE);
     
+    b.setAlign(optionsMFinder->align);
     b.setWidth(optionsMFinder->width);
     b.setMaxIter(optionsMFinder->maxIter);
     b.setPcounts(optionsMFinder->pcounts);

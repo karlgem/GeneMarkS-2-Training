@@ -87,18 +87,8 @@ ModuleGMS2::genome_class_t ModuleGMS2::classifyGenome(const NumSequence &numSeq,
     
     // start by building motif finder
     // convert align option from string format to align_t format
-    MFinderModelParams::align_t align = MFinderModelParams::NONE;
-    if (options.optionsMFinder.align == "left")
-        align = MFinderModelParams::LEFT;
-    else if (options.optionsMFinder.align == "right")
-        align = MFinderModelParams::RIGHT;
-    else if (options.optionsMFinder.align == "none")
-        align = MFinderModelParams::NONE;
-    else
-        throw invalid_argument("Align option must be one of: left, right, none");
-    
     MotifFinder::Builder b;
-    b.setAlign(align).setWidth(options.optionsMFinder.width).setMaxIter(options.optionsMFinder.maxIter).setMaxEMIter(options.optionsMFinder.maxEMIter).setNumTries(options.optionsMFinder.tries);
+    b.setAlign(options.optionsMFinder.align).setWidth(options.optionsMFinder.width).setMaxIter(options.optionsMFinder.maxIter).setMaxEMIter(options.optionsMFinder.maxEMIter).setNumTries(options.optionsMFinder.tries);
     b.setPcounts(options.optionsMFinder.pcounts).setMotifOrder(options.optionsMFinder.motifOrder).setBackOrder(options.optionsMFinder.bkgdOrder).setShiftEvery(options.optionsMFinder.shiftEvery);
 
     MotifFinder mfinder = b.build();        // build mfinder

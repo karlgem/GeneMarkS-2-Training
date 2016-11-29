@@ -16,12 +16,14 @@
 #include "OptionsGMS2.hpp"
 #include "OptionsMFinder.hpp"
 #include "OptionsUtilities.hpp"
+#include "OptionsExperiment.hpp"
 #include "OptionsGMS2Training.hpp"
 
 #include "Module.hpp"
 #include "ModuleGMS2.hpp"
 #include "ModuleMFinder.hpp"
 #include "ModuleUtilities.hpp"
+#include "ModuleExperiment.hpp"
 #include "ModuleGMS2Training.hpp"
 
 using namespace std;
@@ -30,6 +32,7 @@ using namespace gmsuite;
 #define MOD_GMS2 "gms2"
 #define MOD_MFINDER "mfinder"
 #define MOD_UTILITIES "utilities"
+#define MOD_EXPERIMENT "experiment"
 #define MOD_GMS2_TRAINING "gms2-training"
 
 string usage_message(string progName) {
@@ -40,6 +43,7 @@ string usage_message(string progName) {
     ssm << "\t" << MOD_GMS2 << "\t" << "GeneMarkS2" << endl;
     ssm << "\t" << MOD_MFINDER << "\t" << "MFinder" << endl;
     ssm << "\t" << MOD_UTILITIES << "\t" << "Utilities" << endl;
+    ssm << "\t" << MOD_EXPERIMENT << "\t" << "Experiment" << endl;
     ssm << "\t" << MOD_GMS2_TRAINING << "\t" << "GMS2 Training step" << endl;
     
     return ssm.str();
@@ -82,6 +86,15 @@ int main(int argc, const char * argv[]) {
             return 1;
         
         ModuleUtilities module (options);               // create module with options
+        module.run();                                   // run module
+    }
+    else if (aMode == MOD_EXPERIMENT) {
+        OptionsExperiment options(aMode);               // Experiment
+        
+        if (!options.parse(argc, argv))                 // parse input arguments
+            return 1;
+        
+        ModuleExperiment module (options);               // create module with options
         module.run();                                   // run module
     }
     else if (aMode == MOD_GMS2_TRAINING) {

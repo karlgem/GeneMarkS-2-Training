@@ -87,6 +87,43 @@ namespace gmsuite {
                                  const po::options_description& desc,
                                  const po::positional_options_description& pod) const;
         
+        
+        
+        /**********************************************\
+         *             General-based options          *
+        \**********************************************/
+        
+        
+        // generic experiment options
+        struct GenericOptions {
+            bool help;
+            bool debug;
+            bool verbose;
+        };
+        
+        // general read-sequence-and-labels files option
+        struct GenReadSeqAndLabelsOptions : public GenericOptions {
+            string fn_seqeuence;            // sequence filename
+            string fn_labels;               // labels filename
+        };
+        
+        // general extract-upstreams options
+        struct GenExtractUpstreamsOptions : public GenReadSeqAndLabelsOptions {
+            size_t length;                  // length of upstream region
+            bool allowOverlaps;             // allow upstream regions to overlap previous coding region
+            size_t minGeneLength;           // minimum gene length associated with upstream sequences
+        };
+
+        
+        /**********************************************\
+         *              Option Processing             *
+        \**********************************************/
+        
+        static void addProcessOptions_GenericOptions(GenericOptions &options, po::options_description &processOptions);
+        static void addProcessOptions_GenReadSeqAndLabelsOptions(GenReadSeqAndLabelsOptions &options, po::options_description &processOptions);
+        static void addProcessOptions_GenExtractUpstreamsOptions(GenExtractUpstreamsOptions &options, po::options_description &processOptions);
+        
+        
     // Below, create a variable for each parameter, to make for easy access
     public:
         

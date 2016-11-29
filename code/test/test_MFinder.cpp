@@ -21,7 +21,7 @@ TEST_CASE("Testing Motif Finder") {
     srand(1);
     
     OptionsMFinder options("mfinder");
-    options.align = "right";
+    options.align = MFinderModelParams::RIGHT;
     options.width = 6;
     options.motifOrder = 0;
     options.bkgdOrder = 0;

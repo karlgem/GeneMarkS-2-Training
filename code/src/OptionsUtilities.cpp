@@ -12,12 +12,53 @@
 #include <fstream>
 #include <iostream>
 #include <boost/program_options.hpp>
+#include <boost/xpressive/xpressive.hpp>
+#include <boost/lexical_cast.hpp>
+#include <boost/any.hpp>
 
 using namespace std;
 using namespace gmsuite;
+using namespace boost::xpressive;
 namespace po = boost::program_options;
 
 OptionsUtilities::OptionsUtilities(string mode) : Options(mode) {
+    
+}
+
+#define STR_EXTRACT_UPSTR "extract_upstream"
+#define STR_START_MODEL_INFO "start-model-info"
+#define STR_MATCH_SEQ_TO_UPSTREAM "match-seq-to-upstream"
+#define STR_MATCH_SEQ_TO_NONCODING "match-seq-to-noncoding"
+
+namespace gmsuite {
+    // convert string to utility_t
+    std::istream& operator>>(std::istream& in, OptionsUtilities::utility_t& unit) {
+        std::string token;
+        in >> token;
+        
+        if (token == STR_EXTRACT_UPSTR)                 unit = OptionsUtilities::EXTRACT_UPSTR;
+        else if (token == STR_START_MODEL_INFO)         unit = OptionsUtilities::START_MODEL_INFO;
+        else if (token == STR_MATCH_SEQ_TO_UPSTREAM)    unit = OptionsUtilities::MATCH_SEQ_TO_UPSTREAM;
+        else if (token == STR_MATCH_SEQ_TO_NONCODING)   unit = OptionsUtilities::MATCH_SEQ_TO_NONCODING;
+        else
+            throw boost::program_options::invalid_option_value(token);
+        
+        return in;
+    }
+    
+//    // validate utility option
+//    void validate(boost::any& v,
+//                  const vector<string>& values,
+//                  OptionsUtilities::utility_t * target_type, int) {
+//        
+//        static sregex expr = sregex::compile("^\\s*(\\S+)\\s*");
+//        
+//        po::validators::check_first_occurrence(v);  // check no previous assignment to v
+//        const string& s = po::validators::get_single_string(values);  // get value
+//        
+//        smatch match;
+//        if (regex_search(s,match,expr))
+//    }
     
 }
 
@@ -50,7 +91,7 @@ bool OptionsUtilities::parse(int argc, const char *argv[]) {
         po::options_description hidden;
         hidden.add_options()
         ("mode", po::value<string>(&mode)->required(), "Program Mode")
-        ("utility", po::value<string>(&utility)->required(), "Utility function")
+        ("utility", po::value<utility_t>(&utility)->required(), "Utility function")
         ("subargs", po::value<std::vector<std::string> >(), "Arguments for command")
         ;
         
@@ -84,12 +125,10 @@ bool OptionsUtilities::parse(int argc, const char *argv[]) {
         
         po::store(parsed,vm);
         
-//        if (utility.empty())
-//            // if help specified, print usage message and quit
-//            if (vm.count("help")) {
-//                cout << make_usage_string(basename(argv[0]), cmdline_options, pos) << endl;
-//                return false;
-//            }
+        if (!vm.count("utility")){
+                cout << make_usage_string(basename(argv[0]), cmdline_options, pos) << endl;
+                return false;
+        }
         
         // try parsing arguments.
         po::notify(vm);
@@ -97,7 +136,7 @@ bool OptionsUtilities::parse(int argc, const char *argv[]) {
         // Utility: Extract upstream
         if (utility == EXTRACT_UPSTR) {
             
-            po::options_description utilDesc(string(EXTRACT_UPSTR) + " options");
+            po::options_description utilDesc(string(STR_EXTRACT_UPSTR) + " options");
             utilDesc.add_options()
                 ("sequence,s", po::value<string>(&extractUpstreamUtility.fn_sequence)->required(), "Sequence filename")
                 ("label,l", po::value<string>(&extractUpstreamUtility.fn_label)->required(), "Label filename")
@@ -124,7 +163,7 @@ bool OptionsUtilities::parse(int argc, const char *argv[]) {
         // Utility: Start-Model Info
         else if (utility == START_MODEL_INFO) {
             
-            po::options_description utilDesc(string(START_MODEL_INFO) + " options");
+            po::options_description utilDesc(string(STR_START_MODEL_INFO) + " options");
             utilDesc.add_options()
                 ("sequence,s", po::value<string>(&startModelInfoUtility.fn_sequence)->required(), "Sequence filename")
                 ("label,l", po::value<string>(&startModelInfoUtility.fn_label)->required(), "Label filename")
@@ -156,13 +195,13 @@ bool OptionsUtilities::parse(int argc, const char *argv[]) {
         }
         // Utility: Match sequence to upstream
         else if (utility == MATCH_SEQ_TO_UPSTREAM) {
-            po::options_description utilDesc(string(MATCH_SEQ_TO_UPSTREAM) + " options");
+            po::options_description utilDesc(string(STR_MATCH_SEQ_TO_UPSTREAM) + " options");
             utilDesc.add_options()
                 ("match-to", po::value<string>(&matchSeqWithUpstream.matchTo)->required(), "Sequence to be matched to")
             ;
             
             // add extract upstream process
-            po::options_description extractUpstreamOptions(string(EXTRACT_UPSTR) + " options");
+            po::options_description extractUpstreamOptions(string(STR_EXTRACT_UPSTR) + " options");
             addProcessOptions_ExtractUpstream(matchSeqWithUpstream, extractUpstreamOptions);
             
             utilDesc.add(extractUpstreamOptions);
@@ -184,13 +223,13 @@ bool OptionsUtilities::parse(int argc, const char *argv[]) {
         }
         // Utility: Match sequence to noncoding
         else if (utility == MATCH_SEQ_TO_NONCODING) {
-            po::options_description utilDesc(string(MATCH_SEQ_TO_NONCODING) + " options");
+            po::options_description utilDesc(string(STR_MATCH_SEQ_TO_NONCODING) + " options");
             utilDesc.add_options()
                 ("match-to", po::value<string>(&matchSeqWithNoncoding.matchTo)->required(), "Sequence to be matched to")
             ;
             
             // add start-model-info
-            po::options_description startModelInfoOptions(string(START_MODEL_INFO) + " options");
+            po::options_description startModelInfoOptions(string(STR_START_MODEL_INFO) + " options");
             addProcessOptions_StartModelInfo(matchSeqWithNoncoding, startModelInfoOptions);
             
             utilDesc.add(startModelInfoOptions);
@@ -209,12 +248,8 @@ bool OptionsUtilities::parse(int argc, const char *argv[]) {
             // get remaining parameters whose values were not assigned in add_options() above
             matchSeqWithNoncoding.allowOverlaps = vm.count("allow-overlap-with-cds") > 0;
         }
-        // empty utility
-        else if (utility.empty()) {
-            
-        }
-        else                                                                        // unrecognized utility
-            throw po::invalid_option_value(utility);
+//        else                                                                        // unrecognized utility
+//            throw po::invalid_option_value(utility);
         
         // if help specified, print usage message and quit
         if (vm.count("help")) {
