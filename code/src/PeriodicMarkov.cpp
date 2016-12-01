@@ -63,14 +63,18 @@ void PeriodicMarkov::construct(const Counts* counts, int pcount) {
     // start by copying counts
     this->model = periodicCounts->model;
     
-    vector<double> sums (period, 0);            // will contain sum of counts for each period
+    
     
     // add pseudocounts
+    if (pcount > 0)
+        addPseudocounts(pcount);
+    
+    // get total for each period (for normalization)
+    vector<double> sums (period, 0);            // will contain sum of counts for each period
     for (size_t p = 0; p < period; p++)                         // for each period
-        for (size_t n = 0; n < model[p].size(); n++) {          // for each word
-            model[p][n] += pcount;                              // add pseudocount
+        for (size_t n = 0; n < model[p].size(); n++)            // for each word
             sums[p] += model[p][n];                             // add to sum
-        }
+        
     
     
     // normalize to get joint probabilities (e.g. P(ACG))
@@ -238,7 +242,11 @@ void PeriodicMarkov::initialize() {
 
 
 
-
+void PeriodicMarkov::addPseudocounts(int pcount) {
+    for (size_t p = 0; p < period; p++)                         // for each period
+        for (size_t n = 0; n < model[p].size(); n++)            // for each word
+            model[p][n] += pcount;                              // add pseudocount
+}
 
 
 

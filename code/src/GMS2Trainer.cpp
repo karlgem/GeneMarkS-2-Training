@@ -12,8 +12,10 @@
 #include "UnivariatePDF.hpp"
 #include "UniformCounts.hpp"
 #include "PeriodicCounts.hpp"
+#include "CodingMarkov.hpp"
 #include "NonUniformCounts.hpp"
 #include "SequenceParser.hpp"
+#include "CodingCounts.hpp"
 #include <boost/lexical_cast.hpp>
 
 using namespace std;
@@ -168,7 +170,8 @@ void GMS2Trainer::estimateParamtersCoding(const NumSequence &sequence, const vec
             throw invalid_argument("Labels and Use vector should have the same length");
     }
     
-    PeriodicCounts counts (codingOrder, 3, *this->alphabet);
+//    PeriodicCounts counts (codingOrder, 3, *this->alphabet);
+    CodingCounts counts (codingOrder, 3, *this->alphabet, *this->numGeneticCode);
     
     // get counts for 3 period markov model given order
     size_t n = 0;
@@ -202,7 +205,8 @@ void GMS2Trainer::estimateParamtersCoding(const NumSequence &sequence, const vec
     }
     
     // convert counts to probabilities
-    coding = new PeriodicMarkov(codingOrder, 3, *this->alphabet);
+//    coding = new PeriodicMarkov(codingOrder, 3, *this->alphabet);
+    coding = new CodingMarkov(codingOrder, 3, *this->alphabet, *this->numGeneticCode);
     coding->construct(&counts, pcounts);
     
 }

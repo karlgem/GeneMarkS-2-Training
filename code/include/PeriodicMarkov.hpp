@@ -83,6 +83,12 @@ namespace gmsuite {
          */
         void initialize();
         
+        /**
+         * Add pseudocounts to counts. This is polymorphic in case a subclass wants to have more control
+         * on which elements to include in the pseudocount.
+         */
+        virtual void addPseudocounts(int pcount);
+        
         
         // The structure of the model 'm' is a vector of vectors, where m[p] holds
         // the probabilities for frame 'p' of the model. If the model order is 2, the period
