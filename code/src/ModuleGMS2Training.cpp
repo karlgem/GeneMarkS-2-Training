@@ -51,7 +51,7 @@ void ModuleGMS2Training::run() {
     trainer.toModFile(toMod);
     
     ModelFile modFile(options.fn_outmod, ModelFile::WRITE);
-    modFile.write(toMod);
+    modFile.write(toMod, "NATIVE");
     
     
     // free up memory for labels

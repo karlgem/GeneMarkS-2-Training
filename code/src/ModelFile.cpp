@@ -202,11 +202,15 @@ bool ModelFile::keyExists(string key) const {
 /**
  * Write model parameters to file in key-value pair format.
  */
-void ModelFile::write(const map<string, string> &keyValue) {
+void ModelFile::write(const map<string, string> &keyValue, string sectionHeader) {
 
     // open filestream
     ofstream out;
     out.open(params.path.c_str());
+    
+    if (!sectionHeader.empty()) {
+        out << "__" << sectionHeader << endl;
+    }
     
     for (map<string, string>::const_iterator iter = keyValue.begin(); iter != keyValue.end(); iter++) {
         out << "$" << iter->first;

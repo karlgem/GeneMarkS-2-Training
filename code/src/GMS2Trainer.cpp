@@ -675,8 +675,6 @@ void GMS2Trainer::toModFile(map<string, string> &toMod) const {
     toMod["COD_P_N"] = "0.4";
     toMod["NON_P_N"] = "0.6";
     toMod["GENE_MIN_LENGTH"] = "89";
-//    toMod["NON_ORDER"] = boost::lexical_cast<string>(this->noncodingOrder);
-//    toMod["COD_ORDER"] = boost::lexical_cast<string>(this->codingOrder);
     
     
     // add start/stop codon probabilities
