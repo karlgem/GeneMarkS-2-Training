@@ -701,13 +701,14 @@ void GMS2Trainer::toModFile(map<string, string> &toMod) const {
         toMod["SC_ORDER"] = boost::lexical_cast<string>(startContext->getOrder());
         toMod["SC_WIDTH"] = boost::lexical_cast<string>(startContext->getLength());
         toMod["SC_MAT"] = startContext->toString();
-        toMod["SC_POS_DISTR"] = "\n" + boost::lexical_cast<string>(-3 - (int)startContext->getLength()) + "\t1.0\n";
+        toMod["SC_MARGIN"] = boost::lexical_cast<string>(-3 - (int)startContext->getLength());
     }
     
     if (rbs != NULL) {
         toMod["RBS"] = "1";
         toMod["RBS_ORDER"] = boost::lexical_cast<string>(rbs->getOrder());
         toMod["RBS_WIDTH"] = boost::lexical_cast<string>(rbs->getLength());
+        toMod["RBS_MARGIN"] = "0";
         toMod["RBS_MAT"] = rbs->toString();
     }
     
@@ -715,6 +716,7 @@ void GMS2Trainer::toModFile(map<string, string> &toMod) const {
         toMod["PROMOTER"] = "1";
         toMod["PROMOTER_ORDER"] = boost::lexical_cast<string>(promoter->getOrder());
         toMod["PROMOTER_WIDTH"] = boost::lexical_cast<string>(promoter->getLength());
+        toMod["PROMOTER_MARGIN"] = "0";
         toMod["PROMOTER_MAT"] = promoter->toString();
     }
     

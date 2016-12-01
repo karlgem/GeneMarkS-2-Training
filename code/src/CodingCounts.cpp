@@ -29,6 +29,12 @@ void CodingCounts::updateCounts(NumSequence::const_iterator begin, NumSequence::
         codon[1] = *(begin+n+1);
         codon[2] = *(begin+n+2);
         
+        if (reverseComplement) {
+            NumSequence numSeq (codon);
+            numSeq.reverseComplement(*this->alphabet->getCNC());
+            codon = vector<NumSequence::num_t> (numSeq.begin(), numSeq.end());
+        }
+        
         if (this->geneticCode->isStop(codon))
             throw std::logic_error("Codons cannot be STOP codons.");
     }
