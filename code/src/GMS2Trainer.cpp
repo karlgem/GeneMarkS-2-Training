@@ -76,7 +76,8 @@ GMS2Trainer::GMS2Trainer(unsigned pcounts,
                          genome_class_t genomeClass,
                          const OptionsMFinder &optionsMFinder,
                          const NumAlphabetDNA &alph,
-                         const NumSequence::size_type MIN_GENE_LEN) {
+                         const NumSequence::size_type MIN_GENE_LEN,
+                         const NumGeneticCode &numGenCode) {
     
     this->pcounts = pcounts;
     this->codingOrder = codingOrder;
@@ -88,6 +89,7 @@ GMS2Trainer::GMS2Trainer(unsigned pcounts,
     this->optionsMFinder = &optionsMFinder;
     this->alphabet = &alph;
     this->MIN_GENE_LEN = MIN_GENE_LEN;
+    this->numGeneticCode = &numGenCode;
     
     
     // public variables for models
@@ -101,6 +103,59 @@ GMS2Trainer::GMS2Trainer(unsigned pcounts,
     upstreamSignature = NULL;
     rbsSpacer = NULL;
     promoterSpacer = NULL;
+}
+
+
+void GMS2Trainer::estimateParametersStartStopCodons(const NumSequence &sequence, const vector<Label*> &labels, const vector<bool> &use) {
+    
+    // check if all labels should be used
+    bool useAll = true;
+    if (use.size() > 0) {
+        useAll = false;
+        if (use.size() != labels.size())
+            throw invalid_argument("Labels and Use vector should have the same length");
+    }
+    
+    // get starts and stops from genetic code definition
+    vector<CharNumConverter::seq_t> starts = this->numGeneticCode->getStarts();
+    vector<CharNumConverter::seq_t> stops = this->numGeneticCode->getStops();
+    
+    // fill in maps
+    for (size_t n = 0; n < starts.size(); n++)
+        this->startProbs[starts[n]] = 0;
+    for (size_t n = 0; n < stops.size(); n++)
+        this->stopProbs[stops[n]] = 1;              // stop probabilities to 1
+    
+    size_t totalStarts = 0;
+    
+    for (vector<Label*>::const_iterator iter = labels.begin(); iter != labels.end(); iter++) {
+        
+        CharNumConverter::seq_t start;
+        
+        // get start from positive strand
+        if ((*iter)->strand == Label::POS) {
+            start = CharNumConverter::seq_t(sequence.begin() + (*iter)->left, sequence.begin() + (*iter)->left + 3);
+        }
+        // get start from negative strand and reverse complement
+        else {
+            start = CharNumConverter::seq_t (sequence.begin() + (*iter)->right-2, sequence.begin()+(*iter)->right+1);
+            NumSequence s(start); s.reverseComplement(*this->alphabet->getCNC());   // reverse complement
+            start = CharNumConverter::seq_t (s.begin(), s.end());
+        }
+        
+        // if it is a start, add it to counts
+        if (this->numGeneticCode->isStart(start)) {
+            this->startProbs[start] += 1;
+            totalStarts += 1;
+        }
+    }
+    
+    // normalize start counts
+    if (totalStarts > 0)
+        for (map<CharNumConverter::seq_t, double>::iterator  iter = this->startProbs.begin(); iter != this->startProbs.end(); iter++)
+            iter->second /= totalStarts;
+    
+    
 }
 
 void GMS2Trainer::estimateParamtersCoding(const NumSequence &sequence, const vector<Label *> &labels, NumSequence::size_type scSize, const vector<bool> &use) {
@@ -559,6 +614,8 @@ void GMS2Trainer::estimateParameters(const NumSequence &sequence, const vector<g
     selectLabelsForCodingParameters(labels, useCoding);
     estimateParamtersCoding(sequence, labels, startContextLength, useCoding);
     
+    estimateParametersStartStopCodons(sequence, labels);
+    
     // estimate parameters for noncoding model
     useNonCoding = useCoding;                           // for now, assume
     estimateParamtersNonCoding(sequence, labels);
@@ -594,13 +651,42 @@ GMS2Trainer::~GMS2Trainer() {
 }
 
 
+void codonFrequencyToMod(const map<CharNumConverter::seq_t, double> &codons, const CharNumConverter &cnc, map<string, string> &toMod) {
+    
+    for (map<CharNumConverter::seq_t, double>::const_iterator iter = codons.begin(); iter != codons.end(); iter++) {
+        stringstream ssm;
+        ssm << cnc.convert(iter->first.begin(), iter->first.end()); // << "\t" << iter->second << endl;
+        
+        toMod[ssm.str()] = boost::lexical_cast<string>(iter->second);
+    }
+    
+}
+
 
 void GMS2Trainer::toModFile(map<string, string> &toMod) const {
     
-    // dealloc public variables for models
+    
+    
+    // name and genetic code
+    toMod["NAME"] = "gms2-training";
+    toMod["GCODE"] = "11";
+    toMod["NON_DURATION_DECAY"] = "150";
+    toMod["COD_DURATION_DECAY"] = "300";
+    toMod["COD_P_N"] = "0.4";
+    toMod["NON_P_N"] = "0.6";
+    toMod["GENE_MIN_LENGTH"] = "89";
+//    toMod["NON_ORDER"] = boost::lexical_cast<string>(this->noncodingOrder);
+//    toMod["COD_ORDER"] = boost::lexical_cast<string>(this->codingOrder);
+    
+    
+    // add start/stop codon probabilities
+    codonFrequencyToMod(startProbs, *this->alphabet->getCNC(), toMod);
+    codonFrequencyToMod(stopProbs,  *this->alphabet->getCNC(), toMod);
+    
+    // add description to mod file
     if (noncoding != NULL) {
-        toMod["NONC_ORDER"] = boost::lexical_cast<string>(noncoding->getOrder());
-        toMod["NONC_MAT"] =  noncoding->toString();
+        toMod["NON_ORDER"] = boost::lexical_cast<string>(noncoding->getOrder());
+        toMod["NON_MAT"] =  noncoding->toString();
     }
     
     if (coding != NULL) {
@@ -609,17 +695,22 @@ void GMS2Trainer::toModFile(map<string, string> &toMod) const {
     }
     
     if (startContext != NULL) {
+        toMod["SC"] = "1";
         toMod["SC_ORDER"] = boost::lexical_cast<string>(startContext->getOrder());
+        toMod["SC_WIDTH"] = boost::lexical_cast<string>(startContext->getLength());
         toMod["SC_MAT"] = startContext->toString();
+        toMod["SC_POS_DISTR"] = "\n" + boost::lexical_cast<string>(-3 - (int)startContext->getLength()) + "\t1.0\n";
     }
     
     if (rbs != NULL) {
+        toMod["RBS"] = "1";
         toMod["RBS_ORDER"] = boost::lexical_cast<string>(rbs->getOrder());
         toMod["RBS_WIDTH"] = boost::lexical_cast<string>(rbs->getLength());
         toMod["RBS_MAT"] = rbs->toString();
     }
     
     if (promoter != NULL) {
+        toMod["PROMOTER"] = "1";
         toMod["PROMOTER_ORDER"] = boost::lexical_cast<string>(promoter->getOrder());
         toMod["PROMOTER_WIDTH"] = boost::lexical_cast<string>(promoter->getLength());
         toMod["PROMOTER_MAT"] = promoter->toString();

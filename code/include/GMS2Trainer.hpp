@@ -17,6 +17,7 @@
 
 #include "UnivariatePDF.hpp"
 #include "NumSequence.hpp"
+#include "NumGeneticCode.hpp"
 #include "UniformMarkov.hpp"
 #include "OptionsMFinder.hpp"
 #include "PeriodicMarkov.hpp"
@@ -55,7 +56,8 @@ namespace gmsuite {
                     genome_class_t genomeClass,
                     const OptionsMFinder &optionsMFinder,
                     const NumAlphabetDNA &alph,
-                    const NumSequence::size_type MIN_GENE_LEN);
+                    const NumSequence::size_type MIN_GENE_LEN,
+                    const NumGeneticCode &numGeneticCode);
         
         ~GMS2Trainer();
         
@@ -68,7 +70,7 @@ namespace gmsuite {
         void estimateParamtersNonCoding(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use = vector<bool>());
         void estimateParametersStartContext(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use = vector<bool>());
         void estimateParametersMotifModel(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use = vector<bool>());
-        
+        void estimateParametersStartStopCodons(const NumSequence &sequence, const vector<Label*> &labels, const vector<bool> &use = vector<bool>());
         
         void estimateParametersMotifModel_Promoter(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use = vector<bool>());
         
@@ -82,6 +84,7 @@ namespace gmsuite {
         genome_class_t genomeClass;
         const OptionsMFinder* optionsMFinder;
         const NumAlphabetDNA *alphabet;
+        const NumGeneticCode *numGeneticCode;
         NumSequence::size_type MIN_GENE_LEN;            // minimum gene length
         NumSequence::size_type MIN_UPSTR_LEN_FGIO;           // minimum upstream length for first-genes-in-operon
         NumSequence::size_type UPSTR_LEN_NFGIO;
@@ -100,6 +103,9 @@ namespace gmsuite {
         NonUniformMarkov *upstreamSignature;
         UnivariatePDF *rbsSpacer;
         UnivariatePDF *promoterSpacer;
+        
+        map<CharNumConverter::seq_t, double> startProbs;
+        map<CharNumConverter::seq_t, double> stopProbs;
         
         
         
