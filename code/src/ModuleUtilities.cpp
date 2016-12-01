@@ -173,13 +173,15 @@ void ModuleUtilities::runStartModelInfo() {
     // create numeric sequence
     AlphabetDNA alph;
     CharNumConverter cnc (&alph);
+    GeneticCode geneticCode(GeneticCode::ELEVEN);
+    NumGeneticCode numGeneticCode(geneticCode, cnc);
     NumAlphabetDNA numAlph(alph, cnc);
     
     NumSequence numSequence (strSequence, cnc);
     
     // run training step
     const OptionsGMS2Training* optTrain = &options.startModelInfoUtility.optionsGMS2Training;
-    GMS2Trainer trainer (optTrain->pcounts, optTrain->codingOrder, optTrain->noncodingOrder, optTrain->startContextOrder, optTrain->upstreamLength, optTrain->startContextLength, optTrain->genomeClass, optTrain->optionsMFinder, numAlph, optTrain->MIN_GENE_LEN);
+    GMS2Trainer trainer (optTrain->pcounts, optTrain->codingOrder, optTrain->noncodingOrder, optTrain->startContextOrder, optTrain->upstreamLength, optTrain->startContextLength, optTrain->genomeClass, optTrain->optionsMFinder, numAlph, optTrain->MIN_GENE_LEN, numGeneticCode);
     
     trainer.estimateParameters(numSequence, labels);
     
@@ -348,12 +350,14 @@ void ModuleUtilities::runMatchSeqToNoncoding() {
     AlphabetDNA alph;
     CharNumConverter cnc (&alph);
     NumAlphabetDNA numAlph(alph, cnc);
+    GeneticCode geneticCode(GeneticCode::ELEVEN);
+    NumGeneticCode numGeneticCode(geneticCode, cnc);
     
     NumSequence numSequence (strSequence, cnc);
     
     // run training step
     const OptionsGMS2Training* optTrain = &options.matchSeqWithNoncoding.optionsGMS2Training;
-    GMS2Trainer trainer (optTrain->pcounts, optTrain->codingOrder, optTrain->noncodingOrder, optTrain->startContextOrder, optTrain->upstreamLength, optTrain->startContextLength, optTrain->genomeClass, optTrain->optionsMFinder, numAlph, optTrain->MIN_GENE_LEN);
+    GMS2Trainer trainer (optTrain->pcounts, optTrain->codingOrder, optTrain->noncodingOrder, optTrain->startContextOrder, optTrain->upstreamLength, optTrain->startContextLength, optTrain->genomeClass, optTrain->optionsMFinder, numAlph, optTrain->MIN_GENE_LEN, numGeneticCode);
     
     trainer.estimateParameters(numSequence, labels);
     

@@ -24,9 +24,10 @@ ModuleGMS2Training::ModuleGMS2Training(const OptionsGMS2Training &opt) : options
 void ModuleGMS2Training::run() {
     
     AlphabetDNA alph;
+    GeneticCode geneticCode (GeneticCode::ELEVEN);
     CharNumConverter cnc(&alph);
     NumAlphabetDNA numAlph(alph, cnc);
-    
+    NumGeneticCode numGeneticCode(geneticCode, cnc);
     // read sequence from file
     SequenceFile seqFile(options.fn_sequence, SequenceFile::READ);
     Sequence strSeq = seqFile.read();
@@ -41,7 +42,7 @@ void ModuleGMS2Training::run() {
     
     
     // set up trainer
-    GMS2Trainer trainer (options.pcounts, options.codingOrder, options.noncodingOrder, options.startContextOrder, options.upstreamLength, options.startContextLength, options.genomeClass, options.optionsMFinder, numAlph, options.MIN_GENE_LEN);
+    GMS2Trainer trainer (options.pcounts, options.codingOrder, options.noncodingOrder, options.startContextOrder, options.upstreamLength, options.startContextLength, options.genomeClass, options.optionsMFinder, numAlph, options.MIN_GENE_LEN, numGeneticCode);
     
     trainer.estimateParameters(sequence, labels);
     
@@ -50,7 +51,7 @@ void ModuleGMS2Training::run() {
     trainer.toModFile(toMod);
     
     ModelFile modFile(options.fn_outmod, ModelFile::WRITE);
-    modFile.write(toMod);
+    modFile.write(toMod, "NATIVE");
     
     
     // free up memory for labels

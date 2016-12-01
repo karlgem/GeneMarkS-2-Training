@@ -82,7 +82,7 @@ namespace gmsuite {
         /**
          * Write model parameters to file in key-value pair format.
          */
-        void write(const map<string, string> &keyValue);
+        void write(const map<string, string> &keyValue, string sectionHeader = "");
         
         
         

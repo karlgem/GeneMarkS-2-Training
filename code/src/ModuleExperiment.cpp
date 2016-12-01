@@ -135,13 +135,15 @@ void ModuleExperiment::runMatchSeqToNoncoding() {
     AlphabetDNA alph;
     CharNumConverter cnc (&alph);
     NumAlphabetDNA numAlph(alph, cnc);
+    GeneticCode geneticCode(GeneticCode::ELEVEN);
+    NumGeneticCode numGeneticCode(geneticCode, cnc);
     
     NumSequence numSequence (strSequence, cnc);
     
     OptionsMFinder optionsMFinder;
     
     // run training step
-    GMS2Trainer trainer((unsigned) expOptions.pcounts, 0, expOptions.order, 0, 40, 0, ProkGeneStartModel::C1, optionsMFinder, numAlph, 300);
+    GMS2Trainer trainer((unsigned) expOptions.pcounts, 0, expOptions.order, 0, 40, 0, ProkGeneStartModel::C1, optionsMFinder, numAlph, 300, numGeneticCode);
     
     trainer.estimateParameters(numSequence, labels);
     
