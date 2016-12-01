@@ -12,6 +12,7 @@
 #include "UnivariatePDF.hpp"
 #include "UniformCounts.hpp"
 #include "PeriodicCounts.hpp"
+#include "CodingMarkov.hpp"
 #include "NonUniformCounts.hpp"
 #include "SequenceParser.hpp"
 #include <boost/lexical_cast.hpp>
@@ -202,7 +203,8 @@ void GMS2Trainer::estimateParamtersCoding(const NumSequence &sequence, const vec
     }
     
     // convert counts to probabilities
-    coding = new PeriodicMarkov(codingOrder, 3, *this->alphabet);
+//    coding = new PeriodicMarkov(codingOrder, 3, *this->alphabet);
+    coding = new CodingMarkov(codingOrder, 3, *this->alphabet, *this->numGeneticCode);
     coding->construct(&counts, pcounts);
     
 }
