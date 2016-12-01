@@ -7,6 +7,7 @@
 //
 
 #include "CodingCounts.hpp"
+#include <stdexcept>
 
 using namespace gmsuite;
 
