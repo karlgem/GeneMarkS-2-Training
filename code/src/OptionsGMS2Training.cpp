@@ -198,9 +198,10 @@ void OptionsGMS2Training::addProcessOptions(OptionsGMS2Training &options, po::op
     ("coding-order", po::value<unsigned>(&options.codingOrder)->default_value(4), "Order for coding Markov model")
     ("noncoding-order", po::value<unsigned>(&options.noncodingOrder)->default_value(2), "Order for noncoding Markov model")
     ("sc-order", po::value<unsigned>(&options.startContextOrder)->default_value(0), "Order for start-context model")
-    ("sc-length", po::value<NumSequence::size_type>(&options.startContextLength)->default_value(12), "Length of start-context model")
+    ("sc-length", po::value<NumSequence::size_type>(&options.startContextLength)->default_value(18), "Length of start-context model")
     ("upstream-length", po::value<NumSequence::size_type>(&options.upstreamLength)->default_value(40), "Length of upstream region for motif search")
     ("MIN_GENE_LEN", po::value<NumSequence::size_type>(&options.MIN_GENE_LEN)->default_value(300), "Minimum gene length allowed in training")
+    ("sc-margin", po::value<int>(&options.startContextMargin)->default_value(-15), "Margin for start context matrix");
     ;
     
     // mfinder options

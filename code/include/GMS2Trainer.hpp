@@ -57,7 +57,8 @@ namespace gmsuite {
                     const OptionsMFinder &optionsMFinder,
                     const NumAlphabetDNA &alph,
                     const NumSequence::size_type MIN_GENE_LEN,
-                    const NumGeneticCode &numGeneticCode);
+                    const NumGeneticCode &numGeneticCode,
+                    int scMargin);
         
         ~GMS2Trainer();
         
@@ -90,6 +91,7 @@ namespace gmsuite {
         NumSequence::size_type UPSTR_LEN_NFGIO;
         unsigned FGIO_DIST_THRESH;
         unsigned NFGIO_DIST_THRES;
+        int scMargin;
         
         // public variables for models
 //        NonUniformMarkov *motif;

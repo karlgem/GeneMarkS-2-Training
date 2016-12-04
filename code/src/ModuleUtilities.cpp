@@ -181,7 +181,7 @@ void ModuleUtilities::runStartModelInfo() {
     
     // run training step
     const OptionsGMS2Training* optTrain = &options.startModelInfoUtility.optionsGMS2Training;
-    GMS2Trainer trainer (optTrain->pcounts, optTrain->codingOrder, optTrain->noncodingOrder, optTrain->startContextOrder, optTrain->upstreamLength, optTrain->startContextLength, optTrain->genomeClass, optTrain->optionsMFinder, numAlph, optTrain->MIN_GENE_LEN, numGeneticCode);
+    GMS2Trainer trainer (optTrain->pcounts, optTrain->codingOrder, optTrain->noncodingOrder, optTrain->startContextOrder, optTrain->upstreamLength, optTrain->startContextLength, optTrain->genomeClass, optTrain->optionsMFinder, numAlph, optTrain->MIN_GENE_LEN, numGeneticCode, optTrain->startContextMargin);
     
     trainer.estimateParameters(numSequence, labels);
     
@@ -357,7 +357,7 @@ void ModuleUtilities::runMatchSeqToNoncoding() {
     
     // run training step
     const OptionsGMS2Training* optTrain = &options.matchSeqWithNoncoding.optionsGMS2Training;
-    GMS2Trainer trainer (optTrain->pcounts, optTrain->codingOrder, optTrain->noncodingOrder, optTrain->startContextOrder, optTrain->upstreamLength, optTrain->startContextLength, optTrain->genomeClass, optTrain->optionsMFinder, numAlph, optTrain->MIN_GENE_LEN, numGeneticCode);
+    GMS2Trainer trainer (optTrain->pcounts, optTrain->codingOrder, optTrain->noncodingOrder, optTrain->startContextOrder, optTrain->upstreamLength, optTrain->startContextLength, optTrain->genomeClass, optTrain->optionsMFinder, numAlph, optTrain->MIN_GENE_LEN, numGeneticCode, optTrain->startContextMargin);
     
     trainer.estimateParameters(numSequence, labels);
     

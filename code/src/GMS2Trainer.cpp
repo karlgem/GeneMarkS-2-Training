@@ -79,7 +79,8 @@ GMS2Trainer::GMS2Trainer(unsigned pcounts,
                          const OptionsMFinder &optionsMFinder,
                          const NumAlphabetDNA &alph,
                          const NumSequence::size_type MIN_GENE_LEN,
-                         const NumGeneticCode &numGenCode) {
+                         const NumGeneticCode &numGenCode,
+                         int scMargin) {
     
     this->pcounts = pcounts;
     this->codingOrder = codingOrder;
@@ -92,6 +93,7 @@ GMS2Trainer::GMS2Trainer(unsigned pcounts,
     this->alphabet = &alph;
     this->MIN_GENE_LEN = MIN_GENE_LEN;
     this->numGeneticCode = &numGenCode;
+    this->scMargin = scMargin;
     
     
     // public variables for models
@@ -152,6 +154,12 @@ void GMS2Trainer::estimateParametersStartStopCodons(const NumSequence &sequence,
         }
     }
     
+    // add pseudocounts
+    for (map<CharNumConverter::seq_t, double>::iterator  iter = this->startProbs.begin(); iter != this->startProbs.end(); iter++) {
+        iter->second += pcounts;
+        totalStarts += pcounts;
+    }
+    
     // normalize start counts
     if (totalStarts > 0)
         for (map<CharNumConverter::seq_t, double>::iterator  iter = this->startProbs.begin(); iter != this->startProbs.end(); iter++)
@@ -194,6 +202,7 @@ void GMS2Trainer::estimateParamtersCoding(const NumSequence &sequence, const vec
         
         counts.count(sequence.begin()+left, sequence.begin() + left +length, reverseComplement);
         
+        // FIXME:
         // if start context > 0, remove segement near start
         if (scSize > 0) {
             if (reverseComplement)
@@ -283,9 +292,13 @@ void GMS2Trainer::estimateParametersStartContext(const NumSequence &sequence, co
         size_t left;
         
         if ((*iter)->strand == Label::POS)
-            left = (*iter)->left + 3;
+//            left = (*iter)->left + 3;
+//            left = (*iter)->left-3;    // left = 3;   (3 + -(18-15)) = 0
+            left = (*iter)->left - (startContextLength - scMargin);
         else
-            left = (*iter)->right - 2 - startContextLength;
+//            left = (*iter)->right - 2 - startContextLength;
+//            left = (*iter)->right+3 - startContextLength + 1;      // right = 20:    20 - 15
+            left = (*iter)->right - scMargin;
         
         bool reverseComplement = (*iter)->strand == Label::NEG;
         counts.count(sequence.begin() + left, sequence.begin() + left + startContextLength, reverseComplement);
@@ -701,7 +714,7 @@ void GMS2Trainer::toModFile(map<string, string> &toMod) const {
         toMod["SC_ORDER"] = boost::lexical_cast<string>(startContext->getOrder());
         toMod["SC_WIDTH"] = boost::lexical_cast<string>(startContext->getLength());
         toMod["SC_MAT"] = startContext->toString();
-        toMod["SC_MARGIN"] = boost::lexical_cast<string>(-3 - (int)startContext->getLength());
+        toMod["SC_MARGIN"] = boost::lexical_cast<string>(scMargin);
     }
     
     if (rbs != NULL) {
