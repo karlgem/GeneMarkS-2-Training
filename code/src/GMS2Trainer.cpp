@@ -128,29 +128,41 @@ void GMS2Trainer::estimateParametersStartStopCodons(const NumSequence &sequence,
     for (size_t n = 0; n < starts.size(); n++)
         this->startProbs[starts[n]] = 0;
     for (size_t n = 0; n < stops.size(); n++)
-        this->stopProbs[stops[n]] = 1;              // stop probabilities to 1
+        this->stopProbs[stops[n]] = 0;              // stop probabilities to 1
     
     size_t totalStarts = 0;
+    size_t totalStops = 0;
     
     for (vector<Label*>::const_iterator iter = labels.begin(); iter != labels.end(); iter++) {
         
         CharNumConverter::seq_t start;
+        CharNumConverter::seq_t stop;
         
         // get start from positive strand
         if ((*iter)->strand == Label::POS) {
             start = CharNumConverter::seq_t(sequence.begin() + (*iter)->left, sequence.begin() + (*iter)->left + 3);
+            stop = CharNumConverter::seq_t(sequence.begin() + (*iter)->right-2, sequence.begin() + (*iter)->right + 1);
         }
         // get start from negative strand and reverse complement
         else {
             start = CharNumConverter::seq_t (sequence.begin() + (*iter)->right-2, sequence.begin()+(*iter)->right+1);
             NumSequence s(start); s.reverseComplement(*this->alphabet->getCNC());   // reverse complement
             start = CharNumConverter::seq_t (s.begin(), s.end());
+            
+            stop = CharNumConverter::seq_t (sequence.begin() + (*iter)->left, sequence.begin() + (*iter)->left + 3);
+            NumSequence ss(stop); ss.reverseComplement(*this->alphabet->getCNC());  // reverse complement
+            stop = CharNumConverter::seq_t (ss.begin(), ss.end());
         }
         
         // if it is a start, add it to counts
         if (this->numGeneticCode->isStart(start)) {
             this->startProbs[start] += 1;
             totalStarts += 1;
+        }
+        
+        if (this->numGeneticCode->isStop(stop)) {
+            this->stopProbs[stop] += 1;
+            totalStops += 1;
         }
     }
     
@@ -160,11 +172,19 @@ void GMS2Trainer::estimateParametersStartStopCodons(const NumSequence &sequence,
         totalStarts += pcounts;
     }
     
+    for (map<CharNumConverter::seq_t, double>::iterator iter = this->stopProbs.begin(); iter != this->stopProbs.end(); iter++) {
+        iter->second += pcounts;
+        totalStops += pcounts;
+    }
+    
     // normalize start counts
     if (totalStarts > 0)
         for (map<CharNumConverter::seq_t, double>::iterator  iter = this->startProbs.begin(); iter != this->startProbs.end(); iter++)
             iter->second /= totalStarts;
     
+    if (totalStops > 0)
+        for (map<CharNumConverter::seq_t, double>::iterator iter = this->stopProbs.begin(); iter != this->stopProbs.end(); iter++)
+            iter->second /= totalStops;
     
 }
 
@@ -739,11 +759,13 @@ void GMS2Trainer::toModFile(map<string, string> &toMod) const {
         toMod["UPSTR_SIG_MAT"] = upstreamSignature->toString();
     }
     
-    if (rbsSpacer != NULL) {
+    if (rbsSpacer != NULL && rbsSpacer->size() > 0) {
+        toMod["RBS_MAX_DUR"] = boost::lexical_cast<string>(rbsSpacer->size() - 1);
         toMod["RBS_POS_DISTR"] = rbsSpacer->toString();
     }
     
-    if (promoterSpacer != NULL) {
+    if (promoterSpacer != NULL && promoterSpacer->size() > 0) {
+        toMod["PROMOTER_MAX_DUR"] = boost::lexical_cast<string>(promoterSpacer->size() - 1);
         toMod["PROMOTER_POS_DISTR"] = promoterSpacer->toString();
     }
     
