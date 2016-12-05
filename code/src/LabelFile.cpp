@@ -83,7 +83,7 @@ void LabelFile::read_lst(vector<Label*> &output) const {
     const char* current = begin_read;
     
     // ignore all lines until we reach "Predicted Genes"
-    gotoKey(current, end_read, "Predicted genes");
+    gotoKey(current, end_read, "SequenceID");
 
     
     bool foundFirstLabel = false;
@@ -94,6 +94,17 @@ void LabelFile::read_lst(vector<Label*> &output) const {
         // skip all white spaces
         while (current != end_read && isspace(*current))
             current++;
+        
+        // skip all commented lines
+        while (current != end_read && *current == '#') {
+            // skip all white spaces
+            while (current != end_read && *current != '\n' && *current != '\r')
+                current++;
+            
+            // skip all white spaces
+            while (current != end_read && isspace(*current))
+                current++;
+        }
         
         if (current == end_read)
             break;
@@ -229,7 +240,7 @@ bool LabelFile::detectLST(const char* const begin, const char* const end) const 
         const char* endOfLine = current;
         
         cmatch match;
-        cregex expr = cregex::compile("Predicted genes");
+        cregex expr = cregex::compile("SequenceID");
         
         // check if key found
         if (regex_search(startOfLine, endOfLine, match, expr)) {
