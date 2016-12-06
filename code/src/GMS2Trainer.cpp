@@ -314,11 +314,11 @@ void GMS2Trainer::estimateParametersStartContext(const NumSequence &sequence, co
         if ((*iter)->strand == Label::POS)
 //            left = (*iter)->left + 3;
 //            left = (*iter)->left-3;    // left = 3;   (3 + -(18-15)) = 0
-            left = (*iter)->left - (startContextLength - scMargin);
+            left = (*iter)->left - (startContextLength + scMargin);
         else
 //            left = (*iter)->right - 2 - startContextLength;
 //            left = (*iter)->right+3 - startContextLength + 1;      // right = 20:    20 - 15
-            left = (*iter)->right - scMargin;
+            left = (*iter)->right + scMargin + 1;
         
         bool reverseComplement = (*iter)->strand == Label::NEG;
         counts.count(sequence.begin() + left, sequence.begin() + left + startContextLength, reverseComplement);
