@@ -102,10 +102,10 @@ bool OptionsGMS2Training::parse(int argc, const char *argv[]) {
         ("coding-order", po::value<unsigned>(&codingOrder)->default_value(4), "Order for coding Markov model")
         ("noncoding-order", po::value<unsigned>(&noncodingOrder)->default_value(2), "Order for noncoding Markov model")
         ("sc-order", po::value<unsigned>(&startContextOrder)->default_value(0), "Order for start-context model")
-        ("sc-length", po::value<NumSequence::size_type>(&startContextLength)->default_value(12), "Length of start-context model")
+        ("sc-length", po::value<NumSequence::size_type>(&startContextLength)->default_value(18), "Length of start-context model")
         ("upstream-length", po::value<NumSequence::size_type>(&upstreamLength)->default_value(40), "Length of upstream region for motif search")
         ("MIN_GENE_LEN", po::value<NumSequence::size_type>(&MIN_GENE_LEN)->default_value(300), "Minimum gene length allowed in training")
-        
+        ("sc-margin", po::value<int>(&startContextMargin)->default_value(-15), "Margin for start context matrix");
 //        // MFinder options
 //        ("pcounts-mfinder", po::value<double>(&optionsMFinder.pcounts)->default_value(1), "Pseudocounts for mfinder models")
 //        ("width", po::value<unsigned>(&optionsMFinder.width)->default_value(6), "Width of motif in MFinder")
