@@ -224,11 +224,12 @@ void GMS2Trainer::estimateParamtersCoding(const NumSequence &sequence, const vec
         
         // FIXME:
         // if start context > 0, remove segement near start
-        if (scSize > 0) {
+        if (scSize > 0 && scMargin < -3) {
+            size_t scSizeInCoding = abs(scMargin) - 3;          // length of start context that overlaps with CDS
             if (reverseComplement)
-                counts.decount(sequence.begin()+right-scSize+1, sequence.begin()+right+1, reverseComplement);
+                counts.decount(sequence.begin()+right-scSizeInCoding+1, sequence.begin()+right+1, reverseComplement);
             else
-                counts.decount(sequence.begin()+left, sequence.begin()+left+scSize);
+                counts.decount(sequence.begin()+left, sequence.begin()+left+scSizeInCoding);
         }
         
     }
