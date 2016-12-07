@@ -20,6 +20,7 @@ namespace io = boost::iostreams;
 using std::map;
 using std::string;
 using std::vector;
+using std::pair;
 
 namespace gmsuite {
     
@@ -82,7 +83,7 @@ namespace gmsuite {
         /**
          * Write model parameters to file in key-value pair format.
          */
-        void write(const map<string, string> &keyValue, string sectionHeader = "");
+        void write(const vector<pair<string, string> > &keyValue, string sectionHeader = "");
         
         
         

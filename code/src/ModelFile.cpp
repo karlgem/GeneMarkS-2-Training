@@ -202,7 +202,7 @@ bool ModelFile::keyExists(string key) const {
 /**
  * Write model parameters to file in key-value pair format.
  */
-void ModelFile::write(const map<string, string> &keyValue, string sectionHeader) {
+void ModelFile::write(const vector<pair<string, string> > &keyValue, string sectionHeader) {
 
     // open filestream
     ofstream out;
@@ -212,7 +212,7 @@ void ModelFile::write(const map<string, string> &keyValue, string sectionHeader)
         out << "__" << sectionHeader << endl;
     }
     
-    for (map<string, string>::const_iterator iter = keyValue.begin(); iter != keyValue.end(); iter++) {
+    for (vector<pair<string, string> >::const_iterator iter = keyValue.begin(); iter != keyValue.end(); iter++) {
         out << "$" << iter->first;
         
         string second = iter->second;
