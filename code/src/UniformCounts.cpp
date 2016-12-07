@@ -74,8 +74,12 @@ void UniformCounts::updateCounts(NumSequence::const_iterator begin, NumSequence:
         mask |= 1;          // set lowest bit to one
     }
     
+    size_t seqSize = distance(begin, end);          // total number of nucleotides in sequence
+    size_t remainingSize = seqSize;                 // number of nucleotides still to be counted
     
     NumSequence::const_iterator currentElement = begin;
+    if (reverseComplement)
+        currentElement = end-1;
     
     size_t wordIndex = 0;       // contains the index of the current word (made up of order+1 elements)
     
@@ -83,7 +87,7 @@ void UniformCounts::updateCounts(NumSequence::const_iterator begin, NumSequence:
 
     
     // loop over first "order" elements to store them as part of the initial word index
-    for (size_t i = 0; i < order; i++, currentElement++) {
+    for (size_t i = 0; i < order; i++) {
         wordIndex <<= elementEncodingSize;      // create space at lower bits for a new element
         
         // if current letter is N
@@ -94,13 +98,21 @@ void UniformCounts::updateCounts(NumSequence::const_iterator begin, NumSequence:
             if (lifeOfN > 0)
                 lifeOfN--;
             
-            wordIndex += *currentElement;           // add new element to the wordIndex
+            if (reverseComplement)
+                wordIndex += this->alphabet->complement(*currentElement);           // complement element then add to the wordIndex
+            else
+                wordIndex += *currentElement;               // add element to the wordIndex
         }
+        
+        // move to next element on negative or positive strand
+        (reverseComplement ? currentElement-- : currentElement++);
+        
+        remainingSize--;
     }
     
     
     // for every word, add a count in the pwm
-    while (currentElement != end) {
+    while (remainingSize != 0) {
         
         // add new element to the wordIndex
         wordIndex <<= elementEncodingSize;      // create space at lower bits for a new element
@@ -113,7 +125,10 @@ void UniformCounts::updateCounts(NumSequence::const_iterator begin, NumSequence:
             if (lifeOfN > 0)
                 lifeOfN--;
             
-            wordIndex += *currentElement;           // add new element to the wordIndex
+            if (reverseComplement)
+                wordIndex += this->alphabet->complement(*currentElement);       // complement element then add to the wordIndex
+            else
+                wordIndex += *currentElement;           // add new element to the wordIndex
         }
         
         wordIndex = wordIndex & mask;           // mask to remove old junk characters
@@ -133,7 +148,10 @@ void UniformCounts::updateCounts(NumSequence::const_iterator begin, NumSequence:
             }
         }
         
-        currentElement++;                       // move to next letter
+        // move to next element on negative or positive strand
+        (reverseComplement ? currentElement-- : currentElement++);
+        
+        remainingSize--;
     }
 }
 

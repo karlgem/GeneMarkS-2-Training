@@ -14,6 +14,7 @@
 #include "PeriodicCounts.hpp"
 #include "CodingMarkov.hpp"
 #include "NonUniformCounts.hpp"
+#include "NonCodingCounts.hpp"
 #include "SequenceParser.hpp"
 #include "CodingCounts.hpp"
 #include <boost/lexical_cast.hpp>
@@ -252,7 +253,8 @@ void GMS2Trainer::estimateParamtersNonCoding(const NumSequence &sequence, const 
             throw invalid_argument("Labels and Use vector should have the same length");
     }
     
-    UniformCounts counts(noncodingOrder, *this->alphabet);
+//    UniformCounts counts(noncodingOrder, *this->alphabet);
+    NonCodingCounts counts(noncodingOrder, *this->alphabet);
     
     size_t leftNoncoding = 0;       // left position of current noncoding region
     

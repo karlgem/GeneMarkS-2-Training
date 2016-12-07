@@ -17,6 +17,16 @@ namespace gmsuite {
     
     class NonCodingCounts : public UniformCounts {
         
+    public:
+        
+        /**
+         * Constructor: Create a uniform count model by defining it's order and alphabet
+         *
+         * @param order the model's order
+         * @param alph the alphabet used by the model
+         */
+        NonCodingCounts(unsigned order, const NumAlphabetDNA &alph);
+        
         /**
          * Count the sequence. This method calls the updateCounts (increment) method, which
          * should be implemented by each derived class.

@@ -10,6 +10,9 @@
 
 using namespace gmsuite;
 
+NonCodingCounts::NonCodingCounts(unsigned order, const NumAlphabetDNA &alph) : UniformCounts(order, alph) {
+    
+}
 
 // count sequence
 void NonCodingCounts::count(NumSequence::const_iterator begin, NumSequence::const_iterator end, bool reverseComplement) {
