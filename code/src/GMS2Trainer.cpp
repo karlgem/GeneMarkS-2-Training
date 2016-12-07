@@ -224,11 +224,12 @@ void GMS2Trainer::estimateParamtersCoding(const NumSequence &sequence, const vec
         
         // FIXME:
         // if start context > 0, remove segement near start
-        if (scSize > 0) {
+        if (scSize > 0 && scMargin < -3) {
+            size_t scSizeInCoding = abs(scMargin) - 3;          // length of start context that overlaps with CDS
             if (reverseComplement)
-                counts.decount(sequence.begin()+right-scSize+1, sequence.begin()+right+1, reverseComplement);
+                counts.decount(sequence.begin()+right-scSizeInCoding+1, sequence.begin()+right+1, reverseComplement);
             else
-                counts.decount(sequence.begin()+left, sequence.begin()+left+scSize);
+                counts.decount(sequence.begin()+left, sequence.begin()+left+scSizeInCoding);
         }
         
     }
@@ -314,11 +315,11 @@ void GMS2Trainer::estimateParametersStartContext(const NumSequence &sequence, co
         if ((*iter)->strand == Label::POS)
 //            left = (*iter)->left + 3;
 //            left = (*iter)->left-3;    // left = 3;   (3 + -(18-15)) = 0
-            left = (*iter)->left - (startContextLength - scMargin);
+            left = (*iter)->left - (startContextLength + scMargin);
         else
 //            left = (*iter)->right - 2 - startContextLength;
 //            left = (*iter)->right+3 - startContextLength + 1;      // right = 20:    20 - 15
-            left = (*iter)->right - scMargin;
+            left = (*iter)->right + scMargin + 1;
         
         bool reverseComplement = (*iter)->strand == Label::NEG;
         counts.count(sequence.begin() + left, sequence.begin() + left + startContextLength, reverseComplement);
