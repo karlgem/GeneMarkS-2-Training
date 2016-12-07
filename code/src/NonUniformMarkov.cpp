@@ -185,7 +185,7 @@ double NonUniformMarkov::evaluate(NumSequence::const_iterator begin, NumSequence
 
 // Generate a string representation of the model
 string NonUniformMarkov::toString() const {
-    stringstream ssm;
+    stringstream ssm; ssm << fixed;
     
     // copy all joint probabilities because we may need to modify them by making them all the same order
     nonunif_joint_t joint = this->jointProbs;

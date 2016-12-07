@@ -26,6 +26,7 @@
 
 using std::map;
 using std::string;
+using std::pair;
 
 namespace gmsuite {
     
@@ -111,7 +112,7 @@ namespace gmsuite {
         
         
         
-        void toModFile(map<string, string> &toMod) const;
+        void toModFile(vector<pair<string, string> > &toMod) const;
         
     private:
         void deallocAllModels();

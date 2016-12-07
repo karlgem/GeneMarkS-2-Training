@@ -47,7 +47,7 @@ void ModuleGMS2Training::run() {
     trainer.estimateParameters(sequence, labels);
     
     // write parameters to file
-    map<string, string> toMod;
+    vector<pair<string, string> > toMod;
     trainer.toModFile(toMod);
     
     ModelFile modFile(options.fn_outmod, ModelFile::WRITE);
