@@ -142,7 +142,7 @@ size_t UnivariatePDF::size() const {
 
 
 string UnivariatePDF::toString() const {
-    stringstream ssm;
+    stringstream ssm; ssm << fixed;
     
     for (size_t n = 0; n < probabilities.size(); n++) {
         ssm << n << "\t" << probabilities[n] << endl;

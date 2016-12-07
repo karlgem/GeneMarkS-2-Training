@@ -689,30 +689,32 @@ GMS2Trainer::~GMS2Trainer() {
 }
 
 
-void codonFrequencyToMod(const map<CharNumConverter::seq_t, double> &codons, const CharNumConverter &cnc, map<string, string> &toMod) {
+void codonFrequencyToMod(const map<CharNumConverter::seq_t, double> &codons, const CharNumConverter &cnc, vector<pair<string, string> > &toMod) {
     
     for (map<CharNumConverter::seq_t, double>::const_iterator iter = codons.begin(); iter != codons.end(); iter++) {
-        stringstream ssm;
-        ssm << cnc.convert(iter->first.begin(), iter->first.end()); // << "\t" << iter->second << endl;
+        stringstream ssm; ssm << fixed;
         
-        toMod[ssm.str()] = boost::lexical_cast<string>(iter->second);
+        string cod = cnc.convert(iter->first.begin(), iter->first.end());
+        ssm << iter->second;
+        
+        toMod.push_back(pair<string,string>(cod, ssm.str()));
     }
     
 }
 
 
-void GMS2Trainer::toModFile(map<string, string> &toMod) const {
+void GMS2Trainer::toModFile(vector<pair<string, string> > &toMod) const {
     
-    
+    typedef pair<string, string> mpair;
     
     // name and genetic code
-    toMod["NAME"] = "gms2-training";
-    toMod["GCODE"] = "11";
-    toMod["NON_DURATION_DECAY"] = "150";
-    toMod["COD_DURATION_DECAY"] = "300";
-    toMod["COD_P_N"] = "0.4";
-    toMod["NON_P_N"] = "0.6";
-    toMod["GENE_MIN_LENGTH"] = "89";
+    toMod.push_back(mpair("NAME", "gms2-training"));
+    toMod.push_back(mpair("GCODE", "11"));
+    toMod.push_back(mpair("NON_DURATION_DECAY", "150"));
+    toMod.push_back(mpair("COD_DURATION_DECAY", "300"));
+    toMod.push_back(mpair("COD_P_N", "0.4"));
+    toMod.push_back(mpair("NON_P_N", "0.6"));
+    toMod.push_back(mpair("GENE_MIN_LENGTH", "89"));
     
     
     // add start/stop codon probabilities
@@ -720,56 +722,56 @@ void GMS2Trainer::toModFile(map<string, string> &toMod) const {
     codonFrequencyToMod(stopProbs,  *this->alphabet->getCNC(), toMod);
     
     // add description to mod file
-    if (noncoding != NULL) {
-        toMod["NON_ORDER"] = boost::lexical_cast<string>(noncoding->getOrder());
-        toMod["NON_MAT"] =  noncoding->toString();
+    if (coding != NULL) {
+        toMod.push_back(mpair("COD_ORDER", boost::lexical_cast<string>(coding->getOrder())));
+        toMod.push_back(mpair("COD_MAT", coding->toString()));
     }
     
-    if (coding != NULL) {
-        toMod["COD_ORDER"] = boost::lexical_cast<string>(coding->getOrder());
-        toMod["COD_MAT"] = coding->toString();
+    if (noncoding != NULL) {
+        toMod.push_back(mpair("NON_ORDER", boost::lexical_cast<string>(noncoding->getOrder())));
+        toMod.push_back(mpair("NON_MAT",  noncoding->toString()));
     }
     
     if (startContext != NULL) {
-        toMod["SC"] = "1";
-        toMod["SC_ORDER"] = boost::lexical_cast<string>(startContext->getOrder());
-        toMod["SC_WIDTH"] = boost::lexical_cast<string>(startContext->getLength());
-        toMod["SC_MAT"] = startContext->toString();
-        toMod["SC_MARGIN"] = boost::lexical_cast<string>(scMargin);
+        toMod.push_back(mpair("SC", "1"));
+        toMod.push_back(mpair("SC_ORDER", boost::lexical_cast<string>(startContext->getOrder())));
+        toMod.push_back(mpair("SC_WIDTH", boost::lexical_cast<string>(startContext->getLength())));
+        toMod.push_back(mpair("SC_MARGIN", boost::lexical_cast<string>(scMargin)));
+        toMod.push_back(mpair("SC_MAT", startContext->toString()));
     }
     
     if (rbs != NULL) {
-        toMod["RBS"] = "1";
-        toMod["RBS_ORDER"] = boost::lexical_cast<string>(rbs->getOrder());
-        toMod["RBS_WIDTH"] = boost::lexical_cast<string>(rbs->getLength());
-        toMod["RBS_MARGIN"] = "0";
-        toMod["RBS_MAT"] = rbs->toString();
-    }
-    
-    if (promoter != NULL) {
-        toMod["PROMOTER"] = "1";
-        toMod["PROMOTER_ORDER"] = boost::lexical_cast<string>(promoter->getOrder());
-        toMod["PROMOTER_WIDTH"] = boost::lexical_cast<string>(promoter->getLength());
-        toMod["PROMOTER_MARGIN"] = "0";
-        toMod["PROMOTER_MAT"] = promoter->toString();
-    }
-    
-    if (upstreamSignature != NULL) {
-        toMod["UPSTR_SIG_ORDER"] = boost::lexical_cast<string>(upstreamSignature->getOrder());
-        toMod["UPSTR_SIG_WIDTH"] = boost::lexical_cast<string>(upstreamSignature->getLength());
-        toMod["UPSTR_SIG_MAT"] = upstreamSignature->toString();
+        toMod.push_back(mpair("RBS", "1"));
+        toMod.push_back(mpair("RBS_ORDER", boost::lexical_cast<string>(rbs->getOrder())));
+        toMod.push_back(mpair("RBS_WIDTH", boost::lexical_cast<string>(rbs->getLength())));
+        toMod.push_back(mpair("RBS_MARGIN", "0"));
+        toMod.push_back(mpair("RBS_MAT", rbs->toString()));
     }
     
     if (rbsSpacer != NULL && rbsSpacer->size() > 0) {
-        toMod["RBS_MAX_DUR"] = boost::lexical_cast<string>(rbsSpacer->size() - 1);
-        toMod["RBS_POS_DISTR"] = rbsSpacer->toString();
+        toMod.push_back(mpair("RBS_MAX_DUR", boost::lexical_cast<string>(rbsSpacer->size() - 1)));
+        toMod.push_back(mpair("RBS_POS_DISTR", rbsSpacer->toString()));
+    }
+    
+    if (promoter != NULL) {
+        toMod.push_back(mpair("PROMOTER", "1"));
+        toMod.push_back(mpair("PROMOTER_ORDER", boost::lexical_cast<string>(promoter->getOrder())));
+        toMod.push_back(mpair("PROMOTER_WIDTH", boost::lexical_cast<string>(promoter->getLength())));
+        toMod.push_back(mpair("PROMOTER_MARGIN", "0"));
+        toMod.push_back(mpair("PROMOTER_MAT", promoter->toString()));
     }
     
     if (promoterSpacer != NULL && promoterSpacer->size() > 0) {
-        toMod["PROMOTER_MAX_DUR"] = boost::lexical_cast<string>(promoterSpacer->size() - 1);
-        toMod["PROMOTER_POS_DISTR"] = promoterSpacer->toString();
+        toMod.push_back(mpair("PROMOTER_MAX_DUR", boost::lexical_cast<string>(promoterSpacer->size() - 1)));
+        toMod.push_back(mpair("PROMOTER_POS_DISTR", promoterSpacer->toString()));
     }
     
+    if (upstreamSignature != NULL) {
+        toMod.push_back(mpair("UPSTR_SIG_ORDER", boost::lexical_cast<string>(upstreamSignature->getOrder())));
+        toMod.push_back(mpair("UPSTR_SIG_WIDTH", boost::lexical_cast<string>(upstreamSignature->getLength())));
+        toMod.push_back(mpair("SC_MARGIN", 0));
+        toMod.push_back(mpair("UPSTR_SIG_MAT", upstreamSignature->toString()));
+    }
 }
 
 

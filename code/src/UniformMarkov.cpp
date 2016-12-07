@@ -175,7 +175,7 @@ double UniformMarkov::evaluate(NumSequence::const_iterator begin, NumSequence::c
 // Generate a string representation of the model
 string UniformMarkov::toString() const {
     
-    stringstream ssm;
+    stringstream ssm; ssm << fixed;
     
     // for each index in join probability distribution
     for (size_t idx = 0; idx < this->model.size(); idx++) {

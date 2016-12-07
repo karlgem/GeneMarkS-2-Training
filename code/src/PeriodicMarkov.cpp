@@ -188,7 +188,7 @@ double PeriodicMarkov::evaluate(NumSequence::const_iterator begin, NumSequence::
 
 // Generate a string representation of the model
 string PeriodicMarkov::toString() const {
-    stringstream ssm;
+    stringstream ssm; ssm << fixed;
     
     if (jointProbs.size() == 0)
         return "";
