@@ -46,7 +46,7 @@ namespace gmsuite {
          * @param begin the start of the sequence
          * @param end the end of the sequence
          */
-        void count(NumSequence::const_iterator begin, NumSequence::const_iterator end, bool reverseComplement=false);
+        virtual void count(NumSequence::const_iterator begin, NumSequence::const_iterator end, bool reverseComplement=false);
         
         
         /**
@@ -56,7 +56,7 @@ namespace gmsuite {
          * @param begin the start of the sequence
          * @param end the end of the sequence
          */
-        void decount(NumSequence::const_iterator begin, NumSequence::const_iterator end, bool reverseComplement=false);
+        virtual void decount(NumSequence::const_iterator begin, NumSequence::const_iterator end, bool reverseComplement=false);
         
         
         /**
