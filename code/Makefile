@@ -7,9 +7,17 @@ TARGET := bin/gmsuite
 SRCEXT := cpp
 SOURCES := $(shell find $(SRCDIR) -type f -name *.$(SRCEXT))
 OBJECTS := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.$(SRCEXT)=.o))
-CFLAGS := -g # -Wall
 LIB :=  -L/usr/local/lib -lboost_iostreams -lboost_program_options
 INC := -I include -I/usr/local/include
+
+
+ifeq ($(BUILD),debug)
+# “Debug” build - no optimization, and debugging symbols
+CFLAGS := -O0 -g
+else
+CFLAGS := -O2 # -Wall
+endif
+
 
 $(TARGET): $(OBJECTS)
 	@echo " Linking..."
@@ -30,5 +38,6 @@ tester:
 # Spikes
 ticket:
 	$(CC) $(CFLAGS) spikes/ticket.cpp $(INC) $(LIB) -o bin/ticket
+
 
 .PHONY: clean
