@@ -46,6 +46,7 @@ namespace gmsuite {
         void runStartModelInfo();
         void runMatchSeqToUpstream();
         void runMatchSeqToNoncoding();
+        void runLabelsSimilarityCheck();
         
     };
     

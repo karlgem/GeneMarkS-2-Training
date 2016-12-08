@@ -26,6 +26,7 @@ OptionsUtilities::OptionsUtilities(string mode) : Options(mode) {
 }
 
 #define STR_EXTRACT_UPSTR "extract_upstream"
+#define STR_LABELS_SIMILARITY_CHECK "labels-sim"
 #define STR_START_MODEL_INFO "start-model-info"
 #define STR_MATCH_SEQ_TO_UPSTREAM "match-seq-to-upstream"
 #define STR_MATCH_SEQ_TO_NONCODING "match-seq-to-noncoding"
@@ -40,6 +41,7 @@ namespace gmsuite {
         else if (token == STR_START_MODEL_INFO)         unit = OptionsUtilities::START_MODEL_INFO;
         else if (token == STR_MATCH_SEQ_TO_UPSTREAM)    unit = OptionsUtilities::MATCH_SEQ_TO_UPSTREAM;
         else if (token == STR_MATCH_SEQ_TO_NONCODING)   unit = OptionsUtilities::MATCH_SEQ_TO_NONCODING;
+        else if (token == STR_LABELS_SIMILARITY_CHECK)  unit = OptionsUtilities::LABELS_SIMILARITY_CHECK;
         else
             throw boost::program_options::invalid_option_value(token);
         
@@ -159,6 +161,23 @@ bool OptionsUtilities::parse(int argc, const char *argv[]) {
             
             // get remaining parameters whose values were not assigned in add_options() above
             extractUpstreamUtility.allowOverlaps = vm.count("allow-overlap-with-cds") > 0;
+        }
+        // Similarity Check
+        else if (utility == LABELS_SIMILARITY_CHECK) {
+            po::options_description utilDesc(string(STR_LABELS_SIMILARITY_CHECK) + " options");
+            addProcessOptions_LabelsSimilarityCheck(labelsSimilarityCheck, utilDesc);
+            
+            cmdline_options.add(utilDesc);
+            
+            // Collect all the unrecognized options from the first pass. This will include the
+            // (positional) mode and command name, so we need to erase them
+            vector<string> opts = po::collect_unrecognized(parsed.options, po::include_positional);
+            opts.erase(opts.begin());       // erase mode
+            opts.erase(opts.begin());       // erase command name
+            
+            // Parse again...
+            po::store(po::command_line_parser(opts).options(utilDesc).run(), vm);
+            
         }
         // Utility: Start-Model Info
         else if (utility == START_MODEL_INFO) {
@@ -304,6 +323,14 @@ void OptionsUtilities::addProcessOptions_StartModelInfo(StartModelInfoUtility &o
 
 
 
+void OptionsUtilities::addProcessOptions_LabelsSimilarityCheck(LabelsSimilarityCheck &options, po::options_description &processOptions) {
+    
+    processOptions.add_options()
+        (",A", po::value<string>(&options.fn_labelsA)->required(), "Set A labels file")
+        (",B", po::value<string>(&options.fn_labelsB)->required(), "Set B labels file")
+    ;
+    
+}
 
 
 

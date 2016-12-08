@@ -32,7 +32,8 @@ namespace gmsuite {
             EXTRACT_UPSTR,
             START_MODEL_INFO,
             MATCH_SEQ_TO_UPSTREAM,
-            MATCH_SEQ_TO_NONCODING
+            MATCH_SEQ_TO_NONCODING,
+            LABELS_SIMILARITY_CHECK
         }
         utility_t;
         
@@ -95,9 +96,15 @@ namespace gmsuite {
         }
         matchSeqWithNoncoding;
         
+        struct LabelsSimilarityCheck : public GenericOptions {
+            string fn_labelsA;              // label file A
+            string fn_labelsB;              // label file B
+        } labelsSimilarityCheck;
+        
         
         static void addProcessOptions_ExtractUpstream(ExtractUpstreamUtility &options, po::options_description &processOptions);
         static void addProcessOptions_StartModelInfo(StartModelInfoUtility &options, po::options_description &processOptions);
+        static void addProcessOptions_LabelsSimilarityCheck(LabelsSimilarityCheck &options, po::options_description &processOptions);
         
     };
 }
