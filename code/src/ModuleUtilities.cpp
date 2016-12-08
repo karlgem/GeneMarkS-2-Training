@@ -43,6 +43,8 @@ void ModuleUtilities::run() {
         runMatchSeqToUpstream();
     else if (options.utility == OptionsUtilities::MATCH_SEQ_TO_NONCODING)
         runMatchSeqToNoncoding();
+    else if (options.utility == OptionsUtilities::LABELS_SIMILARITY_CHECK)
+        runLabelsSimilarityCheck();
 //    else            // unrecognized utility to run
 //        throw invalid_argument("Unknown utility function " + options.utility);
     
@@ -89,7 +91,52 @@ void ModuleUtilities::runExtractUpstream() {
 
 
 
-
+void ModuleUtilities::runLabelsSimilarityCheck() {
+    
+    // open label files
+    LabelFile labelFileA (options.labelsSimilarityCheck.fn_labelsA, LabelFile::READ);
+    LabelFile labelFileB (options.labelsSimilarityCheck.fn_labelsB, LabelFile::READ);
+    
+    // read labels from files
+    vector<Label*> labelsA, labelsB;
+    labelFileA.read(labelsA);
+    labelFileB.read(labelsB);
+    
+    // count number of similar stops
+    size_t identicalStops = 0;
+    size_t identicalStarts = 0;
+    
+    // loop over first set: A
+    for (vector<Label*>::const_iterator a = labelsA.begin(); a != labelsA.end(); a++) {
+        
+        Label::strand_t strandA = (*a)->strand;
+        size_t startA = (strandA == Label::POS ? (*a)->left  : (*a)->right);
+        size_t stopA  = (strandA == Label::POS ? (*a)->right : (*a)->left);
+        
+        // loop over second set: B
+        for (vector<Label*>::const_iterator b = labelsB.begin(); b != labelsB.end(); b++) {
+            
+            Label::strand_t strandB = (*b)->strand;
+            size_t startB = (strandB == Label::POS ? (*b)->left  : (*b)->right);
+            size_t stopB  = (strandB == Label::POS ? (*b)->right : (*b)->left);
+            
+            if (strandA == strandB) {
+                if (startA == startB)
+                    identicalStarts++;
+                if (stopA == stopB)
+                    identicalStops++;
+            }
+        }
+    }
+    
+    double similarity = 0;
+    if (labelsA.size() + labelsB.size() != 0)
+        similarity = (2.0*identicalStarts) / (labelsA.size() + labelsB.size());
+    
+    cout << similarity << endl;
+    
+    
+}
 
 
 
