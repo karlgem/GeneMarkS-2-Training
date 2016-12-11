@@ -14,6 +14,7 @@
 
 #include "Options.hpp"
 #include "NumSequence.hpp"
+#include "GeneticCode.hpp"
 #include "OptionsMFinder.hpp"
 #include "ProkGeneStartModel.hpp"
 
@@ -48,12 +49,14 @@ namespace gmsuite {
     public:
         
         typedef ProkGeneStartModel::genome_class_t genome_class_t;
+        typedef GeneticCode::gcode_t gcode_t;
         
         string fn_sequence;             /**< Input filename containing DNA sequence */
         string fn_labels;               /**< Input filename containing labels */
         string fn_outmod;               /**< Output model file */
         size_t upstrLength;             /**< Length of upstream sequences for motif search */
         genome_class_t genomeClass;     /**< The genome's class */
+        gcode_t geneticCode;            /**< Genetic code */
         
         
         // GMS2 model parameters

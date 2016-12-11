@@ -28,21 +28,35 @@ OptionsGMS2Training::OptionsGMS2Training(string mode) : Options(mode), optionsMF
 }
 
 namespace gmsuite {
-std::istream& operator>>(std::istream& in, ProkGeneStartModel::genome_class_t& unit)
-{
-    std::string token;
-    in >> token;
-    if (token == "1")
-        unit = ProkGeneStartModel::C1;
-    else if (token == "2")
-        unit = ProkGeneStartModel::C2;
-    else if (token == "3")
-        unit = ProkGeneStartModel::C3;
-//    else
-//        throw boost::program_options::validation_error("Invalid genome class");
+    std::istream& operator>>(std::istream& in, ProkGeneStartModel::genome_class_t& unit)
+    {
+        std::string token;
+        in >> token;
+        if (token == "1")
+            unit = ProkGeneStartModel::C1;
+        else if (token == "2")
+            unit = ProkGeneStartModel::C2;
+        else if (token == "3")
+            unit = ProkGeneStartModel::C3;
+    //    else
+    //        throw boost::program_options::validation_error("Invalid genome class");
+        
+        return in;
+    }
     
-    return in;
-}
+    std::istream& operator>>(std::istream& in, GeneticCode::gcode_t& unit)
+    {
+        std::string token;
+        in >> token;
+        if (token == "11")
+            unit = GeneticCode::ELEVEN;
+        else if (token == "4")
+            unit = GeneticCode::FOUR;
+        //    else
+        //        throw boost::program_options::validation_error("Invalid genome class");
+        
+        return in;
+    }
 }
 
 void validate(boost::any& v,
@@ -105,7 +119,8 @@ bool OptionsGMS2Training::parse(int argc, const char *argv[]) {
         ("sc-length", po::value<NumSequence::size_type>(&startContextLength)->default_value(18), "Length of start-context model")
         ("upstream-length", po::value<NumSequence::size_type>(&upstreamLength)->default_value(40), "Length of upstream region for motif search")
         ("MIN_GENE_LEN", po::value<NumSequence::size_type>(&MIN_GENE_LEN)->default_value(300), "Minimum gene length allowed in training")
-        ("sc-margin", po::value<int>(&startContextMargin)->default_value(-15), "Margin for start context matrix");
+        ("sc-margin", po::value<int>(&startContextMargin)->default_value(-15), "Margin for start context matrix")
+        ("genetic-code", po::value<gcode_t>(&geneticCode)->default_value(GeneticCode::ELEVEN), "Genetic code")
 //        // MFinder options
 //        ("pcounts-mfinder", po::value<double>(&optionsMFinder.pcounts)->default_value(1), "Pseudocounts for mfinder models")
 //        ("width", po::value<unsigned>(&optionsMFinder.width)->default_value(6), "Width of motif in MFinder")
@@ -201,7 +216,8 @@ void OptionsGMS2Training::addProcessOptions(OptionsGMS2Training &options, po::op
     ("sc-length", po::value<NumSequence::size_type>(&options.startContextLength)->default_value(18), "Length of start-context model")
     ("upstream-length", po::value<NumSequence::size_type>(&options.upstreamLength)->default_value(40), "Length of upstream region for motif search")
     ("MIN_GENE_LEN", po::value<NumSequence::size_type>(&options.MIN_GENE_LEN)->default_value(300), "Minimum gene length allowed in training")
-    ("sc-margin", po::value<int>(&options.startContextMargin)->default_value(-15), "Margin for start context matrix");
+    ("sc-margin", po::value<int>(&options.startContextMargin)->default_value(-15), "Margin for start context matrix")
+    ("genetic-code", po::value<gcode_t>(&options.geneticCode)->default_value(GeneticCode::ELEVEN), "Genetic code")
     ;
     
     // mfinder options
