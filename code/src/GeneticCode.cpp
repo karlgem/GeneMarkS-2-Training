@@ -8,7 +8,9 @@
 
 #include "GeneticCode.hpp"
 #include <algorithm>
+#include <stdexcept>
 
+using namespace std;
 using namespace gmsuite;
 
 // empty constructor
@@ -28,7 +30,7 @@ GeneticCode::GeneticCode(const vector<pair<string, char> > &table, const vector<
     gcode = CUSTOM;
     
     // initialize custom genetic code
-    
+    throw logic_error("Custom genetic code feature not yet implemented.");
 }
 
 
@@ -117,6 +119,14 @@ void GeneticCode::initialize() {
 
 // init genetic code 4
 void GeneticCode::initialize4() {
+    
+    string AAs      = "FFLLSSSSYY**CCWWLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG";
+    string starts   = "--MM------**-------M------------MMMM---------------M------------";
+    string base1    = "TTTTTTTTTTTTTTTTCCCCCCCCCCCCCCCCAAAAAAAAAAAAAAAAGGGGGGGGGGGGGGGG";
+    string base2    = "TTTTCCCCAAAAGGGGTTTTCCCCAAAAGGGGTTTTCCCCAAAAGGGGTTTTCCCCAAAAGGGG";
+    string base3    = "TCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAG";
+    
+    fillTranslationTable(AAs, starts, base1, base2, base3);
     
 }
 
