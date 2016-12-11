@@ -24,7 +24,7 @@ ModuleGMS2Training::ModuleGMS2Training(const OptionsGMS2Training &opt) : options
 void ModuleGMS2Training::run() {
     
     AlphabetDNA alph;
-    GeneticCode geneticCode (GeneticCode::ELEVEN);
+    GeneticCode geneticCode (options.geneticCode);
     CharNumConverter cnc(&alph);
     NumAlphabetDNA numAlph(alph, cnc);
     NumGeneticCode numGeneticCode(geneticCode, cnc);
