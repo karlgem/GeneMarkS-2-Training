@@ -49,6 +49,8 @@ void ModuleUtilities::run() {
         runLabelsSimilarityCheck();
     else if (options.utility == OptionsUtilities::EMIT_NON_CODING)
         runEmitNonCoding();
+    else if (options.utility == OptionsUtilities::COUNT_NUM_ORF)
+        runCountNumORF();
 //    else            // unrecognized utility to run
 //        throw invalid_argument("Unknown utility function " + options.utility);
     
@@ -488,6 +490,114 @@ void ModuleUtilities::runEmitNonCoding() {
     sfile.write(v);
 }
 
+
+void ModuleUtilities::runCountNumORF() {
+    
+    OptionsUtilities::CountNumORF utilOpt = options.countNumORF;
+    
+    // read model file
+    ModelFile mfile (utilOpt.fn_mod, ModelFile::READ);
+    
+    // set keys for useful parameters
+    vector<string> keys;
+    keys.push_back("GENETIC_CODE");
+    keys.push_back("GENE_MIN_LENGTH");
+    
+    // get key-value pair for parameters
+    map<string, string> mKeyValuePair;
+    mfile.read(mKeyValuePair, keys);
+    
+    
+    // read sequence file
+    SequenceFile sfile(utilOpt.fn_sequence, SequenceFile::READ);
+    Sequence seq = sfile.read();
+    
+    GeneticCode::gcode_t genCodeValue;
+    if (mKeyValuePair["GENETIC_CODE"] == "11")
+        genCodeValue = GeneticCode::ELEVEN;
+    else if (mKeyValuePair["GENETIC_CODE"] == "4")
+        genCodeValue = GeneticCode::FOUR;
+    else
+        throw logic_error("Genetic code invalid: " + mKeyValuePair["GENETIC_CODE"]);
+    
+    GeneticCode geneticCode(genCodeValue);
+    AlphabetDNA alph;
+    
+    // count number of ORFs
+    size_t numORF = 0;
+    size_t minORFLength = boost::lexical_cast<size_t> (mKeyValuePair["GENE_MIN_LENGTH"]);
+    
+    for (size_t n = 0; n < seq.size()-3; n++) {
+        
+        string candStop = seq.toString(n,3);
+        
+        // is stop on positive strand
+        if (geneticCode.isStop(candStop)) {
+            
+            if (n >= 3 + minORFLength) {
+                
+                // search for start longer than minORFLength
+                size_t m = n-3-minORFLength;
+                
+                while (true) {
+                    
+                    string cand = seq.toString(m,3);       // get candidate start
+                    
+                    // found start?
+                    if (geneticCode.isStart(cand)) {
+                        numORF++;
+                        break;
+                    }
+                    // found in-frame stop on same strand?
+                    else if (geneticCode.isStop(cand))
+                        break;
+                    
+                    // check if no more codon exist
+                    if (m <= 2)
+                        break;
+                    
+                    // otherwise move to previous codon
+                    m -= 3;
+                }
+            }
+            
+            
+        }
+        
+        
+        // is stop on negative strand
+        if (geneticCode.isStop(alph.reverseComplement(candStop))) {
+            
+            if (n < seq.size() - 3 - minORFLength) {
+                
+                // search for start longer than minORFLength
+                size_t m = n + 3 + minORFLength;
+                
+                while (true) {
+                    string cand = alph.reverseComplement(seq.toString(m,3));
+                    
+                    // found start?
+                    if (geneticCode.isStart(cand)) {
+                        numORF++;
+                        break;
+                    }
+                    else if (geneticCode.isStop(cand))
+                        break;
+                    
+                    // if no more codons exist
+                    if (m > seq.size() - 3)
+                        break;
+                    
+                    // otherwise move to previous codon
+                    m += 3;
+                }
+            }
+        }
+    }
+    
+    cout << numORF << endl;
+    
+}
 
 
 

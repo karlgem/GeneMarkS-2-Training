@@ -31,6 +31,7 @@ OptionsUtilities::OptionsUtilities(string mode) : Options(mode) {
 #define STR_MATCH_SEQ_TO_UPSTREAM "match-seq-to-upstream"
 #define STR_MATCH_SEQ_TO_NONCODING "match-seq-to-noncoding"
 #define STR_EMIT_NONCODING "emit-noncoding"
+#define STR_COUNT_NUM_ORF "count-num-orfs"
 
 namespace gmsuite {
     // convert string to utility_t
@@ -44,6 +45,7 @@ namespace gmsuite {
         else if (token == STR_MATCH_SEQ_TO_NONCODING)   unit = OptionsUtilities::MATCH_SEQ_TO_NONCODING;
         else if (token == STR_LABELS_SIMILARITY_CHECK)  unit = OptionsUtilities::LABELS_SIMILARITY_CHECK;
         else if (token == STR_EMIT_NONCODING)           unit = OptionsUtilities::EMIT_NON_CODING;
+        else if (token == STR_COUNT_NUM_ORF)           unit = OptionsUtilities::COUNT_NUM_ORF;
         else
             throw boost::program_options::invalid_option_value(token);
         
@@ -185,6 +187,23 @@ bool OptionsUtilities::parse(int argc, const char *argv[]) {
         else if (utility == EMIT_NON_CODING) {
             po::options_description utilDesc(string(STR_EMIT_NONCODING) + " options");
             addProcessOptions_EmitNonCoding(emitNonCoding, utilDesc);
+            
+            cmdline_options.add(utilDesc);
+            
+            // Collect all the unrecognized options from the first pass. This will include the
+            // (positional) mode and command name, so we need to erase them
+            vector<string> opts = po::collect_unrecognized(parsed.options, po::include_positional);
+            opts.erase(opts.begin());       // erase mode
+            opts.erase(opts.begin());       // erase command name
+            
+            // Parse again...
+            po::store(po::command_line_parser(opts).options(utilDesc).run(), vm);
+            
+        }
+        // Emit Noncoding
+        else if (utility == COUNT_NUM_ORF) {
+            po::options_description utilDesc(string(STR_COUNT_NUM_ORF) + " options");
+            addProcessOptions_CountNumORF(countNumORF, utilDesc);
             
             cmdline_options.add(utilDesc);
             
@@ -362,6 +381,14 @@ void OptionsUtilities::addProcessOptions_EmitNonCoding(EmitNonCoding &options, p
     
 }
 
+
+void OptionsUtilities::addProcessOptions_CountNumORF(CountNumORF &options, po::options_description &processOptions) {
+    processOptions.add_options()
+        ("seq,s", po::value<string>(&options.fn_sequence)->required(), "Sequence file")
+        ("mod,m", po::value<string>(&options.fn_mod)->required(), "Model file")
+    ;
+    
+}
 
 
 

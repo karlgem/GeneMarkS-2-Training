@@ -102,6 +102,11 @@ namespace gmsuite {
          */
         char complement(char c) const;
         
+        /**
+         * Complement a string
+         */
+        string reverseComplement(const string &s) const;
+        
         
         // Iterators:
         

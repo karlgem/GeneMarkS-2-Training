@@ -84,7 +84,7 @@ namespace gmsuite {
          *
          * @return a string representation of the sequence.
          */
-        virtual string toString() const;
+        virtual string toString(size_type start = npos, size_type length = 0) const;
         
         
         /**

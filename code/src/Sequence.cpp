@@ -7,6 +7,7 @@
 //
 
 #include "Sequence.hpp"
+#include <stdexcept>
 
 using namespace gmsuite;
 
@@ -45,7 +46,14 @@ Sequence::size_type Sequence::length() const {
 
 
 // get data
-string Sequence::toString() const {
+string Sequence::toString(size_type start, size_type length) const {
+    if (start != npos) {
+        if (start + length > data.length())
+            throw std::invalid_argument("Length cannot exceed data size");
+        else
+            return data.substr(start, length);
+    }
+    
     return data;
 }
 
