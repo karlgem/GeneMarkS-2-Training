@@ -36,7 +36,7 @@ CharNumConverter::CharNumConverter(const AlphabetDNA* alphabet) {
     }
     
     // create complement map
-    for (AlphabetDNA::const_iterator iter = this->alphabet->beginValid(); iter != this->alphabet->endValid(); iter++) {
+    for (AlphabetDNA::const_iterator iter = this->alphabet->begin(); iter != this->alphabet->end(); iter++) {
         element_t from = charToNum[*iter];
         element_t to = charToNum[this->alphabet->complement(*iter)];
         
