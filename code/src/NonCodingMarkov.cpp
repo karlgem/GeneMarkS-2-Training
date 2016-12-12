@@ -56,6 +56,12 @@ NonCodingMarkov::NonCodingMarkov(const vector<pair<string, double> > &keyValue, 
     }
     
     // Conditional Probs
-    this->model = jointProbs[this->order-1];        // get join of highest order
+    this->model = jointProbs[this->order];        // get join of highest order
+  
+    // derive remaining joint probabilities for 'order-1' and lower. This is used to compute words of length shorter than 'order+1'
+    for (unsigned o = this->order; o > 0; o--)
+        this->getLowerOrderJoint(o, jointProbs[o], jointProbs[o-1]);        //  take previous joint probs and reduce (marginalize) it by one
+
+    
     jointToMarkov(this->model);                     // convert joint to conditional
 }

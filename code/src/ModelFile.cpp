@@ -75,6 +75,39 @@ void ModelFile::read(map<string, string> &output) const {
 }
 
 
+void ModelFile::read(map<string, string> &output, const vector<string> &keys) const {
+    
+    const char* current = begin_read;
+    
+    string key = "";
+    string value = "";
+    
+    // loop over file
+    while (current != end_read) {
+        
+        // read next key
+        key = readNextKey(current, end_read);
+        boost::trim(key);
+        
+        // no key found (i.e. should have read the end
+        if (key.empty())
+            continue;
+        
+        // check if key is NOT in the query
+        if (find(keys.begin(), keys.end(), key) == keys.end())
+            continue;
+        
+        // read next value, which consists of all characters up
+        // until the next key
+        value = readNextValue(current, end_read);
+        boost::trim(value);
+        
+        // add key-value pair to map (note, value can be empty, but key should not be)
+        output[key] = value;
+    }
+}
+
+
 
 string readNextKey(const char*& current, const char* const end) {
     
