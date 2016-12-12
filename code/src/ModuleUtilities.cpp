@@ -500,7 +500,7 @@ void ModuleUtilities::runCountNumORF() {
     
     // set keys for useful parameters
     vector<string> keys;
-    keys.push_back("GENETIC_CODE");
+    keys.push_back("GCODE");
     keys.push_back("GENE_MIN_LENGTH");
     
     // get key-value pair for parameters
@@ -513,12 +513,12 @@ void ModuleUtilities::runCountNumORF() {
     Sequence seq = sfile.read();
     
     GeneticCode::gcode_t genCodeValue;
-    if (mKeyValuePair["GENETIC_CODE"] == "11")
+    if (mKeyValuePair["GCODE"] == "11")
         genCodeValue = GeneticCode::ELEVEN;
-    else if (mKeyValuePair["GENETIC_CODE"] == "4")
+    else if (mKeyValuePair["GCODE"] == "4")
         genCodeValue = GeneticCode::FOUR;
     else
-        throw logic_error("Genetic code invalid: " + mKeyValuePair["GENETIC_CODE"]);
+        throw logic_error("Genetic code invalid: " + mKeyValuePair["GCODE"]);
     
     GeneticCode geneticCode(genCodeValue);
     AlphabetDNA alph;
@@ -527,37 +527,55 @@ void ModuleUtilities::runCountNumORF() {
     size_t numORF = 0;
     size_t minORFLength = boost::lexical_cast<size_t> (mKeyValuePair["GENE_MIN_LENGTH"]);
     
-    for (size_t n = 0; n < seq.size()-3; n++) {
+    // min ORF length can't be zero or larger than sequence size
+    if (minORFLength == 0 || minORFLength > seq.size()) {
+        cout << 0 << endl;
+        return;
+    }
+    
+    // if minORFLength is not divisible by 3, "round" it up
+    if (minORFLength % 3 != 0)
+        minORFLength = (((size_t) (minORFLength/3)) + 1) * 3;
+    
+    size_t codonLen = 3;
+    
+    for (size_t n = 0; n < seq.size(); n++) {
         
-        string candStop = seq.toString(n,3);
+        // INV: n in [0, N-4]  =>   n+3 in [3, N-1]
         
-        // is stop on positive strand
-        if (geneticCode.isStop(candStop)) {
+        // check for ORF on positive strand
+        if (n > codonLen) {
             
-            if (n >= 3 + minORFLength) {
+            string candStop = seq.toString(n-2,codonLen);       // get stop codon
+            
+            if (geneticCode.isStop(candStop)) {                 // is stop on positive strand?
                 
-                // search for start longer than minORFLength
-                size_t m = n-3-minORFLength;
-                
-                while (true) {
+                // check if there's enough nt for ORF of min length
+                if (n >= minORFLength-1) {
                     
-                    string cand = seq.toString(m,3);       // get candidate start
+                    // search for start longer than minORFLength
+                    size_t m = n-(minORFLength-1);
                     
-                    // found start?
-                    if (geneticCode.isStart(cand)) {
-                        numORF++;
-                        break;
+                    while (true) {
+                        
+                        string cand = seq.toString(m,codonLen);         // get candidate start
+                        
+                        // found start?
+                        if (geneticCode.isStart(cand)) {
+                            numORF++;
+                            break;
+                        }
+                        // found in-frame stop on same strand?
+                        else if (geneticCode.isStop(cand))
+                            break;
+                        
+                        // check if no more codons exist
+                        if (m < codonLen)
+                            break;
+                        
+                        // otherwise move to previous codon
+                        m -= codonLen;
                     }
-                    // found in-frame stop on same strand?
-                    else if (geneticCode.isStop(cand))
-                        break;
-                    
-                    // check if no more codon exist
-                    if (m <= 2)
-                        break;
-                    
-                    // otherwise move to previous codon
-                    m -= 3;
                 }
             }
             
@@ -565,31 +583,38 @@ void ModuleUtilities::runCountNumORF() {
         }
         
         
-        // is stop on negative strand
-        if (geneticCode.isStop(alph.reverseComplement(candStop))) {
+        // check for ORF on negative strand
+        if (n <= seq.size() - minORFLength) {
             
-            if (n < seq.size() - 3 - minORFLength) {
+            string candStop = alph.reverseComplement(seq.toString(n,codonLen));       // get stop codon on negative strand
+            
+            // is stop on negative strand
+            if (geneticCode.isStop(candStop)) {
                 
-                // search for start longer than minORFLength
-                size_t m = n + 3 + minORFLength;
-                
-                while (true) {
-                    string cand = alph.reverseComplement(seq.toString(m,3));
+                // check if there's enought nt for ORF of min length
+                if (n < seq.size() - (minORFLength-1)) {
                     
-                    // found start?
-                    if (geneticCode.isStart(cand)) {
-                        numORF++;
-                        break;
+                    // search for start longer than minORFLength
+                    size_t m = n + minORFLength - 1;
+                    
+                    while (true) {
+                        string cand = alph.reverseComplement(seq.toString(m-2,codonLen));
+                        
+                        // found start?
+                        if (geneticCode.isStart(cand)) {
+                            numORF++;
+                            break;
+                        }
+                        else if (geneticCode.isStop(cand))
+                            break;
+                        
+                        // if no more codons exist
+                        if (m < seq.size() - 3)
+                            break;
+                        
+                        // otherwise move to previous codon
+                        m += 3;
                     }
-                    else if (geneticCode.isStop(cand))
-                        break;
-                    
-                    // if no more codons exist
-                    if (m > seq.size() - 3)
-                        break;
-                    
-                    // otherwise move to previous codon
-                    m += 3;
                 }
             }
         }

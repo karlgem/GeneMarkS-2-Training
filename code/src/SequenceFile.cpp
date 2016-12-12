@@ -105,8 +105,12 @@ Sequence SequenceFile::read() const {
         read_fasta(output);
         if (output.size() > 0)
             return output[0];
-        else
-            return Sequence();
+    }
+    else if (this->format == PLAIN) {
+        vector<Sequence> output;
+        read_plain(output);
+        if (output.size() > 0)
+            return output[0];
     }
     
     return Sequence();
