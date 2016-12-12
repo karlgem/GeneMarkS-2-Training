@@ -34,7 +34,8 @@ namespace gmsuite {
             MATCH_SEQ_TO_UPSTREAM,
             MATCH_SEQ_TO_NONCODING,
             LABELS_SIMILARITY_CHECK,
-            EMIT_NON_CODING
+            EMIT_NON_CODING,
+            COUNT_NUM_ORF
         }
         utility_t;
         
@@ -108,10 +109,16 @@ namespace gmsuite {
             NumSequence::size_type length;  // length of non-coding sequence
         } emitNonCoding;
         
+        struct CountNumORF : public GenericOptions {
+            string fn_sequence;             // sequence file
+            string fn_mod;                  // input model file containing genetic code and other params
+        } countNumORF;
+        
         static void addProcessOptions_ExtractUpstream(ExtractUpstreamUtility &options, po::options_description &processOptions);
         static void addProcessOptions_StartModelInfo(StartModelInfoUtility &options, po::options_description &processOptions);
         static void addProcessOptions_LabelsSimilarityCheck(LabelsSimilarityCheck &options, po::options_description &processOptions);
         static void addProcessOptions_EmitNonCoding(EmitNonCoding &options, po::options_description &processOptions);
+        static void addProcessOptions_CountNumORF(CountNumORF &options, po::options_description &processOptions);
         
     };
 }

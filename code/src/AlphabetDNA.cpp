@@ -79,6 +79,31 @@ char AlphabetDNA::complement(char c) const {
         return it->second;
 }
 
+// complement a character
+string AlphabetDNA::reverseComplement(const string &original) const {
+    string result;
+    result.resize(original.size());
+    
+    for (size_t n = 0; n < original.size(); n++) {
+        
+        size_t posInResult = result.size() - n - 1;
+        
+        char c = original[n];
+        
+        map<char, char>::const_iterator it = complementDNA.find(c);     // find character complement
+        
+        // if character not found, return it as it is
+        if (it == complementDNA.end())
+            result[posInResult] = c;
+        
+        // otherwise, return the complement
+        else
+            result[posInResult] = it->second;
+    }
+    
+    return result;
+}
+
 
 
 
