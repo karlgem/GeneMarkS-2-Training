@@ -30,6 +30,7 @@ OptionsUtilities::OptionsUtilities(string mode) : Options(mode) {
 #define STR_START_MODEL_INFO "start-model-info"
 #define STR_MATCH_SEQ_TO_UPSTREAM "match-seq-to-upstream"
 #define STR_MATCH_SEQ_TO_NONCODING "match-seq-to-noncoding"
+#define STR_EMIT_NONCODING "emit-noncoding"
 
 namespace gmsuite {
     // convert string to utility_t
@@ -42,6 +43,7 @@ namespace gmsuite {
         else if (token == STR_MATCH_SEQ_TO_UPSTREAM)    unit = OptionsUtilities::MATCH_SEQ_TO_UPSTREAM;
         else if (token == STR_MATCH_SEQ_TO_NONCODING)   unit = OptionsUtilities::MATCH_SEQ_TO_NONCODING;
         else if (token == STR_LABELS_SIMILARITY_CHECK)  unit = OptionsUtilities::LABELS_SIMILARITY_CHECK;
+        else if (token == STR_EMIT_NONCODING)           unit = OptionsUtilities::EMIT_NON_CODING;
         else
             throw boost::program_options::invalid_option_value(token);
         
@@ -166,6 +168,23 @@ bool OptionsUtilities::parse(int argc, const char *argv[]) {
         else if (utility == LABELS_SIMILARITY_CHECK) {
             po::options_description utilDesc(string(STR_LABELS_SIMILARITY_CHECK) + " options");
             addProcessOptions_LabelsSimilarityCheck(labelsSimilarityCheck, utilDesc);
+            
+            cmdline_options.add(utilDesc);
+            
+            // Collect all the unrecognized options from the first pass. This will include the
+            // (positional) mode and command name, so we need to erase them
+            vector<string> opts = po::collect_unrecognized(parsed.options, po::include_positional);
+            opts.erase(opts.begin());       // erase mode
+            opts.erase(opts.begin());       // erase command name
+            
+            // Parse again...
+            po::store(po::command_line_parser(opts).options(utilDesc).run(), vm);
+            
+        }
+        // Emit Noncoding
+        else if (utility == EMIT_NON_CODING) {
+            po::options_description utilDesc(string(STR_EMIT_NONCODING) + " options");
+            addProcessOptions_EmitNonCoding(emitNonCoding, utilDesc);
             
             cmdline_options.add(utilDesc);
             
@@ -333,7 +352,15 @@ void OptionsUtilities::addProcessOptions_LabelsSimilarityCheck(LabelsSimilarityC
 }
 
 
-
+void OptionsUtilities::addProcessOptions_EmitNonCoding(EmitNonCoding &options, po::options_description &processOptions) {
+    
+    processOptions.add_options()
+        ("mod,m", po::value<string>(&options.fn_mod)->required(), "Model file containing non-coding model")
+        ("out,o", po::value<string>(&options.fn_out)->required(), "Name of output file containing sequence")
+        ("length,l", po::value<NumSequence::size_type>(&options.length)->required(), "Length of generated non-coding sequence")
+    ;
+    
+}
 
 
 

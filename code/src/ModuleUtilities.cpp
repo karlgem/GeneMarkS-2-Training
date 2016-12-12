@@ -21,6 +21,8 @@
 #include "SequenceFile.hpp"
 #include "SequenceParser.hpp"
 #include "GMS2Trainer.hpp"
+#include "ModelFile.hpp"
+#include "NonCodingMarkov.hpp"
 
 using namespace std;
 using namespace gmsuite;
@@ -45,6 +47,8 @@ void ModuleUtilities::run() {
         runMatchSeqToNoncoding();
     else if (options.utility == OptionsUtilities::LABELS_SIMILARITY_CHECK)
         runLabelsSimilarityCheck();
+    else if (options.utility == OptionsUtilities::EMIT_NON_CODING)
+        runEmitNonCoding();
 //    else            // unrecognized utility to run
 //        throw invalid_argument("Unknown utility function " + options.utility);
     
@@ -433,7 +437,56 @@ void ModuleUtilities::runMatchSeqToNoncoding() {
 }
 
 
-
+void ModuleUtilities::runEmitNonCoding() {
+    
+    // read model file
+    ModelFile mfile (options.emitNonCoding.fn_mod, ModelFile::READ);
+    
+    // set keys for non-coding model
+    vector<string> keys;
+    keys.push_back("NON_MAT");
+    keys.push_back("NON_ORDER");
+    
+    // get key-value pair for non-coding model
+    map<string, string> mKeyValuePair;
+    mfile.read(mKeyValuePair, keys);
+    
+    AlphabetDNA alph;
+    CharNumConverter cnc(&alph);
+    NumAlphabetDNA numAlph(alph, cnc);
+    
+    // break non-coding string into vector of codon-probability pairs
+    vector<pair<string, double> > nonCodingProbs;
+    istringstream ssm(mKeyValuePair["NON_MAT"]);
+    string line;
+    while (std::getline(ssm, line)) {
+        
+        stringstream lineStream (line);
+        string codon;
+        double prob;
+        
+//        std::getline(lineStream, line, '\t');
+        
+        lineStream >> codon >> prob;
+        
+        nonCodingProbs.push_back(pair<string, double> (codon, prob));
+    }
+    
+    // build non-coding model
+    NonCodingMarkov nonCodingMarkov(nonCodingProbs, numAlph, cnc);
+    
+    // emit noncoding sequence
+    NumSequence emittedNumSeq = nonCodingMarkov.emit(options.emitNonCoding.length);
+    
+    // get string form of sequence
+    Sequence emittedSeq = Sequence(cnc.convert(emittedNumSeq.begin(), emittedNumSeq.end()));
+    
+    // print emitted sequence to file
+    SequenceFile sfile (options.emitNonCoding.fn_out, SequenceFile::WRITE);
+    vector<Sequence> v;
+    v.push_back(emittedSeq);
+    sfile.write(v);
+}
 
 
 

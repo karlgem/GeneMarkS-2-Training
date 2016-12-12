@@ -202,6 +202,8 @@ void UniformMarkov::initialize() {
     size_t numWords = pow(numElements, wordSize);           // number of possible words of size 'wordSize' with the given alphabet
     
     model.resize(numWords, 0);
+    jointProbs.resize(this->order + 1);                     // for order, order-1, order-2, ... 0
+    jointProbs[this->order].resize(numWords, 0);
 }
 
 

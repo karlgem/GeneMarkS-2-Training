@@ -44,6 +44,7 @@ namespace gmsuite {
         // Each submodule (see OptionsUtilities) requires a separate run command
         void runExtractUpstream();
         void runStartModelInfo();
+        void runEmitNonCoding();
         void runMatchSeqToUpstream();
         void runMatchSeqToNoncoding();
         void runLabelsSimilarityCheck();
