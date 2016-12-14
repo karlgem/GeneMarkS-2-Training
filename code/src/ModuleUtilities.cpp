@@ -609,7 +609,7 @@ void ModuleUtilities::runCountNumORF() {
                             break;
                         
                         // if no more codons exist
-                        if (m < seq.size() - 3)
+                        if (m >= seq.size() - 3)
                             break;
                         
                         // otherwise move to previous codon
