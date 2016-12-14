@@ -59,7 +59,8 @@ namespace gmsuite {
                     const NumAlphabetDNA &alph,
                     const NumSequence::size_type MIN_GENE_LEN,
                     const NumGeneticCode &numGeneticCode,
-                    int scMargin);
+                    int scMargin,
+                    bool trainOnNative);
         
         ~GMS2Trainer();
         
@@ -93,7 +94,7 @@ namespace gmsuite {
         unsigned FGIO_DIST_THRESH;
         unsigned NFGIO_DIST_THRES;
         int scMargin;
-        
+        bool trainOnNative;
         // public variables for models
 //        NonUniformMarkov *motif;
         UniformMarkov *noncoding;

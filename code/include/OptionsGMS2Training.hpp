@@ -68,7 +68,7 @@ namespace gmsuite {
         NumSequence::size_type upstreamLength;      /**< Upstream length used for motif search */
         NumSequence::size_type startContextLength;  /**< length of start context model */
         NumSequence::size_type MIN_GENE_LEN;        /**< minimum gene length required for using gene in training */ 
-        
+        bool trainOnNativeOnly;                     /**< train on genes predicted by native model */
         OptionsMFinder optionsMFinder;              /**< Options for Motif Finder */
         
     };
