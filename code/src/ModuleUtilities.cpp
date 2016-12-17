@@ -554,15 +554,17 @@ void ModuleUtilities::runCountNumORF() {
                 if (n >= minORFLength-1) {
                     
                     // search for start longer than minORFLength
-                    size_t m = n-(minORFLength-1);
+                    size_t m = n - 5;
                     
                     while (true) {
                         
                         string cand = seq.toString(m,codonLen);         // get candidate start
-                        
+                        size_t currLen = n-m+1;
                         // found start?
-                        if (geneticCode.isStart(cand)) {
+                        if (currLen >= minORFLength  && geneticCode.isStart(cand)) {
                             numORF++;
+                            if (utilOpt.printSeq)
+                                cout << m << "\t" << n << "\t" << "+" << "\t" << seq.toString(m, n-m+1) << endl;
                             break;
                         }
                         // found in-frame stop on same strand?
@@ -595,14 +597,17 @@ void ModuleUtilities::runCountNumORF() {
                 if (n < seq.size() - (minORFLength-1)) {
                     
                     // search for start longer than minORFLength
-                    size_t m = n + minORFLength - 1;
+                    size_t m = n + 5;
                     
                     while (true) {
                         string cand = alph.reverseComplement(seq.toString(m-2,codonLen));
                         
+                        size_t currLength = m - n + 1;
                         // found start?
-                        if (geneticCode.isStart(cand)) {
+                        if (currLength >= minORFLength && geneticCode.isStart(cand)) {
                             numORF++;
+                            if (utilOpt.printSeq)
+                                cout << n << "\t" << m << "\t" << currLength << "\t" << "-" << "\t" <<  alph.reverseComplement(seq.toString(n, m - n + 1)) << endl;
                             break;
                         }
                         else if (geneticCode.isStop(cand))
@@ -620,7 +625,8 @@ void ModuleUtilities::runCountNumORF() {
         }
     }
     
-    cout << numORF << endl;
+    if (!utilOpt.printSeq)
+        cout << numORF << endl;
     
 }
 

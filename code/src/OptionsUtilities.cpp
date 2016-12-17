@@ -386,6 +386,7 @@ void OptionsUtilities::addProcessOptions_CountNumORF(CountNumORF &options, po::o
     processOptions.add_options()
         ("seq,s", po::value<string>(&options.fn_sequence)->required(), "Sequence file")
         ("mod,m", po::value<string>(&options.fn_mod)->required(), "Model file")
+    ("print-seq", po::bool_switch(&options.printSeq)->default_value(false), "Print orf sequences and positions"))
     ;
     
 }
