@@ -80,7 +80,8 @@ GMS2Trainer::GMS2Trainer(unsigned pcounts,
                          const NumAlphabetDNA &alph,
                          const NumSequence::size_type MIN_GENE_LEN,
                          const NumGeneticCode &numGenCode,
-                         int scMargin) {
+                         int scMargin,
+                         bool trainOnNative) {
     
     this->pcounts = pcounts;
     this->codingOrder = codingOrder;
@@ -94,7 +95,7 @@ GMS2Trainer::GMS2Trainer(unsigned pcounts,
     this->MIN_GENE_LEN = MIN_GENE_LEN;
     this->numGeneticCode = &numGenCode;
     this->scMargin = scMargin;
-    
+    this->trainOnNative = trainOnNative;
     
     // public variables for models
     noncoding = NULL;
@@ -783,14 +784,21 @@ void GMS2Trainer::selectLabelsForCodingParameters(const vector<Label*> &labels, 
     if (useCoding.size() != labels.size())
         throw invalid_argument("Labels and useCoding vectors should have the same size");
     
-    // "remove" short genes
+    
     for (size_t n = 0; n < labels.size(); n++) {
         if (labels[n] == NULL)
             throw invalid_argument("Label cannot be null");
         
+        // "remove" short genes
         if (labels[n]->right - labels[n]->left + 1 < MIN_GENE_LEN)
             useCoding[n] = false;
+        
+        // train on native
+        if (trainOnNative) {
+            useCoding[n] = (labels[n]->geneClass.find("native") != string::npos);
+        }
     }
+    
     
     
     

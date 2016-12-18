@@ -112,6 +112,7 @@ namespace gmsuite {
         struct CountNumORF : public GenericOptions {
             string fn_sequence;             // sequence file
             string fn_mod;                  // input model file containing genetic code and other params
+            bool printSeq;                  // print sequences instead of number
         } countNumORF;
         
         static void addProcessOptions_ExtractUpstream(ExtractUpstreamUtility &options, po::options_description &processOptions);
