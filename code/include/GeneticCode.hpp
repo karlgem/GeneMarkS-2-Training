@@ -132,10 +132,16 @@ namespace gmsuite {
          */
         ttk_const_iterator end() const;
         
+        /**
+         * Get name of genetic code
+         */
+        string getName() const;
+        
         
     protected:
         
         gcode_t gcode;                                      /**< Genetic code value     */
+        string name;                                        /**< Genetic code name      */
         vector<string> starts;                              /**< List of start codons   */
         vector<string> stops;                               /**< List of stop codons    */
         map<string, char> translationTable;                 /**< Translation table of codons to amino-acids */

@@ -17,6 +17,7 @@ NumGeneticCode::NumGeneticCode(const GeneticCode &gcode, const CharNumConverter 
     
     // copy genetic code
     this->gcode = gcode.getGCode();
+    this->name = gcode.getName();
     
     // convert starts to numeric
     vector<string> stringStarts = gcode.getStarts();
@@ -71,4 +72,9 @@ vector<CharNumConverter::seq_t> NumGeneticCode::getStops() const {
 // Get the genetic code value that represents this object.
 NumGeneticCode::gcode_t NumGeneticCode::getGCode() const {
     return this->gcode;
+}
+
+
+string NumGeneticCode::getName() const {
+    return name;
 }

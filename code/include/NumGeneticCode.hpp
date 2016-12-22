@@ -90,12 +90,18 @@ namespace gmsuite {
          */
         gcode_t getGCode() const;
         
+        /**
+         * Get the code's name
+         */
+        string getName() const;
+        
         
     private:
         
         gcode_t gcode;                                      /**< Genetic code value         */
         vector<CharNumConverter::seq_t> starts;             /**< List of start codons       */
         vector<CharNumConverter::seq_t> stops;              /**< List of stop codons        */
+        string name;                                        /**< Genetic Code name          */
     };
 }
 

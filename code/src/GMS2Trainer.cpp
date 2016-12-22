@@ -712,7 +712,7 @@ void GMS2Trainer::toModFile(vector<pair<string, string> > &toMod) const {
     
     // name and genetic code
     toMod.push_back(mpair("NAME", "gms2-training"));
-    toMod.push_back(mpair("GCODE", "11"));
+    toMod.push_back(mpair("GCODE", this->numGeneticCode->getName()));
     toMod.push_back(mpair("NON_DURATION_DECAY", "150"));
     toMod.push_back(mpair("COD_DURATION_DECAY", "300"));
     toMod.push_back(mpair("COD_P_N", "0.4"));

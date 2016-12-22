@@ -21,6 +21,12 @@ GeneticCode::GeneticCode() {
 // constructor with gcode value
 GeneticCode::GeneticCode(gcode_t gcode) {
     this->gcode = gcode;
+    if (this->gcode == ELEVEN)
+        name = "11";
+    else if (this->gcode == FOUR)
+        name = "4";
+    else
+        name = "custom";
     
     initialize();
 }
@@ -28,6 +34,7 @@ GeneticCode::GeneticCode(gcode_t gcode) {
 
 GeneticCode::GeneticCode(const vector<pair<string, char> > &table, const vector<string> &starts, const vector<string> &stops) {
     gcode = CUSTOM;
+    name = "custom";
     
     // initialize custom genetic code
     throw logic_error("Custom genetic code feature not yet implemented.");
@@ -144,6 +151,9 @@ void GeneticCode::initialize11() {
 
 
 
+string GeneticCode::getName() const {
+    return name;
+}
 
 
 
