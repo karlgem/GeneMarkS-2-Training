@@ -23,6 +23,7 @@
 #include "PeriodicMarkov.hpp"
 #include "NonUniformMarkov.hpp"
 #include "ProkGeneStartModel.hpp"
+#include "OptionsGMS2Training.hpp"
 
 using std::map;
 using std::string;
@@ -113,7 +114,7 @@ namespace gmsuite {
         
         
         
-        void toModFile(vector<pair<string, string> > &toMod) const;
+        void toModFile(vector<pair<string, string> > &toMod, const OptionsGMS2Training &options) const;
         
     private:
         void deallocAllModels();

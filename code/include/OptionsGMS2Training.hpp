@@ -57,7 +57,14 @@ namespace gmsuite {
         size_t upstrLength;             /**< Length of upstream sequences for motif search */
         genome_class_t genomeClass;     /**< The genome's class */
         gcode_t geneticCode;            /**< Genetic code */
+        string fn_settings;             /**< Settings to place in output mod file */
         
+        // prediction parameters
+        double nonProbN;
+        double codProbN;
+        double nonDurationDecay;
+        double codDurationDecay;
+        NumSequence::size_type geneMinLengthPrediction;
         
         // GMS2 model parameters
         double pcounts;                             /**< Pseudocounts */

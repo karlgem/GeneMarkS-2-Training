@@ -12,7 +12,9 @@
 #include "ModelFile.hpp"
 #include "LabelFile.hpp"
 #include "SequenceFile.hpp"
+#include <iostream>
 
+using namespace std;
 using namespace gmsuite;
 
 // constructor initializing the module's options
@@ -46,10 +48,41 @@ void ModuleGMS2Training::run() {
     
     trainer.estimateParameters(sequence, labels);
     
-    // write parameters to file
+    // get parameters from training
     vector<pair<string, string> > toMod;
-    trainer.toModFile(toMod);
+    trainer.toModFile(toMod, options);
     
+    // write settings that were given in from the settings file
+    if (!options.fn_settings.empty()) {
+        ModelFile settingsMFile(options.fn_settings, ModelFile::READ);
+        
+        map<string, string> settings;
+        settingsMFile.read(settings);
+        
+        struct comp {
+            comp(std::string const& s) : _s(s) { }
+            bool operator () (std::pair<std::string, string> const& p) {
+                return (p.first == _s);
+            }
+            std::string _s;
+        };
+        
+        for (map<string, string>::const_iterator iter = settings.begin(); iter != settings.end(); iter++) {
+            // search for key
+            vector<pair<string, string> >::iterator key = std::find_if(toMod.begin(), toMod.end(), comp(iter->first));
+            
+            // if key not found, add it
+            if (key == toMod.end()) {
+                toMod.insert(toMod.begin()+1, pair<string, string>(iter->first, iter->second));       // add element to top of list
+            }
+            // if key found, replace value
+            else {
+                key->second = iter->second;
+            }
+        }
+    }
+    
+    // write parameters to file
     ModelFile modFile(options.fn_outmod, ModelFile::WRITE);
     modFile.write(toMod, "NATIVE");
     

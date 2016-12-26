@@ -122,6 +122,7 @@ bool OptionsGMS2Training::parse(int argc, const char *argv[]) {
         ("sc-margin", po::value<int>(&startContextMargin)->default_value(-15), "Margin for start context matrix")
         ("genetic-code", po::value<gcode_t>(&geneticCode)->default_value(GeneticCode::ELEVEN), "Genetic code")
         ("train-on-native-only", po::value<bool>(&trainOnNativeOnly)->default_value(false), "Train on native genes only")
+        ("fn-settings", po::value<string>(&fn_settings), "Settings to put in output model file.")
 //        // MFinder options
 //        ("pcounts-mfinder", po::value<double>(&optionsMFinder.pcounts)->default_value(1), "Pseudocounts for mfinder models")
 //        ("width", po::value<unsigned>(&optionsMFinder.width)->default_value(6), "Width of motif in MFinder")
@@ -130,6 +131,17 @@ bool OptionsGMS2Training::parse(int argc, const char *argv[]) {
 //        ("align", po::value<string>(&optionsMFinder.align)->default_value("none"), "Set to left or right to allow use of spacer distribution in mfinder")
 //        ("tries", po::value<unsigned>(&optionsMFinder.tries)->default_value(10), "Number of tries in mfinder")
         ;
+        
+        po::options_description prediction("Prediction Parameters");
+        prediction.add_options()
+        ("NON_P_N", po::value<double>(&nonProbN)->default_value(0.6), "Probability for N value in non-coding region")
+        ("COD_P_N", po::value<double>(&codProbN)->default_value(0.4), "Probability for N value in coding region")
+        ("NON_DURATION_DECAY", po::value<double>(&nonDurationDecay)->default_value(150), "Duration decay for non-coding region")
+        ("COD_DURATION_DECAY", po::value<double>(&codDurationDecay)->default_value(300), "Duration decay for coding region")
+        ("GENE_MIN_LENGTH", po::value<NumSequence::size_type>(&geneMinLengthPrediction)->default_value(89), "Minimum length for genes in prediction step")
+        ;
+        
+        config.add(prediction);
         
         // mfinder options
         po::options_description mfinder("Motif Finder");
@@ -220,7 +232,20 @@ void OptionsGMS2Training::addProcessOptions(OptionsGMS2Training &options, po::op
     ("sc-margin", po::value<int>(&options.startContextMargin)->default_value(-15), "Margin for start context matrix")
     ("genetic-code", po::value<gcode_t>(&options.geneticCode)->default_value(GeneticCode::ELEVEN), "Genetic code")
     ("train-on-native-only", po::value<bool>(&options.trainOnNativeOnly)->default_value(false), "Train on native genes only")
+    ("fn-settings", po::value<string>(&options.fn_settings), "Settings to put in output model file.")
     ;
+    
+    
+    po::options_description prediction("Prediction Parameters");
+    prediction.add_options()
+    ("NON_P_N", po::value<double>(&options.nonProbN)->default_value(0.6), "Probability for N value in non-coding region")
+    ("COD_P_N", po::value<double>(&options.codProbN)->default_value(0.4), "Probability for N value in coding region")
+    ("NON_DURATION_DECAY", po::value<double>(&options.nonDurationDecay)->default_value(150), "Duration decay for non-coding region")
+    ("COD_DURATION_DECAY", po::value<double>(&options.codDurationDecay)->default_value(300), "Duration decay for coding region")
+    ("GENE_MIN_LENGTH", po::value<NumSequence::size_type>(&options.geneMinLengthPrediction)->default_value(89), "Minimum length for genes in prediction step")
+    ;
+    
+    processOptions.add(prediction);
     
     // mfinder options
     po::options_description mfinder("Motif Finder");
