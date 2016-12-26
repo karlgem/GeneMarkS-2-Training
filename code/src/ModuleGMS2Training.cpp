@@ -59,17 +59,13 @@ void ModuleGMS2Training::run() {
         map<string, string> settings;
         settingsMFile.read(settings);
         
-        struct comp {
-            comp(std::string const& s) : _s(s) { }
-            bool operator () (std::pair<std::string, string> const& p) {
-                return (p.first == _s);
-            }
-            std::string _s;
-        };
-        
         for (map<string, string>::const_iterator iter = settings.begin(); iter != settings.end(); iter++) {
             // search for key
-            vector<pair<string, string> >::iterator key = std::find_if(toMod.begin(), toMod.end(), comp(iter->first));
+            vector<pair<string, string> >::iterator key;
+            for (key = toMod.begin(); key != toMod.end(); key++) {
+                if (key->first == iter->first)      // if key found
+                    break;
+            }
             
             // if key not found, add it
             if (key == toMod.end()) {
