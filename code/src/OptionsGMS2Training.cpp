@@ -132,6 +132,17 @@ bool OptionsGMS2Training::parse(int argc, const char *argv[]) {
 //        ("tries", po::value<unsigned>(&optionsMFinder.tries)->default_value(10), "Number of tries in mfinder")
         ;
         
+        po::options_description prediction("Prediction Parameters");
+        prediction.add_options()
+        ("NON_P_N", po::value<double>(&nonProbN)->default_value(0.6), "Probability for N value in non-coding region")
+        ("COD_P_N", po::value<double>(&codProbN)->default_value(0.4), "Probability for N value in coding region")
+        ("NON_DURATION_DECAY", po::value<double>(&nonDurationDecay)->default_value(150), "Duration decay for non-coding region")
+        ("COD_DURATION_DECAY", po::value<double>(&codDurationDecay)->default_value(300), "Duration decay for coding region")
+        ("GENE_MIN_LENGTH", po::value<NumSequence::size_type>(&geneMinLengthPrediction)->default_value(89), "Minimum length for genes in prediction step")
+        ;
+        
+        config.add(prediction);
+        
         // mfinder options
         po::options_description mfinder("Motif Finder");
         OptionsMFinder::addProcessOptions(optionsMFinder, mfinder);
@@ -223,6 +234,18 @@ void OptionsGMS2Training::addProcessOptions(OptionsGMS2Training &options, po::op
     ("train-on-native-only", po::value<bool>(&options.trainOnNativeOnly)->default_value(false), "Train on native genes only")
     ("fn-settings", po::value<string>(&options.fn_settings), "Settings to put in output model file.")
     ;
+    
+    
+    po::options_description prediction("Prediction Parameters");
+    prediction.add_options()
+    ("NON_P_N", po::value<double>(&options.nonProbN)->default_value(0.6), "Probability for N value in non-coding region")
+    ("COD_P_N", po::value<double>(&options.codProbN)->default_value(0.4), "Probability for N value in coding region")
+    ("NON_DURATION_DECAY", po::value<double>(&options.nonDurationDecay)->default_value(150), "Duration decay for non-coding region")
+    ("COD_DURATION_DECAY", po::value<double>(&options.codDurationDecay)->default_value(300), "Duration decay for coding region")
+    ("GENE_MIN_LENGTH", po::value<NumSequence::size_type>(&options.geneMinLengthPrediction)->default_value(89), "Minimum length for genes in prediction step")
+    ;
+    
+    processOptions.add(prediction);
     
     // mfinder options
     po::options_description mfinder("Motif Finder");

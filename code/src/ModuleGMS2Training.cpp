@@ -50,7 +50,7 @@ void ModuleGMS2Training::run() {
     
     // get parameters from training
     vector<pair<string, string> > toMod;
-    trainer.toModFile(toMod);
+    trainer.toModFile(toMod, options);
     
     // write settings that were given in from the settings file
     if (!options.fn_settings.empty()) {

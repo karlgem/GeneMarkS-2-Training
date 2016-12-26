@@ -18,6 +18,7 @@
 #include "SequenceParser.hpp"
 #include "CodingCounts.hpp"
 #include <boost/lexical_cast.hpp>
+#include "OptionsGMS2Training.hpp"
 
 using namespace std;
 using namespace gmsuite;
@@ -706,18 +707,18 @@ void codonFrequencyToMod(const map<CharNumConverter::seq_t, double> &codons, con
 }
 
 
-void GMS2Trainer::toModFile(vector<pair<string, string> > &toMod) const {
+void GMS2Trainer::toModFile(vector<pair<string, string> > &toMod, const OptionsGMS2Training &options) const {
     
     typedef pair<string, string> mpair;
     
     // name and genetic code
     toMod.push_back(mpair("NAME", "gms2-training"));
     toMod.push_back(mpair("GCODE", this->numGeneticCode->getName()));
-    toMod.push_back(mpair("NON_DURATION_DECAY", "150"));
-    toMod.push_back(mpair("COD_DURATION_DECAY", "300"));
-    toMod.push_back(mpair("COD_P_N", "0.4"));
-    toMod.push_back(mpair("NON_P_N", "0.6"));
-    toMod.push_back(mpair("GENE_MIN_LENGTH", "89"));
+    toMod.push_back(mpair("NON_DURATION_DECAY", boost::lexical_cast<string>(options.nonDurationDecay)));
+    toMod.push_back(mpair("COD_DURATION_DECAY", boost::lexical_cast<string>(options.codDurationDecay)));
+    toMod.push_back(mpair("COD_P_N", boost::lexical_cast<string>(options.codProbN)));
+    toMod.push_back(mpair("NON_P_N", boost::lexical_cast<string>(options.nonProbN)));
+    toMod.push_back(mpair("GENE_MIN_LENGTH", boost::lexical_cast<string>(options.geneMinLengthPrediction)));
     
     
     // add start/stop codon probabilities
