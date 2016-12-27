@@ -181,6 +181,24 @@ bool OptionsGMS2Training::parse(int argc, const char *argv[]) {
                   positional(pos).                              // specify which are positional
                   run(),                                        // parse options
                   vm);                                          // specify storage container
+        if (vm.count("config") > 0) {
+            config_fnames = vm["config"].as<std::vector<std::string> >();
+
+        
+            for (size_t n = 0; n < config_fnames.size(); n++) {
+                std::ifstream file(config_fnames[n].c_str());
+                
+                if(file.fail())
+                {
+                    std::cerr << "Error opening config file: " << config_fnames[n] << std::endl;
+                    return false;
+                }
+                
+                po::store(po::parse_config_file(file, config_file_options), vm);
+                file.close();
+            }
+        }
+
         
         // if help specified, print usage message and quit
         if (vm.count("help")) {
