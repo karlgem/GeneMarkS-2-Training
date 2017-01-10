@@ -12,11 +12,12 @@
 using namespace std;
 using namespace gmsuite;
 
-Label::Label(size_t left, size_t right, strand_t strand, string geneClass) {
+Label::Label(size_t left, size_t right, strand_t strand, string geneClass, string meta) {
     this->left = left;
     this->right = right;
     this->strand = strand;
     this->geneClass = geneClass;
+    this->meta = meta;
 }
 
 
