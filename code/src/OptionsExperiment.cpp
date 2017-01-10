@@ -49,7 +49,7 @@ OptionsExperiment::OptionsExperiment(string mode) : Options(mode) {
 bool OptionsExperiment::parse(int argc, const char **argv) {
     try {
         
-        GenericOptions genericOptions;
+//        GenericOptions genericOptions;
         
         // Group of options allowed only on command line
         po::options_description generic("General Options");
@@ -263,7 +263,7 @@ void OptionsExperiment::addProcessOptions_ScoreStarts(ScoreStarts &options, po::
 }
 
 void OptionsExperiment::addProcessOptions_MatchRBSTo16SOptions(MatchRBSTo16S &options, po::options_description &processOptions) {
-    Options::addProcessOptions_GenericOptions(options, processOptions);
+//    Options::addProcessOptions_GenericOptions(options, processOptions);
     processOptions.add_options()
     ("match-to", po::value<string>(&options.matchTo)->required(), "Sequence to match to.")
     ("fnlabels", po::value<string>(&options.fnlabels)->required(), "File containing gene labels with predicted RBS.")

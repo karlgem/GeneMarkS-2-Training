@@ -893,17 +893,45 @@ void ModuleExperiment::runMatchRBSTo16S() {
     vector<Label*> labels;
     labelFile.read(labels);
     
-    // get RBS from labels
-    vector<NumSequence> rbsSeqs;
+    AlphabetDNA alph;
+    CharNumConverter cnc(&alph);
     
+    // get RBS from labels
+    vector<NumSequence> rbsSeqs (labels.size());
+    for (size_t n = 0; n < labels.size(); n++) {
+        if (labels[n]->meta.empty())
+            throw logic_error("Gene label should have RBS site.");
+        
+        Sequence seq(labels[n]->meta);
+        rbsSeqs[n] = NumSequence (seq, cnc);        // create numeric form of RBS
+    }
+    
+    // 16S tail query
+    Sequence strMatchSeq (expOptions.matchTo);
+    NumSequence matchSeq (strMatchSeq, cnc);
     
     // for each RBS, match to 16S tail
     size_t numMatches = 0;
     
+    std::pair<NumSequence::size_type, NumSequence::size_type> positionOfMatch;
+    
     for (size_t n = 0; n < rbsSeqs.size(); n++) {
+        NumSequence match = SequenceAlgorithms::longestMatchTo16S(matchSeq, rbsSeqs[n], positionOfMatch);
         
+        if (options.genericOptions.verbose) {
+            if (match.size() > 0)
+                cout << cnc.convert(rbsSeqs[n].begin(), rbsSeqs[n].end()) << "\t" << cnc.convert(match.begin(), match.end()) << "\t" << match.size() << "\t" << positionOfMatch.first << "\t" << positionOfMatch.second << endl;
+        }
+        
+        if (match.size() >= expOptions.min16SMatch)
+            numMatches++;
     }
     
+    // pritn number of labels and number of matched sequences
+    cout << labels.size() << "\t" << numMatches << endl;
+    
+    for (size_t n = 0; n < labels.size(); n++)
+        delete labels[n];
     
 }
 
