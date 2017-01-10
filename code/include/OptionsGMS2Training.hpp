@@ -58,7 +58,8 @@ namespace gmsuite {
         genome_class_t genomeClass;     /**< The genome's class */
         gcode_t geneticCode;            /**< Genetic code */
         string fn_settings;             /**< Settings to place in output mod file */
-        
+        bool runMotifSearch;            /**< Run motif search */
+
         // prediction parameters
         double nonProbN;
         double codProbN;

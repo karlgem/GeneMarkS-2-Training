@@ -123,6 +123,7 @@ bool OptionsGMS2Training::parse(int argc, const char *argv[]) {
         ("genetic-code", po::value<gcode_t>(&geneticCode)->default_value(GeneticCode::ELEVEN), "Genetic code")
         ("train-on-native-only", po::value<bool>(&trainOnNativeOnly)->default_value(false), "Train on native genes only")
         ("fn-settings", po::value<string>(&fn_settings), "Settings to put in output model file.")
+        ("run-motif-search", po::value<bool>(&runMotifSearch)->default_value(true), "Enable/disable motif search.")
 //        // MFinder options
 //        ("pcounts-mfinder", po::value<double>(&optionsMFinder.pcounts)->default_value(1), "Pseudocounts for mfinder models")
 //        ("width", po::value<unsigned>(&optionsMFinder.width)->default_value(6), "Width of motif in MFinder")
@@ -251,6 +252,7 @@ void OptionsGMS2Training::addProcessOptions(OptionsGMS2Training &options, po::op
     ("genetic-code", po::value<gcode_t>(&options.geneticCode)->default_value(GeneticCode::ELEVEN), "Genetic code")
     ("train-on-native-only", po::value<bool>(&options.trainOnNativeOnly)->default_value(false), "Train on native genes only")
     ("fn-settings", po::value<string>(&options.fn_settings), "Settings to put in output model file.")
+    ("run-motif-search", po::value<bool>(&options.runMotifSearch)->default_value(true), "Enable/disable motif search.")
     ;
     
     

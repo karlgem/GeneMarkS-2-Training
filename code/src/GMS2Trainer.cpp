@@ -83,7 +83,8 @@ GMS2Trainer::GMS2Trainer(unsigned pcounts,
                          const NumSequence::size_type MIN_GENE_LEN,
                          const NumGeneticCode &numGenCode,
                          int scMargin,
-                         bool trainOnNative) {
+                         bool trainOnNative,
+                         bool runMotifSearch) {
     
     this->pcounts = pcounts;
     this->codingOrder = codingOrder;
@@ -98,6 +99,7 @@ GMS2Trainer::GMS2Trainer(unsigned pcounts,
     this->numGeneticCode = &numGenCode;
     this->scMargin = scMargin;
     this->trainOnNative = trainOnNative;
+    this->runMotifSearch = runMotifSearch;
     
     // public variables for models
     noncoding = NULL;
@@ -667,8 +669,10 @@ void GMS2Trainer::estimateParameters(const NumSequence &sequence, const vector<g
     estimateParametersStartContext(sequence, labels);
     
     // estimate parameters for motif models
-    useMotif = useCoding;
-    estimateParametersMotifModel(sequence, labels);
+    if (runMotifSearch) {
+        useMotif = useCoding;
+        estimateParametersMotifModel(sequence, labels);
+    }
 }
 
 
