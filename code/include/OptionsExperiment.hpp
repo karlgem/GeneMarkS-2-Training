@@ -31,7 +31,8 @@ namespace gmsuite {
             BUILD_START_MODELS,
             BUILD_START_MODELS2,
             BUILD_START_MODELS3,
-            SCORE_STARTS
+            SCORE_STARTS,
+            MATCH_RBS_TO_16S
         }
         experiment_t;
         
@@ -124,6 +125,14 @@ namespace gmsuite {
         scoreStarts;
         
         
+        // match RBS to 16S
+        struct MatchRBSTo16S : public GenericOptions {
+            string fnlabels;                    // file containing labels and RBS sequence
+            string matchTo;                     // 16S sequence to be matched to
+            unsigned min16SMatch;               // the minimum accepted match length with 16S tail
+        }
+        matchRBSTo16S;
+        
         
         /**********************************************\
          *              Option Processing             *
@@ -134,6 +143,7 @@ namespace gmsuite {
         static void addProcessOptions_BuildStartModelsOptions(BuildStartModelsOptions &options, po::options_description &processOptions);
         static void addProcessOptions_BuildStartModels2Options(BuildStartModels2Options &options, po::options_description &processOptions);
         static void addProcessOptions_BuildStartModels3Options(BuildStartModels3Options &options, po::options_description &processOptions);
+        static void addProcessOptions_MatchRBSTo16SOptions(MatchRBSTo16S &options, po::options_description &processOptions);
         
         static void addProcessOptions_ScoreStarts(ScoreStarts &options, po::options_description &processOptions);
         

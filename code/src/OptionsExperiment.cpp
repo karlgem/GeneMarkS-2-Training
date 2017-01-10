@@ -18,6 +18,7 @@ using namespace gmsuite;
 #define STR_BUILD_START_MODELS2     "build-start-models2"
 #define STR_BUILD_START_MODELS3     "build-start-models3"
 #define STR_SCORE_STARTS            "score-starts"
+#define STR_MATCH_RBS_TO_16S        "match-rbs-to-16s"
 
 namespace gmsuite {
     // convert string to experiment_t
@@ -31,6 +32,7 @@ namespace gmsuite {
         else if (token == STR_BUILD_START_MODELS2)      unit = OptionsExperiment::BUILD_START_MODELS2;
         else if (token == STR_BUILD_START_MODELS3)      unit = OptionsExperiment::BUILD_START_MODELS3;
         else if (token == STR_SCORE_STARTS)             unit = OptionsExperiment::SCORE_STARTS;
+        else if (token == STR_MATCH_RBS_TO_16S)         unit = OptionsExperiment::MATCH_RBS_TO_16S;
         else
             throw boost::program_options::invalid_option_value(token);
         
@@ -132,6 +134,10 @@ bool OptionsExperiment::parse(int argc, const char **argv) {
         // Experiment: score starts
         if (experiment == SCORE_STARTS){
             addProcessOptions_ScoreStarts(scoreStarts, expDesc);
+        }
+        // Experience: match rbs to 16s
+        if (experiment == MATCH_RBS_TO_16S) {
+            addProcessOptions_MatchRBSTo16SOptions(matchRBSTo16S, expDesc);
         }
         
         cmdline_options.add(expDesc);
@@ -256,5 +262,13 @@ void OptionsExperiment::addProcessOptions_ScoreStarts(ScoreStarts &options, po::
     
 }
 
-
+void OptionsExperiment::addProcessOptions_MatchRBSTo16SOptions(MatchRBSTo16S &options, po::options_description &processOptions) {
+    Options::addProcessOptions_GenericOptions(options, processOptions);
+    processOptions.add_options()
+    ("match-to", po::value<string>(&options.matchTo)->required(), "Sequence to match to.")
+    ("fnlabels", po::value<string>(&options.fnlabels)->required(), "File containing gene labels with predicted RBS.")
+    ("min-match", po::value<unsigned>(&options.min16SMatch)->default_value(4), "Minimum number of consecutively matched nucleotides for a match to be considered as a match.")
+    ;
+    
+}
 

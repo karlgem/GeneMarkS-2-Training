@@ -53,6 +53,8 @@ void ModuleExperiment::run() {
         runBuildStartModels3();
     else if (options.experiment == OptionsExperiment::SCORE_STARTS)
         runScoreStarts();
+    else if (options.experiment == OptionsExperiment::MATCH_RBS_TO_16S)
+        runMatchRBSTo16S();
     
 }
 
@@ -881,6 +883,29 @@ void ModuleExperiment::runScoreStarts() {
 
 
 
+
+void ModuleExperiment::runMatchRBSTo16S() {
+    
+    OptionsExperiment::MatchRBSTo16S expOptions = options.matchRBSTo16S;
+    
+    // read label file
+    LabelFile labelFile (expOptions.fnlabels, LabelFile::READ);
+    vector<Label*> labels;
+    labelFile.read(labels);
+    
+    // get RBS from labels
+    vector<NumSequence> rbsSeqs;
+    
+    
+    // for each RBS, match to 16S tail
+    size_t numMatches = 0;
+    
+    for (size_t n = 0; n < rbsSeqs.size(); n++) {
+        
+    }
+    
+    
+}
 
 
 
