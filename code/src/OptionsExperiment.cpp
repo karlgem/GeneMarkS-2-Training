@@ -270,6 +270,7 @@ void OptionsExperiment::addProcessOptions_MatchRBSTo16SOptions(MatchRBSTo16S &op
     ("match-to", po::value<string>(&options.matchTo)->required(), "Sequence to match to.")
     ("fnlabels", po::value<string>(&options.fnlabels)->required(), "File containing gene labels with predicted RBS.")
     ("min-match", po::value<unsigned>(&options.min16SMatch)->default_value(4), "Minimum number of consecutively matched nucleotides for a match to be considered as a match.")
+    ("allow-ag-sub", po::bool_switch(&options.allowAGSubstitution)->default_value(false), "Allow G to be substituted for A when matching to 16S tail")
     ;
     
 }

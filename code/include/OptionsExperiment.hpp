@@ -133,6 +133,7 @@ namespace gmsuite {
             string fnlabels;                    // file containing labels and RBS sequence
             string matchTo;                     // 16S sequence to be matched to
             unsigned min16SMatch;               // the minimum accepted match length with 16S tail
+            bool allowAGSubstitution;       // whether A and G can be substituted while matching
         }
         matchRBSTo16S;
         

@@ -914,9 +914,12 @@ void ModuleExperiment::runMatchRBSTo16S() {
     size_t numMatches = 0;
     
     std::pair<NumSequence::size_type, NumSequence::size_type> positionOfMatch;
+    vector<pair<NumSequence::num_t, NumSequence::num_t> > substitutions;
+    if (expOptions.allowAGSubstitution)
+        substitutions.push_back(pair<NumSequence::num_t, NumSequence::num_t> (cnc.convert('A'), cnc.convert('G')));
     
     for (size_t n = 0; n < rbsSeqs.size(); n++) {
-        NumSequence match = SequenceAlgorithms::longestMatchTo16S(matchSeq, rbsSeqs[n], positionOfMatch);
+        NumSequence match = SequenceAlgorithms::longestMatchTo16S(matchSeq, rbsSeqs[n], positionOfMatch, substitutions);
         
         if (options.genericOptions.verbose) {
             if (match.size() > 0)
