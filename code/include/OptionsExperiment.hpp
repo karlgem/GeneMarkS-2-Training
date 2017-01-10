@@ -32,7 +32,8 @@ namespace gmsuite {
             BUILD_START_MODELS2,
             BUILD_START_MODELS3,
             SCORE_STARTS,
-            MATCH_RBS_TO_16S
+            MATCH_RBS_TO_16S,
+            SCORE_LABELED_STARTS
         }
         experiment_t;
         
@@ -135,6 +136,11 @@ namespace gmsuite {
         }
         matchRBSTo16S;
         
+        struct ScoreLabeledStarts : public GenExtractUpstreamsOptions {
+            string fnmod;
+        }
+        scoreLabeledStarts;
+        
         
         /**********************************************\
          *              Option Processing             *
@@ -148,6 +154,7 @@ namespace gmsuite {
         static void addProcessOptions_MatchRBSTo16SOptions(MatchRBSTo16S &options, po::options_description &processOptions);
         
         static void addProcessOptions_ScoreStarts(ScoreStarts &options, po::options_description &processOptions);
+        static void addProcessOptions_ScoreLabeledStarts(ScoreLabeledStarts &options, po::options_description &processOptions);
         
         
         

@@ -19,6 +19,7 @@ using namespace gmsuite;
 #define STR_BUILD_START_MODELS3     "build-start-models3"
 #define STR_SCORE_STARTS            "score-starts"
 #define STR_MATCH_RBS_TO_16S        "match-rbs-to-16s"
+#define STR_SCORE_LABELED_STARTS    "score-labeled-starts"
 
 namespace gmsuite {
     // convert string to experiment_t
@@ -33,6 +34,7 @@ namespace gmsuite {
         else if (token == STR_BUILD_START_MODELS3)      unit = OptionsExperiment::BUILD_START_MODELS3;
         else if (token == STR_SCORE_STARTS)             unit = OptionsExperiment::SCORE_STARTS;
         else if (token == STR_MATCH_RBS_TO_16S)         unit = OptionsExperiment::MATCH_RBS_TO_16S;
+        else if (token == STR_SCORE_LABELED_STARTS)     unit = OptionsExperiment::SCORE_LABELED_STARTS;
         else
             throw boost::program_options::invalid_option_value(token);
         
@@ -272,3 +274,10 @@ void OptionsExperiment::addProcessOptions_MatchRBSTo16SOptions(MatchRBSTo16S &op
     
 }
 
+
+void OptionsExperiment::addProcessOptions_ScoreLabeledStarts(ScoreLabeledStarts &options, po::options_description &processOptions) {
+    Options::addProcessOptions_GenExtractUpstreamsOptions(options, processOptions);
+    processOptions.add_options()
+    ("fnmod", po::value<string>(&options.fnmod)->required(), "Name of GMS2 mod file containing RBS model.")
+    ;
+}
