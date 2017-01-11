@@ -896,11 +896,15 @@ void ModuleExperiment::runMatchRBSTo16S() {
     AlphabetDNA alph;
     CharNumConverter cnc(&alph);
     
+    size_t numOfRBS = 0;
+
     // get RBS from labels
     vector<NumSequence> rbsSeqs (labels.size());
     for (size_t n = 0; n < labels.size(); n++) {
         if (labels[n]->meta.empty())
-            throw logic_error("Gene label should have RBS site.");
+            continue;
+            //throw logic_error("Gene label should have RBS site.");
+        numOfRBS++;
         
         Sequence seq(labels[n]->meta);
         rbsSeqs[n] = NumSequence (seq, cnc);        // create numeric form of RBS
@@ -931,7 +935,7 @@ void ModuleExperiment::runMatchRBSTo16S() {
     }
     
     // pritn number of labels and number of matched sequences
-    cout << labels.size() << "\t" << numMatches << endl;
+    cout << numOfRBS << "\t" << numMatches << endl;
     
     for (size_t n = 0; n < labels.size(); n++)
         delete labels[n];

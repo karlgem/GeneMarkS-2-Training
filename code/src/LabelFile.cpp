@@ -141,7 +141,7 @@ Label* readNextLabelLST(const char*& current, const char* const end) {
     
     cmatch match;
     //                                  gene #     strand      left     right    length     class           meta
-    cregex expr = cregex::compile("^\\s*(\\d+)\\s+([+,-])\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+(\\S+)(?:\\s+(\\S+))?");
+    cregex expr = cregex::compile("^\\s*(\\d+)\\s+([+,-])\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+(\\S+)(?:\\s+([ACGT]+))?");
     
     Label* label = NULL;
     
