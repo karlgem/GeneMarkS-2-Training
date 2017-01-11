@@ -116,8 +116,8 @@ void LabelFile::read_lst(vector<Label*> &output) const {
             output.push_back(currlabel);
             foundFirstLabel = true;
         }
-        else if (foundFirstLabel)
-            throw runtime_error("Could not read label from file.");
+//        else if (foundFirstLabel)
+//            throw runtime_error("Could not read label from file.");
     }    
 }
 
@@ -141,7 +141,7 @@ Label* readNextLabelLST(const char*& current, const char* const end) {
     
     cmatch match;
     //                                  gene #     strand      left     right    length     class           meta
-    cregex expr = cregex::compile("^\\s*(\\d+)\\s+([+,-])\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+(\\S+)(?:\\s+([ACGT]+))?");
+    cregex expr = cregex::compile("^\\s*(\\d+)\\s+([+,-])\\s+(<?\\d+)\\s+(>?\\d+)\\s+(\\d+)\\s+(\\S+)(?:\\s+([ACGT]+))?");
     
     Label* label = NULL;
     
@@ -154,6 +154,10 @@ Label* readNextLabelLST(const char*& current, const char* const end) {
         char strandChar;
         string geneClass;
         string meta;
+        
+        // skip incomplete genes
+        if (match.str(3).find("<") != string::npos || match.str(4).find(">") != string::npos)
+            return NULL;
         
         left = (size_t) strtol(match.str(3).c_str(), NULL, 10)-1;
         right = (size_t) strtol(match.str(4).c_str(), NULL, 10)-1;
