@@ -14,6 +14,7 @@
 #include "PeriodicCounts.hpp"
 #include "CodingMarkov.hpp"
 #include "NonUniformCounts.hpp"
+#include "LabelsParser.hpp"
 #include "NonCodingCounts.hpp"
 #include "SequenceParser.hpp"
 #include "CodingCounts.hpp"
@@ -84,7 +85,8 @@ GMS2Trainer::GMS2Trainer(unsigned pcounts,
                          const NumGeneticCode &numGenCode,
                          int scMargin,
                          bool trainOnNative,
-                         bool runMotifSearch) {
+                         bool runMotifSearch,
+                         NumSequence::size_type upstrFGIO) {
     
     this->pcounts = pcounts;
     this->codingOrder = codingOrder;
@@ -100,6 +102,11 @@ GMS2Trainer::GMS2Trainer(unsigned pcounts,
     this->scMargin = scMargin;
     this->trainOnNative = trainOnNative;
     this->runMotifSearch = runMotifSearch;
+    this->UPSTR_LEN_FGIO = upstrFGIO;
+    
+    if (genomeClass == ProkGeneStartModel::C2) {
+        this->UPSTR_LEN_IG = upstreamLength;
+    }
     
     // public variables for models
     noncoding = NULL;
@@ -403,16 +410,59 @@ void GMS2Trainer::estimateParametersMotifModel(const NumSequence &sequence, cons
     }
     // if genome is class 2, search for weak RBS, and estimate upstream signature pwm
     else if (genomeClass == ProkGeneStartModel::C2) {
-        throw logic_error("Code not yet completed.");
+//        throw logic_error("Code not yet completed.");
+        estimateParametersMotifModel_Promoter(sequence, labels, use);
     }
     // if genome is class 3, search for RBS and promoter
     else {
         throw logic_error("Code not yet completed.");
-        estimateParametersMotifModel_Promoter(sequence, labels, use);
+        
     }
     
 }
 
+
+void runMotifFinder(const vector<NumSequence> &sequencesRaw, const OptionsMFinder &optionsMFinder, size_t upstreamLength, NonUniformMarkov* motifMarkov, UnivariatePDF* motifSpacer) {
+    
+    AlphabetDNA alph;
+    CharNumConverter cnc(&alph);
+    NumAlphabetDNA numAlph(alph, cnc);
+    
+    vector<NumSequence> upstreams;
+    for (size_t n = 0; n < sequencesRaw.size(); n++) {
+        if (!sequencesRaw[n].containsInvalid(numAlph))
+            upstreams.push_back(sequencesRaw[n]);
+    }
+    
+    MotifFinder::Builder b;
+    MotifFinder mfinder = b.build(optionsMFinder);
+    
+    
+    vector<NumSequence::size_type> positions;
+    mfinder.findMotifs(upstreams, positions);
+    
+    // build RBS model
+    NonUniformCounts motifCounts(optionsMFinder.motifOrder, optionsMFinder.width, numAlph);
+    for (size_t n = 0; n < upstreams.size(); n++) {
+        motifCounts.count(upstreams[n].begin()+positions[n], upstreams[n].begin()+positions[n]+optionsMFinder.width);
+    }
+    
+    motifMarkov = new NonUniformMarkov(optionsMFinder.motifOrder, optionsMFinder.width, numAlph);
+    motifMarkov->construct(&motifCounts, optionsMFinder.pcounts);
+    
+    // build spacer distribution
+    // build histogram from positions
+    vector<double> positionCounts (upstreamLength - optionsMFinder.width+1, 0);
+    for (size_t n = 0; n < positions.size(); n++) {
+        // FIXME account for LEFT alignment
+        // below is only for right
+        positionCounts[upstreamLength - optionsMFinder.width - positions[n]]++;        // increment position
+    }
+    
+    motifSpacer = new UnivariatePDF(positionCounts, false, optionsMFinder.pcounts);
+    
+    
+}
 
 vector<GeneStat> separateLabelsViaOperonStatus(const vector<Label*> &labels, unsigned thresh, unsigned threshNFIO) {
     
@@ -509,8 +559,66 @@ vector<GeneStat> separateLabelsViaOperonStatus(const vector<Label*> &labels, uns
 }
 
 
-
 void GMS2Trainer::estimateParametersMotifModel_Promoter(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use) {
+    
+    AlphabetDNA alph;
+    CharNumConverter cnc(&alph);
+    NumAlphabetDNA numAlph(alph, cnc);
+    
+    
+    // copy only usable labels
+    size_t numUse = labels.size();
+    if (use.size() > 0) {
+        numUse = 0;
+        for (size_t n = 0; n < labels.size(); n++)
+            if (use[n])
+                numUse++;
+    }
+    
+    vector<Label*> useLabels (numUse);
+    size_t pos = 0;
+    for (size_t n = 0; n < labels.size(); n++) {
+        if (use[n])
+            useLabels[pos++] = labels[n];
+    }
+    
+    // split labels into sets based on operon status
+    vector<LabelsParser::operon_status_t> operonStatuses;
+    LabelsParser::partitionBasedOnOperonStatus(useLabels, FGIO_DIST_THRESH, NFGIO_DIST_THRES, operonStatuses);
+    
+    size_t numFGIO = 0, numIG = 0, numUNK = 0;
+    for (size_t n = 0; n < operonStatuses.size(); n++) {
+        if (operonStatuses[n] == LabelsParser::FGIO)        numFGIO++;
+        else if (operonStatuses[n] == LabelsParser::NFGIO)  numIG++;
+        else
+            numUNK++;
+    }
+    
+    // get FGIO and IG upstreams and run motif search
+    vector<Label*> labelsFGIO (numFGIO);
+    vector<Label*> labelsIG (numIG);
+    size_t currFGIO = 0, currIG = 0;        // indices
+    
+    for (size_t n = 0; n < operonStatuses.size(); n++) {
+        if (operonStatuses[n] == LabelsParser::FGIO)        labelsFGIO[currFGIO++] = useLabels[n];
+        else if (operonStatuses[n] == LabelsParser::NFGIO)  labelsIG[currIG++] = useLabels[n];
+    }
+    
+    vector<NumSequence> upstreamsFGIO;
+    SequenceParser::extractUpstreamSequences(sequence, labelsFGIO, cnc, this->UPSTR_LEN_FGIO, upstreamsFGIO);
+    
+    vector<NumSequence> upstreamsIG;
+    SequenceParser::extractUpstreamSequences(sequence, labelsIG, cnc, this->UPSTR_LEN_IG, upstreamsIG);
+    
+//    void runMotifFinder(const vector<NumSequence> &sequencesRaw, OptionsMFinder &optionsMFinder, size_t upstreamLength, NonUniformMarkov* motifMarkov, UnivariatePDF* motifSpacer) {
+
+    runMotifFinder(upstreamsFGIO, *this->optionsMFinder, this->UPSTR_LEN_FGIO, this->promoter, this->promoterSpacer);
+    runMotifFinder(upstreamsIG, *this->optionsMFinder, this->UPSTR_LEN_IG, this->rbs, this->rbsSpacer);
+    
+}
+
+// DEPRECATED
+void GMS2Trainer::estimateParametersMotifModel_Promoter_DEPRECATED(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use) {
     
     // split sequences into first in operon and the rest
     

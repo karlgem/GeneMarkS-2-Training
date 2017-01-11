@@ -59,7 +59,8 @@ namespace gmsuite {
         gcode_t geneticCode;            /**< Genetic code */
         string fn_settings;             /**< Settings to place in output mod file */
         bool runMotifSearch;            /**< Run motif search */
-
+        size_t upstrLenFGIO;            /**< Upstream length for first-genes-in-operon */ 
+        
         // prediction parameters
         double nonProbN;
         double codProbN;
