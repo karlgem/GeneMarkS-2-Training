@@ -126,6 +126,9 @@ bool OptionsGMS2Training::parse(int argc, const char *argv[]) {
         ("run-motif-search", po::value<bool>(&runMotifSearch)->default_value(true), "Enable/disable motif search.")
         ("upstream-length-fgio", po::value<size_t>(&upstrLenFGIO)->default_value(40), "Upstream length of first-gene-in-operon.")
         ("width-archaea-promoter", po::value<unsigned>(&widthArchaeaPromoter)->default_value(12), "Width for promoters in Archaea.")
+        ("match-to", po::value<string>(&matchTo)->default_value("TAAGGAGGTGA"), "16S tail")
+        ("allow-ag-substitution", po::bool_switch(&allowAGSubstitution)->default_value(true), "Allow AG substitution.")
+        ("match-thresh", po::value<unsigned>(&matchThresh)->default_value(4), "Match threshold for 16S tail.")
 //        // MFinder options
 //        ("pcounts-mfinder", po::value<double>(&optionsMFinder.pcounts)->default_value(1), "Pseudocounts for mfinder models")
 //        ("width", po::value<unsigned>(&optionsMFinder.width)->default_value(6), "Width of motif in MFinder")

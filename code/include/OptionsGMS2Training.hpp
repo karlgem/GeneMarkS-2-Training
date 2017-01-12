@@ -67,6 +67,9 @@ namespace gmsuite {
         double nonDurationDecay;
         double codDurationDecay;
         NumSequence::size_type geneMinLengthPrediction;
+        string matchTo;
+        bool allowAGSubstitution;
+        unsigned matchThresh;
         
         // GMS2 model parameters
         double pcounts;                             /**< Pseudocounts */

@@ -20,6 +20,7 @@
 #include "CodingCounts.hpp"
 #include <boost/lexical_cast.hpp>
 #include "OptionsGMS2Training.hpp"
+#include "SequenceAlgorithms.hpp"
 
 using namespace std;
 using namespace gmsuite;
@@ -87,7 +88,10 @@ GMS2Trainer::GMS2Trainer(unsigned pcounts,
                          bool trainOnNative,
                          bool runMotifSearch,
                          NumSequence::size_type upstrFGIO,
-                         unsigned widthArchaeaPromoter) {
+                         unsigned widthArchaeaPromoter,
+                         string matchTo,
+                         bool allowAGSubstitution,
+                         unsigned matchThresh) {
     
     this->pcounts = pcounts;
     this->codingOrder = codingOrder;
@@ -105,6 +109,10 @@ GMS2Trainer::GMS2Trainer(unsigned pcounts,
     this->runMotifSearch = runMotifSearch;
     this->UPSTR_LEN_FGIO = upstrFGIO;
     this->widthArchaeaPromoter = widthArchaeaPromoter;
+    
+    this->matchTo = matchTo;
+    this->allowAGSubstitution = allowAGSubstitution;
+    this->matchThresh = matchThresh;
     
     this->FGIO_DIST_THRESH = 25;
     this->NFGIO_DIST_THRES = 22;
@@ -420,7 +428,8 @@ void GMS2Trainer::estimateParametersMotifModel(const NumSequence &sequence, cons
     }
     // if genome is class 3, search for RBS and promoter
     else {
-        throw logic_error("Code not yet completed.");
+        estimateParametersMotifModel_Tuberculosis(sequence, labels, use);
+//        throw logic_error("Code not yet completed.");
         
     }
     
@@ -621,6 +630,94 @@ void GMS2Trainer::estimateParametersMotifModel_Promoter(const NumSequence &seque
     
     runMotifFinder(upstreamsFGIO, optionMFinderFGIO, *this->alphabet, this->UPSTR_LEN_FGIO, this->promoter, this->promoterSpacer);
     runMotifFinder(upstreamsIG, *this->optionsMFinder, *this->alphabet, this->UPSTR_LEN_IG, this->rbs, this->rbsSpacer);
+    
+}
+
+
+
+void GMS2Trainer::estimateParametersMotifModel_Tuberculosis(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use) {
+    
+    AlphabetDNA alph;
+    CharNumConverter cnc(&alph);
+    NumAlphabetDNA numAlph(alph, cnc);
+    
+    
+    // copy only usable labels
+    size_t numUse = labels.size();
+    if (use.size() > 0) {
+        numUse = 0;
+        for (size_t n = 0; n < labels.size(); n++)
+            if (use[n])
+                numUse++;
+    }
+    
+    vector<Label*> useLabels (numUse);
+    size_t pos = 0;
+    for (size_t n = 0; n < labels.size(); n++) {
+        if (use[n])
+            useLabels[pos++] = labels[n];
+    }
+    
+    // split labels into sets based on operon status
+    vector<LabelsParser::operon_status_t> operonStatuses;
+    LabelsParser::partitionBasedOnOperonStatus(useLabels, FGIO_DIST_THRESH, NFGIO_DIST_THRES, operonStatuses);
+    
+    size_t numFGIO = 0, numIG = 0, numUNK = 0;
+    for (size_t n = 0; n < operonStatuses.size(); n++) {
+        if (operonStatuses[n] == LabelsParser::FGIO)        numFGIO++;
+        else if (operonStatuses[n] == LabelsParser::NFGIO)  numIG++;
+        else
+            numUNK++;
+    }
+    
+    // get FGIO and IG upstreams and run motif search
+    vector<Label*> labelsFGIO (numFGIO);
+    vector<Label*> labelsIG (numIG);
+    size_t currFGIO = 0, currIG = 0;        // indices
+    
+    for (size_t n = 0; n < operonStatuses.size(); n++) {
+        if (operonStatuses[n] == LabelsParser::FGIO)        labelsFGIO[currFGIO++] = useLabels[n];
+        else if (operonStatuses[n] == LabelsParser::NFGIO)  labelsIG[currIG++] = useLabels[n];
+    }
+    
+    vector<NumSequence> upstreamsRBS;
+    vector<NumSequence> upstreamsPromoter;
+    
+    // match FGIO to 16S tail
+    vector<NumSequence> upstreamsFGIO;
+    SequenceParser::extractUpstreamSequences(sequence, labelsFGIO, cnc, 20, upstreamsFGIO);
+    
+    Sequence strMatchSeq (matchTo);
+    NumSequence matchSeq (strMatchSeq, cnc);
+    
+    pair<NumSequence::size_type, NumSequence::size_type> positionsOfMatches;
+    vector<pair<NumSequence::num_t, NumSequence::num_t> > substitutions;
+    if (allowAGSubstitution)
+        substitutions.push_back(pair<NumSequence::num_t, NumSequence::num_t> (cnc.convert('A'), cnc.convert('G')));
+
+    
+    for (size_t n = 0; n < upstreamsFGIO.size(); n++) {
+        NumSequence match = SequenceAlgorithms::longestMatchTo16S(matchSeq, upstreamsFGIO[n], positionsOfMatches, substitutions);
+
+        // keep track of nonmatches
+        if (match.size() < matchThresh)
+            upstreamsPromoter.push_back(upstreamsFGIO[n]);
+        else
+            upstreamsRBS.push_back(upstreamsFGIO[n]);
+    }
+    
+    
+    vector<NumSequence> upstreamsIG;
+    SequenceParser::extractUpstreamSequences(sequence, labelsIG, cnc, this->UPSTR_LEN_IG, upstreamsIG);
+    for (size_t n = 0; n < upstreamsIG.size(); n++) {
+        upstreamsRBS.push_back(upstreamsIG[n]);
+    }
+    
+    
+    
+    runMotifFinder(upstreamsPromoter, *this->optionsMFinder, *this->alphabet, this->UPSTR_LEN_FGIO, this->promoter, this->promoterSpacer);
+    runMotifFinder(upstreamsRBS, *this->optionsMFinder, *this->alphabet, this->UPSTR_LEN_IG, this->rbs, this->rbsSpacer);
+    
     
 }
 

@@ -64,7 +64,10 @@ namespace gmsuite {
                     bool trainOnNative,
                     bool runMotifSearch=true,
                     NumSequence::size_type upstrFGIO = 40,
-                    unsigned widthArchaeaPromoter = 12);
+                    unsigned widthArchaeaPromoter = 12,
+                    string matchTo = "TAAGGAGGTGA",
+                    bool allowAGSubstitution = true,
+                    unsigned matchThresh = 4);
         
         ~GMS2Trainer();
         
@@ -80,6 +83,8 @@ namespace gmsuite {
         void estimateParametersStartStopCodons(const NumSequence &sequence, const vector<Label*> &labels, const vector<bool> &use = vector<bool>());
         
         void estimateParametersMotifModel_Promoter(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use = vector<bool>());
+        
+        void estimateParametersMotifModel_Tuberculosis(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use = vector<bool>());
         
         void estimateParametersMotifModel_Promoter_DEPRECATED(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use = vector<bool>());
         
@@ -105,6 +110,10 @@ namespace gmsuite {
         bool trainOnNative;
         bool runMotifSearch;
         unsigned widthArchaeaPromoter;
+        
+        string matchTo;
+        bool allowAGSubstitution;
+        unsigned matchThresh;
         
         // public variables for models
 //        NonUniformMarkov *motif;
