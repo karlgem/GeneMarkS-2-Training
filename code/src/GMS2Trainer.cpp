@@ -422,11 +422,10 @@ void GMS2Trainer::estimateParametersMotifModel(const NumSequence &sequence, cons
 }
 
 
-void runMotifFinder(const vector<NumSequence> &sequencesRaw, const OptionsMFinder &optionsMFinder, size_t upstreamLength, NonUniformMarkov* motifMarkov, UnivariatePDF* motifSpacer) {
+void runMotifFinder(const vector<NumSequence> &sequencesRaw, const OptionsMFinder &optionsMFinder, const NumAlphabetDNA  &numAlph, size_t upstreamLength, NonUniformMarkov* &motifMarkov, UnivariatePDF* &motifSpacer) {
     
-    AlphabetDNA alph;
-    CharNumConverter cnc(&alph);
-    NumAlphabetDNA numAlph(alph, cnc);
+//    AlphabetDNA alph;
+//    CharNumConverter cnc(&alph);
     
     vector<NumSequence> upstreams;
     for (size_t n = 0; n < sequencesRaw.size(); n++) {
@@ -612,8 +611,8 @@ void GMS2Trainer::estimateParametersMotifModel_Promoter(const NumSequence &seque
     
 //    void runMotifFinder(const vector<NumSequence> &sequencesRaw, OptionsMFinder &optionsMFinder, size_t upstreamLength, NonUniformMarkov* motifMarkov, UnivariatePDF* motifSpacer) {
 
-    runMotifFinder(upstreamsFGIO, *this->optionsMFinder, this->UPSTR_LEN_FGIO, this->promoter, this->promoterSpacer);
-    runMotifFinder(upstreamsIG, *this->optionsMFinder, this->UPSTR_LEN_IG, this->rbs, this->rbsSpacer);
+    runMotifFinder(upstreamsFGIO, *this->optionsMFinder, *this->alphabet, this->UPSTR_LEN_FGIO, this->promoter, this->promoterSpacer);
+    runMotifFinder(upstreamsIG, *this->optionsMFinder, *this->alphabet, this->UPSTR_LEN_IG, this->rbs, this->rbsSpacer);
     
 }
 
@@ -779,7 +778,7 @@ void GMS2Trainer::estimateParameters(const NumSequence &sequence, const vector<g
     // estimate parameters for motif models
     if (runMotifSearch) {
         useMotif = useCoding;
-        estimateParametersMotifModel(sequence, labels);
+        estimateParametersMotifModel(sequence, labels, useMotif);
     }
 }
 

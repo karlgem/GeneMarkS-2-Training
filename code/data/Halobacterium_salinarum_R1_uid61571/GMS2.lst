@@ -1,14 +1,5 @@
-GeneMark.hmm PROKARYOTIC (Version 3.4.4)
-Date: Sun Jan 24 19:45:30 2016
-Sequence file name: /storage2/gena/GMS2/new/benchmark/Halobacterium_salinarum_R1_uid61571/GMS2_auto/../NC_010364.fna
-Model file name: itr_9.mod
-RBS: false
-Model information: GeneMarkS_gcode_11
+SequenceID: 1
 
-FASTA definition line: gi|169235049|ref|NC_010364.1| Halobacterium salinarum R1, complete genome
-Predicted genes
-   Gene    Strand    LeftEnd    RightEnd       Gene     Class
-    #                                         Length
  1	+	248	1453	1206	1
  2	+	1450	2115	666	1
  3	+	2112	3254	1143	1
