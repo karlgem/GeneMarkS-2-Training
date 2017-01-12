@@ -117,7 +117,7 @@ GMS2Trainer::GMS2Trainer(unsigned pcounts,
     this->FGIO_DIST_THRESH = 25;
     this->NFGIO_DIST_THRES = 22;
     
-    if (genomeClass == ProkGeneStartModel::C2) {
+    if (genomeClass == ProkGeneStartModel::C2 || genomeClass == ProkGeneStartModel::C3) {
         this->UPSTR_LEN_IG = upstreamLength;
     }
     
@@ -683,9 +683,11 @@ void GMS2Trainer::estimateParametersMotifModel_Tuberculosis(const NumSequence &s
     vector<NumSequence> upstreamsRBS;
     vector<NumSequence> upstreamsPromoter;
     
+    size_t upstrLen = 20;
+    
     // match FGIO to 16S tail
     vector<NumSequence> upstreamsFGIO;
-    SequenceParser::extractUpstreamSequences(sequence, labelsFGIO, cnc, 20, upstreamsFGIO);
+    SequenceParser::extractUpstreamSequences(sequence, labelsFGIO, cnc, upstrLen, upstreamsFGIO);
     
     Sequence strMatchSeq (matchTo);
     NumSequence matchSeq (strMatchSeq, cnc);
@@ -708,15 +710,15 @@ void GMS2Trainer::estimateParametersMotifModel_Tuberculosis(const NumSequence &s
     
     
     vector<NumSequence> upstreamsIG;
-    SequenceParser::extractUpstreamSequences(sequence, labelsIG, cnc, this->UPSTR_LEN_IG, upstreamsIG);
+    SequenceParser::extractUpstreamSequences(sequence, labelsIG, cnc, upstrLen, upstreamsIG);
     for (size_t n = 0; n < upstreamsIG.size(); n++) {
         upstreamsRBS.push_back(upstreamsIG[n]);
     }
     
     
     
-    runMotifFinder(upstreamsPromoter, *this->optionsMFinder, *this->alphabet, this->UPSTR_LEN_FGIO, this->promoter, this->promoterSpacer);
-    runMotifFinder(upstreamsRBS, *this->optionsMFinder, *this->alphabet, this->UPSTR_LEN_IG, this->rbs, this->rbsSpacer);
+    runMotifFinder(upstreamsPromoter, *this->optionsMFinder, *this->alphabet, upstrLen, this->promoter, this->promoterSpacer);
+    runMotifFinder(upstreamsRBS, *this->optionsMFinder, *this->alphabet, upstrLen, this->rbs, this->rbsSpacer);
     
     
 }
