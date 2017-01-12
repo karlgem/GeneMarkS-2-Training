@@ -33,7 +33,8 @@ namespace gmsuite {
             BUILD_START_MODELS3,
             SCORE_STARTS,
             MATCH_RBS_TO_16S,
-            SCORE_LABELED_STARTS
+            SCORE_LABELED_STARTS,
+            PROMOTER_IS_VALID_FOR_ARCHAEA
         }
         experiment_t;
         
@@ -142,6 +143,14 @@ namespace gmsuite {
         }
         scoreLabeledStarts;
         
+        // get-start-model-type
+        struct PromoterIsValidForArchaea : public GenericOptions {
+            string fnmod;
+            size_t distanceThresh;
+            double scoreThresh;
+        }
+        promoterIsValidForArchaea;
+        
         
         /**********************************************\
          *              Option Processing             *
@@ -156,7 +165,7 @@ namespace gmsuite {
         
         static void addProcessOptions_ScoreStarts(ScoreStarts &options, po::options_description &processOptions);
         static void addProcessOptions_ScoreLabeledStarts(ScoreLabeledStarts &options, po::options_description &processOptions);
-        
+        static void addProcessOptions_PromoterIsValidForArchaea(PromoterIsValidForArchaea &options, po::options_description &processOptions);
         
         
         

@@ -20,6 +20,7 @@ using namespace gmsuite;
 #define STR_SCORE_STARTS            "score-starts"
 #define STR_MATCH_RBS_TO_16S        "match-rbs-to-16s"
 #define STR_SCORE_LABELED_STARTS    "score-labeled-starts"
+#define STR_PROMOTER_IS_VALID_FOR_ARCHAEA    "promoter-is-valid-for-archaea"
 
 namespace gmsuite {
     // convert string to experiment_t
@@ -35,6 +36,7 @@ namespace gmsuite {
         else if (token == STR_SCORE_STARTS)             unit = OptionsExperiment::SCORE_STARTS;
         else if (token == STR_MATCH_RBS_TO_16S)         unit = OptionsExperiment::MATCH_RBS_TO_16S;
         else if (token == STR_SCORE_LABELED_STARTS)     unit = OptionsExperiment::SCORE_LABELED_STARTS;
+        else if (token == STR_PROMOTER_IS_VALID_FOR_ARCHAEA)     unit = OptionsExperiment::PROMOTER_IS_VALID_FOR_ARCHAEA;
         else
             throw boost::program_options::invalid_option_value(token);
         
@@ -141,6 +143,9 @@ bool OptionsExperiment::parse(int argc, const char **argv) {
         if (experiment == MATCH_RBS_TO_16S) {
             addProcessOptions_MatchRBSTo16SOptions(matchRBSTo16S, expDesc);
         }
+        // Experiment: get start-model type
+        if (experiment == PROMOTER_IS_VALID_FOR_ARCHAEA)
+            addProcessOptions_PromoterIsValidForArchaea(promoterIsValidForArchaea, expDesc);
         
         cmdline_options.add(expDesc);
         
@@ -282,3 +287,23 @@ void OptionsExperiment::addProcessOptions_ScoreLabeledStarts(ScoreLabeledStarts 
     ("fnmod", po::value<string>(&options.fnmod)->required(), "Name of GMS2 mod file containing RBS model.")
     ;
 }
+
+
+
+
+void OptionsExperiment::addProcessOptions_PromoterIsValidForArchaea(PromoterIsValidForArchaea &options, po::options_description &processOptions) {
+    processOptions.add_options()
+    ("fnmod", po::value<string>(&options.fnmod)->required(), "Name of mod file containing RBS spacer.")
+    ("dist-thresh", po::value<size_t>(&options.distanceThresh)->default_value(22), "Distance threshold after which spacer indicates promoter.")
+    ("score-thresh", po::value<double>(&options.scoreThresh)->default_value(0.1), "Minimum score above which spacer is considered localized.")
+    ;
+}
+
+
+
+
+
+
+
+
+
