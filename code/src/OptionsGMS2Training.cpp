@@ -125,6 +125,7 @@ bool OptionsGMS2Training::parse(int argc, const char *argv[]) {
         ("fn-settings", po::value<string>(&fn_settings), "Settings to put in output model file.")
         ("run-motif-search", po::value<bool>(&runMotifSearch)->default_value(true), "Enable/disable motif search.")
         ("upstream-length-fgio", po::value<size_t>(&upstrLenFGIO)->default_value(40), "Upstream length of first-gene-in-operon.")
+        ("width-archaea-promoter", po::value<unsigned>(&widthArchaeaPromoter)->default_value(12), "Width for promoters in Archaea.")
 //        // MFinder options
 //        ("pcounts-mfinder", po::value<double>(&optionsMFinder.pcounts)->default_value(1), "Pseudocounts for mfinder models")
 //        ("width", po::value<unsigned>(&optionsMFinder.width)->default_value(6), "Width of motif in MFinder")
@@ -255,6 +256,7 @@ void OptionsGMS2Training::addProcessOptions(OptionsGMS2Training &options, po::op
     ("fn-settings", po::value<string>(&options.fn_settings), "Settings to put in output model file.")
     ("run-motif-search", po::value<bool>(&options.runMotifSearch)->default_value(true), "Enable/disable motif search.")
     ("upstream-length-fgio", po::value<size_t>(&options.upstrLenFGIO)->default_value(40), "Upstream length of first-gene-in-operon.")
+    ("width-archaea-promoter", po::value<unsigned>(&options.widthArchaeaPromoter)->default_value(12), "Width for promoters in Archaea.")
     ;
     
     

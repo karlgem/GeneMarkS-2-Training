@@ -63,7 +63,8 @@ namespace gmsuite {
                     int scMargin,
                     bool trainOnNative,
                     bool runMotifSearch=true,
-                    NumSequence::size_type upstrFGIO = 40);
+                    NumSequence::size_type upstrFGIO = 40,
+                    unsigned widthArchaeaPromoter = 12);
         
         ~GMS2Trainer();
         
@@ -103,6 +104,8 @@ namespace gmsuite {
         int scMargin;
         bool trainOnNative;
         bool runMotifSearch;
+        unsigned widthArchaeaPromoter;
+        
         // public variables for models
 //        NonUniformMarkov *motif;
         UniformMarkov *noncoding;

@@ -86,7 +86,8 @@ GMS2Trainer::GMS2Trainer(unsigned pcounts,
                          int scMargin,
                          bool trainOnNative,
                          bool runMotifSearch,
-                         NumSequence::size_type upstrFGIO) {
+                         NumSequence::size_type upstrFGIO,
+                         unsigned widthArchaeaPromoter) {
     
     this->pcounts = pcounts;
     this->codingOrder = codingOrder;
@@ -103,6 +104,7 @@ GMS2Trainer::GMS2Trainer(unsigned pcounts,
     this->trainOnNative = trainOnNative;
     this->runMotifSearch = runMotifSearch;
     this->UPSTR_LEN_FGIO = upstrFGIO;
+    this->widthArchaeaPromoter = widthArchaeaPromoter;
     
     if (genomeClass == ProkGeneStartModel::C2) {
         this->UPSTR_LEN_IG = upstreamLength;
@@ -611,7 +613,10 @@ void GMS2Trainer::estimateParametersMotifModel_Promoter(const NumSequence &seque
     
 //    void runMotifFinder(const vector<NumSequence> &sequencesRaw, OptionsMFinder &optionsMFinder, size_t upstreamLength, NonUniformMarkov* motifMarkov, UnivariatePDF* motifSpacer) {
 
-    runMotifFinder(upstreamsFGIO, *this->optionsMFinder, *this->alphabet, this->UPSTR_LEN_FGIO, this->promoter, this->promoterSpacer);
+    OptionsMFinder optionMFinderFGIO (*this->optionsMFinder);
+    optionMFinderFGIO.width = widthArchaeaPromoter;
+    
+    runMotifFinder(upstreamsFGIO, optionMFinderFGIO, *this->alphabet, this->UPSTR_LEN_FGIO, this->promoter, this->promoterSpacer);
     runMotifFinder(upstreamsIG, *this->optionsMFinder, *this->alphabet, this->UPSTR_LEN_IG, this->rbs, this->rbsSpacer);
     
 }

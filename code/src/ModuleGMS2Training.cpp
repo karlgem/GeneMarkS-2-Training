@@ -44,7 +44,7 @@ void ModuleGMS2Training::run() {
     
     
     // set up trainer
-    GMS2Trainer trainer (options.pcounts, options.codingOrder, options.noncodingOrder, options.startContextOrder, options.upstreamLength, options.startContextLength, options.genomeClass, options.optionsMFinder, numAlph, options.MIN_GENE_LEN, numGeneticCode, options.startContextMargin, options.trainOnNativeOnly, options.runMotifSearch);
+    GMS2Trainer trainer (options.pcounts, options.codingOrder, options.noncodingOrder, options.startContextOrder, options.upstreamLength, options.startContextLength, options.genomeClass, options.optionsMFinder, numAlph, options.MIN_GENE_LEN, numGeneticCode, options.startContextMargin, options.trainOnNativeOnly, options.runMotifSearch, options.upstrLenFGIO, options.widthArchaeaPromoter);
     
     trainer.estimateParameters(sequence, labels);
     
