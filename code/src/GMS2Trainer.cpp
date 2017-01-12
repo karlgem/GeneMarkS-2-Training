@@ -106,6 +106,9 @@ GMS2Trainer::GMS2Trainer(unsigned pcounts,
     this->UPSTR_LEN_FGIO = upstrFGIO;
     this->widthArchaeaPromoter = widthArchaeaPromoter;
     
+    this->FGIO_DIST_THRESH = 25;
+    this->NFGIO_DIST_THRES = 22;
+    
     if (genomeClass == ProkGeneStartModel::C2) {
         this->UPSTR_LEN_IG = upstreamLength;
     }
