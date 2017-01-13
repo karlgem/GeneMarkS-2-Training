@@ -697,13 +697,13 @@ void GMS2Trainer::estimateParametersMotifModel_Tuberculosis(const NumSequence &s
     if (allowAGSubstitution)
         substitutions.push_back(pair<NumSequence::num_t, NumSequence::num_t> (cnc.convert('A'), cnc.convert('G')));
 
-    
+    size_t skipFromStart = 3;
     for (size_t n = 0; n < upstreamsFGIO.size(); n++) {
         NumSequence match = SequenceAlgorithms::longestMatchTo16S(matchSeq, upstreamsFGIO[n], positionsOfMatches, substitutions);
 
         // keep track of nonmatches
         if (match.size() < matchThresh)
-            upstreamsPromoter.push_back(upstreamsFGIO[n]);
+            upstreamsPromoter.push_back(upstreamsFGIO[n].subseq(0, upstreamsFGIO[n].size() - skipFromStart));
         else
             upstreamsRBS.push_back(upstreamsFGIO[n]);
     }
@@ -717,8 +717,17 @@ void GMS2Trainer::estimateParametersMotifModel_Tuberculosis(const NumSequence &s
     
     
     
-    runMotifFinder(upstreamsPromoter, *this->optionsMFinder, *this->alphabet, upstrLen, this->promoter, this->promoterSpacer);
+    runMotifFinder(upstreamsPromoter, *this->optionsMFinder, *this->alphabet, upstrLen-skipFromStart, this->promoter, this->promoterSpacer);
     runMotifFinder(upstreamsRBS, *this->optionsMFinder, *this->alphabet, upstrLen, this->rbs, this->rbsSpacer);
+    
+    // shift probabilities
+    vector<double> extendedProbs (upstrLen, 0);
+    for (size_t n = 0; n < rbsSpacer->size(); n++) {
+        extendedProbs[n+skipFromStart] = (*rbsSpacer)[n];
+    }
+    
+    delete rbsSpacer;
+    rbsSpacer = new UnivariatePDF(extendedProbs);
     
     
 }
