@@ -721,7 +721,7 @@ void GMS2Trainer::estimateParametersMotifModel_Tuberculosis(const NumSequence &s
     runMotifFinder(upstreamsRBS, *this->optionsMFinder, *this->alphabet, upstrLen, this->rbs, this->rbsSpacer);
     
     // shift probabilities
-    vector<double> extendedProbs (upstrLen, 0);
+    vector<double> extendedProbs (promoterSpacer->size()+skipFromStart, 0);
     for (size_t n = 0; n < promoterSpacer->size(); n++) {
         extendedProbs[n+skipFromStart] = (*promoterSpacer)[n];
     }
