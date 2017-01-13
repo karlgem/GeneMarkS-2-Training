@@ -722,12 +722,12 @@ void GMS2Trainer::estimateParametersMotifModel_Tuberculosis(const NumSequence &s
     
     // shift probabilities
     vector<double> extendedProbs (upstrLen, 0);
-    for (size_t n = 0; n < rbsSpacer->size(); n++) {
-        extendedProbs[n+skipFromStart] = (*rbsSpacer)[n];
+    for (size_t n = 0; n < promoterSpacer->size(); n++) {
+        extendedProbs[n+skipFromStart] = (*promoterSpacer)[n];
     }
     
-    delete rbsSpacer;
-    rbsSpacer = new UnivariatePDF(extendedProbs);
+    delete promoterSpacer;
+    promoterSpacer = new UnivariatePDF(extendedProbs);
     
     
 }
