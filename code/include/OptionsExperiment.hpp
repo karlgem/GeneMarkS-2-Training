@@ -31,7 +31,10 @@ namespace gmsuite {
             BUILD_START_MODELS,
             BUILD_START_MODELS2,
             BUILD_START_MODELS3,
-            SCORE_STARTS
+            SCORE_STARTS,
+            MATCH_RBS_TO_16S,
+            SCORE_LABELED_STARTS,
+            PROMOTER_IS_VALID_FOR_ARCHAEA
         }
         experiment_t;
         
@@ -60,6 +63,8 @@ namespace gmsuite {
         /**********************************************\
          *          Experiment-based options          *
         \**********************************************/
+        
+        GenericOptions genericOptions;
         
         // match-seq-to-upstream options
         struct MatchSeqToUpstreamOptions : public GenExtractUpstreamsOptions {
@@ -124,6 +129,28 @@ namespace gmsuite {
         scoreStarts;
         
         
+        // match RBS to 16S
+        struct MatchRBSTo16S : public GenericOptions {
+            string fnlabels;                    // file containing labels and RBS sequence
+            string matchTo;                     // 16S sequence to be matched to
+            unsigned min16SMatch;               // the minimum accepted match length with 16S tail
+            bool allowAGSubstitution;       // whether A and G can be substituted while matching
+        }
+        matchRBSTo16S;
+        
+        struct ScoreLabeledStarts : public GenExtractUpstreamsOptions {
+            string fnmod;
+        }
+        scoreLabeledStarts;
+        
+        // get-start-model-type
+        struct PromoterIsValidForArchaea : public GenericOptions {
+            string fnmod;
+            size_t distanceThresh;
+            double scoreThresh;
+        }
+        promoterIsValidForArchaea;
+        
         
         /**********************************************\
          *              Option Processing             *
@@ -134,9 +161,11 @@ namespace gmsuite {
         static void addProcessOptions_BuildStartModelsOptions(BuildStartModelsOptions &options, po::options_description &processOptions);
         static void addProcessOptions_BuildStartModels2Options(BuildStartModels2Options &options, po::options_description &processOptions);
         static void addProcessOptions_BuildStartModels3Options(BuildStartModels3Options &options, po::options_description &processOptions);
+        static void addProcessOptions_MatchRBSTo16SOptions(MatchRBSTo16S &options, po::options_description &processOptions);
         
         static void addProcessOptions_ScoreStarts(ScoreStarts &options, po::options_description &processOptions);
-        
+        static void addProcessOptions_ScoreLabeledStarts(ScoreLabeledStarts &options, po::options_description &processOptions);
+        static void addProcessOptions_PromoterIsValidForArchaea(PromoterIsValidForArchaea &options, po::options_description &processOptions);
         
         
         

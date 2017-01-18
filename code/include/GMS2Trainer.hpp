@@ -61,7 +61,13 @@ namespace gmsuite {
                     const NumSequence::size_type MIN_GENE_LEN,
                     const NumGeneticCode &numGeneticCode,
                     int scMargin,
-                    bool trainOnNative);
+                    bool trainOnNative,
+                    bool runMotifSearch=true,
+                    NumSequence::size_type upstrFGIO = 40,
+                    unsigned widthArchaeaPromoter = 12,
+                    string matchTo = "TAAGGAGGTGA",
+                    bool allowAGSubstitution = true,
+                    unsigned matchThresh = 4);
         
         ~GMS2Trainer();
         
@@ -78,6 +84,10 @@ namespace gmsuite {
         
         void estimateParametersMotifModel_Promoter(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use = vector<bool>());
         
+        void estimateParametersMotifModel_Tuberculosis(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use = vector<bool>());
+        
+        void estimateParametersMotifModel_Promoter_DEPRECATED(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use = vector<bool>());
+        
         // parameters
         unsigned pcounts;
         unsigned codingOrder;
@@ -91,11 +101,20 @@ namespace gmsuite {
         const NumGeneticCode *numGeneticCode;
         NumSequence::size_type MIN_GENE_LEN;            // minimum gene length
         NumSequence::size_type MIN_UPSTR_LEN_FGIO;           // minimum upstream length for first-genes-in-operon
-        NumSequence::size_type UPSTR_LEN_NFGIO;
+        NumSequence::size_type UPSTR_LEN_NFGIO;         // deprecated
+        NumSequence::size_type UPSTR_LEN_IG;    
+        NumSequence::size_type UPSTR_LEN_FGIO;
         unsigned FGIO_DIST_THRESH;
         unsigned NFGIO_DIST_THRES;
         int scMargin;
         bool trainOnNative;
+        bool runMotifSearch;
+        unsigned widthArchaeaPromoter;
+        
+        string matchTo;
+        bool allowAGSubstitution;
+        unsigned matchThresh;
+        
         // public variables for models
 //        NonUniformMarkov *motif;
         UniformMarkov *noncoding;

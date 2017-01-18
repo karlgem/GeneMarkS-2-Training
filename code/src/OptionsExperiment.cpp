@@ -18,6 +18,9 @@ using namespace gmsuite;
 #define STR_BUILD_START_MODELS2     "build-start-models2"
 #define STR_BUILD_START_MODELS3     "build-start-models3"
 #define STR_SCORE_STARTS            "score-starts"
+#define STR_MATCH_RBS_TO_16S        "match-rbs-to-16s"
+#define STR_SCORE_LABELED_STARTS    "score-labeled-starts"
+#define STR_PROMOTER_IS_VALID_FOR_ARCHAEA    "promoter-is-valid-for-archaea"
 
 namespace gmsuite {
     // convert string to experiment_t
@@ -31,6 +34,9 @@ namespace gmsuite {
         else if (token == STR_BUILD_START_MODELS2)      unit = OptionsExperiment::BUILD_START_MODELS2;
         else if (token == STR_BUILD_START_MODELS3)      unit = OptionsExperiment::BUILD_START_MODELS3;
         else if (token == STR_SCORE_STARTS)             unit = OptionsExperiment::SCORE_STARTS;
+        else if (token == STR_MATCH_RBS_TO_16S)         unit = OptionsExperiment::MATCH_RBS_TO_16S;
+        else if (token == STR_SCORE_LABELED_STARTS)     unit = OptionsExperiment::SCORE_LABELED_STARTS;
+        else if (token == STR_PROMOTER_IS_VALID_FOR_ARCHAEA)     unit = OptionsExperiment::PROMOTER_IS_VALID_FOR_ARCHAEA;
         else
             throw boost::program_options::invalid_option_value(token);
         
@@ -47,7 +53,7 @@ OptionsExperiment::OptionsExperiment(string mode) : Options(mode) {
 bool OptionsExperiment::parse(int argc, const char **argv) {
     try {
         
-        GenericOptions genericOptions;
+//        GenericOptions genericOptions;
         
         // Group of options allowed only on command line
         po::options_description generic("General Options");
@@ -133,6 +139,13 @@ bool OptionsExperiment::parse(int argc, const char **argv) {
         if (experiment == SCORE_STARTS){
             addProcessOptions_ScoreStarts(scoreStarts, expDesc);
         }
+        // Experience: match rbs to 16s
+        if (experiment == MATCH_RBS_TO_16S) {
+            addProcessOptions_MatchRBSTo16SOptions(matchRBSTo16S, expDesc);
+        }
+        // Experiment: get start-model type
+        if (experiment == PROMOTER_IS_VALID_FOR_ARCHAEA)
+            addProcessOptions_PromoterIsValidForArchaea(promoterIsValidForArchaea, expDesc);
         
         cmdline_options.add(expDesc);
         
@@ -255,6 +268,42 @@ void OptionsExperiment::addProcessOptions_ScoreStarts(ScoreStarts &options, po::
     
     
 }
+
+void OptionsExperiment::addProcessOptions_MatchRBSTo16SOptions(MatchRBSTo16S &options, po::options_description &processOptions) {
+//    Options::addProcessOptions_GenericOptions(options, processOptions);
+    processOptions.add_options()
+    ("match-to", po::value<string>(&options.matchTo)->required(), "Sequence to match to.")
+    ("fnlabels", po::value<string>(&options.fnlabels)->required(), "File containing gene labels with predicted RBS.")
+    ("min-match", po::value<unsigned>(&options.min16SMatch)->default_value(4), "Minimum number of consecutively matched nucleotides for a match to be considered as a match.")
+    ("allow-ag-sub", po::bool_switch(&options.allowAGSubstitution)->default_value(false), "Allow G to be substituted for A when matching to 16S tail")
+    ;
+    
+}
+
+
+void OptionsExperiment::addProcessOptions_ScoreLabeledStarts(ScoreLabeledStarts &options, po::options_description &processOptions) {
+    Options::addProcessOptions_GenExtractUpstreamsOptions(options, processOptions);
+    processOptions.add_options()
+    ("fnmod", po::value<string>(&options.fnmod)->required(), "Name of GMS2 mod file containing RBS model.")
+    ;
+}
+
+
+
+
+void OptionsExperiment::addProcessOptions_PromoterIsValidForArchaea(PromoterIsValidForArchaea &options, po::options_description &processOptions) {
+    processOptions.add_options()
+    ("fnmod", po::value<string>(&options.fnmod)->required(), "Name of mod file containing RBS spacer.")
+    ("dist-thresh", po::value<size_t>(&options.distanceThresh)->default_value(22), "Distance threshold after which spacer indicates promoter.")
+    ("score-thresh", po::value<double>(&options.scoreThresh)->default_value(0.1), "Minimum score above which spacer is considered localized.")
+    ;
+}
+
+
+
+
+
+
 
 
 

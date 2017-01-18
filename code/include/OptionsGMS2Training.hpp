@@ -58,13 +58,18 @@ namespace gmsuite {
         genome_class_t genomeClass;     /**< The genome's class */
         gcode_t geneticCode;            /**< Genetic code */
         string fn_settings;             /**< Settings to place in output mod file */
-        
+        bool runMotifSearch;            /**< Run motif search */
+        size_t upstrLenFGIO;            /**< Upstream length for first-genes-in-operon */ 
+        unsigned widthArchaeaPromoter;
         // prediction parameters
         double nonProbN;
         double codProbN;
         double nonDurationDecay;
         double codDurationDecay;
         NumSequence::size_type geneMinLengthPrediction;
+        string matchTo;
+        bool allowAGSubstitution;
+        unsigned matchThresh;
         
         // GMS2 model parameters
         double pcounts;                             /**< Pseudocounts */

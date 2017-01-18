@@ -23,6 +23,7 @@
 #include "NumGeneticCode.hpp"
 #include "OldGMS2ModelFile.hpp"
 #include "NonCodingMarkov.hpp"
+#include "ModelFile.hpp"
 
 #include <algorithm>
 #include <iostream>
@@ -53,6 +54,10 @@ void ModuleExperiment::run() {
         runBuildStartModels3();
     else if (options.experiment == OptionsExperiment::SCORE_STARTS)
         runScoreStarts();
+    else if (options.experiment == OptionsExperiment::MATCH_RBS_TO_16S)
+        runMatchRBSTo16S();
+    else if (options.experiment == OptionsExperiment::PROMOTER_IS_VALID_FOR_ARCHAEA)
+        runPromoterIsValidForAchaea();
     
 }
 
@@ -882,12 +887,121 @@ void ModuleExperiment::runScoreStarts() {
 
 
 
+void ModuleExperiment::runMatchRBSTo16S() {
+    
+    OptionsExperiment::MatchRBSTo16S expOptions = options.matchRBSTo16S;
+    
+    // read label file
+    LabelFile labelFile (expOptions.fnlabels, LabelFile::READ);
+    vector<Label*> labels;
+    labelFile.read(labels);
+    
+    AlphabetDNA alph;
+    CharNumConverter cnc(&alph);
+    
+    size_t numOfRBS = 0;
+
+    // get RBS from labels
+    vector<NumSequence> rbsSeqs (labels.size());
+    for (size_t n = 0; n < labels.size(); n++) {
+        if (labels[n]->meta.empty())
+            continue;
+            //throw logic_error("Gene label should have RBS site.");
+        numOfRBS++;
+        
+        Sequence seq(labels[n]->meta);
+        rbsSeqs[n] = NumSequence (seq, cnc);        // create numeric form of RBS
+    }
+    
+    // 16S tail query
+    Sequence strMatchSeq (expOptions.matchTo);
+    NumSequence matchSeq (strMatchSeq, cnc);
+    
+    // for each RBS, match to 16S tail
+    size_t numMatches = 0;
+    
+    std::pair<NumSequence::size_type, NumSequence::size_type> positionOfMatch;
+    vector<pair<NumSequence::num_t, NumSequence::num_t> > substitutions;
+    if (expOptions.allowAGSubstitution)
+        substitutions.push_back(pair<NumSequence::num_t, NumSequence::num_t> (cnc.convert('A'), cnc.convert('G')));
+    
+    for (size_t n = 0; n < rbsSeqs.size(); n++) {
+        NumSequence match = SequenceAlgorithms::longestMatchTo16S(matchSeq, rbsSeqs[n], positionOfMatch, substitutions);
+        
+        if (options.genericOptions.verbose) {
+            if (match.size() > 0)
+                cout << cnc.convert(rbsSeqs[n].begin(), rbsSeqs[n].end()) << "\t" << cnc.convert(match.begin(), match.end()) << "\t" << match.size() << "\t" << positionOfMatch.first << "\t" << positionOfMatch.second << endl;
+        }
+        
+        if (match.size() >= expOptions.min16SMatch)
+            numMatches++;
+    }
+    
+    // pritn number of labels and number of matched sequences
+    cout << numOfRBS << "\t" << numMatches << endl;
+    
+    for (size_t n = 0; n < labels.size(); n++)
+        delete labels[n];
+    
+}
 
 
 
 
 
 
+void ModuleExperiment::runPromoterIsValidForAchaea() {
+    
+    OptionsExperiment::PromoterIsValidForArchaea expOptions = options.promoterIsValidForArchaea;
+    
+    // open mod file
+    ModelFile mfile (expOptions.fnmod, ModelFile::READ);
+    
+    string rbsSpacerStr = mfile.readValueForKey("PROMOTER_POS_DISTR");       // get spacer distribution
+    string rbsMaxDurStr = mfile.readValueForKey("PROMOTER_MAX_DUR");         // get maximum duration
+    size_t rbsMaxDur = boost::lexical_cast<size_t>(rbsMaxDurStr);
+    
+    vector<double> rbsSpacer (rbsMaxDur, 0);
+    
+    // convert string to vector of probabilities
+    istringstream f(rbsSpacerStr);
+    string line;
+    while (getline(f, line)) {
+        size_t pos;
+        double prob;
+        
+        istringstream ssmPerLine (line);
+        ssmPerLine >> pos;
+        ssmPerLine >> prob;
+        
+        rbsSpacer[pos] = prob;
+    }
+    
+    
+    // find max location
+    double maxProb = -numeric_limits<double>::infinity();
+    size_t maxPos = 0;
+    
+    for (size_t n = 0; n < rbsSpacer.size(); n++) {
+        if (rbsSpacer[n] > maxProb) {
+            maxProb = rbsSpacer[n];
+            maxPos = n;
+        }
+    }
+    
+    string promoterIsValid = "no";
+    
+    // check position and score
+    if (maxPos > expOptions.distanceThresh) {       // possibly promoter
+        if (maxProb > expOptions.scoreThresh) {     // definitely promoter
+            promoterIsValid = "yes";
+        }
+    }
+    
+    cout << promoterIsValid << endl;
+    
+    
+}
 
 
 

@@ -163,13 +163,14 @@ namespace gmsuite {
             return MotifFinder(width, motifOrder, backOrder, pcounts, align, tries, MAX_ITER, MAX_EM_ITER, shiftEvery, filterThresh);
         }
         
-        MotifFinder build(OptionsMFinder &options) {
+        MotifFinder build(const OptionsMFinder &options) {
             this->setNumTries(options.tries).setMaxIter(options.maxIter).setMaxEMIter(options.maxEMIter).setShiftEvery(options.shiftEvery);
             this->setMotifOrder(options.motifOrder).setBackOrder(options.bkgdOrder).setWidth(options.width).setPcounts(options.pcounts);
             this->setAlign(options.align);
             this->setFilterThresh(options.filterThresh);
             return build();
         }
+
     };
 
 

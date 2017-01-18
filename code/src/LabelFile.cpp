@@ -116,8 +116,8 @@ void LabelFile::read_lst(vector<Label*> &output) const {
             output.push_back(currlabel);
             foundFirstLabel = true;
         }
-        else if (foundFirstLabel)
-            throw runtime_error("Could not read label from file.");
+//        else if (foundFirstLabel)
+//            throw runtime_error("Could not read label from file.");
     }    
 }
 
@@ -140,8 +140,8 @@ Label* readNextLabelLST(const char*& current, const char* const end) {
     const char* endOfLine = current;
     
     cmatch match;
-    //                                  gene #     strand      left     right    length     class
-    cregex expr = cregex::compile("^\\s*(\\d+)\\s+([+,-])\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+(\\S+)\\s*");
+    //                                  gene #     strand      left     right    length     class           meta
+    cregex expr = cregex::compile("^\\s*(\\d+)\\s+([+,-])\\s+(<?\\d+)\\s+(>?\\d+)\\s+(\\d+)\\s+(\\S+)(?:\\s+([ACGT]+))?");
     
     Label* label = NULL;
     
@@ -153,11 +153,20 @@ Label* readNextLabelLST(const char*& current, const char* const end) {
         size_t right;
         char strandChar;
         string geneClass;
+        string meta;
+        
+        // skip incomplete genes
+        if (match.str(3).find("<") != string::npos || match.str(4).find(">") != string::npos)
+            return NULL;
         
         left = (size_t) strtol(match.str(3).c_str(), NULL, 10)-1;
         right = (size_t) strtol(match.str(4).c_str(), NULL, 10)-1;
         strandChar = match.str(2)[0];
         geneClass = match.str(6);
+        
+        // check if meta exists
+        if (match[7].matched)
+            meta = match.str(7);
         
         Label::strand_t strand;
         
@@ -168,7 +177,7 @@ Label* readNextLabelLST(const char*& current, const char* const end) {
         else
             throw invalid_argument("Invalid gene strand: " + match.str(2));
 
-        label = new Label(left, right, strand, geneClass);
+        label = new Label(left, right, strand, geneClass, meta);
     }
     
     
