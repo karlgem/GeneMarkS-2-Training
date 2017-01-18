@@ -998,6 +998,11 @@ void GMS2Trainer::toModFile(vector<pair<string, string> > &toMod, const OptionsG
     }
     
     if (upstreamSignature != NULL) {
+        int upstrSigMargin = 0;
+        if (startContext != NULL)
+            upstrSigMargin= max(0, (int)startContext->getLength() - scMargin);
+            
+        toMod.push_back(mpair("UPSTR_SIG_ORDER", "1"));
         toMod.push_back(mpair("UPSTR_SIG_ORDER", boost::lexical_cast<string>(upstreamSignature->getOrder())));
         toMod.push_back(mpair("UPSTR_SIG_WIDTH", boost::lexical_cast<string>(upstreamSignature->getLength())));
         toMod.push_back(mpair("SC_MARGIN", 0));
