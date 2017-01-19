@@ -765,7 +765,6 @@ void GMS2Trainer::estimateParametersMotifModel_Synechocystis(const NumSequence &
     if (allowAGSubstitution)
         substitutions.push_back(pair<NumSequence::num_t, NumSequence::num_t> (cnc.convert('A'), cnc.convert('G')));
     
-    vector<NumSequence> upstreamsRBS, upstreamsSig;
     
     // extract upstream for every sequence and match it to 16S tail
     vector<NumSequence> upstreams (useLabels.size());
@@ -785,8 +784,32 @@ void GMS2Trainer::estimateParametersMotifModel_Synechocystis(const NumSequence &
             labelsRBS.push_back(useLabels[n]);
     }
     
-    NonUniformCounts upstreamSigCounts(0, 20, *this->alphabet);
-    upstreamSigCounts.count
+    // for all non-Sig sequences, append "N" to mask Sig sequences
+    string Ns = "";
+    size_t numNs = 0;
+    if ( this->upstreamSignatureLength >= this->startContextLength &&
+         this->upstreamSignatureLength - this->startContextLength >= - this->upstreamSignatureOrder)
+        numNs = (this->upstreamSignatureLength - this->startContextLength) - this->upstreamSignatureOrder;
+    
+    for (size_t n = 0; n < numNs; n++)
+        Ns += "N";
+    
+    NumSequence numSeqNs (Sequence(Ns), cnc);       // numeric sequence of N's
+    
+    NonUniformCounts counts(upstreamSignatureOrder, upstreamSignatureLength, *this->alphabet);
+    
+    vector<NumSequence> contextsRBS;
+    long long posRelToStart = - (startContextLength + scMargin + upstreamSignatureOrder);
+    SequenceParser::extractStartContextSequences(sequence, labelsRBS, cnc, posRelToStart, startContextLength, contextsRBS);
+
+    for (size_t n = 0; n < contextsRBS.size(); n++) {
+        NumSequence withNs = numSeqNs + contextsRBS[n];     // append N's
+        counts.count(withNs.begin(), withNs.end());
+    }
+    
+    // add Sig sequences
+    
+    
     
     
 }

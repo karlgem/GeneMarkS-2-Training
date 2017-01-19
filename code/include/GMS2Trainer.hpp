@@ -116,6 +116,9 @@ namespace gmsuite {
         bool allowAGSubstitution;
         unsigned matchThresh;
         
+        NumSequence::size_type upstreamSignatureLength;
+        unsigned upstreamSignatureOrder;
+        
         // public variables for models
 //        NonUniformMarkov *motif;
         UniformMarkov *noncoding;
