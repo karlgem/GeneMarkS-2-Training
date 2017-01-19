@@ -421,16 +421,17 @@ void GMS2Trainer::estimateParametersMotifModel(const NumSequence &sequence, cons
         rbsSpacer = new UnivariatePDF(positionCounts, false, pcounts);
         
     }
-    // if genome is class 2, search for weak RBS, and estimate upstream signature pwm
+    // if genome is class 2: promoter and RBS in archaea
     else if (genomeClass == ProkGeneStartModel::C2) {
-//        throw logic_error("Code not yet completed.");
         estimateParametersMotifModel_Promoter(sequence, labels, use);
     }
-    // if genome is class 3, search for RBS and promoter
-    else {
+    // if genome is class 3: promoter and RBS in bacteria
+    else if (genomeClass == ProkGeneStartModel::C3) {
         estimateParametersMotifModel_Tuberculosis(sequence, labels, use);
-//        throw logic_error("Code not yet completed.");
-        
+    }
+    // if genome is class 4: RBS and upstream signature
+    else {
+        estimateParametersMotifModel_Synechocystis(sequence, labels, use);
     }
     
 }
@@ -731,6 +732,65 @@ void GMS2Trainer::estimateParametersMotifModel_Tuberculosis(const NumSequence &s
     
     
 }
+
+
+void GMS2Trainer::estimateParametersMotifModel_Synechocystis(const NumSequence &sequence, const vector<Label*> &labels, const vector<bool> &use) {
+    
+    AlphabetDNA alph;
+    CharNumConverter cnc(&alph);
+    NumAlphabetDNA numAlph(alph, cnc);
+    
+    // copy only usable labels
+    size_t numUse = labels.size();
+    if (use.size() > 0) {
+        numUse = 0;
+        for (size_t n = 0; n < labels.size(); n++)
+            if (use[n])
+                numUse++;
+    }
+    
+    vector<Label*> useLabels (numUse);
+    size_t pos = 0;
+    for (size_t n = 0; n < labels.size(); n++) {
+        if (use[n])
+            useLabels[pos++] = labels[n];
+    }
+    
+    size_t upstrLen = 20;
+    Sequence strMatchSeq (matchTo);
+    NumSequence matchSeq (strMatchSeq, cnc);
+    
+    pair<NumSequence::size_type, NumSequence::size_type> positionsOfMatches;
+    vector<pair<NumSequence::num_t, NumSequence::num_t> > substitutions;
+    if (allowAGSubstitution)
+        substitutions.push_back(pair<NumSequence::num_t, NumSequence::num_t> (cnc.convert('A'), cnc.convert('G')));
+    
+    vector<NumSequence> upstreamsRBS, upstreamsSig;
+    
+    // extract upstream for every sequence and match it to 16S tail
+    vector<NumSequence> upstreams (useLabels.size());
+    SequenceParser::extractUpstreamSequences(sequence, useLabels, cnc, upstrLen, upstreams);
+    size_t skipFromStart = 0;
+    
+    vector<Label*> labelsSig;
+    vector<Label*> labelsRBS;
+    
+    for (size_t n = 0; n < upstreams.size(); n++) {
+        NumSequence match = SequenceAlgorithms::longestMatchTo16S(matchSeq, upstreams[n], positionsOfMatches, substitutions);
+        
+        // keep track of nonmatches
+        if (match.size() < matchThresh)
+            labelsSig.push_back(useLabels[n]);
+        else
+            labelsRBS.push_back(useLabels[n]);
+    }
+    
+    NonUniformCounts upstreamSigCounts(0, 20, *this->alphabet);
+    upstreamSigCounts.count
+    
+    
+}
+
 
 // DEPRECATED
 void GMS2Trainer::estimateParametersMotifModel_Promoter_DEPRECATED(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use) {
