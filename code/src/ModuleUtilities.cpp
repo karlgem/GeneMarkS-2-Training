@@ -23,6 +23,7 @@
 #include "GMS2Trainer.hpp"
 #include "ModelFile.hpp"
 #include "NonCodingMarkov.hpp"
+#include "LabelsParser.hpp"
 
 using namespace std;
 using namespace gmsuite;
@@ -51,6 +52,8 @@ void ModuleUtilities::run() {
         runEmitNonCoding();
     else if (options.utility == OptionsUtilities::COUNT_NUM_ORF)
         runCountNumORF();
+    else if (options.utility == OptionsUtilityes::EXTRACT_SC_PER_OPERON_STATUS)
+        runExtractStartContextPerOperonStatus();
 //    else            // unrecognized utility to run
 //        throw invalid_argument("Unknown utility function " + options.utility);
     
@@ -629,6 +632,69 @@ void ModuleUtilities::runCountNumORF() {
         cout << numORF << endl;
     
 }
+
+
+
+void ModuleUtilities::runExtractStartContextPerOperonStatus() {
+    OptionsUtilities::ExtractStartContextPerOperonStatus utilOpt = options.extractStartContextPerOperonStatus;
+    
+    // read sequence file
+    SequenceFile sequenceFile (utilOpt.fn_sequence, SequenceFile::READ);
+    Sequence strSequence = sequenceFile.read();
+    
+    // read label file
+    LabelFile labelFile (utilOpt.fn_label, LabelFile::READ);
+    vector<Label*> labels;
+    labelFile.read(labels);
+    
+    // create numeric sequence
+    AlphabetDNA alph;
+    CharNumConverter cnc (&alph);
+    NumAlphabetDNA numAlph(alph, cnc);
+    GeneticCode geneticCode(GeneticCode::ELEVEN);
+    NumGeneticCode numGeneticCode(geneticCode, cnc);
+    
+    NumSequence sequence (strSequence, cnc);
+    
+    // split labels into sets based on operon status
+    vector<LabelsParser::operon_status_t> operonStatuses;
+    LabelsParser::partitionBasedOnOperonStatus(labels, utilOpt.distThreshFGIO, utilOpt.distThreshIG, operonStatuses);
+    
+    vector<NumSequence> startContexts;
+    SequenceParser::extractStartContextSequences(sequence, labels, cnc, -3, 18, startContexts);
+    
+    for (size_t n = 0; n < startContexts.size(); n++) {
+        if (startContexts[n].size() == 0)
+            continue;
+        
+        string label = "AMBIG";
+        if (operonStatuses[n] == LabelsParser::FGIO) label = "FGIO";
+        if (operonStatuses[n] == LabelsParser::NFGIO) label = "IG";
+        
+        string strSC = cnc.convert(startContexts[n].begin(), startContexts[n].end());
+        cout << label << "\t" << strSC << endl;
+    }
+    
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
