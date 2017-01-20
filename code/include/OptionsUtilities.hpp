@@ -35,7 +35,9 @@ namespace gmsuite {
             MATCH_SEQ_TO_NONCODING,
             LABELS_SIMILARITY_CHECK,
             EMIT_NON_CODING,
-            COUNT_NUM_ORF
+            COUNT_NUM_ORF,
+            EXTRACT_SC_PER_OPERON_STATUS,
+            EXTRACT_SC_PER_MOTIF_STATUS
         }
         utility_t;
         
@@ -115,11 +117,38 @@ namespace gmsuite {
             bool printSeq;                  // print sequences instead of number
         } countNumORF;
         
+        struct ExtractStartContextPerOperonStatus : public GenericOptions {
+            string fn_sequence;             // sequence filename
+            string fn_label;                // label filename
+            string fn_output;               // output filename
+            size_t length;                  // length of upstream regions
+            bool allowOverlaps;             // allow upstream region to overlap coding region
+            size_t minimumGeneLength;       // minimum gene length associated with upstream
+            size_t distThreshFGIO;
+            size_t distThreshIG;
+        } extractStartContextPerOperonStatus;
+        
+        struct ExtractStartContextPerMotifStatus : public GenericOptions {
+            string fn_sequence;             // sequence filename
+            string fn_label;                // label filename
+            string fn_output;               // output filename
+            size_t length;                  // length of upstream regions
+            bool allowOverlaps;             // allow upstream region to overlap coding region
+            size_t minimumGeneLength;       // minimum gene length associated with upstream
+            size_t distThreshFGIO;
+            size_t distThreshIG;
+            string matchTo;
+            size_t matchThresh;
+            bool allowAGSubstitution;
+        } extractStartContextPerMotifStatus;
+        
         static void addProcessOptions_ExtractUpstream(ExtractUpstreamUtility &options, po::options_description &processOptions);
         static void addProcessOptions_StartModelInfo(StartModelInfoUtility &options, po::options_description &processOptions);
         static void addProcessOptions_LabelsSimilarityCheck(LabelsSimilarityCheck &options, po::options_description &processOptions);
         static void addProcessOptions_EmitNonCoding(EmitNonCoding &options, po::options_description &processOptions);
         static void addProcessOptions_CountNumORF(CountNumORF &options, po::options_description &processOptions);
+        static void addProcessOptions_ExtractStartContextPerOperonStatus(ExtractStartContextPerOperonStatus &options, po::options_description &processOptions);
+        static void addProcessOptions_ExtractStartContextPerMotifStatus(ExtractStartContextPerMotifStatus &options, po::options_description &processOptions);
         
     };
 }

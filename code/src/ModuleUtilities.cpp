@@ -23,6 +23,7 @@
 #include "GMS2Trainer.hpp"
 #include "ModelFile.hpp"
 #include "NonCodingMarkov.hpp"
+#include "LabelsParser.hpp"
 
 using namespace std;
 using namespace gmsuite;
@@ -51,6 +52,11 @@ void ModuleUtilities::run() {
         runEmitNonCoding();
     else if (options.utility == OptionsUtilities::COUNT_NUM_ORF)
         runCountNumORF();
+    else if (options.utility == OptionsUtilities::EXTRACT_SC_PER_OPERON_STATUS)
+        runExtractStartContextPerOperonStatus();
+    else if (options.utility == OptionsUtilities::EXTRACT_SC_PER_MOTIF_STATUS)
+        runExtractStartContextPerMotifStatus();
+    
 //    else            // unrecognized utility to run
 //        throw invalid_argument("Unknown utility function " + options.utility);
     
@@ -629,6 +635,150 @@ void ModuleUtilities::runCountNumORF() {
         cout << numORF << endl;
     
 }
+
+
+
+void ModuleUtilities::runExtractStartContextPerOperonStatus() {
+    OptionsUtilities::ExtractStartContextPerOperonStatus utilOpt = options.extractStartContextPerOperonStatus;
+    
+    // read sequence file
+    SequenceFile sequenceFile (utilOpt.fn_sequence, SequenceFile::READ);
+    Sequence strSequence = sequenceFile.read();
+    
+    // read label file
+    LabelFile labelFile (utilOpt.fn_label, LabelFile::READ);
+    vector<Label*> labels;
+    labelFile.read(labels);
+    
+    // create numeric sequence
+    AlphabetDNA alph;
+    CharNumConverter cnc (&alph);
+    NumAlphabetDNA numAlph(alph, cnc);
+    GeneticCode geneticCode(GeneticCode::ELEVEN);
+    NumGeneticCode numGeneticCode(geneticCode, cnc);
+    
+    NumSequence sequence (strSequence, cnc);
+    
+    // split labels into sets based on operon status
+    vector<LabelsParser::operon_status_t> operonStatuses;
+    LabelsParser::partitionBasedOnOperonStatus(labels, utilOpt.distThreshFGIO, utilOpt.distThreshIG, operonStatuses);
+    
+    vector<NumSequence> startContexts;
+    SequenceParser::extractStartContextSequences(sequence, labels, cnc, -3, 18, startContexts);
+    
+    for (size_t n = 0; n < startContexts.size(); n++) {
+        if (startContexts[n].size() == 0)
+            continue;
+        
+        string label = "AMBIG";
+        if (operonStatuses[n] == LabelsParser::FGIO) label = "FGIO";
+        if (operonStatuses[n] == LabelsParser::NFGIO) label = "IG";
+        
+        string strSC = cnc.convert(startContexts[n].begin(), startContexts[n].end());
+        cout << label << "\t" << strSC << endl;
+    }
+    
+}
+
+void ModuleUtilities::runExtractStartContextPerMotifStatus() {
+    
+    OptionsUtilities::ExtractStartContextPerMotifStatus utilOpt = options.extractStartContextPerMotifStatus;
+    
+    cout << utilOpt.fn_sequence << endl;
+    cout << utilOpt.fn_label << endl;
+    
+    // read sequence file
+    SequenceFile sequenceFile (utilOpt.fn_sequence, SequenceFile::READ);
+    Sequence strSequence = sequenceFile.read();
+    
+    // read label file
+    LabelFile labelFile (utilOpt.fn_label, LabelFile::READ);
+    vector<Label*> labels;
+    labelFile.read(labels);
+    
+    // create numeric sequence
+    AlphabetDNA alph;
+    CharNumConverter cnc (&alph);
+    NumAlphabetDNA numAlph(alph, cnc);
+    GeneticCode geneticCode(GeneticCode::ELEVEN);
+    NumGeneticCode numGeneticCode(geneticCode, cnc);
+    
+    NumSequence sequence (strSequence, cnc);
+    
+    // split labels into sets based on operon status
+    vector<LabelsParser::operon_status_t> operonStatuses;
+    LabelsParser::partitionBasedOnOperonStatus(labels, utilOpt.distThreshFGIO, utilOpt.distThreshIG, operonStatuses);
+    
+    vector<Label*> labelsFGIO;
+    vector<Label*> labelsIG;
+    for (size_t n = 0; n < labels.size(); n++) {
+        if (operonStatuses[n] == LabelsParser::FGIO)    labelsFGIO.push_back(labels[n]);        // fgio
+        if (operonStatuses[n] == LabelsParser::NFGIO)   labelsIG.push_back(labels[n]);          // ig
+    }
+    
+    vector<NumSequence> upstreamsFGIO, upstreamsIG;
+    SequenceParser::extractUpstreamSequences(sequence, labelsFGIO, cnc, 20, upstreamsFGIO, true, 0);
+    SequenceParser::extractUpstreamSequences(sequence, labelsIG, cnc, 20, upstreamsIG, true, 0);
+    
+    vector<NumSequence> startContextsFGIO, startContextsIG;
+    SequenceParser::extractStartContextSequences(sequence, labelsFGIO, cnc, -3, 18, startContextsFGIO);
+    SequenceParser::extractStartContextSequences(sequence, labelsIG, cnc, -3, 18, startContextsIG);
+    
+    Sequence matchToStr (utilOpt.matchTo);
+    NumSequence matchSeq (matchToStr, cnc);
+    
+    vector<NumSequence> startContextsRBS;
+    vector<NumSequence> startContextsPromoter;
+    
+    pair<NumSequence::size_type, NumSequence::size_type> positionsOfMatches;
+    vector<pair<NumSequence::num_t, NumSequence::num_t> > substitutions;
+    if (utilOpt.allowAGSubstitution)
+        substitutions.push_back(pair<NumSequence::num_t, NumSequence::num_t> (cnc.convert('A'), cnc.convert('G')));
+    
+    for (size_t n = 0; n < startContextsFGIO.size(); n++) {
+        if (startContextsFGIO[n].size() == 0)
+            continue;
+        
+        NumSequence match = SequenceAlgorithms::longestMatchTo16S(matchSeq, upstreamsFGIO[n], positionsOfMatches, substitutions);
+        
+        // keep track of nonmatches
+        if (match.size() < utilOpt.matchThresh)
+            startContextsPromoter.push_back(startContextsFGIO[n]);
+//        else
+//            startContextsRBS.push_back(startContextsFGIO[n]);
+    }
+    
+    startContextsRBS.insert(startContextsRBS.end(), startContextsIG.begin(), startContextsIG.end());
+    
+    // print promoter-based start-contexts
+    for (size_t n = 0; n < startContextsPromoter.size(); n++) {
+        cout << "PROM" << "\t" << cnc.convert(startContextsPromoter[n].begin(), startContextsPromoter[n].end()) << endl;
+    }
+    
+    // print RBS-based
+    for (size_t n = 0; n < startContextsRBS.size(); n++) {
+        cout << "RBS" << "\t" << cnc.convert(startContextsRBS[n].begin(), startContextsRBS[n].end()) << endl;
+    }
+    
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

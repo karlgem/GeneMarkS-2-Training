@@ -49,6 +49,8 @@ namespace gmsuite {
         void runMatchSeqToUpstream();
         void runMatchSeqToNoncoding();
         void runLabelsSimilarityCheck();
+        void runExtractStartContextPerOperonStatus();
+        void runExtractStartContextPerMotifStatus();
         
     };
     
