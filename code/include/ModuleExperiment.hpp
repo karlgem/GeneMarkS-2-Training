@@ -48,6 +48,7 @@ namespace gmsuite {
         void runBuildStartModels3();
         void runMatchRBSTo16S();
         void runPromoterIsValidForAchaea();
+        void runPromoterIsValidForBacteria();
         
         void runScoreStarts();
     };

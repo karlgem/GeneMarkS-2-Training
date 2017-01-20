@@ -21,6 +21,7 @@ using namespace gmsuite;
 #define STR_MATCH_RBS_TO_16S        "match-rbs-to-16s"
 #define STR_SCORE_LABELED_STARTS    "score-labeled-starts"
 #define STR_PROMOTER_IS_VALID_FOR_ARCHAEA    "promoter-is-valid-for-archaea"
+#define STR_PROMOTER_IS_VALID_FOR_BACTERIA    "promoter-is-valid-for-bacteria"
 
 namespace gmsuite {
     // convert string to experiment_t
@@ -37,6 +38,7 @@ namespace gmsuite {
         else if (token == STR_MATCH_RBS_TO_16S)         unit = OptionsExperiment::MATCH_RBS_TO_16S;
         else if (token == STR_SCORE_LABELED_STARTS)     unit = OptionsExperiment::SCORE_LABELED_STARTS;
         else if (token == STR_PROMOTER_IS_VALID_FOR_ARCHAEA)     unit = OptionsExperiment::PROMOTER_IS_VALID_FOR_ARCHAEA;
+        else if (token == STR_PROMOTER_IS_VALID_FOR_BACTERIA)     unit = OptionsExperiment::PROMOTER_IS_VALID_FOR_BACTERIA;
         else
             throw boost::program_options::invalid_option_value(token);
         
@@ -146,6 +148,9 @@ bool OptionsExperiment::parse(int argc, const char **argv) {
         // Experiment: get start-model type
         if (experiment == PROMOTER_IS_VALID_FOR_ARCHAEA)
             addProcessOptions_PromoterIsValidForArchaea(promoterIsValidForArchaea, expDesc);
+        // Experiment: get start-model bacteria
+        if (experiment == PROMOTER_IS_VALID_FOR_BACTERIA)
+            addProcessOptions_PromoterIsValidForBacteria(promoterIsValidForBacteria, expDesc);
         
         cmdline_options.add(expDesc);
         
@@ -295,6 +300,14 @@ void OptionsExperiment::addProcessOptions_PromoterIsValidForArchaea(PromoterIsVa
     processOptions.add_options()
     ("fnmod", po::value<string>(&options.fnmod)->required(), "Name of mod file containing RBS spacer.")
     ("dist-thresh", po::value<size_t>(&options.distanceThresh)->default_value(22), "Distance threshold after which spacer indicates promoter.")
+    ("score-thresh", po::value<double>(&options.scoreThresh)->default_value(0.1), "Minimum score above which spacer is considered localized.")
+    ;
+}
+
+void OptionsExperiment::addProcessOptions_PromoterIsValidForBacteria(PromoterIsValidForBacteria &options, po::options_description &processOptions) {
+    processOptions.add_options()
+    ("fnmod", po::value<string>(&options.fnmod)->required(), "Name of mod file containing RBS spacer.")
+    ("dist-thresh", po::value<size_t>(&options.distanceThresh)->default_value(15), "Distance threshold before which spacer indicates promoter.")
     ("score-thresh", po::value<double>(&options.scoreThresh)->default_value(0.1), "Minimum score above which spacer is considered localized.")
     ;
 }
