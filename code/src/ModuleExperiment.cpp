@@ -58,6 +58,8 @@ void ModuleExperiment::run() {
         runMatchRBSTo16S();
     else if (options.experiment == OptionsExperiment::PROMOTER_IS_VALID_FOR_ARCHAEA)
         runPromoterIsValidForAchaea();
+    else if (options.experiment == OptionsExperiment::PROMOTER_IS_VALID_FOR_BACTERIA)
+        runPromoterIsValidForBacteria();
     
 }
 
@@ -993,6 +995,61 @@ void ModuleExperiment::runPromoterIsValidForAchaea() {
     
     // check position and score
     if (maxPos > expOptions.distanceThresh) {       // possibly promoter
+        if (maxProb > expOptions.scoreThresh) {     // definitely promoter
+            promoterIsValid = "yes";
+        }
+    }
+    
+    cout << promoterIsValid << endl;
+    
+    
+}
+
+
+
+void ModuleExperiment::runPromoterIsValidForBacteria() {
+    
+    OptionsExperiment::PromoterIsValidForBacteria expOptions = options.promoterIsValidForBacteria;
+    
+    // open mod file
+    ModelFile mfile (expOptions.fnmod, ModelFile::READ);
+    
+    string rbsSpacerStr = mfile.readValueForKey("PROMOTER_POS_DISTR");       // get spacer distribution
+    string rbsMaxDurStr = mfile.readValueForKey("PROMOTER_MAX_DUR");         // get maximum duration
+    size_t rbsMaxDur = boost::lexical_cast<size_t>(rbsMaxDurStr);
+    
+    vector<double> rbsSpacer (rbsMaxDur, 0);
+    
+    // convert string to vector of probabilities
+    istringstream f(rbsSpacerStr);
+    string line;
+    while (getline(f, line)) {
+        size_t pos;
+        double prob;
+        
+        istringstream ssmPerLine (line);
+        ssmPerLine >> pos;
+        ssmPerLine >> prob;
+        
+        rbsSpacer[pos] = prob;
+    }
+    
+    
+    // find max location
+    double maxProb = -numeric_limits<double>::infinity();
+    size_t maxPos = 0;
+    
+    for (size_t n = 0; n < rbsSpacer.size(); n++) {
+        if (rbsSpacer[n] > maxProb) {
+            maxProb = rbsSpacer[n];
+            maxPos = n;
+        }
+    }
+    
+    string promoterIsValid = "no";
+    
+    // check position and score
+    if (maxPos < expOptions.distanceThresh) {       // possibly promoter
         if (maxProb > expOptions.scoreThresh) {     // definitely promoter
             promoterIsValid = "yes";
         }

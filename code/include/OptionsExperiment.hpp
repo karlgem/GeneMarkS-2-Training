@@ -34,7 +34,8 @@ namespace gmsuite {
             SCORE_STARTS,
             MATCH_RBS_TO_16S,
             SCORE_LABELED_STARTS,
-            PROMOTER_IS_VALID_FOR_ARCHAEA
+            PROMOTER_IS_VALID_FOR_ARCHAEA,
+            PROMOTER_IS_VALID_FOR_BACTERIA
         }
         experiment_t;
         
@@ -151,6 +152,14 @@ namespace gmsuite {
         }
         promoterIsValidForArchaea;
         
+        // get-start-model-type
+        struct PromoterIsValidForBacteria : public GenericOptions {
+            string fnmod;
+            size_t distanceThresh;
+            double scoreThresh;
+        }
+        promoterIsValidForBacteria;
+        
         
         /**********************************************\
          *              Option Processing             *
@@ -166,6 +175,7 @@ namespace gmsuite {
         static void addProcessOptions_ScoreStarts(ScoreStarts &options, po::options_description &processOptions);
         static void addProcessOptions_ScoreLabeledStarts(ScoreLabeledStarts &options, po::options_description &processOptions);
         static void addProcessOptions_PromoterIsValidForArchaea(PromoterIsValidForArchaea &options, po::options_description &processOptions);
+        static void addProcessOptions_PromoterIsValidForBacteria(PromoterIsValidForBacteria &options, po::options_description &processOptions);
         
         
         
