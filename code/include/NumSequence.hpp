@@ -113,6 +113,9 @@ namespace gmsuite {
         bool containsInvalid(const NumAlphabetDNA &alph) const;
         
         
+        NumSequence operator+ (const NumSequence &op2);
+        
+        
         /*************** Sequence Iterators *******************/
         
         // Iterators

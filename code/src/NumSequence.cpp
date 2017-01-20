@@ -118,3 +118,12 @@ bool NumSequence::containsInvalid(const NumAlphabetDNA &alph) const {
     
     return false;
 }
+
+
+
+NumSequence NumSequence::operator+ (const NumSequence &op2) {
+    NumSequence result;
+    result.numSeq = this->numSeq;
+    result.numSeq.insert(result.numSeq.end(), op2.numSeq.begin(), op2.numSeq.end());     // append op2 vector
+    return result;
+}
