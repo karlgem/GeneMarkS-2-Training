@@ -67,7 +67,9 @@ namespace gmsuite {
                     unsigned widthArchaeaPromoter = 12,
                     string matchTo = "TAAGGAGGTGA",
                     bool allowAGSubstitution = true,
-                    unsigned matchThresh = 4);
+                    unsigned matchThresh = 4,
+                    NumSequence::size_type upstreamSignatureLength = 35,
+                    unsigned upstreamSignatureOrder = 2);
         
         ~GMS2Trainer();
         

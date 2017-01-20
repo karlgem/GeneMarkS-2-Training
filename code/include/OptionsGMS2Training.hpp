@@ -70,6 +70,8 @@ namespace gmsuite {
         string matchTo;
         bool allowAGSubstitution;
         unsigned matchThresh;
+        NumSequence::size_type upstreamSignatureLength;
+        unsigned upstreamSignatureOrder;
         
         // GMS2 model parameters
         double pcounts;                             /**< Pseudocounts */

@@ -91,7 +91,9 @@ GMS2Trainer::GMS2Trainer(unsigned pcounts,
                          unsigned widthArchaeaPromoter,
                          string matchTo,
                          bool allowAGSubstitution,
-                         unsigned matchThresh) {
+                         unsigned matchThresh,
+                         NumSequence::size_type upstreamSignatureLength,
+                         unsigned upstreamSignatureOrder) {
     
     this->pcounts = pcounts;
     this->codingOrder = codingOrder;
@@ -109,6 +111,8 @@ GMS2Trainer::GMS2Trainer(unsigned pcounts,
     this->runMotifSearch = runMotifSearch;
     this->UPSTR_LEN_FGIO = upstrFGIO;
     this->widthArchaeaPromoter = widthArchaeaPromoter;
+    this->upstreamSignatureLength = upstreamSignatureLength;
+    this->upstreamSignatureOrder = upstreamSignatureOrder;
     
     this->matchTo = matchTo;
     this->allowAGSubstitution = allowAGSubstitution;
@@ -321,6 +325,9 @@ void GMS2Trainer::estimateParametersStartContext(const NumSequence &sequence, co
             throw invalid_argument("Labels and Use vector should have the same length");
     }
     
+    AlphabetDNA alph;
+    CharNumConverter cnc(&alph);
+    
     NonUniformCounts counts(startContextOrder, startContextLength, *this->alphabet);
     
     // get counts for start context model
@@ -333,7 +340,14 @@ void GMS2Trainer::estimateParametersStartContext(const NumSequence &sequence, co
             throw invalid_argument("Label can't be NULL");
         
         // skip sequence if it doesn't have enough nucleotides for start context
-        if ((*iter)->right - (*iter)->left + 1 - 6 < startContextLength)        // get lenght of sequence, and -6 to account for start/stop codons
+        size_t ntBeforeStart = (startContextLength + scMargin);
+        if ((*iter)->strand == Label::POS && (*iter)->left < ntBeforeStart) {
+            continue;
+        }
+        else if ((*iter)->strand == Label::NEG && (*iter)->right > sequence.size() - ntBeforeStart) {
+            continue;
+        }
+        if ((*iter)->right - (*iter)->left + 1 - 6 < startContextLength)        // get length of sequence, and -6 to account for start/stop codons
             continue;
         
         size_t left;
@@ -341,7 +355,7 @@ void GMS2Trainer::estimateParametersStartContext(const NumSequence &sequence, co
         if ((*iter)->strand == Label::POS)
 //            left = (*iter)->left + 3;
 //            left = (*iter)->left-3;    // left = 3;   (3 + -(18-15)) = 0
-            left = (*iter)->left - (startContextLength + scMargin);
+            left = (*iter)->left - ((int)startContextLength + scMargin);
         else
 //            left = (*iter)->right - 2 - startContextLength;
 //            left = (*iter)->right+3 - startContextLength + 1;      // right = 20:    20 - 15
@@ -349,6 +363,13 @@ void GMS2Trainer::estimateParametersStartContext(const NumSequence &sequence, co
         
         bool reverseComplement = (*iter)->strand == Label::NEG;
         counts.count(sequence.begin() + left, sequence.begin() + left + startContextLength, reverseComplement);
+        
+//        NumSequence s = sequence.subseq(left, startContextLength);
+//        if (reverseComplement)
+//            s.reverseComplement(cnc);
+//        
+//        cout << cnc.convert(s.begin(), s.end()) << endl;
+        
     }
     
     // convert counts to probabilities
@@ -788,7 +809,7 @@ void GMS2Trainer::estimateParametersMotifModel_Synechocystis(const NumSequence &
     string Ns = "";
     size_t numNs = 0;
     if ( this->upstreamSignatureLength >= this->startContextLength &&
-         this->upstreamSignatureLength - this->startContextLength >= - this->upstreamSignatureOrder)
+         this->upstreamSignatureLength - this->startContextLength >= this->upstreamSignatureOrder)
         numNs = (this->upstreamSignatureLength - this->startContextLength) - this->upstreamSignatureOrder;
     
     for (size_t n = 0; n < numNs; n++)
@@ -800,15 +821,30 @@ void GMS2Trainer::estimateParametersMotifModel_Synechocystis(const NumSequence &
     
     vector<NumSequence> contextsRBS;
     long long posRelToStart = - (startContextLength + scMargin + upstreamSignatureOrder);
-    SequenceParser::extractStartContextSequences(sequence, labelsRBS, cnc, posRelToStart, startContextLength, contextsRBS);
+    SequenceParser::extractStartContextSequences(sequence, labelsRBS, cnc, posRelToStart, startContextLength + this->upstreamSignatureOrder, contextsRBS);
 
     for (size_t n = 0; n < contextsRBS.size(); n++) {
         NumSequence withNs = numSeqNs + contextsRBS[n];     // append N's
         counts.count(withNs.begin(), withNs.end());
+//        cout << cnc.convert(withNs.begin(), withNs.end()) << endl;
     }
     
     // add Sig sequences
+    vector<NumSequence> contextsSig;
+    SequenceParser::extractStartContextSequences(sequence, labelsSig, cnc, -( (int)upstreamSignatureLength + scMargin), upstreamSignatureLength, contextsSig);
     
+    for (size_t n = 0; n < contextsSig.size(); n++) {
+        counts.count(contextsSig[n].begin(), contextsSig[n].end());
+//        cout << cnc.convert(contextsSig[n].begin(), contextsSig[n].end()) << endl;
+    }
+
+    upstreamSignature = new NonUniformMarkov(upstreamSignatureOrder, upstreamSignatureLength, *this->alphabet);
+    upstreamSignature->construct(&counts, pcounts);
+    
+    // run motif search for RBS
+    vector<NumSequence> upstreamsRBS;
+    SequenceParser::extractUpstreamSequences(sequence, labelsRBS, cnc, this->upstreamLength, upstreamsRBS);
+    runMotifFinder(upstreamsRBS, *this->optionsMFinder, *this->alphabet, this->upstreamLength, this->rbs, this->rbsSpacer);
     
     
     
@@ -1088,7 +1124,7 @@ void GMS2Trainer::toModFile(vector<pair<string, string> > &toMod, const OptionsG
         toMod.push_back(mpair("UPSTR_SIG_ORDER", "1"));
         toMod.push_back(mpair("UPSTR_SIG_ORDER", boost::lexical_cast<string>(upstreamSignature->getOrder())));
         toMod.push_back(mpair("UPSTR_SIG_WIDTH", boost::lexical_cast<string>(upstreamSignature->getLength())));
-        toMod.push_back(mpair("SC_MARGIN", 0));
+        toMod.push_back(mpair("UPSTR_SIGN_MARGIN", boost::lexical_cast<string>(scMargin)));
         toMod.push_back(mpair("UPSTR_SIG_MAT", upstreamSignature->toString()));
     }
 }

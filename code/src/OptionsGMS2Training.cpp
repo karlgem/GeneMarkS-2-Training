@@ -38,6 +38,8 @@ namespace gmsuite {
             unit = ProkGeneStartModel::C2;
         else if (token == "3")
             unit = ProkGeneStartModel::C3;
+        else if (token == "4")
+            unit = ProkGeneStartModel::C4;
     //    else
     //        throw boost::program_options::validation_error("Invalid genome class");
         
@@ -129,6 +131,8 @@ bool OptionsGMS2Training::parse(int argc, const char *argv[]) {
         ("match-to", po::value<string>(&matchTo)->default_value("TAAGGAGGTGA"), "16S tail")
         ("allow-ag-substitution", po::bool_switch(&allowAGSubstitution)->default_value(true), "Allow AG substitution.")
         ("match-thresh", po::value<unsigned>(&matchThresh)->default_value(4), "Match threshold for 16S tail.")
+        ("upstream-sig-length", po::value<NumSequence::size_type>(&upstreamSignatureLength)->default_value(35), "Length of full upstream signature model")
+        ("upstream-sig-order", po::value<unsigned> (&upstreamSignatureOrder)->default_value(2), "Order of upstream signature model")
 //        // MFinder options
 //        ("pcounts-mfinder", po::value<double>(&optionsMFinder.pcounts)->default_value(1), "Pseudocounts for mfinder models")
 //        ("width", po::value<unsigned>(&optionsMFinder.width)->default_value(6), "Width of motif in MFinder")
@@ -260,6 +264,8 @@ void OptionsGMS2Training::addProcessOptions(OptionsGMS2Training &options, po::op
     ("run-motif-search", po::value<bool>(&options.runMotifSearch)->default_value(true), "Enable/disable motif search.")
     ("upstream-length-fgio", po::value<size_t>(&options.upstrLenFGIO)->default_value(40), "Upstream length of first-gene-in-operon.")
     ("width-archaea-promoter", po::value<unsigned>(&options.widthArchaeaPromoter)->default_value(12), "Width for promoters in Archaea.")
+    ("upstream-sig-length", po::value<NumSequence::size_type>(&options.upstreamLength)->default_value(35), "Length of full upstream signature model")
+    ("upstream-sig-order", po::value<unsigned> (&options.upstreamSignatureOrder)->default_value(2), "Order of upstream signature model")
     ;
     
     

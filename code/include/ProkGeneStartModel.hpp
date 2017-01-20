@@ -18,7 +18,7 @@ namespace gmsuite {
     public:
         
         // class of genome
-        typedef enum {C1, C2, C3} genome_class_t;
+        typedef enum {C1, C2, C3, C4} genome_class_t;
     };
 }
 
