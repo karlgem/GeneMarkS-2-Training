@@ -50,6 +50,7 @@ namespace gmsuite {
         void runMatchSeqToNoncoding();
         void runLabelsSimilarityCheck();
         void runExtractStartContextPerOperonStatus();
+        void runExtractStartContextPerMotifStatus();
         
     };
     

@@ -33,6 +33,7 @@ OptionsUtilities::OptionsUtilities(string mode) : Options(mode) {
 #define STR_EMIT_NONCODING "emit-noncoding"
 #define STR_COUNT_NUM_ORF "count-num-orfs"
 #define STR_EXTRACT_SC_PER_OPERON_STATUS "extract-sc-per-operon-status"
+#define STR_EXTRACT_SC_PER_MOTIF_STATUS "extract-sc-per-motif-status"
 
 namespace gmsuite {
     // convert string to utility_t
@@ -48,6 +49,7 @@ namespace gmsuite {
         else if (token == STR_EMIT_NONCODING)           unit = OptionsUtilities::EMIT_NON_CODING;
         else if (token == STR_COUNT_NUM_ORF)           unit = OptionsUtilities::COUNT_NUM_ORF;
         else if (token == STR_EXTRACT_SC_PER_OPERON_STATUS) unit = OptionsUtilities::EXTRACT_SC_PER_OPERON_STATUS;
+        else if (token == STR_EXTRACT_SC_PER_MOTIF_STATUS) unit = OptionsUtilities::EXTRACT_SC_PER_MOTIF_STATUS;
         else
             throw boost::program_options::invalid_option_value(token);
         
@@ -324,7 +326,28 @@ bool OptionsUtilities::parse(int argc, const char *argv[]) {
             
             // get remaining parameters whose values were not assigned in add_options() above
             extractStartContextPerOperonStatus.allowOverlaps = vm.count("allow-overlap-with-cds") > 0;
-
+            
+            
+            
+        }
+        else if (utility == EXTRACT_SC_PER_MOTIF_STATUS) {
+            po::options_description utilDesc (string(STR_EXTRACT_SC_PER_MOTIF_STATUS) + " options");
+            addProcessOptions_ExtractStartContextPerMotifStatus(extractStartContextPerMotifStatus, utilDesc);
+            
+            cmdline_options.add(utilDesc);
+            
+            // Collect all the unrecognized options from the first pass. This will include the
+            // (positional) mode and command name, so we need to erase them
+            vector<string> opts = po::collect_unrecognized(parsed.options, po::include_positional);
+            opts.erase(opts.begin());       // erase mode
+            opts.erase(opts.begin());       // erase command name
+            
+            // Parse again...
+            po::store(po::command_line_parser(opts).options(utilDesc).run(), vm);
+            
+            // get remaining parameters whose values were not assigned in add_options() above
+            extractStartContextPerMotifStatus.allowOverlaps = vm.count("allow-overlap-with-cds") > 0;
+            
             
             
         }
@@ -419,12 +442,25 @@ void OptionsUtilities::addProcessOptions_ExtractStartContextPerOperonStatus(Extr
     processOptions.add_options()
     ("sequence,s", po::value<string>(&options.fn_sequence)->required(), "Sequence filename")
     ("label,l", po::value<string>(&options.fn_label)->required(), "Label filename")
-    ("output,o", po::value<string>(&options.fn_output)->required(), "Output filename")
-    ("length", po::value<size_t>(&options.length)->required(), "Upstream length")
     ("allow-overlap-with-cds", "If set, then upstream (non-coding) regions are allowed to overlap with coding regions. If not set, these sequences are ignored.")
     ("min-gene-length", po::value<size_t>(&options.minimumGeneLength)->default_value(0), "Minimum gene length")
     ("dist-thresh-fgio", po::value<size_t>(&options.distThreshFGIO)->default_value(22), "Minimum distance between genes to be classified as FGIO")
     ("dist-thres-ig", po::value<size_t>(&options.distThreshIG)->default_value(22), "Maximum distance between genes to be classified as IG")
+    ;
+}
+
+
+void OptionsUtilities::addProcessOptions_ExtractStartContextPerMotifStatus(ExtractStartContextPerMotifStatus &options, po::options_description &processOptions) {
+    processOptions.add_options()
+    ("sequence,s", po::value<string>(&options.fn_sequence)->required(), "Sequence filename")
+    ("label,l", po::value<string>(&options.fn_label)->required(), "Label filename")
+    ("allow-overlap-with-cds", "If set, then upstream (non-coding) regions are allowed to overlap with coding regions. If not set, these sequences are ignored.")
+    ("min-gene-length", po::value<size_t>(&options.minimumGeneLength)->default_value(0), "Minimum gene length")
+    ("dist-thresh-fgio", po::value<size_t>(&options.distThreshFGIO)->default_value(22), "Minimum distance between genes to be classified as FGIO")
+    ("dist-thres-ig", po::value<size_t>(&options.distThreshIG)->default_value(22), "Maximum distance between genes to be classified as IG")
+    ("match-to", po::value<string>(&options.matchTo)->default_value("TAAGGAGGTGA"), "Match to 16S tail")
+    ("allow-ag-subsitution", po::bool_switch(&options.allowAGSubstitution)->default_value(true), "Allow AG substitution in 16S match.")
+    ("match-thresh", po::value<size_t>(&options.matchThresh)->default_value(4), "Match threshold")
     ;
 }
 

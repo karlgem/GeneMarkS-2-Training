@@ -7,9 +7,8 @@ TARGET := bin/gmsuite
 SRCEXT := cpp
 SOURCES := $(shell find $(SRCDIR) -type f -name *.$(SRCEXT))
 OBJECTS := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.$(SRCEXT)=.o))
-LIB :=  -L/usr/local/lib -L/usr/lib64/boost148 -lboost_iostreams -lboost_program_options
-INC := -I include -I/usr/local/include -I/usr/include/boost148
-
+LIB :=  -L/usr/local/lib -lboost_iostreams -lboost_program_options
+INC := -I include -I/usr/local/include
 
 ifeq ($(BUILD),debug)
 # “Debug” build - no optimization, and debugging symbols
