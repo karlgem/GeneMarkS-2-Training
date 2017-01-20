@@ -264,7 +264,7 @@ void OptionsGMS2Training::addProcessOptions(OptionsGMS2Training &options, po::op
     ("run-motif-search", po::value<bool>(&options.runMotifSearch)->default_value(true), "Enable/disable motif search.")
     ("upstream-length-fgio", po::value<size_t>(&options.upstrLenFGIO)->default_value(40), "Upstream length of first-gene-in-operon.")
     ("width-archaea-promoter", po::value<unsigned>(&options.widthArchaeaPromoter)->default_value(12), "Width for promoters in Archaea.")
-    ("upstream-sig-length", po::value<NumSequence::size_type>(&options.upstreamLength)->default_value(35), "Length of full upstream signature model")
+    ("upstream-sig-length", po::value<NumSequence::size_type>(&options.upstreamSignatureLength)->default_value(35), "Length of full upstream signature model")
     ("upstream-sig-order", po::value<unsigned> (&options.upstreamSignatureOrder)->default_value(2), "Order of upstream signature model")
     ;
     
