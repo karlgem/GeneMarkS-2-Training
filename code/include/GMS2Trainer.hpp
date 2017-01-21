@@ -125,7 +125,9 @@ namespace gmsuite {
 //        NonUniformMarkov *motif;
         UniformMarkov *noncoding;
         PeriodicMarkov *coding;
-        NonUniformMarkov *startContext;
+        NonUniformMarkov *startContextRBS;
+        NonUniformMarkov *startContextPromoter;
+        NonUniformMarkov *startContext;             // used for synechocystis-type or when no motif is allowed
         
         // start models
         NonUniformMarkov *rbs;
