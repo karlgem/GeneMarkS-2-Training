@@ -129,6 +129,8 @@ GMS2Trainer::GMS2Trainer(unsigned pcounts,
     noncoding = NULL;
     coding = NULL;
     startContext = NULL;
+    startContextRBS = NULL;
+    startContextPromoter = NULL;
     
     // start models
     rbs = NULL;
@@ -373,8 +375,14 @@ void GMS2Trainer::estimateParametersStartContext(const NumSequence &sequence, co
     }
     
     // convert counts to probabilities
-    startContext = new NonUniformMarkov(startContextOrder, startContextLength, *this->alphabet);
-    startContext->construct(&counts, pcounts);
+    if (!runMotifSearch) {
+        startContext = new NonUniformMarkov(startContextOrder, startContextLength, *this->alphabet);
+        startContext->construct(&counts, pcounts);
+    }
+    else {
+        startContextRBS = new NonUniformMarkov(startContextOrder, startContextLength, *this->alphabet);
+        startContextRBS->construct(&counts, pcounts);
+    }
 }
 
 
@@ -837,9 +845,10 @@ void GMS2Trainer::estimateParametersMotifModel_Synechocystis(const NumSequence &
         counts.count(contextsSig[n].begin(), contextsSig[n].end());
 //        cout << cnc.convert(contextsSig[n].begin(), contextsSig[n].end()) << endl;
     }
-
-    upstreamSignature = new NonUniformMarkov(upstreamSignatureOrder, upstreamSignatureLength, *this->alphabet);
-    upstreamSignature->construct(&counts, pcounts);
+    
+    // for sequences without motifs
+    startContext = new NonUniformMarkov(upstreamSignatureOrder, upstreamSignatureLength, *this->alphabet);
+    startContext->construct(&counts, pcounts);
     
     // run motif search for RBS
     vector<NumSequence> upstreamsRBS;
@@ -1096,6 +1105,14 @@ void GMS2Trainer::toModFile(vector<pair<string, string> > &toMod, const OptionsG
         toMod.push_back(mpair("RBS_WIDTH", boost::lexical_cast<string>(rbs->getLength())));
         toMod.push_back(mpair("RBS_MARGIN", "0"));
         toMod.push_back(mpair("RBS_MAT", rbs->toString()));
+        
+        if (startContextRBS != NULL) {
+            toMod.push_back(mpair("SC_RBS", "1"));
+            toMod.push_back(mpair("SC_RBS_ORDER", boost::lexical_cast<string>(startContextRBS->getOrder())));
+            toMod.push_back(mpair("SC_RBS_WIDTH", boost::lexical_cast<string>(startContextRBS->getLength())));
+            toMod.push_back(mpair("SC_RBS_MARGIN", boost::lexical_cast<string>(scMargin)));
+            toMod.push_back(mpair("SC_RBS_MAT", startContextRBS->toString()));
+        }
     }
     
     if (rbsSpacer != NULL && rbsSpacer->size() > 0) {
@@ -1109,6 +1126,21 @@ void GMS2Trainer::toModFile(vector<pair<string, string> > &toMod, const OptionsG
         toMod.push_back(mpair("PROMOTER_WIDTH", boost::lexical_cast<string>(promoter->getLength())));
         toMod.push_back(mpair("PROMOTER_MARGIN", "0"));
         toMod.push_back(mpair("PROMOTER_MAT", promoter->toString()));
+        
+        if (startContextPromoter != NULL) {
+            toMod.push_back(mpair("SC_PROM", "1"));
+            toMod.push_back(mpair("SC_PROM_ORDER", boost::lexical_cast<string>(startContextPromoter->getOrder())));
+            toMod.push_back(mpair("SC_PROM_WIDTH", boost::lexical_cast<string>(startContextPromoter->getLength())));
+            toMod.push_back(mpair("SC_PROM_MARGIN", boost::lexical_cast<string>(scMargin)));
+            toMod.push_back(mpair("SC_PROM_MAT", startContextPromoter->toString()));
+        }
+        else if (startContextRBS != NULL) {                 // copy promoter start context from RBS start context
+            toMod.push_back(mpair("SC_PROM", "1"));
+            toMod.push_back(mpair("SC_PROM_ORDER", boost::lexical_cast<string>(startContextRBS->getOrder())));
+            toMod.push_back(mpair("SC_PROM_WIDTH", boost::lexical_cast<string>(startContextRBS->getLength())));
+            toMod.push_back(mpair("SC_PROM_MARGIN", boost::lexical_cast<string>(scMargin)));
+            toMod.push_back(mpair("SC_PROM_MAT", startContextRBS->toString()));
+        }
     }
     
     if (promoterSpacer != NULL && promoterSpacer->size() > 0) {
@@ -1116,17 +1148,17 @@ void GMS2Trainer::toModFile(vector<pair<string, string> > &toMod, const OptionsG
         toMod.push_back(mpair("PROMOTER_POS_DISTR", promoterSpacer->toString()));
     }
     
-    if (upstreamSignature != NULL) {
-        int upstrSigMargin = 0;
-        if (startContext != NULL)
-            upstrSigMargin= max(0, (int)startContext->getLength() - scMargin);
-            
-        toMod.push_back(mpair("UPSTR_SIG_ORDER", "1"));
-        toMod.push_back(mpair("UPSTR_SIG_ORDER", boost::lexical_cast<string>(upstreamSignature->getOrder())));
-        toMod.push_back(mpair("UPSTR_SIG_WIDTH", boost::lexical_cast<string>(upstreamSignature->getLength())));
-        toMod.push_back(mpair("UPSTR_SIGN_MARGIN", boost::lexical_cast<string>(scMargin)));
-        toMod.push_back(mpair("UPSTR_SIG_MAT", upstreamSignature->toString()));
-    }
+//    if (upstreamSignature != NULL) {
+//        int upstrSigMargin = 0;
+//        if (startContext != NULL)
+//            upstrSigMargin= max(0, (int)startContext->getLength() - scMargin);
+//            
+//        toMod.push_back(mpair("UPSTR_SIG_ORDER", "1"));
+//        toMod.push_back(mpair("UPSTR_SIG_ORDER", boost::lexical_cast<string>(upstreamSignature->getOrder())));
+//        toMod.push_back(mpair("UPSTR_SIG_WIDTH", boost::lexical_cast<string>(upstreamSignature->getLength())));
+//        toMod.push_back(mpair("UPSTR_SIGN_MARGIN", boost::lexical_cast<string>(scMargin)));
+//        toMod.push_back(mpair("UPSTR_SIG_MAT", upstreamSignature->toString()));
+//    }
 }
 
 
@@ -1152,10 +1184,6 @@ void GMS2Trainer::selectLabelsForCodingParameters(const vector<Label*> &labels, 
             useCoding[n] = (labels[n]->geneClass.find("native") != string::npos);
         }
     }
-    
-    
-    
-    
 }
 
 
