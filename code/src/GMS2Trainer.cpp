@@ -1128,18 +1128,18 @@ void GMS2Trainer::toModFile(vector<pair<string, string> > &toMod, const OptionsG
         toMod.push_back(mpair("PROMOTER_MAT", promoter->toString()));
         
         if (startContextPromoter != NULL) {
-            toMod.push_back(mpair("SC_PROM", "1"));
-            toMod.push_back(mpair("SC_PROM_ORDER", boost::lexical_cast<string>(startContextPromoter->getOrder())));
-            toMod.push_back(mpair("SC_PROM_WIDTH", boost::lexical_cast<string>(startContextPromoter->getLength())));
-            toMod.push_back(mpair("SC_PROM_MARGIN", boost::lexical_cast<string>(scMargin)));
-            toMod.push_back(mpair("SC_PROM_MAT", startContextPromoter->toString()));
+            toMod.push_back(mpair("SC_PROMOTER", "1"));
+            toMod.push_back(mpair("SC_PROMOTER_ORDER", boost::lexical_cast<string>(startContextPromoter->getOrder())));
+            toMod.push_back(mpair("SC_PROMOTER_WIDTH", boost::lexical_cast<string>(startContextPromoter->getLength())));
+            toMod.push_back(mpair("SC_PROMOTER_MARGIN", boost::lexical_cast<string>(scMargin)));
+            toMod.push_back(mpair("SC_PROMOTER_MAT", startContextPromoter->toString()));
         }
         else if (startContextRBS != NULL) {                 // copy promoter start context from RBS start context
-            toMod.push_back(mpair("SC_PROM", "1"));
-            toMod.push_back(mpair("SC_PROM_ORDER", boost::lexical_cast<string>(startContextRBS->getOrder())));
-            toMod.push_back(mpair("SC_PROM_WIDTH", boost::lexical_cast<string>(startContextRBS->getLength())));
-            toMod.push_back(mpair("SC_PROM_MARGIN", boost::lexical_cast<string>(scMargin)));
-            toMod.push_back(mpair("SC_PROM_MAT", startContextRBS->toString()));
+            toMod.push_back(mpair("SC_PROMOTER", "1"));
+            toMod.push_back(mpair("SC_PROMOTER_ORDER", boost::lexical_cast<string>(startContextRBS->getOrder())));
+            toMod.push_back(mpair("SC_PROMOTER_WIDTH", boost::lexical_cast<string>(startContextRBS->getLength())));
+            toMod.push_back(mpair("SC_PROMOTER_MARGIN", boost::lexical_cast<string>(scMargin)));
+            toMod.push_back(mpair("SC_PROMOTER_MAT", startContextRBS->toString()));
         }
     }
     
