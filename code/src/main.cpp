@@ -35,9 +35,12 @@ using namespace gmsuite;
 #define MOD_EXPERIMENT "experiment"
 #define MOD_GMS2_TRAINING "gms2-training"
 
+#define GMSUITE_VERSION 0.1
+
 string usage_message(string progName) {
     stringstream ssm;
     
+    ssm << "KGSuite, version " << GMSUITE_VERSION << endl;
     ssm << "Usage: " << progName << " mode" << endl;
     ssm << "The valid modes are:" << endl;
     ssm << "\t" << MOD_GMS2 << "\t" << "GeneMarkS2" << endl;
@@ -105,6 +108,9 @@ int main(int argc, const char * argv[]) {
         
         ModuleGMS2Training module (options);            // create module with options
         module.run();                                   // run module
+    }
+    else if (aMode == "--version") {
+        cout << "Version: " << GMSUITE_VERSION << endl;
     }
     
     return 0;
