@@ -56,6 +56,8 @@ void ModuleUtilities::run() {
         runExtractStartContextPerOperonStatus();
     else if (options.utility == OptionsUtilities::EXTRACT_SC_PER_MOTIF_STATUS)
         runExtractStartContextPerMotifStatus();
+    else if (options.utility == OptionsUtilities::COMPUTE_GC)
+        runComputeGC();
     
 //    else            // unrecognized utility to run
 //        throw invalid_argument("Unknown utility function " + options.utility);
@@ -768,7 +770,26 @@ void ModuleUtilities::runExtractStartContextPerMotifStatus() {
 
 
 
-
+void ModuleUtilities::runComputeGC() {
+    OptionsUtilities::ComputeGC utilOpt = options.computeGC;
+    
+    // read sequence file
+    SequenceFile sequenceFile (utilOpt.fn_sequence, SequenceFile::READ);
+    Sequence strSequence = sequenceFile.read();
+    
+    // read label file (if given)
+    vector<Label*> labels;
+    
+    if (!utilOpt.fn_label.empty()) {
+        LabelFile labelFile (utilOpt.fn_label, LabelFile::READ);
+        labelFile.read(labels);
+    }
+    
+    
+    
+    
+    
+}
 
 
 

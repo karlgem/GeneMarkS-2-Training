@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <vector>
 #include "NumSequence.hpp"
+#include "Label.hpp"
 
 namespace gmsuite {
     
@@ -28,6 +29,9 @@ namespace gmsuite {
                                             const std::vector<std::pair<NumSequence::num_t, NumSequence::num_t> >& subs = std::vector<std::pair<NumSequence::num_t, NumSequence::num_t> > ()
                                              );
         
+        static double computeGC(const Sequence &seq);
+        
+        static  void computeGC(const Sequence &seq, const vector<Label*> &labels, vector<double> gcs);
     };
     
     

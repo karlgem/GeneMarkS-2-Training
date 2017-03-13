@@ -34,6 +34,7 @@ OptionsUtilities::OptionsUtilities(string mode) : Options(mode) {
 #define STR_COUNT_NUM_ORF "count-num-orfs"
 #define STR_EXTRACT_SC_PER_OPERON_STATUS "extract-sc-per-operon-status"
 #define STR_EXTRACT_SC_PER_MOTIF_STATUS "extract-sc-per-motif-status"
+#define STR_COMPUTE_GC "compute-gc"
 
 namespace gmsuite {
     // convert string to utility_t
@@ -50,6 +51,7 @@ namespace gmsuite {
         else if (token == STR_COUNT_NUM_ORF)           unit = OptionsUtilities::COUNT_NUM_ORF;
         else if (token == STR_EXTRACT_SC_PER_OPERON_STATUS) unit = OptionsUtilities::EXTRACT_SC_PER_OPERON_STATUS;
         else if (token == STR_EXTRACT_SC_PER_MOTIF_STATUS) unit = OptionsUtilities::EXTRACT_SC_PER_MOTIF_STATUS;
+        else if (token == STR_COMPUTE_GC)               unit = OptionsUtilities::COMPUTE_GC;
         else
             throw boost::program_options::invalid_option_value(token);
         
@@ -351,6 +353,21 @@ bool OptionsUtilities::parse(int argc, const char *argv[]) {
             
             
         }
+        else if (utility == COMPUTE_GC) {
+            po::options_description utilDesc (string(STR_COMPUTE_GC) + " options");
+            addProcessOptions_ComputeGC(computeGC, utilDesc);
+            
+            cmdline_options.add(utilDesc);
+            
+            // Collect all the unrecognized options from the first pass. This will include the
+            // (positional) mode and command name, so we need to erase them
+            vector<string> opts = po::collect_unrecognized(parsed.options, po::include_positional);
+            opts.erase(opts.begin());       // erase mode
+            opts.erase(opts.begin());       // erase command name
+            
+            // Parse again...
+            po::store(po::command_line_parser(opts).options(utilDesc).run(), vm);
+        }
 //        else                                                                        // unrecognized utility
 //            throw po::invalid_option_value(utility);
         
@@ -465,7 +482,13 @@ void OptionsUtilities::addProcessOptions_ExtractStartContextPerMotifStatus(Extra
 }
 
 
-
+void OptionsUtilities::addProcessOptions_ComputeGC(ComputeGC &options, po::options_description &processOptions) {
+    processOptions.add_options()
+    ("sequence,s", po::value<string>(&options.fn_sequence)->required(), "Sequence filename")
+    ("label,l", po::value<string>(&options.fn_label)->default_value(""), "Label filename (for genes-based GC)")
+    ("per-gene", po::bool_switch(&options.perGene)->default_value(false), "If set, per-gene GC is printed")
+    ;
+}
 
 
 
