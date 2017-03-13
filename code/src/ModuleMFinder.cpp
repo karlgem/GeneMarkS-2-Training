@@ -72,7 +72,7 @@ void ModuleMFinder::run() {
     
     // print positions
     for (size_t n = 0; n < numSequences.size(); n++) {
-        cout << cnc.convert(numSequences[n].begin() + positions[n], numSequences[n].begin() + positions[n] + 6);
+        cout << cnc.convert(numSequences[n].begin() + positions[n], numSequences[n].begin() + positions[n] + options.width);
         cout << "\t" << positions[n] + 1 << "\t" << numSequences[n].size() << endl;
     }
 }
