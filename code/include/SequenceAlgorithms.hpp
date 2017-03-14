@@ -31,7 +31,7 @@ namespace gmsuite {
         
         static double computeGC(const Sequence &seq);
         
-        static  void computeGC(const Sequence &seq, const vector<Label*> &labels, vector<double> gcs);
+        static  void computeGC(const Sequence &seq, const vector<Label*> &labels, vector<double> &gcs);
     };
     
     

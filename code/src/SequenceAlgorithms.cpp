@@ -163,11 +163,11 @@ double SequenceAlgorithms::computeGC(const Sequence &seq) {
     if (seq.size() == 0)
         return 0;
     
-    return numGC / (double) seq.size();
+    return 100 * numGC / (double) seq.size();
 }
 
 // compute GC per gene
-void SequenceAlgorithms::computeGC(const Sequence &seq, const vector<Label*> &labels, vector<double> gcs) {
+void SequenceAlgorithms::computeGC(const Sequence &seq, const vector<Label*> &labels, vector<double> &gcs) {
     
     gcs.clear();
     
@@ -187,7 +187,7 @@ void SequenceAlgorithms::computeGC(const Sequence &seq, const vector<Label*> &la
                     numGC++;
             }
             
-            double GC = numGC / (double) length;
+            double GC = 100 *  numGC / (double) length;
             gcs.push_back(GC);
         }
         else {

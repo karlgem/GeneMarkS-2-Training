@@ -794,7 +794,7 @@ void ModuleUtilities::runComputeGC() {
     else {
         double gc = SequenceAlgorithms::computeGC(strSequence);
         cout << gc << endl;
-    }    
+    }
 }
 
 
