@@ -93,7 +93,8 @@ GMS2Trainer::GMS2Trainer(unsigned pcounts,
                          bool allowAGSubstitution,
                          unsigned matchThresh,
                          NumSequence::size_type upstreamSignatureLength,
-                         unsigned upstreamSignatureOrder) {
+                         unsigned upstreamSignatureOrder,
+                         bool trainNonCodingOnFullGenome) {
     
     this->pcounts = pcounts;
     this->codingOrder = codingOrder;
@@ -113,6 +114,7 @@ GMS2Trainer::GMS2Trainer(unsigned pcounts,
     this->widthArchaeaPromoter = widthArchaeaPromoter;
     this->upstreamSignatureLength = upstreamSignatureLength;
     this->upstreamSignatureOrder = upstreamSignatureOrder;
+    this->trainNonCodingOnFullGenome = trainNonCodingOnFullGenome;
     
     this->matchTo = matchTo;
     this->allowAGSubstitution = allowAGSubstitution;
@@ -286,31 +288,38 @@ void GMS2Trainer::estimateParamtersNonCoding(const NumSequence &sequence, const 
 //    UniformCounts counts(noncodingOrder, *this->alphabet);
     NonCodingCounts counts(noncodingOrder, *this->alphabet);
     
-    size_t leftNoncoding = 0;       // left position of current noncoding region
-    
-    // get counts for 3 period markov model given order
-    size_t n = 0;
-    for (vector<Label*>::const_iterator iter = labels.begin(); iter != labels.end(); iter++) {
-        if (!useAll && !use[n++])
-            continue;       // skip unwanted genes
+    // train on full genome (i.e. consider it as a single non-coding sequence)
+    if (this->trainNonCodingOnFullGenome) {
+        counts.count(sequence.begin(), sequence.end());
+    }
+    // train on labels
+    else {
+        size_t leftNoncoding = 0;       // left position of current noncoding region
         
-        if (*iter == NULL)
-            throw invalid_argument("Label can't be NULL");
-        
-        size_t left = (*iter)->left;                // get left position of fragment
-        size_t right = (*iter)->right;              // get right position of fragment
-        
-        if (leftNoncoding < left) {
-            counts.count(sequence.begin() + leftNoncoding, sequence.begin() + left);
+        // get counts for 3 period markov model given order
+        size_t n = 0;
+        for (vector<Label*>::const_iterator iter = labels.begin(); iter != labels.end(); iter++) {
+            if (!useAll && !use[n++])
+                continue;       // skip unwanted genes
+            
+            if (*iter == NULL)
+                throw invalid_argument("Label can't be NULL");
+            
+            size_t left = (*iter)->left;                // get left position of fragment
+            size_t right = (*iter)->right;              // get right position of fragment
+            
+            if (leftNoncoding < left) {
+                counts.count(sequence.begin() + leftNoncoding, sequence.begin() + left);
+            }
+            
+            // update left position of (possible) non-coding region after current gene
+            leftNoncoding = right+1;
+            
         }
         
-        // update left position of (possible) non-coding region after current gene
-        leftNoncoding = right+1;
-        
+        // add last non-coding sequence
+        counts.count(sequence.begin() + leftNoncoding, sequence.begin() + sequence.size());
     }
-    
-    // add last non-coding sequence
-    counts.count(sequence.begin() + leftNoncoding, sequence.begin() + sequence.size());
     
     // convert counts to probabilities
     noncoding = new UniformMarkov(noncodingOrder, *this->alphabet);

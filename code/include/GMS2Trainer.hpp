@@ -69,7 +69,8 @@ namespace gmsuite {
                     bool allowAGSubstitution = true,
                     unsigned matchThresh = 4,
                     NumSequence::size_type upstreamSignatureLength = 35,
-                    unsigned upstreamSignatureOrder = 2);
+                    unsigned upstreamSignatureOrder = 2,
+                    bool trainNonCodingOnFullGenome=false);
         
         ~GMS2Trainer();
         
@@ -113,6 +114,7 @@ namespace gmsuite {
         bool trainOnNative;
         bool runMotifSearch;
         unsigned widthArchaeaPromoter;
+        bool trainNonCodingOnFullGenome;
         
         string matchTo;
         bool allowAGSubstitution;
