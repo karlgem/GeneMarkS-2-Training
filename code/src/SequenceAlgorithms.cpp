@@ -7,6 +7,7 @@
 //
 
 #include "SequenceAlgorithms.hpp"
+#include "LabelsParser.hpp"
 
 using namespace gmsuite;
 
@@ -147,3 +148,64 @@ NumSequence SequenceAlgorithms::longestMatchTo16S(const NumSequence &A, const Nu
     
     return NumSequence(result);
 }
+
+
+
+// compute GC for entire sequence
+double SequenceAlgorithms::computeGC(const Sequence &seq) {
+    
+    size_t numGC = 0;
+    for (size_t n = 0; n < seq.size(); n++) {
+        if (seq[n] == 'G' || seq[n] == 'C')
+            numGC++;
+    }
+    
+    if (seq.size() == 0)
+        return 0;
+    
+    return 100 * numGC / (double) seq.size();
+}
+
+// compute GC per gene
+void SequenceAlgorithms::computeGC(const Sequence &seq, const vector<Label*> &labels, vector<double> &gcs) {
+    
+    gcs.clear();
+    
+    for (size_t n = 0; n < labels.size(); n++) {
+        Label* lab = labels[n];
+        
+        size_t left = lab->left;
+        size_t right = lab->right;
+    
+        // check for valid coordinates
+        if (left <= right && right < seq.size()) {
+            
+            size_t length = right - left + 1;
+            double numGC = 0;
+            for (size_t i = left; i <= right; i++) {
+                if (seq[i] == 'G' || seq[i] == 'C')
+                    numGC++;
+            }
+            
+            double GC = 100 *  numGC / (double) length;
+            gcs.push_back(GC);
+        }
+        else {
+            gcs.push_back(0);           // GC=0 for invalid ranges (to maintain equal vector lengths of labels and gcs)
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -51,6 +51,7 @@ namespace gmsuite {
         void runLabelsSimilarityCheck();
         void runExtractStartContextPerOperonStatus();
         void runExtractStartContextPerMotifStatus();
+        void runComputeGC();
         
     };
     

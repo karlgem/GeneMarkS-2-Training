@@ -37,7 +37,8 @@ namespace gmsuite {
             EMIT_NON_CODING,
             COUNT_NUM_ORF,
             EXTRACT_SC_PER_OPERON_STATUS,
-            EXTRACT_SC_PER_MOTIF_STATUS
+            EXTRACT_SC_PER_MOTIF_STATUS,
+            COMPUTE_GC
         }
         utility_t;
         
@@ -142,6 +143,12 @@ namespace gmsuite {
             bool allowAGSubstitution;
         } extractStartContextPerMotifStatus;
         
+        struct ComputeGC : public GenericOptions {
+            string fn_sequence;             // sequence filename
+            string fn_label;                // labels filename (optional)
+            bool perGene;                   // if set, then print GC per labeled gene (only valid if 'fn_labels' is given)
+        } computeGC;
+        
         static void addProcessOptions_ExtractUpstream(ExtractUpstreamUtility &options, po::options_description &processOptions);
         static void addProcessOptions_StartModelInfo(StartModelInfoUtility &options, po::options_description &processOptions);
         static void addProcessOptions_LabelsSimilarityCheck(LabelsSimilarityCheck &options, po::options_description &processOptions);
@@ -149,7 +156,7 @@ namespace gmsuite {
         static void addProcessOptions_CountNumORF(CountNumORF &options, po::options_description &processOptions);
         static void addProcessOptions_ExtractStartContextPerOperonStatus(ExtractStartContextPerOperonStatus &options, po::options_description &processOptions);
         static void addProcessOptions_ExtractStartContextPerMotifStatus(ExtractStartContextPerMotifStatus &options, po::options_description &processOptions);
-        
+        static void addProcessOptions_ComputeGC(ComputeGC &options, po::options_description &processOptions);
     };
 }
 
