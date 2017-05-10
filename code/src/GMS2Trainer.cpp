@@ -140,6 +140,8 @@ GMS2Trainer::GMS2Trainer(unsigned pcounts,
     upstreamSignature = NULL;
     rbsSpacer = NULL;
     promoterSpacer = NULL;
+
+    this->numLeaderless = 0;
 }
 
 
@@ -663,6 +665,8 @@ void GMS2Trainer::estimateParametersMotifModel_Promoter(const NumSequence &seque
     SequenceParser::extractUpstreamSequences(sequence, labelsIG, cnc, this->UPSTR_LEN_IG, upstreamsIG);
     
 //    void runMotifFinder(const vector<NumSequence> &sequencesRaw, OptionsMFinder &optionsMFinder, size_t upstreamLength, NonUniformMarkov* motifMarkov, UnivariatePDF* motifSpacer) {
+//
+    this->numLeaderless = upstreamsFGIO.size();
 
     OptionsMFinder optionMFinderFGIO (*this->optionsMFinder);
     optionMFinderFGIO.width = widthArchaeaPromoter;
@@ -754,6 +758,7 @@ void GMS2Trainer::estimateParametersMotifModel_Tuberculosis(const NumSequence &s
         upstreamsRBS.push_back(upstreamsIG[n]);
     }
     
+    this->numLeaderless = upstreamsPromoter.size();
     
     
     runMotifFinder(upstreamsPromoter, *this->optionsMFinder, *this->alphabet, upstrLen-skipFromStart, this->promoter, this->promoterSpacer);
@@ -1135,6 +1140,7 @@ void GMS2Trainer::toModFile(vector<pair<string, string> > &toMod, const OptionsG
         toMod.push_back(mpair("PROMOTER_WIDTH", boost::lexical_cast<string>(promoter->getLength())));
         toMod.push_back(mpair("PROMOTER_MARGIN", "0"));
         toMod.push_back(mpair("PROMOTER_MAT", promoter->toString()));
+        toMod.push_back(mpair("PROMOTER_NUM_LEADERLESS", boost::lexical_cast<string>(this->numLeaderless)));
         
         if (startContextPromoter != NULL) {
             toMod.push_back(mpair("SC_PROMOTER", "1"));

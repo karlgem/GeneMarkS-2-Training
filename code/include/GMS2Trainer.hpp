@@ -115,6 +115,7 @@ namespace gmsuite {
         bool runMotifSearch;
         unsigned widthArchaeaPromoter;
         bool trainNonCodingOnFullGenome;
+        size_t numLeaderless;
         
         string matchTo;
         bool allowAGSubstitution;
