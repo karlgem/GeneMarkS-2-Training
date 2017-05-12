@@ -142,6 +142,8 @@ GMS2Trainer::GMS2Trainer(unsigned pcounts,
     promoterSpacer = NULL;
 
     this->numLeaderless = 0;
+    this->numFGIO = 0;
+    this->genomeType = "no-motif";
 }
 
 
@@ -426,6 +428,7 @@ void GMS2Trainer::estimateParametersMotifModel(const NumSequence &sequence, cons
     
     // if genome is class 1, search for RBS
     if (genomeClass == ProkGeneStartModel::C1) {
+        this->genomeType = "pure-rbs";
         
         // extract upstream of each label
         vector<NumSequence> upstreamsRaw;
@@ -463,14 +466,17 @@ void GMS2Trainer::estimateParametersMotifModel(const NumSequence &sequence, cons
     }
     // if genome is class 2: promoter and RBS in archaea
     else if (genomeClass == ProkGeneStartModel::C2) {
+        this->genomeType = "archaea-promoter";
         estimateParametersMotifModel_Promoter(sequence, labels, use);
     }
     // if genome is class 3: promoter and RBS in bacteria
     else if (genomeClass == ProkGeneStartModel::C3) {
+        this->genomeType = "bacteria-promoter";
         estimateParametersMotifModel_Tuberculosis(sequence, labels, use);
     }
     // if genome is class 4: RBS and upstream signature
     else {
+        this->genomeType = "upstream-signature";
         estimateParametersMotifModel_Synechocystis(sequence, labels, use);
     }
     
@@ -667,6 +673,7 @@ void GMS2Trainer::estimateParametersMotifModel_Promoter(const NumSequence &seque
 //    void runMotifFinder(const vector<NumSequence> &sequencesRaw, OptionsMFinder &optionsMFinder, size_t upstreamLength, NonUniformMarkov* motifMarkov, UnivariatePDF* motifSpacer) {
 //
     this->numLeaderless = upstreamsFGIO.size();
+    this->numFGIO = upstreamsFGIO.size();
 
     OptionsMFinder optionMFinderFGIO (*this->optionsMFinder);
     optionMFinderFGIO.width = widthArchaeaPromoter;
@@ -759,6 +766,7 @@ void GMS2Trainer::estimateParametersMotifModel_Tuberculosis(const NumSequence &s
     }
     
     this->numLeaderless = upstreamsPromoter.size();
+    this->numFGIO = upstreamsFGIO.size();
     
     
     runMotifFinder(upstreamsPromoter, *this->optionsMFinder, *this->alphabet, upstrLen-skipFromStart, this->promoter, this->promoterSpacer);
@@ -1141,6 +1149,7 @@ void GMS2Trainer::toModFile(vector<pair<string, string> > &toMod, const OptionsG
         toMod.push_back(mpair("PROMOTER_MARGIN", "0"));
         toMod.push_back(mpair("PROMOTER_MAT", promoter->toString()));
         toMod.push_back(mpair("PROMOTER_NUM_LEADERLESS", boost::lexical_cast<string>(this->numLeaderless)));
+        toMod.push_back(mpair("PROMOTER_NUM_FGIO", boost::lexical_cast<string>(this->numFGIO)));
         
         if (startContextPromoter != NULL) {
             toMod.push_back(mpair("SC_PROMOTER", "1"));
@@ -1162,6 +1171,8 @@ void GMS2Trainer::toModFile(vector<pair<string, string> > &toMod, const OptionsG
         toMod.push_back(mpair("PROMOTER_MAX_DUR", boost::lexical_cast<string>(promoterSpacer->size() - 1)));
         toMod.push_back(mpair("PROMOTER_POS_DISTR", promoterSpacer->toString()));
     }
+
+    toMod.push_back(mpair("GENOME_TYPE", this->genomeType));
     
 //    if (upstreamSignature != NULL) {
 //        int upstrSigMargin = 0;

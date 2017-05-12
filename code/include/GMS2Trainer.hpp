@@ -116,6 +116,8 @@ namespace gmsuite {
         unsigned widthArchaeaPromoter;
         bool trainNonCodingOnFullGenome;
         size_t numLeaderless;
+        size_t numFGIO;
+        string genomeType;
         
         string matchTo;
         bool allowAGSubstitution;
