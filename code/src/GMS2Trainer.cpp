@@ -430,6 +430,37 @@ void GMS2Trainer::estimateParametersMotifModel(const NumSequence &sequence, cons
     if (genomeClass == ProkGeneStartModel::C1) {
         this->genomeType = "pure-rbs";
         
+        // START: REMOVE THIS
+        // copy only usable labels
+        size_t numUse = labels.size();
+        if (use.size() > 0) {
+            numUse = 0;
+            for (size_t n = 0; n < labels.size(); n++)
+                if (use[n])
+                    numUse++;
+        }
+        
+        vector<Label*> useLabels (numUse);
+        size_t pos = 0;
+        for (size_t n = 0; n < labels.size(); n++) {
+            if (use[n])
+                useLabels[pos++] = labels[n];
+        }
+        
+        // split labels into sets based on operon status
+        vector<LabelsParser::operon_status_t> operonStatuses;
+        LabelsParser::partitionBasedOnOperonStatus(useLabels, FGIO_DIST_THRESH, NFGIO_DIST_THRES, operonStatuses);
+        
+        size_t numFGIO = 0, numIG = 0, numUNK = 0;
+        for (size_t n = 0; n < operonStatuses.size(); n++) {
+            if (operonStatuses[n] == LabelsParser::FGIO)        numFGIO++;
+            else if (operonStatuses[n] == LabelsParser::NFGIO)  numIG++;
+            else
+                numUNK++;
+        }
+        this->numFGIO = numFGIO;
+        // END: REMOVE THIS
+        
         // extract upstream of each label
         vector<NumSequence> upstreamsRaw;
         SequenceParser::extractUpstreamSequences(sequence, labels, *alphabet->getCNC(), upstreamLength, upstreamsRaw, false, MIN_GENE_LEN, use);
@@ -1142,6 +1173,8 @@ void GMS2Trainer::toModFile(vector<pair<string, string> > &toMod, const OptionsG
         toMod.push_back(mpair("RBS_POS_DISTR", rbsSpacer->toString()));
     }
     
+    toMod.push_back(mpair("PROMOTER_NUM_FGIO", boost::lexical_cast<string>(this->numFGIO)));
+    
     if (promoter != NULL) {
         toMod.push_back(mpair("PROMOTER", "1"));
         toMod.push_back(mpair("PROMOTER_ORDER", boost::lexical_cast<string>(promoter->getOrder())));
@@ -1149,7 +1182,7 @@ void GMS2Trainer::toModFile(vector<pair<string, string> > &toMod, const OptionsG
         toMod.push_back(mpair("PROMOTER_MARGIN", "0"));
         toMod.push_back(mpair("PROMOTER_MAT", promoter->toString()));
         toMod.push_back(mpair("PROMOTER_NUM_LEADERLESS", boost::lexical_cast<string>(this->numLeaderless)));
-        toMod.push_back(mpair("PROMOTER_NUM_FGIO", boost::lexical_cast<string>(this->numFGIO)));
+        
         
         if (startContextPromoter != NULL) {
             toMod.push_back(mpair("SC_PROMOTER", "1"));
