@@ -94,7 +94,8 @@ GMS2Trainer::GMS2Trainer(unsigned pcounts,
                          unsigned matchThresh,
                          NumSequence::size_type upstreamSignatureLength,
                          unsigned upstreamSignatureOrder,
-                         bool trainNonCodingOnFullGenome) {
+                         bool trainNonCodingOnFullGenome,
+                         unsigned FGIO_DIST_THRESH) {
     
     this->pcounts = pcounts;
     this->codingOrder = codingOrder;
@@ -120,7 +121,7 @@ GMS2Trainer::GMS2Trainer(unsigned pcounts,
     this->allowAGSubstitution = allowAGSubstitution;
     this->matchThresh = matchThresh;
     
-    this->FGIO_DIST_THRESH = 25;
+    this->FGIO_DIST_THRESH = FGIO_DIST_THRESH;
     this->NFGIO_DIST_THRES = 22;
     
     if (genomeClass == ProkGeneStartModel::C2 || genomeClass == ProkGeneStartModel::C3) {

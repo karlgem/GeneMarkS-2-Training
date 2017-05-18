@@ -73,6 +73,7 @@ namespace gmsuite {
         NumSequence::size_type upstreamSignatureLength;
         unsigned upstreamSignatureOrder;
         bool trainNonCodingOnFullGenome;            /**< If set, non-coding model is trained on full genome (instead of non-coding regions) */
+        unsigned fgioDistThresh;
         
         // GMS2 model parameters
         double pcounts;                             /**< Pseudocounts */

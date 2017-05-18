@@ -70,7 +70,8 @@ namespace gmsuite {
                     unsigned matchThresh = 4,
                     NumSequence::size_type upstreamSignatureLength = 35,
                     unsigned upstreamSignatureOrder = 2,
-                    bool trainNonCodingOnFullGenome=false);
+                    bool trainNonCodingOnFullGenome=false,
+                    unsigned FGIO_DIST_THRESH = 25);
         
         ~GMS2Trainer();
         
