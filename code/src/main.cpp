@@ -35,7 +35,7 @@ using namespace gmsuite;
 #define MOD_EXPERIMENT "experiment"
 #define MOD_GMS2_TRAINING "gms2-training"
 
-#define GMSUITE_VERSION 0.1
+#define GMSUITE_VERSION 0.01
 
 string usage_message(string progName) {
     stringstream ssm;
