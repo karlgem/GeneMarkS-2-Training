@@ -1,0 +1,1607 @@
+#
+1	+	248	1453	401	hypothetical protein
+2	+	1450	2115	221	ABC-type transport system ATP-binding protein
+3	+	2112	3254	380	ABC-type transport system permease protein
+4	+	3322	5643	773	oligosaccharyl transferase
+5	-	5646	7451	601	glucosamine--fructose-6-phosphate aminotransferase
+6	-	7454	8641	395	sugar nucleotidyltransferase
+7	-	8655	9860	401	sugar nucleotidyltransferase
+8	+	9980	11413	477	sugar transferase
+9	-	11478	12734	418	IS1341-type transposase (TCE32)
+10	-	13462	13812	116	hypothetical protein
+11	-	13809	14201	130	hypothetical protein
+12	+	16282	17706	474	transposase (ISH10)
+13	-	20533	21789	418	IS1341-type transposase (TCE32)
+14	+	23336	23890	184	transposase (TCE39)
+15	-	30356	31171	271	transposase (ISH1)
+16	+	31841	32089	82	hypothetical protein
+17	+	32104	32358	84	hypothetical protein
+18	-	32558	32893	111	hypothetical protein
+19	-	33185	33589	134	hypothetical protein
+20	-	34654	35934	426	IS1341-type transposase (TCE32)
+21	+	36052	36936	294	transposase (ISH4)
+22	+	37336	37728	130	IS200-type transposase (ISH12)
+23	+	37730	38986	418	IS1341-type transposase (ISH12)
+24	+	39215	40447	410	cell division control protein cdc6-like protein
+25	-	40626	41918	430	UDP-glucose 6-dehydrogenase
+26	+	42006	42734	242	sugar nucleotidyltransferase
+27	+	42895	43674	259	hypothetical protein
+28	+	43722	45164	480	polysaccharide export protein
+29	-	45260	46471	403	glycosyltransferase, type 1
+30	-	46870	48036	388	transposase (ISH3)
+31	-	48214	49488	424	transposase (ISH8)
+32	-	51579	53036	485	transposase (ISH10)
+33	-	56808	58082	424	transposase (ISH8)
+34	-	58675	59748	357	glycosyltransferase, type 1
+35	+	59842	61197	451	sulfatase-like protein
+36	-	61624	62712	362	glycosyltransferase, type 1
+37	-	62715	63701	328	nucleoside-diphosphate-sugar epimerase ( UDP-glucose 4-epimerase)
+38	+	63942	64658	238	sugar nucleotidyltransferase
+39	+	64896	65825	309	nucleoside-diphosphate-sugar epimerase ( dTDP-glucose 4,6-dehydratase)
+40	+	65925	66221	98	hypothetical protein
+41	+	66218	66487	89	hypothetical protein
+42	+	67256	67549	97	hypothetical protein
+43	-	68072	68506	144	hypothetical protein
+44	+	68923	69219	98	hypothetical protein
+45	+	69305	69529	74	hypothetical protein
+46	+	72332	72763	143	hypothetical protein
+47	+	72928	73719	263	bifunctional molybdopterin-guanine dinucleotide biosynthesis protein MobB/MoaE
+48	-	73723	74559	278	molybdenum cofactor biosynthesis protein moeB
+49	+	74684	75757	357	molybdenum cofactor biosynthesis protein moaA
+50	-	75767	77662	631	molybdopterin biosynthesis protein MoeA/LysR substrate binding-domain-containing protein
+51	-	77659	78882	407	molybdenum cofactor biosynthesis protein moeA1
+52	-	78938	79675	245	protein-L-isoaspartate O-methyltransferase pimT1
+53	-	80677	81342	221	hypothetical protein
+54	-	81402	82343	313	aminopeptidase
+55	+	82467	83474	335	glyceraldehyde-3-phosphate dehydrogenase
+56	+	83555	83941	128	hsp20-type molecular chaperone
+57	-	83947	84804	285	rimK family protein
+58	-	84900	85430	176	50S ribosomal protein L10
+59	-	85632	85826	64	cold shock protein
+60	-	85942	86598	218	phosphatase-like protein
+61	-	86655	87626	323	phosphoglycerate dehydrogenase
+62	+	89422	90696	424	transposase (ISH8)
+63	+	91588	93015	475	type I site-specific deoxyribonuclease subunit rmeS
+64	+	93067	96069	1000	type I site-specific deoxyribonuclease subunit rmeR
+65	+	96062	96787	241	hypothetical protein
+66	+	98036	98404	122	hypothetical protein
+67	+	98469	99146	225	hypothetical protein
+68	+	99251	100033	260	oxidoreductase
+69	+	103208	103636	142	hypothetical protein
+70	+	103704	105632	642	ABC-type transport system ATP-binding/permease protein
+71	+	105679	106422	247	creatininase
+72	-	106864	107193	109	hypothetical protein
+73	+	107292	108059	255	dehydratase-like protein
+74	+	108298	109194	298	ste24-type metalloprotease
+75	+	110400	111824	474	replication factor A
+76	+	111878	112330	150	histone
+77	+	112327	113343	338	histone deacetylase
+78	-	113322	114680	452	tRNA CCA-pyrophosphorylase
+79	-	117819	118022	67	insertion element protein (ISH2)
+80	+	118777	119214	145	hypothetical protein
+81	-	119921	120349	142	hypothetical protein
+82	+	120827	123037	736	cadmium-transporting ATPase
+83	-	123052	123723	223	cytochrome c-type biogenesis protein
+84	-	123720	124253	177	thioredoxin
+85	-	124250	124918	222	hypothetical protein
+86	-	125174	126262	362	hypothetical protein
+87	-	126341	127738	465	oxidoreductase (mercury(II) reductase homolog / dihydrolipoamide dehydrogenase homolog)
+88	+	127854	128552	232	hypothetical protein
+89	+	128646	129878	410	major facilitator superfamily transporter
+90	-	129899	130855	318	2-keto-3-deoxygluconate kinase
+91	-	130879	132858	659	DNA mismatch repair protein
+92	+	132977	135439	820	transcription regulator boa1
+93	+	135666	136955	429	glutamate dehydrogenase (NAD)
+94	+	137024	138640	538	acyl-CoA synthetase
+95	-	138656	141271	871	DNA mismatch repair protein MutS
+96	-	141343	142362	339	hydrogenase expression/formation protein
+97	+	142497	143258	253	proteasome subunit alpha
+98	+	143327	143659	110	thioredoxin
+99	-	144516	145178	220	DSBA thioredoxin domain-containing protein
+100	+	145347	146069	240	hypothetical protein
+101	-	146041	148632	863	DNA mismatch repair protein MutS
+102	+	148919	151330	803	cationic amino acid transport protein
+103	+	151336	152022	228	TrkA domain-containing protein
+104	-	152037	152777	246	hypothetical protein
+105	-	152929	153519	196	50S ribosomal protein L15
+106	-	154856	155758	300	hypothetical protein
+107	-	155843	156667	274	halorhodopsin
+108	+	156775	157593	272	lipoate-protein ligase
+109	+	157643	158470	275	DNA-(apurinic or apyrimidinic site) lyase
+110	+	158642	159454	270	hypothetical protein
+111	+	159504	160595	363	aminopeptidase
+112	+	162818	164257	479	hypothetical protein
+113	+	164313	165275	320	hypothetical protein
+114	-	165314	166495	393	cell division protein FtsZ
+115	-	166498	166665	55	hypothetical protein
+116	-	168346	169374	342	hypothetical protein
+117	-	173699	174637	312	transmembrane protein (homolog 4 to type II secretion system proteins tadC) (nonfunctional, N-terminal part)
+118	-	174634	176778	714	type II secretion system protein gspE1
+119	+	178450	179712	420	hypothetical protein
+120	-	180200	181156	318	methanol dehydrogenase regulatory protein
+121	+	181457	182527	356	periplasmic serine proteinase
+122	-	182519	182881	120	hypothetical protein
+123	+	182973	183524	183	GMP synthase subunit A
+124	+	183531	185405	624	hypothetical protein
+125	+	185502	186131	209	metallo-beta-lactamase family hydrolase
+126	-	186435	186812	125	prefoldin beta subunit
+127	-	186936	187193	85	hypothetical protein
+128	-	187199	187333	44	DNA-directed RNA polymerase subunit P
+129	-	187342	187629	95	50S ribosomal protein L37
+130	-	188023	188745	240	hypothetical protein
+131	-	188798	190102	434	tRNA pseudouridine synthase D
+132	-	190102	190440	112	peptidyl-tRNA hydrolase
+133	+	190524	191138	204	hypothetical protein
+134	+	191172	191759	195	deoxycytidine triphosphate deaminase
+135	+	191756	192664	302	thiamine biosynthesis protein thiN
+136	-	193423	195855	810	halocyanin hcpG
+137	-	195937	196686	249	hypothetical protein
+138	-	196726	197565	279	sugar kinase
+139	-	197621	198331	236	geranylgeranylglyceryl phosphate synthase-like protein
+140	-	198433	199404	323	transcription initiation factor TFB
+141	+	199586	200185	199	hypothetical protein
+142	-	200786	201136	116	hypothetical protein
+143	+	201248	201781	177	inorganic pyrophosphatase
+144	+	202043	203158	371	hypothetical protein
+145	+	203214	204572	452	hypothetical protein
+146	-	204589	205662	357	cell division protein ftsZ
+147	+	206215	207108	297	hypothetical protein
+148	+	207129	208217	362	oxidoreductase (aldo-keto reductase family protein)
+149	+	208277	209479	400	major facilitator superfamily transporter
+150	+	211140	211757	205	nudix family protein
+151	+	211796	213421	541	flavin containing oxidoreductase ( phytoene desaturase / monoamine oxidase)
+152	+	214614	215735	373	sarcosine oxidase beta subunit
+153	-	215737	216171	144	hsp20-type molecular chaperone
+154	+	217282	218976	564	hypothetical protein
+155	+	219199	219588	129	IS200-type transposase (TCE31)
+156	+	219590	220744	384	IS1341-type transposase (TCE31)
+157	-	220797	221225	142	hypothetical protein
+158	-	221302	221964	220	hypothetical protein
+159	-	222010	222792	260	metallo-beta-lactamase family hydrolase
+160	+	223284	223988	234	S-adenosylmethionine-dependent methyltransferase
+161	+	224041	224958	305	glycosyltransferase, type 2
+162	-	224955	225773	272	hypothetical protein
+163	-	225845	226450	201	hypothetical protein
+164	-	226465	227229	254	hypothetical protein
+165	-	227280	227813	177	nicotinamide-nucleotide adenylyltransferase
+166	+	227963	230098	711	ATP-dependent protease Lon
+167	-	230154	230603	149	hypothetical protein
+168	+	230688	231443	251	indole-3-glycerol phosphate synthase
+169	+	231440	232732	430	tryptophan synthase subunit beta
+170	+	232729	233559	276	tryptophan synthase subunit alpha
+171	+	233584	234381	265	fructose-bisphosphate aldolase
+172	+	234786	235949	387	3-dehydroquinate synthase
+173	-	236414	237094	226	3-dehydroquinate dehydratase
+174	-	237155	238114	319	transcription initiation factor TFB
+175	+	238405	239118	237	iron/cobalamin ABC transporter substrate-binding protein
+176	-	239120	240964	614	glycosyltransferase D
+177	-	241420	242031	203	hypothetical protein
+178	-	242087	243265	392	hypothetical protein
+179	-	243305	243814	169	hypothetical protein
+180	-	244061	245800	579	pyruvate kinase
+181	-	245889	247958	689	methionyl-tRNA synthetase
+182	-	248019	249086	355	L-tyrosine decarboxylase
+183	-	249112	250398	428	bifunctional CAAX prenyl proteinase / zinc metalloproteinase
+184	-	250438	252696	752	phosphoenolpyruvate synthase
+185	-	253220	254125	301	hypothetical protein
+186	+	254400	255092	230	phosphoribosyltransferase-like protein
+187	-	255742	257016	424	transposase (ISH8)
+188	-	258193	259053	286	segregation and condensation protein scpA
+189	-	259046	262618	1190	chromosome segregation protein
+190	+	263054	264541	495	aspartyl/glutamyl-tRNA amidotransferase subunit B
+191	+	265641	268130	829	DNA topoisomerase I
+192	+	268291	269559	422	hypothetical protein
+193	+	269851	270621	256	hypothetical protein
+194	-	270634	272517	627	transducer protein mpcT
+195	+	272970	273872	300	hypothetical protein
+196	+	274419	275420	333	rhomboid family protein
+197	+	275425	276219	264	endonuclease V
+198	+	276278	277099	273	oxidoreductase
+199	-	277115	278158	347	anion-transporting ATPase
+200	+	278248	278592	114	hypothetical protein
+201	+	278638	279153	171	CinA C-terminal domain-containing protein
+202	-	279662	280417	251	hypothetical protein
+203	+	280526	281686	386	acyl-CoA dehydrogenase
+204	-	282141	282578	145	transcription antitermination protein NusG
+205	-	282580	282753	57	preprotein translocase subunit SecE
+206	-	282817	284007	396	cell division protein FtsZ
+207	-	284035	285402	455	hypothetical protein
+208	-	285457	286413	318	Na /Ca2-antiporter-like protein
+209	+	286491	287291	266	shikimate 5-dehydrogenase
+210	+	287318	287677	119	hypothetical protein
+211	+	287692	289158	488	aminodeoxychorismate synthase component II
+212	-	289913	290728	271	transposase (ISH1)
+213	+	290845	291702	285	aminodeoxychorismate lyase
+214	+	291748	292218	156	hypothetical protein
+215	-	292215	292505	96	hypothetical protein
+216	+	292564	293553	329	sugar nucleotidyltransferase
+217	-	293554	294276	240	hypothetical protein
+218	-	294323	295471	382	hypothetical protein
+219	-	295545	296447	300	hypothetical protein
+220	+	296708	297121	137	hypothetical protein
+221	+	297179	297976	265	DNA-(apurinic or apyrimidinic site) lyase endonuclease III
+222	-	298567	300492	641	mRNA 3'-end processing factor-like protein
+223	+	301084	302589	501	prolyl-tRNA synthetase
+224	+	303234	304223	329	dtdpglucose 4,6-dehydratase-like protein
+225	+	304382	305440	352	NAD(P)-dependent glycerol-1-phosphate dehydrogenase
+226	-	305433	306248	271	hypothetical protein
+227	-	306483	307553	356	hypothetical protein
+228	-	307586	309382	598	acylaminoacyl peptidase
+229	+	309485	310552	355	glycosyltransferase, type 1
+230	-	310574	313021	815	folylpolyglutamate synthase / 7,8-dihydropteroate reductase / dihydropteroate synthase
+231	-	313070	314686	538	phosphoribosylglycinamide formyltransferase / phosphoribosylaminoimidazolecarboxamide formyltransferase
+232	+	314856	316232	458	adenylosuccinate lyase
+233	+	316297	316938	213	hypothetical protein
+234	+	316975	317472	165	hypothetical protein
+235	+	317745	318224	159	hypothetical protein
+236	-	318232	319575	447	unspecific monooxygenase (cytochrome P450)
+237	+	319692	320084	130	nascent polypeptide-associated complex protein
+238	+	320084	320800	238	methyltransferase
+239	-	320930	321244	104	DNA-directed RNA polymerase subunit M1
+240	+	321356	322618	420	major facilitator superfamily transporter
+241	-	322619	323389	256	enoyl-CoA hydratase
+242	-	325093	325521	142	bis(5'-nucleosyl)-tetraphosphatase (asymmetrical)
+243	+	325645	325980	111	ribosomal protein S10-like protein
+244	-	326338	327903	521	antiporter ( Na /H antiporter)
+245	+	328000	329280	426	indole-3-acetyl-L-aspartic acid hydrolase
+246	-	329291	330661	456	geranylgeranyl hydrogenase-like protein
+247	+	330767	331096	109	ferredoxin (2Fe-2S)
+248	-	331099	332229	376	fused rhodanese domain-containing protein/hydrolase
+249	-	332947	334185	412	D-gluconate dehydratase
+250	-	334223	335137	304	2-dehydro-3-deoxy-6-phosphogalactonate aldolase
+251	-	335186	336394	402	hypothetical protein
+252	+	336482	337552	356	glucose 1-dehydrogenase
+253	+	337549	338187	212	orotate phosphoribosyltransferase-like protein
+254	+	338228	338632	134	glutaredoxin
+255	-	338644	339333	229	transcription regulator ( phosphate uptake regulator)
+256	-	339330	340175	281	phosphate ABC transporter ATP-binding protein
+257	-	340182	341882	566	phosphate ABC transporter permease
+258	-	341884	342843	319	phosphate ABC transporter permease
+259	-	342899	343933	344	phosphate ABC transporter substrate-binding protein
+260	+	344160	345164	334	transcription regulator ( phosphate uptake regulator)
+261	+	345237	346208	323	sulfate adenylyltransferase small subunit
+262	+	346535	347845	436	aspartate--tRNA ligase
+263	-	347882	348166	94	hypothetical protein
+264	-	348778	349668	296	ABC-type transport system ATP-binding protein
+265	-	350665	351492	275	oxidoreductase (aldo-keto reductase family protein)
+266	-	351556	352788	410	oxidoreductase (geranylgeranyl hydrogenase homolog)
+267	-	354636	355394	252	ABC-type transport system ATP-binding protein
+268	-	355553	355753	66	transcription regulator-like protein
+269	-	356581	357450	289	2-oxoglutarate ferredoxin oxidoreductase subunit beta
+270	-	357447	359195	582	oxoglutarate--ferredoxin oxidoreductase alpha subunit
+271	+	359444	360088	214	electron transfer protein
+272	+	360085	360681	198	hypothetical protein
+273	-	360686	361075	129	methylmalonyl-CoA epimerase
+274	-	361114	362064	316	oxidoreductase
+275	-	362118	363803	561	methylmalonyl-CoA mutase subunit A
+276	-	364216	364785	189	N-acetyltransferase
+277	-	364854	366038	394	hypothetical protein
+278	+	366130	368100	656	acyl-CoA synthetase
+279	-	368510	369085	191	protein N-acetyltransferase-like protein
+280	-	369085	369660	191	hypothetical protein
+281	-	369806	370510	234	hypothetical protein
+282	-	370579	371754	391	molecular chaperone dnaJ
+283	-	371830	373719	629	molecular chaperone DnaK
+284	-	373876	374571	231	hypothetical protein
+285	-	374611	375264	217	dnaJ/dnaK ATPase stimulator grpE
+286	-	375776	376282	168	hypothetical protein
+287	-	376279	377190	303	rRNA methylase
+288	+	377286	378032	248	hypothetical protein
+289	-	378043	379281	412	transport protein
+290	+	379446	380567	373	pyridoxal phosphate-dependent aminotransferase ( aspartate aminotransferase)
+291	+	380632	381420	262	hypothetical protein
+292	-	381417	382598	393	translation-associated GTPase
+293	+	382709	383809	366	hypothetical protein
+294	-	384138	384983	281	hypothetical protein
+295	-	385507	386727	406	proteasome-activating nucleotidase
+296	+	387222	388385	387	phosphoesterase
+297	+	388382	391033	883	chromosome segregation protein
+298	+	392399	395104	901	DNA-directed DNA polymerase type II
+299	-	395120	395863	247	oxidoreductase
+300	+	396165	397091	308	ATP-binding sufC-like protein
+301	+	397128	398552	474	sufB domain-containing protein
+302	+	398554	399768	404	sufB domain-containing protein
+303	+	399868	400374	168	hypothetical protein
+304	+	400436	400870	144	transcription regulator
+305	+	401743	402405	220	hypothetical protein
+306	+	402597	403280	227	hypothetical protein
+307	-	403304	403993	229	hypothetical protein
+308	-	403990	404667	225	transcription regulator sirR
+309	-	404816	407530	904	TRAP-type transport system permease protein
+310	-	407523	408014	163	TRAP-type transport system protein small subunit
+311	-	408076	409032	318	TRAP-type transport system substrate-binding protein
+312	-	409180	410376	398	threonine synthase
+313	+	410500	411765	421	phytoene dehydrogenase
+314	-	411753	412436	227	hypothetical protein
+315	-	412520	413119	199	DnaJ N-terminal domain-containing protein
+316	-	413182	413934	250	hypothetical protein
+317	-	413939	414121	60	H/ACA RNA-protein complex component Nop10p
+318	-	414121	414924	267	translation initiation factor IF-2 subunit alpha
+319	-	414921	415094	57	30S ribosomal protein S27e
+320	-	415099	415380	93	50S ribosomal protein L44
+321	-	417066	419588	840	hypothetical protein
+322	+	419749	421257	502	hypothetical protein
+323	-	421561	422241	226	thiJ/pfpI family protein
+324	-	422310	422876	188	adenine phosphoribosyltransferase
+325	-	422935	424719	594	monovalent cation/H+ antiporter subunit D
+326	-	424716	426335	539	monovalent cation/H+ antiporter subunit D
+327	-	426332	427813	493	pH adaptation potassium efflux system protein D3 (sodium-potassium/hydrogen antiporter subunit D3)
+328	-	427806	428162	118	monovalent cation/H+ antiporter subunit C
+329	-	428159	428626	155	monovalent cation/H+ antiporter subunit B
+330	-	428623	429153	176	monovalent cation/H+ antiporter subunit B
+331	-	429150	429476	108	monovalent cation/H+ antiporter subunit G
+332	-	429473	429748	91	monovalent cation/H+ antiporter subunit F
+333	-	429745	430839	364	monovalent cation/H+ antiporter subunit E
+334	-	431009	432187	392	pantothenate metabolism flavoprotein
+335	+	432294	432785	163	hypothetical protein
+336	-	432795	433343	182	halocyanin hcpF
+337	+	433486	433743	85	hypothetical protein
+338	+	433794	435095	433	peptidase
+339	+	435225	435959	244	hypothetical protein
+340	-	437173	437937	254	cytochrome bc1 complex cytochrome b/c subunit
+341	-	437942	438754	270	cytochrome bc1 complex cytochrome b subunit
+342	-	438757	439587	276	cytochrome bc1 complex Rieske iron-sulfur protein
+343	-	439976	440665	229	halocyanin hcpE
+344	-	442233	442877	214	hypothetical protein
+345	-	442977	443660	227	DNA-(apurinic or apyrimidinic site) lyase endonuclease III
+346	+	443768	444745	325	diphosphomevalonate decarboxylase
+347	-	445748	446362	204	lactoylglutathione lyase / aromatic compounds dioxygenase
+348	-	447756	448865	369	glycosyltransferase, type 1
+349	-	448867	449952	361	glycosyltransferase, type 1
+350	+	450022	450303	93	hypothetical protein
+351	+	450351	450593	80	hypothetical protein
+352	-	450609	451070	153	UpsA domain-containing protein
+353	+	452032	453012	326	cysteine synthase
+354	-	453022	453435	137	hypothetical protein
+355	-	453468	454115	215	hypothetical protein
+356	-	454230	455060	276	prenyltransferase
+357	-	458665	461043	792	transducer protein htr16
+358	-	461187	462824	545	potassium channel protein
+359	-	463873	464775	300	proteinase IV
+360	-	464959	465987	342	hypothetical protein
+361	+	466072	467847	591	propionyl-CoA carboxylase carboxyltransferase component
+362	-	468302	468775	157	maoC family protein
+363	+	468849	469685	278	citryl-CoA lyase (citrate lyase beta subunit / ATP citrate synthase beta subunit)
+364	+	469755	471008	417	glutamate dehydrogenase (NADP)
+365	-	471132	472274	380	aspartate aminotransferase
+366	-	472271	472672	133	6,7-dimethyl-8-ribityllumazine synthase
+367	+	472700	474514	604	hypothetical protein
+368	+	474581	475735	384	phosphoribosylaminoimidazole carboxylase carbon dioxide-fixation subunit
+369	+	475732	476343	203	phosphoribosylaminoimidazole carboxylase catalytic subunit
+370	+	476469	476879	136	NADH dehydrogenase-like complex subunit A
+371	+	476872	477579	235	NADH dehydrogenase-like complex subunit B
+372	+	477576	479264	562	NADH dehydrogenase-like complex subunit Cd
+373	+	479265	480320	351	NADH dehydrogenase-like complex subunit H
+374	+	480317	480778	153	NADH dehydrogenase-like complex subunit I
+375	+	480824	481096	90	NADH dehydrogenase subunit J
+376	+	481093	481401	102	NADH dehydrogenase-like complex subunit J2
+377	+	481401	481703	100	NADH dehydrogenase-like complex subunit K
+378	+	481705	483783	692	NADH dehydrogenase-like complex subunit L
+379	+	483784	485343	519	NADH dehydrogenase-like complex subunit M
+380	+	485340	486827	495	NADH dehydrogenase-like complex subunit N
+381	+	486895	488328	477	hypothetical protein
+382	+	488360	489178	272	CBS/parB domain-containing protein
+383	+	489556	491259	567	methylmalonyl-CoA mutase subunit A
+384	-	491264	492007	247	hypothetical protein
+385	-	492547	494328	593	cox-type terminal oxidase subunit I
+386	+	495228	496085	285	cox-type terminal oxidase subunit III
+387	+	496135	496983	282	biotin--[acetyl-CoA-carboxylase] ligase 2
+388	-	496984	497751	255	cox-type terminal oxidase subunit II
+389	+	497858	499237	459	protoheme IX farnesyltransferase
+390	+	499935	500831	298	ABC-type transport system ATP-binding protein
+391	+	500828	501577	249	ABC-type transport system permease protein
+392	-	502080	502688	202	hypothetical protein
+393	+	502810	503226	138	methylmalonyl-CoA mutase subunit B (cobalamin-binding subunit)
+394	+	503228	504202	324	argK-type transport ATPase
+395	+	504260	505192	310	hydrolase
+396	-	505169	505552	127	hypothetical protein
+397	-	505549	506736	395	acetyl-CoA C-acyltransferase
+398	-	507111	508253	380	acyl-CoA dehydrogenase
+399	+	508388	509431	347	farnesyl-diphosphate farnesyltransferase (squalene synthase)
+400	-	509458	510318	286	3-hydroxyacyl-CoA dehydrogenase
+401	+	511189	511980	263	fructose-bisphosphate aldolase
+402	+	511980	512843	287	fructose-1,6-bisphosphatase
+403	+	512869	513558	229	hypothetical protein
+404	+	514790	515653	287	ABC-type transport system ATP-binding protein
+405	+	515650	517389	579	ABC-type transport system permease protein
+406	+	517502	518431	309	hypothetical protein
+407	+	518484	518900	138	hypothetical protein
+408	-	519110	519775	221	hypothetical protein
+409	+	520045	522618	857	copper-transporting ATPase
+410	+	522680	522886	68	heavy metal binding protein
+411	+	523025	523309	94	hypothetical protein
+412	-	523313	523684	123	hypothetical protein
+413	-	523770	525281	503	hypothetical protein
+414	+	525416	526054	212	hypothetical protein
+415	+	526797	527783	328	metallo-beta-lactamase family hydrolase
+416	+	527859	528440	193	hypothetical protein
+417	+	528487	529182	231	methyltransferase
+418	+	529260	530690	476	thiamine biosynthesis protein ThiC
+419	-	530687	532315	542	signal-transducing histidine kinase
+420	-	532748	533425	225	hypothetical protein
+421	+	533453	534319	288	sugar phosphatase-like protein
+422	-	534324	535793	489	hypothetical protein
+423	-	535839	536948	369	X-Pro dipeptidase
+424	+	537345	538253	302	hypothetical protein
+425	-	538263	538853	196	transcription regulator-like protein
+426	+	539267	540751	494	hypothetical protein
+427	-	541530	542441	303	2-dehydropantoate 2-reductase
+428	-	542998	544017	339	RNA 3'-terminal-phosphate cyclase
+429	+	544079	544648	189	hypothetical protein
+430	-	544684	545661	325	transcription initiation factor TFB
+431	+	545979	546566	195	response regulator
+432	+	546570	548483	637	signal-transducing histidine kinase
+433	-	549260	549892	210	hypothetical protein
+434	-	550295	550999	234	hypothetical protein
+435	+	551090	551536	148	UpsA domain-containing protein
+436	-	551547	553529	660	SpoVR protein
+437	-	553516	554844	442	hypothetical protein
+438	-	554835	557105	756	prkA-type protein kinase
+439	-	557102	559159	685	prkA-type protein kinase
+440	+	559503	560222	239	hypothetical protein
+441	+	560297	560611	104	hypothetical protein
+442	-	560651	561595	314	nucleoside-diphosphate-sugar epimerase ( UDP-glucose 4-epimerase)
+443	-	561677	562855	392	phosphate permease
+444	+	563739	564317	192	tRNA 2'-O-methylase
+445	+	564526	565044	172	transcription initiation factor E
+446	+	565044	565715	223	hypothetical protein
+447	+	566472	567167	231	CinA domain-containing protein
+448	+	567396	568022	208	PAP2 family protein
+449	+	568113	569189	358	NAD kinase
+450	+	569478	570506	342	transcription regulator ( phosphate uptake regulator)
+451	+	571063	571473	136	hypothetical protein
+452	-	571726	573237	503	aldehyde dehydrogenase
+453	-	573313	574161	282	hypothetical protein
+454	+	574321	575460	379	acyl/butyryl-CoA dehydrogenase
+455	-	575480	575920	146	glycerol-3-phosphate cytidyltransferase-like protein
+456	-	575917	576402	161	hypothetical protein
+457	+	576510	578402	630	hypothetical protein
+458	-	578399	579925	508	phospholipase D
+459	-	579976	581277	433	hypothetical protein
+460	-	581330	582007	225	CDP-diacylglycerol--serine O-phosphatidyltransferase
+461	+	582104	582553	149	halocyanin hcpH
+462	-	582614	583234	206	30S ribosomal protein S3Ae
+463	-	584581	585048	155	30S ribosomal protein S15
+464	-	585635	588004	789	transducer protein htrVI
+465	-	588001	589140	379	substrate-binding protein (membrane lipoprotein tmpC homolog)
+466	+	589512	590018	168	halocyanin hcpC
+467	+	590153	591370	405	cystathionine synthase/lyase (cystathionine gamma-synthase, cystathionine gamma-lyase, cystathionine beta-lyase)
+468	+	591430	592698	422	hypothetical protein
+469	+	592762	593463	233	ABC-type transport system ATP-binding protein
+470	+	593460	594056	198	ABC-type transport system permease protein
+471	-	594311	594601	96	sec-independent protein translocase component tatA
+472	+	594808	595620	270	hypothetical protein
+473	-	595646	597982	778	transducer protein htr4
+474	-	598138	599499	453	aldehyde dehydrogenase
+475	+	600784	603234	816	transducer protein htr18
+476	+	603231	604481	416	substrate-binding protein
+477	-	604501	605133	210	hypothetical protein
+478	+	605270	606280	336	oxidoreductase
+479	+	606474	608114	546	chitinase
+480	+	608207	609925	572	chitinase
+481	+	609922	611607	561	chitinase
+482	-	611861	612514	217	hypothetical protein
+483	-	612511	614589	692	hypothetical protein
+484	-	614643	616295	550	type II secretion system protein
+485	-	616359	617060	233	molybdopterin-guanine dinucleotide biosynthesis protein A
+486	-	617140	617586	148	molybdopterin-guanine dinucleotide biosynthesis protein B
+487	+	617732	618406	224	hypothetical protein
+488	+	618719	621232	837	dimethylsulfoxide reductase subunit A (reductase subunit)
+489	+	621229	622017	262	dimethylsulfoxide reductase subunit B (electron transfer protein)
+490	+	622017	623324	435	dimethylsulfoxide reductase subunit C (membrane anchor subunit)
+491	+	623321	623899	192	hypothetical protein
+492	+	623972	624862	296	hypothetical protein
+493	-	624874	625236	120	transcription regulator
+494	+	628467	629540	357	site-specific integrase/recombinase
+495	-	630183	630890	235	carbonate dehydratase
+496	-	630947	631756	269	methyltransferase
+497	-	634346	635695	449	hypothetical protein
+498	-	635782	636615	277	hypothetical protein
+499	+	636701	637351	216	hypothetical protein
+500	-	637360	637758	132	hypothetical protein
+501	+	637866	638900	344	hypothetical protein
+502	+	638949	639569	206	hypothetical protein
+503	-	639560	641215	551	rhomboid family protein
+504	+	641456	641740	94	DNA-directed RNA polymerase subunit L
+505	-	641747	642568	273	imidazole glycerol phosphate synthase subunit HisF
+506	-	643309	645411	700	phosphoribosylformylglycinamidine synthase II
+507	+	645527	646210	227	phosphotransferase domain-containing protein
+508	+	646210	647292	360	asparagine synthase
+509	-	647308	647781	157	hypothetical protein
+510	-	647814	648800	328	transcription initiation factor TFB
+511	+	648961	649236	91	aspartyl-tRNA amidotransferase subunit C
+512	+	649236	650507	423	aspartyl/glutamyl-tRNA amidotransferase subunit A
+513	-	650515	650982	155	acyl-CoA thioester hydrolase
+514	+	651085	652599	504	traB family protein
+515	+	652596	653204	202	hypothetical protein
+516	+	653262	654257	331	phosphoribosylaminoimidazole synthetase
+517	-	654343	654882	179	HTH/hypothetical protein
+518	-	654923	655288	121	hypothetical protein
+519	+	655523	656254	243	proteasome beta subunit
+520	+	656396	658081	561	DNA ligase (ATP)
+521	+	658136	658909	257	sugar phosphatase
+522	+	658975	659769	264	hypothetical protein
+523	-	659720	660820	366	DNA topoisomerase VI subunit A
+524	-	660817	663231	804	DNA topoisomerase VI subunit B
+525	+	663373	665286	637	DNA topoisomerase (ATP-hydrolyzing) subunit B
+526	+	665288	667762	824	DNA topoisomerase (ATP-hydrolyzing) subunit A
+527	+	667951	668484	177	hypothetical protein
+528	+	668530	669699	389	NADH dehydrogenase
+529	+	669894	670418	174	hypothetical protein
+530	-	670415	671236	273	uridine phosphorylase
+531	-	671290	671694	134	cytidine deaminase
+532	-	671745	672830	361	ABC-type transport system permease protein
+533	-	672823	674046	407	ABC-type transport system permease protein
+534	-	674043	675563	506	ABC-type transport system ATP-binding protein
+535	-	675588	676637	349	ABC-type transport system substrate-binding protein
+536	-	676740	678122	460	phosphohexomutase (phosphoglucomutase,phosphomannomutase)
+537	+	678951	680630	559	Na /proline symporter
+538	+	684144	685337	397	kynureninase
+539	-	685343	687640	765	signal-transducing histidine kinase
+540	-	687630	688244	204	response regulator / transcription regulator
+541	+	688360	689049	229	glycosyltransferase, type 2
+542	-	689018	691084	688	hypothetical protein
+543	-	691084	692217	377	iron ABC transporter ATP-binding protein
+544	-	692210	693823	537	iron ABC transporter permease
+545	-	693826	694977	383	iron ABC transporter substrate-binding protein
+546	-	697007	698572	521	protein kinase
+547	+	698659	699675	338	alkanesulfonate monooxygenase
+548	+	699753	700904	383	nonspecific lipid-transfer protein (sterol carrier protein)
+549	+	700901	701293	130	hypothetical protein
+550	-	701310	702410	366	NADPH dehydrogenase/ 2,4-dienoyl-CoA reductase (NADPH)
+551	-	702765	703406	213	NAD(P)H nitroreductase
+552	-	703546	704331	261	hydrolase-like protein
+553	+	704427	705869	480	aldehyde dehydrogenase
+554	-	705882	706682	266	transport protein ( substrate zinc)
+555	+	706932	709034	700	acyl-CoA synthetase
+556	+	709031	710095	354	phosphate acetyltransferase
+557	-	710108	710506	132	purine-binding chemotaxis protein cheW2
+558	+	710594	710941	115	hypothetical protein
+559	-	711293	712264	323	ParA domain-containing protein
+560	-	712309	714054	581	flagellar assembly protein J
+561	-	714061	715950	629	flagella biogenesis protein flaI ( flagellin secretion system protein flaI)
+562	-	715962	716732	256	fla cluster protein flaH
+563	-	716729	717184	151	fla cluster protein flaG
+564	-	717185	717622	145	fla cluster protein flaF
+565	-	717606	719120	504	fla cluster protein flaCE
+566	-	719225	719695	156	fla cluster protein flaD
+567	-	719692	721602	636	transducer protein htr15
+568	+	722062	722643	193	flagellin B1
+569	+	722655	723245	196	flagellin B2
+570	+	723257	723838	193	flagellin B3
+571	+	723908	725128	406	che operon protein
+572	+	725272	726144	290	hypothetical protein
+573	-	726173	727036	287	hypothetical protein
+574	-	727103	727909	268	protein-glutamate O-methyltransferase cheR
+575	-	727906	728373	155	taxis cluster protein cheD
+576	-	728370	729509	379	taxis protein cheC3
+577	-	729511	730098	195	taxis protein cheC1
+578	-	730101	732107	668	taxis sensor histidine kinase cheA
+579	-	732109	733152	347	protein-glutamate methylesterase cheB
+580	-	733149	733511	120	response regulator cheY
+581	-	733558	734094	178	purine-binding chemotaxis protein cheW1
+582	+	735911	737026	371	pyridoxal phosphate-dependent aminotransferase ( histidinol-phosphate aminotransferase / aspartate aminotransferase)
+583	+	737106	737396	96	hypothetical protein
+584	-	737414	738868	484	hypothetical protein
+585	+	739655	741661	668	hypothetical protein
+586	+	741757	742923	388	transposase (ISH3)
+587	+	744711	745877	388	transposase (ISH3)
+588	+	746818	747072	84	hypothetical protein
+589	+	747065	747442	125	hypothetical protein
+590	-	747510	748532	340	integrase-like protein
+591	-	752372	752653	93	phage PhiH1 repressor protein
+592	+	753202	755007	601	transcription regulator bat
+593	+	755129	757132	667	acyl-CoA synthetase
+594	-	757139	758149	336	oxidoreductase (aldo-keto reductase family protein)
+595	+	759123	759332	69	hypothetical protein
+596	-	759475	760974	499	IMP dehydrogenase
+597	+	765349	765939	196	flagellin A1
+598	+	765951	766535	194	flagellin A2
+599	+	766725	767492	255	GTP cyclohydrolase III
+600	+	767522	767794	90	glutaredoxin
+601	-	767791	769062	423	transducer protein htrXIII
+602	+	769207	770442	411	DNA-directed DNA polymerase type IV
+603	-	770846	771949	367	hypothetical protein
+604	+	772235	774037	600	oxidoreductase (aldo-keto reductase family protein)
+605	+	774034	774885	283	hypothetical protein
+606	+	774923	775684	253	GTP cyclohydrolase III
+607	+	775686	776705	339	oxidoreductase ( zinc-containing alcohol dehydrogenase / threonine 3-dehydrogenase)
+608	+	776702	777109	135	6-pyruvoyl tetrahydrobiopterin synthase
+609	-	778519	779163	214	triosephosphate isomerase
+610	-	779210	779749	179	hypothetical protein
+611	-	779792	780391	199	hypothetical protein
+612	-	780388	780897	169	hypothetical protein
+613	-	780894	781994	366	histidinol-phosphate aminotransferase
+614	-	782588	784177	529	oxidoreductase-like protein
+615	-	784749	785492	247	2-hydroxyhepta-2,4-diene-1,7-dioate isomerase
+616	+	785596	786318	240	hypothetical protein
+617	+	787281	787676	131	hypothetical protein
+618	-	788762	790042	426	UDP-glucose 6-dehydrogenase
+619	-	790115	790465	116	hypothetical protein
+620	-	791372	792289	305	glycosyltransferase, type 2
+621	+	792404	793831	475	polysaccharide biosynthesis protein
+622	+	793924	794646	240	sugar nucleotidyltransferase
+623	-	795715	797073	452	hypothetical protein
+624	+	797297	798415	372	hypothetical protein
+625	-	798488	799684	398	glycosyltransferase, type 1
+626	+	800820	801719	299	sugar transferase-like protein
+627	+	804610	805371	253	hypothetical protein
+628	+	805361	806269	302	glycosyltransferase, type 2
+629	-	806259	807197	312	glycosyltransferase, type 2
+630	+	807306	810569	1087	oligosaccharyl transferase
+631	+	810572	811513	313	hypothetical protein
+632	-	811534	812727	397	glycerol-3-phosphate dehydrogenase subunit A
+633	-	812830	813186	118	hypothetical protein
+634	-	813234	814715	493	O-succinylbenzoic acid--CoA ligase
+635	-	814708	815703	331	O-succinylbenzoate synthase
+636	-	815700	816635	311	1,4-dihydroxy-2-naphthoate octaprenyltransferase
+637	-	816692	818326	544	glycine betaine transport protein
+638	-	818498	819412	304	naphthoate synthase
+639	-	819485	821239	584	2-succinyl-6-hydroxy-2,4-cyclohexadiene-1-carboxylate synthase
+640	-	821236	822561	441	isochorismate synthase
+641	-	822607	823203	198	reductase ( nitrate reductase/ sulfite dehydrogenase)
+642	+	823640	823918	92	hypothetical protein
+643	+	823999	825942	647	hypothetical protein
+644	-	825961	826263	100	hypothetical protein
+645	+	826470	827792	440	adenylosuccinate synthetase
+646	+	827843	828046	67	hypothetical protein
+647	-	829755	830633	292	hypothetical protein
+648	+	830724	831908	394	hypothetical protein
+649	-	832212	832571	119	hypothetical protein
+650	+	832746	834230	494	cysteine--tRNA ligase
+651	+	834289	835125	278	hypothetical protein
+652	+	835118	835669	183	hypothetical protein
+653	-	835679	836923	414	hypothetical protein
+654	-	837044	837388	114	50S ribosomal protein L12
+655	-	837394	838452	352	acidic ribosomal protein P0
+656	-	838454	839092	212	50S ribosomal protein L1
+657	-	839293	839784	163	50S ribosomal protein L17
+658	+	840162	841274	370	GTP-binding protein
+659	+	841738	842523	261	lyase / dioxygenase ( lactoylglutathione lyase / aromatic compounds dioxygenase)
+660	+	842639	843013	124	hypothetical protein
+661	-	843015	843797	260	diphthine synthase
+662	+	843885	844868	327	hypothetical protein
+663	-	845407	845883	158	hypothetical protein
+664	+	845975	847150	391	pyridoxal phosphate-dependent aminotransferase ( aspartate aminotransferase)
+665	-	847143	847571	142	transcription regulator
+666	-	847708	848646	312	pyruvate--ferredoxin oxidoreductase beta subunit
+667	-	848649	850535	628	pyruvate--ferredoxin oxidoreductase alpha subunit
+668	-	850897	851928	343	ATP-binding protein mrp
+669	+	852264	852779	171	30S ribosomal protein S13
+670	+	852779	853291	170	30S ribosomal protein S4
+671	+	853298	853681	127	30S ribosomal protein S11
+672	+	853685	854431	248	DNA-directed RNA polymerase subunit D
+673	+	854683	855036	117	50S ribosomal protein L18
+674	+	855033	855470	145	50S ribosomal protein L13
+675	+	855464	855862	132	30S ribosomal protein S9
+676	+	855875	856075	66	DNA-directed RNA polymerase subunit N
+677	+	856078	856260	60	DNA-directed RNA polymerase subunit K
+678	+	856262	857458	398	phosphopyruvate hydratase
+679	+	857455	858204	249	30S ribosomal protein S2
+680	+	859199	860191	330	mevalonate kinase
+681	+	860188	860925	245	isopentenyl phosphate kinase
+682	+	861144	862490	448	hypothetical protein
+683	+	862490	863533	347	trifunctional short-chain (E)-prenyl diphosphate synthase ( dimethylallyltransferase / geranyltranstransferase / farnesytranstransferase)
+684	+	863949	865709	586	glutamyl-tRNA synthetase
+685	-	866222	868453	743	hypothetical protein
+686	+	868656	869018	120	50S ribosomal protein L7
+687	+	869025	869249	74	30S ribosomal protein S28
+688	+	869249	869437	62	50S ribosomal protein L24
+689	+	869434	869919	161	nucleoside diphosphate kinase
+690	-	869967	870914	315	5-methyltetrahydropteroyltriglutamate--homocysteine
+691	-	870971	871546	191	protein N5-glutamine methyltransferase
+692	-	871539	872441	300	hypothetical protein
+693	-	872612	873460	282	dimethyladenosine transferase
+694	-	873498	874091	197	hypothetical protein
+695	-	874133	874492	119	DNA-directed RNA polymerase subunit F
+696	-	874492	874791	99	50S ribosomal protein L21
+697	+	875184	876365	393	cystathionine synthase/lyase (cystathionine gamma-synthase, cystathionine gamma-lyase, cystathionine beta-lyase)
+698	-	876435	876701	88	elongation factor 1-beta
+699	-	876704	876877	57	hypothetical protein
+700	-	876956	878782	608	signal-transducing histidine kinase
+701	+	878900	879733	277	RNA modification ribonucleoprotein complex protein nop5
+702	+	879730	880362	210	fibrillarin
+703	-	880606	881196	196	transcription regulator
+704	+	881315	881848	177	methionine sulfoxide reductase A
+705	+	881892	882515	207	flagellin flgX
+706	+	882592	883080	162	hypothetical protein
+707	-	883114	884319	401	coenzyme PQQ synthesis protein E
+708	-	884316	884567	83	hypothetical protein
+709	+	884683	885780	365	coenzyme PQQ synthesis protein E
+710	+	885912	887051	379	copper-containing oxidoreductase
+711	+	887058	887675	205	halocyanin hcpD
+712	-	888244	888846	200	superoxide dismutase 1 (Mn containing)
+713	+	888985	890130	381	acyl-CoA dehydrogenase
+714	-	890143	891387	414	signal-transducing histidine kinase
+715	-	891757	892110	117	hypothetical protein
+716	-	892149	892613	154	peroxiredoxin (thioredoxin-dependent hydroperoxide peroxidase)
+717	-	892692	894068	458	geranylgeranyl hydrogenase-like protein
+718	-	894427	895062	211	L-fuculose-phosphate aldolase
+719	-	895065	895763	232	hypothetical protein
+720	-	895807	897057	416	glutamate dehydrogenase
+721	-	897162	898457	431	N-ethylammeline chlorohydrolase
+722	-	899016	899648	210	hypothetical protein
+723	+	899732	901498	588	urocanate hydratase
+724	+	901498	902418	306	formiminoglutamase
+725	+	902415	903668	417	imidazolonepropionase
+726	+	903665	905242	525	histidine ammonia-lyase
+727	+	905558	906310	250	hypothetical protein
+728	-	908382	908864	160	hypothetical protein
+729	-	908861	910057	398	phosphoglycerate kinase
+730	-	910160	910876	238	hypothetical protein
+731	+	910908	911585	225	uridine kinase
+732	+	912658	913851	397	cell division control protein cdc6-like protein
+733	-	915068	915700	210	hypothetical protein
+734	-	916116	917300	394	chorismate synthase
+735	-	917549	918841	430	3-phosphoshikimate 1-carboxyvinyltransferase
+736	+	918963	920138	391	X-Pro dipeptidase
+737	-	920154	921524	456	signal-transducing histidine kinase
+738	+	921632	922369	245	prephenate dehydrogenase
+739	+	923810	924292	160	transcription regulator
+740	+	924643	924864	73	hypothetical protein
+741	+	924851	927037	728	amino acid ABC transporter
+742	+	927113	927889	258	stationary-phase survival protein
+743	-	928132	928461	109	chorismate mutase
+744	-	928395	929249	284	shikimate kinase
+745	-	929923	930582	219	ABC-type transport system ATP-binding protein
+746	-	932831	935671	946	Lhr-like helicase
+747	-	935732	936475	247	phosphoesterase
+748	-	936475	937872	465	hypothetical protein
+749	-	937869	939140	423	replication factor A
+750	+	939246	939908	220	5-amino-6-(5-phosphoribosylamino)uracil reductase
+751	-	940249	941283	344	thioredoxin-disulfide reductase
+752	+	941451	941735	94	hypothetical protein
+753	-	942067	942465	132	translation initiation factor IF-2 subunit beta
+754	+	942607	942849	80	hypothetical protein
+755	-	942925	943308	127	hypothetical protein
+756	+	943393	944298	301	8-oxoguanine DNA glycosylase
+757	+	947435	948871	478	YjeF family carbohydrate kinase
+758	+	948864	949355	163	molybdenum cofactor biosynthesis protein MoaC
+759	-	949365	950672	435	GTP-binding protein
+760	-	950721	951446	241	RNA-associated protein
+761	-	951507	952001	164	hypothetical protein
+762	-	951998	952600	200	hypothetical protein
+763	-	952584	953282	232	hypothetical protein
+764	-	953395	954063	222	TrkA domain-containing protein
+765	-	954308	955921	537	potassium transport system protein trkH1
+766	-	955998	956759	253	lrp-type transcriptional regulator
+767	-	956824	957246	140	hypothetical protein
+768	-	958612	959523	303	FKBP-type peptidylprolyl isomerase
+769	+	959888	960499	203	adenylate cyclase
+770	+	960566	961792	408	S-adenosylmethionine synthetase
+771	+	961869	963047	392	thiamine biosynthesis protein thiI
+772	-	963510	964493	327	cysteine synthase
+773	+	964607	964972	121	thioredoxin
+774	-	964962	967127	721	hypothetical protein
+775	+	967262	968554	430	phosphoribosylamine--glycine ligase
+776	-	968548	970395	615	succinate dehydrogenase subunit A (flavoprotein)
+777	-	970402	971280	292	succinate dehydrogenase subunit B (iron-sulfur protein)
+778	-	971287	971649	120	succinate dehydrogenase subunit D (membrane anchor protein)
+779	-	971651	972043	130	succinate dehydrogenase subunit C (cytochrome b-556)
+780	-	972190	972765	191	DNA-3-methyladenine glycosidase I
+781	+	972907	974886	659	3-hydroxyacyl-CoA dehydrogenase
+782	-	978572	979387	271	transposase (ISH1)
+783	-	983080	983514	144	hypothetical protein
+784	-	984063	984806	247	thymidylate synthase
+785	+	984892	985230	112	hypothetical protein
+786	+	985284	985862	192	metallo-beta-lactamase family hydrolase
+787	-	986717	987319	200	superoxide dismutase 2
+788	-	987384	988829	481	deoxyribodipyrimidine photo-lyase
+789	-	988870	989325	151	hypothetical protein
+790	+	989427	990785	452	hypothetical protein
+791	+	990861	992426	521	acyl-CoA synthetase
+792	-	992442	993242	266	metallo-beta-lactamase family hydrolase
+793	+	993346	994113	255	oxidoreductase
+794	+	994110	995126	338	alkanesulfonate monooxygenase
+795	-	995143	995820	225	hypothetical protein
+796	-	995952	997070	372	dihydropteroate synthase
+797	+	997723	998448	241	hypothetical protein
+798	-	998452	998913	153	maoC family protein
+799	-	998967	999908	313	drug/metabolite family transporter
+800	+	1000051	1000536	161	transcription regulator
+801	-	1000544	1002412	622	glutamyl-tRNA(Gln) amidotransferase subunit E
+802	-	1002449	1003993	514	hypothetical protein
+803	-	1003990	1004469	159	hypothetical protein
+804	-	1004514	1005926	470	fumarate hydratase
+805	-	1006130	1006378	82	hypothetical protein
+806	-	1006427	1007410	327	flap endonuclease-1
+807	+	1008615	1009601	328	ornithine cyclodeaminase
+808	-	1009602	1010558	318	hypothetical protein
+809	-	1010614	1010841	75	H/ACA RNA-protein complex component Gar1
+810	-	1010841	1011119	92	signal recognition particle 19K protein
+811	-	1011159	1012268	369	corrinoid ABC transporter substrate-binding protein
+812	+	1012328	1013437	369	corrinoid ABC transporter permease
+813	+	1013434	1014630	398	corrinoid ABC transporter ATPase
+814	+	1014680	1016110	476	hypothetical protein
+815	+	1016190	1018010	606	signal-transducing histidine kinase
+816	+	1018325	1019659	444	signal-transducing histidine kinase
+817	-	1020080	1020529	149	transcription regulator
+818	-	1020566	1021366	266	inositol-1(or 4)-monophosphatase / fructose-1,6-bisphosphatase
+819	+	1023905	1026307	800	DNA repair helicase
+820	+	1026535	1027053	172	O-acetyltransferase ( galactoside O-acetyltransferase)
+821	-	1027625	1028404	259	hypothetical protein
+822	-	1028406	1029218	270	hypothetical protein
+823	+	1029527	1029838	103	TFB C-terminal domain-containing protein
+824	-	1029840	1030328	162	phosphopantetheine adenylyltransferase
+825	-	1030368	1030865	165	hypothetical protein
+826	-	1030927	1032372	481	transducer protein htr9
+827	-	1032442	1033524	360	carboxylate-amine ligase
+828	-	1033585	1034028	147	hypothetical protein
+829	-	1034095	1034577	160	hypothetical protein
+830	-	1034621	1035067	148	hypothetical protein
+831	-	1035652	1036026	124	hypothetical protein
+832	+	1036186	1036587	133	hypothetical protein
+833	-	1036595	1036738	47	hypothetical protein
+834	+	1036871	1038673	600	DNA repair helicase
+835	+	1038746	1039144	132	hypothetical protein
+836	-	1039192	1041240	682	UDP-sugar hydrolase / 5'-nucleotidase
+837	+	1041390	1042532	380	hypothetical protein
+838	-	1042543	1044264	573	hypothetical protein
+839	+	1047096	1048343	415	serine hydroxymethyltransferase
+840	+	1048516	1049409	297	bifunctional 5,10-methylene-tetrahydrofolate dehydrogenase/ 5,10-methylene-tetrahydrofolate cyclohydrolase
+841	+	1050242	1051540	432	hypothetical protein
+842	+	1052194	1053105	303	hypothetical protein
+843	+	1053958	1054236	92	hypothetical protein
+844	-	1054479	1055627	382	hypothetical protein
+845	+	1055719	1056729	336	LPPG:FO 2-phospho-L-lactate transferase
+846	+	1056731	1057462	243	hypothetical protein
+847	+	1057593	1058585	330	deoxyhypusine synthase
+848	+	1058671	1058850	59	30S ribosomal protein S17
+849	+	1058897	1059928	343	aspartate-semialdehyde dehydrogenase
+850	-	1060195	1061142	315	phosphoglycerate dehydrogenase
+851	-	1062232	1063494	420	transducer protein htrXII
+852	+	1063612	1064889	425	histidinol dehydrogenase
+853	-	1065028	1065234	68	dodecin
+854	+	1066603	1067952	449	5'-nucleotidase
+855	+	1067997	1069079	360	hypothetical protein
+856	-	1069088	1069954	288	translation initiation factor aIF-2B subunit alpha/delta eif2bd
+857	-	1070440	1071942	500	rtcB-like protein
+858	-	1073065	1073538	157	hypothetical protein
+859	+	1073624	1074157	177	N-terminal acetyltransferase
+860	-	1074159	1075127	322	geranylgeranyl-diphosphate geranylgeranyltransferase (phytoene synthase)
+861	-	1075886	1077961	691	ATPase AAA
+862	-	1078614	1080638	674	bacterio-opsin activator
+863	+	1082241	1083029	262	bacteriorhodopsin
+864	+	1083580	1084755	391	DNA primase small subunit
+865	+	1084752	1085576	274	hypothetical protein
+866	-	1085670	1087949	759	ATPase AAA
+867	+	1088336	1089133	265	hydrolase
+868	+	1089405	1091060	551	hypothetical protein
+869	+	1091081	1093321	746	hypothetical protein
+870	-	1093323	1094147	274	3-methyl-2-oxobutanoate hydroxymethyltransferase
+871	-	1094474	1094992	172	phosphoglycolate phosphatase
+872	+	1095146	1095661	171	serine O-acetyltransferase
+873	-	1095671	1096795	374	acyl-CoA dehydrogenase
+874	-	1096860	1097363	167	hypothetical protein
+875	+	1099055	1099513	152	hypothetical protein
+876	+	1099567	1100214	215	transcription regulator bat
+877	+	1100274	1100678	134	hypothetical protein
+878	+	1101050	1101619	189	hypothetical protein
+879	-	1101678	1103150	490	amidophosphoribosyltransferase
+880	-	1103356	1103532	58	50S ribosomal protein L37
+881	-	1103529	1103711	60	small nuclear ribonucleoprotein
+882	-	1103768	1104829	353	tetrahedral aminopeptidase
+883	+	1105184	1106137	317	hypothetical protein
+884	+	1106793	1109429	878	helicase
+885	+	1109479	1110222	247	ribonuclease Z
+886	-	1110219	1111688	489	transducer protein hemAT
+887	-	1111749	1112822	357	peptide chain release factor pelota
+888	-	1112882	1114993	703	hypothetical protein
+889	-	1115071	1116720	549	protein acetyltransferase
+890	-	1116768	1118816	682	hypothetical protein
+891	-	1119155	1119763	202	hypothetical protein
+892	-	1119767	1120354	195	thymidine kinase
+893	+	1120461	1120901	146	UpsA domain-containing protein
+894	-	1121204	1122142	312	A/G-specific adenine glycosylase
+895	+	1122628	1124559	643	transducer protein htrVIII
+896	-	1124563	1125939	458	pyridoxal phosphate-dependent aminotransferase ( acetylornithine aminotransferase)
+897	-	1126072	1127370	432	mgtC family protein
+898	+	1127639	1128982	447	sodium-dependent transporter
+899	+	1129122	1130555	477	sodium-dependent transporter
+900	+	1130624	1132174	516	propionyl-CoA carboxylase carboxyltransferase component
+901	+	1132542	1134374	610	propionyl-CoA carboxylase biotin carboxylase component
+902	+	1137012	1137959	315	biotin--[acetyl-CoA-carboxylase] ligase 1
+903	-	1137966	1138409	147	UpsA domain-containing protein
+904	-	1138461	1139690	409	hypothetical protein
+905	+	1139793	1140638	281	hypothetical protein
+906	-	1140673	1141383	236	oxidoreductase
+907	+	1141501	1142649	382	succinyl-CoA synthetase subunit beta
+908	+	1142646	1143515	289	succinate--CoA ligase (ADP-forming) alpha subunit
+909	+	1143570	1144616	348	site-specific DNA-methyltransferase
+910	-	1144626	1147004	792	chloride channel
+911	-	1147437	1147979	180	hypothetical protein
+912	-	1147976	1148215	79	glutaredoxin
+913	-	1149071	1149850	259	hypothetical protein
+914	+	1150022	1150585	187	precorrin-8W decarboxylase
+915	+	1150582	1151286	234	cobalt-precorrin-2 C(20)-methyltransferase
+916	+	1151279	1152145	288	precorrin-4 C11-methyltransferase
+917	+	1152142	1153119	325	cobalamin biosynthesis protein CbiG
+918	+	1153116	1153946	276	precorrin-3B C17-methyltransferase
+919	+	1153946	1154953	335	precorrin-3B C17-methyltransferase
+920	+	1154953	1155201	82	cobalamin operon protein
+921	+	1155893	1157116	407	cobalt chelatase,oxygen-independent
+922	+	1157113	1157484	123	cobalamin operon protein
+923	+	1157462	1158685	407	nicotinate-nucleotide--dimethylbenzimidazole phosphoribosyltransferase
+924	-	1158714	1160786	690	magnesium chelatase (protoporphyrin IX magnesium-chelatase)
+925	+	1160821	1164720	1299	cobalt chelatase,oxygen-dependent
+926	+	1164710	1165423	237	precorrin-8X methylmutase
+927	+	1165420	1166172	250	cobalt-precorrin-6Y C(5)-methyltransferase
+928	-	1166169	1166939	256	hypothetical protein
+929	+	1167084	1168085	333	hypothetical protein
+930	+	1168099	1169397	432	cobyrinic acid a,c-diamide synthase
+931	+	1169394	1170071	225	cob(I)alamin adenosyltransferase
+932	+	1170073	1171611	512	cobyric acid synthase
+933	+	1171608	1172267	219	cobalamin operon protein
+934	+	1172264	1173190	308	cobalamin biosynthesis protein (adenosylcobinamide biosynthesis protein)
+935	+	1173187	1173930	247	cobalamin (5'-phosphate) synthase
+936	+	1173930	1174499	189	GTP:adenosylcobinamide-phosphate guanylyltransferase
+937	+	1174517	1175527	336	L-threonine-O-3-phosphate decarboxylase
+938	+	1175520	1176215	231	adenosylcobinamide amidohydrolase
+939	-	1176282	1178138	618	hypothetical protein
+940	+	1179175	1179588	137	hypothetical protein
+941	-	1180803	1181612	269	sulfate/thiosulfate/molybdate ABC transporter permease
+942	-	1181609	1182538	309	sulfate/thiosulfate/molybdate ABC transporter substrate-binding protein
+943	+	1182599	1183030	143	transcriptional regulator
+944	-	1183041	1184462	473	glycine dehydrogenase subunit 2
+945	-	1184462	1185787	441	glycine dehydrogenase subunit 1
+946	-	1186070	1186444	124	glycine cleavage system protein H
+947	-	1186441	1187532	363	glycine cleavage system aminomethyltransferase T
+948	-	1187679	1188269	196	taxis protein cheC2
+949	+	1188392	1188850	152	hypothetical protein
+950	-	1188874	1189581	235	hypothetical protein
+951	+	1189709	1190554	281	hypothetical protein
+952	+	1190628	1191215	195	hypothetical protein
+953	+	1193335	1194672	445	hydroxymethylglutaryl-CoA synthase
+954	-	1194674	1195258	194	NADH-dependent FMN reductase
+955	-	1195321	1196034	237	hypothetical protein
+956	+	1196129	1196617	162	hypothetical protein
+957	-	1197235	1197690	151	hypothetical protein
+958	+	1197779	1199194	471	replication factor C large subunit
+959	-	1199191	1200024	277	heme A synthase
+960	+	1200155	1202407	750	malic enzyme
+961	-	1202415	1203038	207	hypothetical protein
+962	+	1203157	1204065	302	drug/metabolite family transporter
+963	-	1204078	1205052	324	oxidoreductase (aldo-keto reductase family protein)
+964	-	1205541	1206269	242	cobalt ABC transporter ATP-binding protein
+965	-	1206324	1207052	242	cobalt ABC transporter permease
+966	-	1207056	1207346	96	cobalt transport protein CbiN
+967	-	1207343	1208005	220	cobalt transport protein CbiM
+968	+	1208235	1209092	285	halocyanin hcpA
+969	+	1209410	1210540	376	hypothetical protein
+970	+	1211000	1211626	208	hypothetical protein
+971	-	1211809	1214964	1051	ribonucleoside-diphosphate reductase alpha subunit
+972	-	1215489	1216085	198	anthranilate synthase component II
+973	-	1216082	1217665	527	anthranilate synthase component I
+974	-	1217662	1218318	218	phosphoribosylanthranilate isomerase
+975	-	1218315	1219325	336	anthranilate phosphoribosyltransferase
+976	+	1220268	1220471	67	insertion element protein (ISH2)
+977	-	1221879	1223063	394	ATPase AAA
+978	-	1224068	1225069	333	hypothetical protein
+979	-	1225644	1226075	143	UpsA domain-containing protein
+980	+	1226324	1227934	536	transducer protein htrI
+981	+	1227934	1228653	239	sensory rhodopsin I
+982	+	1228755	1229897	380	hypothetical protein
+983	-	1230149	1230859	236	DNA repair and recombination protein RadB
+984	-	1230960	1231727	255	carbohydrate reductase-like protein
+985	+	1231909	1234137	742	ATPase AAA
+986	-	1234221	1234595	124	30S ribosomal protein S8
+987	+	1234682	1235137	151	hypothetical protein
+988	+	1235606	1236409	267	orotidine-5'-phosphate decarboxylase
+989	+	1236624	1237133	169	DnaJ N-terminal domain-containing protein
+990	+	1237163	1237774	203	hypothetical protein
+991	+	1237849	1239471	540	translation elongation factor aEF-1 alpha subunit-like protein
+992	+	1239506	1239874	122	hypothetical protein
+993	+	1240520	1241488	322	geranylgeranyl-diphosphate geranylgeranyltransferase (phytoene synthase)
+994	-	1241496	1242335	279	hypothetical protein
+995	-	1242328	1243155	275	prenyltransferase
+996	-	1243162	1244700	512	phytoene dehydrogenase
+997	-	1244747	1245682	311	N(5),N(10)-methenyltetrahydromethanopterin cyclohydrolase
+998	+	1247417	1248268	283	hypothetical protein
+999	+	1248273	1249280	335	50S ribosomal protein L3P
+1000	+	1249284	1250036	250	50S ribosomal protein L4
+1001	+	1250033	1250287	84	50S ribosomal protein L23
+1002	+	1250290	1251012	240	50S ribosomal protein L2
+1003	+	1251016	1251438	140	30S ribosomal protein S19
+1004	+	1251442	1251912	156	50S ribosomal protein L22
+1005	+	1251912	1252820	302	30S ribosomal protein S3P
+1006	+	1252820	1253035	71	50S ribosomal protein L29
+1007	+	1253044	1253415	123	ribonuclease P protein component 1
+1008	+	1253406	1253735	109	30S ribosomal protein S17
+1009	+	1253735	1254133	132	50S ribosomal protein L14
+1010	+	1254138	1254494	118	50S ribosomal protein L24
+1011	+	1254491	1255192	233	30S ribosomal protein S4
+1012	+	1255189	1255716	175	50S ribosomal protein L5
+1013	+	1255713	1255871	52	30S ribosomal protein S14
+1014	+	1255874	1256266	130	30S ribosomal protein S8
+1015	+	1256270	1256806	178	50S ribosomal protein L6
+1016	+	1256810	1257529	239	50S ribosomal protein L32
+1017	+	1257522	1257971	149	50S ribosomal protein L19
+1018	+	1257971	1258522	183	50S ribosomal protein L18
+1019	+	1258526	1259164	212	30S ribosomal protein S5
+1020	+	1259164	1259628	154	50S ribosomal protein L30
+1021	+	1259634	1260095	153	50S ribosomal protein L15
+1022	+	1260099	1261574	491	preprotein translocase subunit SecY
+1023	+	1261650	1262813	387	ABC-type transport system substrate-binding protein
+1024	-	1263011	1264687	558	potassium transport system protein trkH2
+1025	+	1265289	1265939	216	adenylate kinase
+1026	+	1266003	1266875	290	hypothetical protein
+1027	+	1266931	1267509	192	cytidylate kinase
+1028	+	1267511	1268416	301	H/ACA RNA-protein complex component Cbf5p
+1029	-	1269023	1270777	584	hypothetical protein
+1030	-	1270983	1272593	536	transducer protein htr17
+1031	+	1273077	1273862	261	hypothetical protein
+1032	+	1273919	1274890	323	hypothetical protein
+1033	+	1274916	1275755	279	hypothetical protein
+1034	+	1275800	1276777	325	hypothetical protein
+1035	+	1277207	1277521	104	DNA-directed RNA polymerase subunit M2
+1036	-	1277563	1278270	235	hypothetical protein
+1037	+	1278505	1279194	229	hypothetical protein
+1038	-	1279195	1279869	224	oxidoreductase
+1039	+	1279991	1281181	396	translation-associated GTPase
+1040	-	1282202	1282633	143	UpsA domain-containing protein
+1041	-	1282697	1284085	462	deoxyribodipyrimidine photo-lyase
+1042	-	1284088	1285644	518	phytoene dehydrogenase
+1043	+	1285778	1286029	83	translation initiation factor IF-1A
+1044	+	1286520	1288157	545	transducer protein htrVII
+1045	-	1288173	1290605	810	transducer protein cosT
+1046	-	1290610	1291614	334	chemotactic signal transduction system substrate-binding protein cosB
+1047	-	1293408	1294121	237	sensory rhodopsin II
+1048	-	1294123	1296417	764	transducer protein htrII
+1049	-	1296507	1297268	253	hypothetical protein
+1050	-	1297296	1298114	272	agmatinase
+1051	-	1298118	1298501	127	translation initiation factor IF-5A
+1052	-	1298603	1299379	258	creatininase
+1053	-	1299427	1301169	580	hypothetical protein
+1054	-	1301173	1301523	116	hsp20-type molecular chaperone
+1055	-	1301597	1302253	218	phosphatase ( phosphoglycolate phosphatase)
+1056	-	1302307	1302582	91	pterin-4-alpha-carbinolamine dehydratase
+1057	-	1302646	1303956	436	glutamyl-tRNA reductase
+1058	-	1303953	1304615	220	siroheme synthase (precorrin-2 oxidase / ferrochelatase)
+1059	-	1304623	1305681	352	heme biosynthesis protein nirGH
+1060	+	1306292	1307200	302	di-trans,poly-cis-decaprenylcistransferase / (Z)-prenyl diphosphate synthase
+1061	-	1307220	1307828	202	di-trans,poly-cis-decaprenylcistransferase / (Z)-prenyl diphosphate synthase
+1062	+	1307917	1309239	440	hypothetical protein
+1063	-	1309241	1310461	406	DNA primase
+1064	+	1310801	1312291	496	sodium/pantothenate symporter
+1065	-	1312293	1312571	92	hypothetical protein
+1066	+	1314535	1314894	119	hypothetical protein
+1067	-	1314896	1315579	227	hypothetical protein
+1068	+	1315778	1316686	302	pyridoxal biosynthesis lyase PdxS
+1069	-	1316696	1318780	694	nuclease-like protein
+1070	-	1318992	1319897	301	homoserine kinase
+1071	+	1320018	1321334	438	hypothetical protein
+1072	-	1322097	1322669	190	hypothetical protein
+1073	-	1323055	1323570	171	hsp20-type molecular chaperone
+1074	+	1324701	1325954	417	ferredoxin-NAD reductase
+1075	+	1326381	1326800	139	hypothetical protein
+1076	-	1327444	1328748	434	erythromycin esterase-like protein
+1077	+	1329039	1332167	1042	carbamoyl phosphate synthase large subunit
+1078	-	1332238	1333299	353	carbamoyl phosphate synthase small subunit
+1079	+	1333397	1333810	137	transcription regulator
+1080	+	1333850	1334479	209	isopentenyl-diphosphate delta-isomerase, type I
+1081	+	1334527	1334937	136	hypothetical protein
+1082	-	1335223	1336266	347	NADPH:quinone reductase
+1083	+	1336357	1336974	205	molybdenum cofactor biosynthesis protein moaB
+1084	+	1336971	1337678	235	5-formyltetrahydrofolate cyclo-ligase
+1085	-	1338370	1339287	305	GMP synthase subunit B
+1086	-	1339287	1340948	553	CTP synthetase
+1087	-	1342067	1342684	205	hypothetical protein
+1088	+	1342776	1343321	181	peroxiredoxin-like protein
+1089	-	1343352	1345274	640	threonyl-tRNA synthetase
+1090	+	1345483	1345692	69	cold shock protein
+1091	-	1345822	1346853	343	mandelate racemase / muconate lactonizing enzyme
+1092	-	1346850	1347863	337	hypothetical protein
+1093	-	1348189	1349070	293	hypothetical protein
+1094	+	1349566	1350222	218	hypothetical protein
+1095	+	1350258	1351541	427	glutamyl-tRNA(Gln) amidotransferase subunit D
+1096	-	1352471	1353202	243	glycerophosphodiester phosphodiesterase
+1097	-	1353202	1353477	91	molybdopterin converting factor small subunit
+1098	+	1353574	1354740	388	potassium channel protein
+1099	-	1356276	1357052	258	uridine phosphorylase
+1100	-	1357101	1357988	295	sugar kinase
+1101	-	1358013	1358831	272	hypothetical protein
+1102	-	1358890	1359834	314	translation initiation factor IF-2B subunit delta
+1103	-	1359877	1362294	805	transducer protein basT
+1104	-	1362291	1363532	413	chemotactic signal transduction system substrate-binding protein basB
+1105	+	1363630	1364268	212	deoxyribose-phosphate aldolase
+1106	+	1364327	1365625	432	hypothetical protein
+1107	-	1365644	1366543	299	cation efflux system membrane protein (zinc/cadmium)
+1108	-	1366584	1367129	181	histidine triad family protein
+1109	-	1367488	1368378	296	methionine aminopeptidase
+1110	-	1368427	1369242	271	spermidine/putrescine ABC transporter permease
+1111	-	1369242	1370135	297	spermidine/putrescine ABC transporter permease
+1112	-	1370137	1371315	392	spermidine/putrescine ABC transporter substrate-binding protein
+1113	+	1371458	1372582	374	spermidine/putrescine ABC transporter ATP-binding protein
+1114	-	1372589	1373473	294	asparaginase
+1115	+	1373572	1374840	422	isocitrate dehydrogenase (NADP )
+1116	-	1375456	1376673	405	hydroxymethylglutaryl-CoA reductase (NADPH)
+1117	+	1376769	1377086	105	hypothetical protein
+1118	+	1377083	1378231	382	thiamine ABC transporter substrate-binding protein
+1119	+	1378282	1379802	506	hypothetical protein
+1120	+	1379924	1381048	374	quinolinate synthetase
+1121	+	1381051	1382580	509	L-aspartate oxidase, quinolinate synthetase B
+1122	+	1382567	1383373	268	nicotinate-nucleotide pyrophosphorylase (carboxylating)
+1123	-	1383374	1384165	263	hypothetical protein
+1124	+	1384268	1384606	112	small multidrug export protein
+1125	-	1384609	1386135	508	phosphoglyceromutase
+1126	+	1389232	1389981	249	ABC-type transport system ATP-binding protein
+1127	+	1392047	1393846	599	hypothetical protein
+1128	+	1393895	1394320	141	UpsA domain-containing protein
+1129	-	1394358	1395434	358	hypothetical protein
+1130	+	1395680	1396528	282	hypothetical protein
+1131	+	1396577	1397512	311	GTP cyclohydrolase
+1132	-	1398526	1399326	266	hypothetical protein
+1133	-	1399617	1401197	526	hypothetical protein
+1134	+	1401298	1401855	185	FxsA
+1135	-	1403267	1404304	345	heme biosynthesis protein nirDL
+1136	+	1404415	1405473	352	anthranilate phosphoribosyltransferase
+1137	+	1405541	1406083	180	CYPL-type peptidylprolyl isomerase
+1138	+	1406702	1407055	117	hypothetical protein
+1139	-	1407058	1407819	253	geranylgeranylglyceryl phosphate synthase-like protein
+1140	-	1407870	1408229	119	chromosome condensation/camphor resistance protein CrcB
+1141	-	1408226	1408612	128	chromosome condensation/camphor resistance protein CrcB
+1142	-	1409198	1409425	75	transcription regulator
+1143	-	1409426	1410103	225	TrkA domain-containing protein
+1144	+	1410193	1410432	79	transcription regulator-like protein
+1145	-	1410451	1411557	368	branched-chain amino acid dehydrogenase E1 component alpha subunit
+1146	-	1411900	1412499	199	thymidylate kinase
+1147	+	1412574	1413485	303	NADH dehydrogenase 32K subunit
+1148	+	1413643	1414827	394	cell division protein ftsZ
+1149	+	1415599	1416228	209	hypothetical protein
+1150	+	1416285	1417388	367	FO synthase subunit 1
+1151	-	1417395	1418777	460	FO synthase subunit 2
+1152	+	1418904	1419920	338	phosphoribosylaminoimidazole-succinocarboxamide synthase
+1153	+	1420391	1421470	359	hypothetical protein
+1154	-	1422082	1422756	224	phosphoribosylformylglycinamidine synthase I
+1155	-	1422753	1423007	84	phosphoribosylformylglycinamidine synthase component purS
+1156	+	1423133	1424044	303	formyltetrahydrofolate deformylase
+1157	-	1425049	1425480	143	hypothetical protein
+1158	-	1425550	1427307	585	subtilisin-like serine proteinase
+1159	-	1427378	1428151	257	hypothetical protein
+1160	-	1433366	1435123	585	archaeosine tRNA-ribosyltransferase
+1161	-	1435187	1436662	491	7-cyano-7-deazaguanine tRNA-ribosyltransferase
+1162	-	1436911	1437453	180	nudix family protein
+1163	-	1437500	1438039	179	hypothetical protein
+1164	-	1438101	1439273	390	hypothetical protein
+1165	-	1440402	1441934	510	glycerol kinase
+1166	+	1442155	1443867	570	glycerol-3-phosphate dehydrogenase subunit A
+1167	+	1443857	1445140	427	anaerobic glycerol-3-phosphate dehydrogenase subunit B
+1168	+	1445133	1446530	465	sn-glycerol-3-phosphate dehydrogenase subunit C
+1169	+	1447279	1447800	173	hypothetical protein
+1170	+	1448270	1449181	303	hypothetical protein
+1171	-	1450533	1451123	196	hypothetical protein
+1172	+	1452746	1454023	425	pseudouridylate synthase
+1173	+	1454025	1454663	212	ribonuclease HII
+1174	-	1454660	1456270	536	antiporter ( Na /H antiporter)
+1175	+	1456401	1457153	250	hypothetical protein
+1176	-	1457161	1458690	509	preprotein translocase subunit SecD
+1177	-	1458687	1459541	284	preprotein translocase subunit SecF
+1178	-	1460195	1460737	180	hypothetical protein
+1179	+	1460843	1462123	426	glucose-6-phosphate isomerase
+1180	+	1462132	1463181	349	hypothetical protein
+1181	-	1463183	1463644	153	hypothetical protein
+1182	-	1463644	1463883	79	hypothetical protein
+1183	+	1464098	1465900	600	translation initiation factor IF-2
+1184	-	1466394	1466876	160	pyruvoyl-dependent arginine decarboxylase
+1185	-	1466909	1468144	411	proteasome-activating nucleotidase
+1186	-	1468240	1470033	597	oligoendopeptidase
+1187	+	1470137	1471462	441	aminopeptidase
+1188	-	1471459	1472259	266	tRNA pseudouridine synthase A
+1189	-	1472264	1473562	432	histidyl-tRNA synthetase
+1190	-	1473614	1474204	196	hypothetical protein
+1191	-	1474208	1474561	117	hypothetical protein
+1192	-	1474664	1475119	151	30S ribosomal protein S19
+1193	+	1475271	1476137	288	thiamine-phosphate kinase
+1194	-	1476134	1477246	370	hypothetical protein
+1195	+	1477964	1478689	241	uridylate kinase
+1196	+	1478694	1480340	548	lysine--tRNA ligase
+1197	+	1480420	1482222	600	hypothetical protein
+1198	-	1482219	1482749	176	hypothetical protein
+1199	+	1482860	1484338	492	hypothetical protein
+1200	-	1484608	1485666	352	oxidoreductase (aldo-keto reductase family protein)
+1201	+	1486006	1486920	304	O-acetyltransferase ( galactoside O-acetyltransferase)
+1202	+	1488645	1489451	268	NAD synthetase
+1203	-	1489448	1490122	224	enoyl-CoA hydratase
+1204	-	1491336	1491905	189	response regulator
+1205	-	1491932	1493452	506	signal-transducing histidine kinase
+1206	-	1495143	1495697	184	6-N-hydroxylaminopurine sensitivity-controlling protein
+1207	-	1495738	1496019	93	hypothetical protein
+1208	-	1496068	1497666	532	O-sialoglycoprotein endopeptidase/protein kinase
+1209	-	1497675	1497809	44	30S ribosomal protein S27ae
+1210	-	1497811	1498119	102	30S ribosomal protein S24
+1211	-	1498175	1498708	177	hypothetical protein
+1212	-	1498714	1498911	65	DNA-directed RNA polymerase subunit E''
+1213	-	1498912	1499484	190	DNA-directed RNA polymerase subunit E'
+1214	-	1499488	1499871	127	hypothetical protein
+1215	-	1499876	1501120	414	translation initiation factor IF-2 subunit gamma
+1216	-	1502229	1503050	273	phnP-like protein
+1217	-	1503047	1504363	438	ATPase AAA
+1218	-	1504433	1506148	571	hypothetical protein
+1219	+	1506278	1507420	380	acetyl-CoA C-ac(et)yltransferase
+1220	+	1507491	1508264	257	glycosyltransferase, type 2
+1221	+	1508290	1508727	145	hypothetical protein
+1222	-	1508738	1510603	621	potassium transport protein kefC
+1223	-	1510696	1512648	650	acyl-CoA synthetase
+1224	-	1512660	1513568	302	metallo-beta-lactamase family hydrolase
+1225	+	1513686	1515068	460	seryl-tRNA synthetase
+1226	-	1515133	1515462	109	hypothetical protein
+1227	+	1515545	1516042	165	hypothetical protein
+1228	+	1516089	1516232	47	50S ribosomal protein L40
+1229	-	1516300	1516731	143	ADP-ribose pyrophosphatase
+1230	-	1516728	1517264	178	N-acetyltransferase
+1231	-	1517322	1517939	205	metallo-beta-lactamase family hydrolase
+1232	+	1518198	1518746	182	hypothetical protein
+1233	+	1518804	1519385	193	uracil-DNA glycosylase
+1234	-	1519389	1520384	331	phosphate/phosphonate ABC transporter permease
+1235	-	1520381	1521223	280	phosphate/phosphonate ABC transporter ATP-binding protein
+1236	-	1521311	1522273	320	phosphate/phosphonate ABC transporter substrate-binding protein
+1237	+	1522425	1523081	218	imidazole glycerol phosphate synthase subunit HisH
+1238	-	1523169	1523522	117	hypothetical protein
+1239	+	1523614	1524729	371	N(2),N(2)-dimethylguanosine tRNA methyltransferase
+1240	+	1525182	1526009	275	hypothetical protein
+1241	-	1525991	1527355	454	glutamate--ammonia ligase
+1242	+	1527481	1527945	154	global transcription regulator
+1243	-	1528080	1529750	556	thermosome subunit 2
+1244	+	1529968	1531212	414	hypothetical protein
+1245	-	1531587	1531970	127	ribonuclease, PSP-type
+1246	-	1532021	1533253	410	threonine dehydratase
+1247	-	1534021	1535151	376	citrate (si)-synthase
+1248	+	1535262	1536518	418	potassium channel protein
+1249	+	1536870	1537826	318	hypothetical protein
+1250	+	1537872	1538963	363	threonine synthase
+1251	-	1539259	1540521	420	hypothetical protein
+1252	+	1540655	1541617	320	hypothetical protein
+1253	-	1541614	1542744	376	hypothetical protein
+1254	-	1542804	1543049	81	glutaredoxin
+1255	-	1543115	1544551	478	hypothetical protein
+1256	-	1544670	1545389	239	adenine phosphoribosyltransferase
+1257	-	1545468	1545995	175	orotate phosphoribosyltransferase
+1258	-	1546051	1546596	181	hypothetical protein
+1259	+	1546682	1547521	279	proline dehydrogenase
+1260	+	1547593	1548210	205	hypothetical protein
+1261	-	1548248	1549174	308	branched-chain amino acid aminotransferase
+1262	+	1549306	1550781	491	antiporter ( Na /H antiporter)
+1263	-	1550783	1552531	582	antiporter ( Na /H antiporter)
+1264	-	1552608	1553276	222	3,4-dihydroxy-2-butanone 4-phosphate synthase
+1265	-	1553263	1553964	233	hypothetical protein
+1266	-	1554028	1555005	325	tRNA-modifying enzyme
+1267	-	1555341	1556258	305	ParA domain-containing protein
+1268	+	1556373	1557623	416	peptide chain release factor 1
+1269	-	1557641	1558303	220	DnaJ N-terminal domain-containing protein
+1270	-	1558787	1559461	224	V-type ATP synthase subunit D
+1271	-	1561535	1562950	471	V-type ATP synthase subunit B
+1272	-	1562956	1564713	585	V-type ATP synthase subunit A
+1273	-	1564719	1565081	120	V-type ATP synthase subunit F
+1274	-	1565078	1566136	352	V-type ATP synthase subunit C
+1275	-	1566133	1566720	195	V-type ATP synthase subunit E
+1276	-	1566743	1567012	89	A-type ATP synthase subunit K
+1277	-	1567024	1569192	722	A-type ATP synthase subunit I
+1278	-	1569179	1569511	110	A-type ATP synthase subunit H
+1279	+	1569613	1570242	209	S-adenosylmethionine-dependent methyltransferase
+1280	+	1572084	1573247	387	hypothetical protein
+1281	+	1573317	1574117	266	electron transfer flavoprotein beta subunit
+1282	+	1574114	1575082	322	electron transfer flavoprotein alpha subunit
+1283	-	1575106	1575756	216	hypothetical protein
+1284	+	1575888	1576790	300	multifunctional long-chain (E)-prenyl diphosphate synthase
+1285	-	1576792	1577877	361	hypothetical protein
+1286	+	1578002	1578997	331	hypothetical protein
+1287	-	1579051	1580772	573	hypothetical protein
+1288	+	1580893	1581345	150	hypothetical protein
+1289	+	1581394	1582179	261	oxidoreductase
+1290	-	1582190	1583185	331	mannose-1-phosphate guanylyltransferase
+1291	+	1583361	1584293	310	replication factor A
+1292	+	1584295	1584867	190	hypothetical protein
+1293	-	1585329	1585781	150	helicase
+1294	-	1586889	1587956	355	hypothetical protein
+1295	-	1587992	1590247	751	DNA helicase (enhancer-binding protein homolog)
+1296	-	1590298	1591470	390	metalloprotease
+1297	-	1591527	1592732	401	oxidoreductase
+1298	+	1592844	1593227	127	hypothetical protein
+1299	-	1593234	1594328	364	hypothetical protein
+1300	+	1594454	1596508	684	helicase
+1301	+	1599434	1599811	125	hypothetical protein
+1302	-	1599808	1601475	555	signal-transducing histidine kinase
+1303	+	1601636	1604275	879	DNA helicase mcm (intein-containing)
+1304	-	1605474	1606337	287	transcription initiation factor TFB
+1305	-	1607010	1607759	249	hypothetical protein
+1306	-	1607802	1608230	142	histidine triad family protein
+1307	+	1608856	1612068	1070	isoleucyl-tRNA synthetase
+1308	-	1612676	1614373	565	ba3-type terminal oxidase subunit I
+1309	-	1614370	1614921	183	ba3-type terminal oxidase subunit II
+1310	-	1614918	1616207	429	halocyanin hcpB
+1311	+	1616630	1617430	266	hypothetical protein
+1312	+	1617432	1619837	801	cation-transporting ATPase
+1313	-	1620504	1621349	281	ribose-phosphate pyrophosphokinase
+1314	+	1623560	1624927	455	phosphohexomutase (phosphoglucomutase,phosphomannomutase)
+1315	-	1626109	1627650	513	tryptophanyl-tRNA synthetase
+1316	-	1627647	1628678	343	tRNA splicing endonuclease
+1317	-	1628701	1629429	242	hypothetical protein
+1318	-	1629468	1631807	779	ATP-dependent DNA helicase
+1319	-	1631844	1633253	469	hypothetical protein
+1320	+	1633373	1634308	311	lipoyl synthase
+1321	+	1634534	1635649	371	branched-chain amino acid dehydrogenase E1 component alpha subunit
+1322	+	1635654	1636628	324	branched-chain amino acid dehydrogenase E1 component beta subunit
+1323	+	1636630	1638066	478	branched-chain alpha-keto acid dehydrogenase subunit E2
+1324	+	1638069	1639493	474	dihydrolipoamide dehydrogenase ( glycine cleavage system protein L and E3 component of branched-chain amino acid dehydrogenase)
+1325	+	1639543	1640355	270	prephenate dehydratase
+1326	-	1640359	1643016	885	leucyl-tRNA synthetase
+1327	-	1643147	1644133	328	ornithine cyclodeaminase
+1328	-	1644311	1645999	562	thermosome subunit 1
+1329	-	1646179	1646730	183	RNA-processing protein
+1330	-	1646776	1647606	276	hypothetical protein
+1331	-	1647644	1648987	447	hypothetical protein
+1332	-	1649068	1650210	380	tryptophan--tRNA ligase
+1333	-	1650427	1651362	311	hypothetical protein
+1334	-	1651379	1651666	95	translation initiation factor IF-1A
+1335	-	1652086	1653069	327	tyrosyl-tRNA synthetase
+1336	-	1653136	1655103	655	hypothetical protein
+1337	-	1655149	1656075	308	ribonuclease Z
+1338	+	1656190	1657194	334	replication factor C small subunit 2
+1339	-	1657577	1658545	322	hypothetical protein
+1340	+	1658660	1659220	186	transcription factor
+1341	-	1660025	1660873	282	ATP phosphoribosyltransferase
+1342	+	1661534	1662829	431	chlorohydrolase
+1343	+	1662910	1664193	427	S-adenosyl-L-homocysteine hydrolase
+1344	+	1664298	1664723	141	holliday-junction resolvase
+1345	-	1664987	1666069	360	DNA primase large subunit
+1346	+	1666155	1666745	196	phosphatidylserine decarboxylase
+1347	-	1666815	1667558	247	DNA polymerase sliding clamp
+1348	-	1667637	1668671	344	Na /Ca2-antiporter
+1349	+	1668875	1670353	492	phosphoenolpyruvate carboxylase
+1350	-	1671649	1672224	191	hypothetical protein
+1351	+	1672311	1673090	259	23S rRNA methyltransferase
+1352	-	1673099	1673812	237	hypothetical protein
+1353	-	1673802	1673993	63	hypothetical protein
+1354	-	1674056	1676230	724	sec-independent protein translocase component tatC2
+1355	+	1676576	1677355	259	sec-independent protein translocase component tatC1
+1356	+	1677402	1679411	669	DNA mismatch repair protein mutS-like protein
+1357	+	1679515	1680639	374	cell division control protein 6
+1358	+	1680684	1681361	225	ribose-5-phosphate isomerase A
+1359	+	1682030	1682263	77	hypothetical protein
+1360	+	1682325	1683698	457	phosphohexomutase (phosphoglucomutase,phosphomannomutase)
+1361	-	1683713	1684108	131	hypothetical protein
+1362	-	1684110	1684334	74	hypothetical protein
+1363	+	1684633	1685601	322	replication factor C small subunit
+1364	-	1685610	1686593	327	hypothetical protein
+1365	+	1686682	1687392	236	hypothetical protein
+1366	+	1687454	1690243	929	alanyl-tRNA synthetase
+1367	-	1690259	1690648	129	phosphoribosyl-AMP cyclohydrolase
+1368	-	1690694	1691638	314	preflagellin peptidase
+1369	+	1691863	1692312	149	methylaspartate mutase subunit S
+1370	+	1692319	1693749	476	methylaspartate mutase large subunit
+1371	+	1693749	1695005	418	methylaspartate ammonia-lyase
+1372	+	1695064	1695690	208	maoC family protein
+1373	+	1695687	1697162	491	succinyl-CoA transferase
+1374	-	1698694	1699083	129	ferredoxin (2Fe-2S)
+1375	+	1699226	1699954	242	1-(5-phosphoribosyl)-5-[(5-phosphoribosylamino)methylideneamino] imidazole-4-carboxamide isomerase
+1376	+	1700006	1700596	196	imidazoleglycerol-phosphate dehydratase
+1377	+	1701249	1701752	167	hypothetical protein
+1378	+	1702193	1702813	206	hypothetical protein
+1379	+	1703087	1703971	294	oxidoreductase ( thioredoxin-disulfide reductase)
+1380	+	1704035	1706059	674	acylaminoacyl peptidase
+1381	-	1706357	1707040	227	uracil phosphoribosyltransferase
+1382	+	1707880	1709061	393	phosphate/sulfate permease
+1383	-	1709076	1710449	457	hypothetical protein
+1384	+	1710556	1710846	96	glutaredoxin
+1385	+	1710846	1711361	171	hypothetical protein
+1386	+	1711448	1712044	198	hypothetical protein
+1387	-	1712045	1712710	221	hypothetical protein
+1388	+	1714801	1715409	202	bioY family protein
+1389	+	1715409	1716107	232	cobalt ABC transporter ATP-binding protein
+1390	+	1716104	1716811	235	cobalt ABC transporter permease
+1391	+	1716877	1719012	711	iron-sulfur protein (4Fe-4S)
+1392	-	1719088	1719654	188	N-acetyltransferase
+1393	+	1720074	1721054	326	delta-aminolevulinic acid dehydratase
+1394	+	1722511	1723848	445	glutamate-1-semialdehyde aminotransferase
+1395	+	1723897	1724415	172	hem operon protein
+1396	+	1724996	1726186	396	hydroxymethylbilane synthase (porphobilinogen deaminase)
+1397	+	1726188	1726928	246	uroporphyrin-III C-methyltransferase
+1398	+	1726937	1727641	234	uroporphyrinogen-III synthase
+1399	+	1727680	1729107	475	single-stranded-DNA-specific exonuclease
+1400	-	1729116	1733021	1301	signal-transducing histidine kinase / response regulator
+1401	+	1734038	1734388	116	hypothetical protein
+1402	-	1734416	1738528	1370	DNA polymerase II large subunit
+1403	-	1738528	1738947	139	hypothetical protein
+1404	-	1740536	1741873	445	dipeptide/oligopeptide/nickel ABC transporter ATP-binding protein
+1405	-	1741870	1742961	363	dipeptide/oligopeptide/nickel ABC transporter ATP-binding protein
+1406	-	1742962	1744542	526	dipeptide/oligopeptide/nickel ABC transporter permease
+1407	-	1744547	1745638	363	dipeptide/oligopeptide/nickel ABC transporter permease
+1408	-	1745770	1747662	630	dipeptide/oligopeptide/nickel ABC transporter substrate-binding protein
+1409	+	1747952	1748809	285	hypothetical protein
+1410	+	1748802	1750532	576	glycyl-tRNA synthetase
+1411	+	1750529	1751086	185	dolichol kinase
+1412	+	1751135	1753489	784	Hef nuclease
+1413	+	1753697	1755658	653	dipeptide/oligopeptide/nickel ABC transporter substrate-binding protein
+1414	+	1755685	1756665	326	dipeptide/oligopeptide/nickel ABC transporter permease
+1415	+	1756667	1757827	386	ABC-type transport system permease protein
+1416	+	1757824	1758852	342	dipeptide/oligopeptide/nickel ABC transporter ATP-binding protein
+1417	+	1758849	1760171	440	dipeptide/oligopeptide/nickel ABC transporter ATP-binding protein
+1418	-	1760168	1760716	182	hypothetical protein
+1419	+	1760892	1761806	304	malate dehydrogenase
+1420	-	1761832	1762080	82	ferredoxin (4Fe-4S)
+1421	+	1762165	1764516	783	ski2-like helicase
+1422	+	1764513	1765010	165	hypothetical protein
+1423	+	1765339	1765923	194	IMP cyclohydrolase
+1424	+	1765969	1766652	227	phosphoesterase
+1425	-	1766658	1768004	448	tryptophanase
+1426	-	1768093	1769277	394	aspartate kinase
+1427	-	1769813	1770610	265	copper ABC transporter permease
+1428	-	1770607	1771521	304	copper ABC transporter ATP-binding protein
+1429	+	1772658	1774430	590	excinuclease ABC subunit C
+1430	-	1774440	1775435	331	ribonucleotide-diphosphate reductase subunit beta
+1431	-	1775435	1777849	804	ribonucleoside-diphosphate reductase alpha subunit
+1432	-	1778235	1778669	144	UpsA domain-containing protein
+1433	-	1778671	1779759	362	hypothetical protein
+1434	-	1779934	1782003	689	excinuclease ABC subunit B
+1435	-	1782777	1783631	284	thiosulfate sulfurtransferase
+1436	+	1783754	1784527	257	thiosulfate sulfurtransferase
+1437	+	1784590	1785648	352	thiamine ABC transporter substrate-binding protein
+1438	+	1785645	1787465	606	thiamine ABC transporter permease
+1439	+	1787462	1788493	343	thiamine ABC transporter ATP-binding protein
+1440	-	1788497	1789174	225	methyltransferase ( 24-sterol C-methyltransferase)
+1441	+	1789249	1789680	143	hypothetical protein
+1442	+	1789760	1790338	192	hypothetical protein
+1443	-	1791263	1792846	527	drug export protein
+1444	-	1792952	1793620	222	hypothetical protein
+1445	-	1793620	1794018	132	hypothetical protein
+1446	-	1794025	1794669	214	GTP-binding protein
+1447	+	1795480	1797036	518	cdc6-type chromosome replication protein
+1448	-	1797336	1797854	172	hypothetical protein
+1449	+	1798013	1798387	124	hypothetical protein
+1450	-	1798661	1799380	239	signal peptidase
+1451	+	1799492	1801018	508	DNA polymerase II small subunit
+1452	+	1801080	1802255	391	aminotransferase class V
+1453	-	1802265	1803428	387	major facilitator superfamily transporter
+1454	+	1803599	1804723	374	homoserine O-acetyltransferase
+1455	+	1804793	1806088	431	O-acetylhomoserine aminocarboxypropyltransferase (methionine synthase)
+1456	+	1806157	1809195	1012	oxidoreductase (4Fe-4S iron-sulfur cluster containing)
+1457	-	1809205	1809912	235	phosphoserine phosphatase
+1458	+	1809997	1811580	527	D-3-phosphoglycerate dehydrogenase
+1459	+	1811642	1812085	147	acyl-CoA thioester hydrolase
+1460	+	1812156	1813328	390	major facilitator superfamily transporter
+1461	-	1813332	1814579	415	threonine synthase
+1462	-	1814986	1815300	104	hypothetical protein
+1463	-	1815874	1817331	485	argininosuccinate lyase
+1464	-	1817328	1818518	396	argininosuccinate synthase
+1465	-	1819564	1821762	732	DNA repair helicase-like protein
+1466	-	1822093	1822641	182	ferritin
+1467	+	1822845	1823357	170	hypothetical protein
+1468	-	1823408	1824040	210	hypothetical protein
+1469	-	1824274	1825290	338	threonine aldolase
+1470	+	1825377	1826486	369	leucyl aminopeptidase
+1471	+	1827006	1827578	190	hypothetical protein
+1472	+	1827571	1827987	138	hypothetical protein
+1473	-	1827994	1828953	319	hypothetical protein
+1474	-	1829024	1829581	185	Mg2+ transporter
+1475	-	1829582	1830154	190	Mg2+ transporter
+1476	-	1830204	1831586	460	signal recognition particle 54K protein
+1477	-	1832133	1833254	373	signal recognition particle receptor SRalpha
+1478	-	1833262	1833726	154	prefoldin alpha subunit
+1479	-	1833869	1834531	220	translation initiation factor IF-6
+1480	-	1834537	1834815	92	50S ribosomal protein L31
+1481	-	1834815	1834967	50	50S ribosomal protein L39
+1482	+	1835103	1835894	263	hypothetical protein
+1483	+	1835891	1836199	102	hypothetical protein
+1484	+	1836270	1837517	415	cysteine desulfurase
+1485	+	1837571	1837999	142	iron-sulfur cluster assembly protein
+1486	-	1838012	1839043	343	DNA repair and recombination protein RadA
+1487	+	1839171	1840274	367	hypothetical protein
+1488	+	1840267	1841307	346	hypothetical protein
+1489	-	1841696	1843489	597	helicase
+1490	-	1843764	1844882	372	transcription regulator ( phosphate uptake regulator)
+1491	-	1844968	1846005	345	phosphate ABC transporter ATP-binding protein
+1492	-	1845998	1847602	534	phosphate ABC transporter permease
+1493	-	1847602	1848717	371	phosphate ABC transporter permease
+1494	-	1848761	1849900	379	phosphate ABC transporter substrate-binding protein
+1495	+	1850055	1850957	300	hypothetical protein
+1496	+	1852335	1853138	267	hypothetical protein
+1497	-	1853367	1853687	106	ferredoxin (3Fe-4S)(4Fe-4S)
+1498	+	1853779	1854246	155	hypothetical protein
+1499	-	1854640	1855803	387	acyl-CoA dehydrogenase
+1500	-	1855840	1856535	231	glutamine amidotransferase ( GMP synthase subunit A)
+1501	+	1856621	1857802	393	hypothetical protein
+1502	+	1858007	1859515	502	phenylalanyl-tRNA synthetase subunit alpha
+1503	+	1859515	1861218	567	phenylalanyl-tRNA synthetase subunit beta
+1504	-	1861219	1862268	349	dihydroorotate dehydrogenase 2
+1505	-	1870495	1871727	410	mRNA 3'-end processing factor-like protein
+1506	+	1871852	1873321	489	aldehyde dehydrogenase
+1507	+	1873493	1873888	131	30S ribosomal protein S6
+1508	+	1874409	1875320	303	sugar kinase
+1509	-	1875317	1876120	267	photosystem I biogenesis protein
+1510	-	1876162	1877244	360	hypothetical protein
+1511	-	1877304	1877753	149	UpsA domain-containing protein
+1512	+	1877829	1878272	147	UpsA domain-containing protein
+1513	-	1878287	1878838	183	N-terminal acetyltransferase
+1514	-	1878828	1879208	126	UpsA domain-containing protein
+1515	+	1880543	1883374	943	dipeptide/oligopeptide/nickel ABC transporter ATP-binding protein
+1516	+	1883456	1885123	555	dipeptide/oligopeptide/nickel ABC transporter substrate-binding protein
+1517	+	1885181	1886224	347	dipeptide/oligopeptide/nickel ABC transporter permease
+1518	+	1886231	1887178	315	dipeptide/oligopeptide/nickel ABC transporter permease
+1519	-	1887544	1888812	422	dihydroorotase
+1520	-	1888837	1889520	227	hypothetical protein
+1521	+	1890478	1890918	146	hypothetical protein
+1522	-	1890923	1891495	190	isochorismatase; nicotinamidase; N-carbamoylsarcosine amidase
+1523	+	1893276	1894421	381	nicotinate phosphoribosyltransferase
+1524	-	1894411	1895043	210	hypothetical protein
+1525	-	1895798	1896901	367	leucyl aminopeptidase
+1526	-	1896958	1899603	881	valyl-tRNA synthetase
+1527	+	1899887	1901017	376	ABC-type transport system substrate-binding protein ( substrate iron/cobalamin)
+1528	+	1901025	1902146	373	iron/cobalamin ABC transporter permease
+1529	+	1902149	1902970	273	iron/cobalamin ABC-type transporter ATP-binding protein
+1530	+	1903223	1904140	305	6-phosphogluconate dehydrogenase
+1531	-	1904137	1904718	193	RNA-binding protein / protease
+1532	+	1904812	1905390	192	ferredoxin (2Fe-2S)
+1533	-	1906165	1907085	306	iron/cobalamin ABC transporter ATP-binding protein
+1534	-	1907089	1908168	359	iron/cobalamin ABC transporter permease
+1535	-	1908175	1909329	384	ABC-type transport system substrate-binding protein ( substrate iron/cobalamin)
+1536	+	1910546	1912093	515	potassium transport system protein trkH3
+1537	-	1915012	1915473	153	flagellar protein FlaG
+1538	-	1916175	1916672	165	deoxyuridine 5'-triphosphate nucleotidohydrolase
+1539	+	1916807	1918384	525	serine protease halolysin R4
+1540	+	1918556	1920541	661	aconitate hydratase
+1541	+	1920626	1921120	164	N-terminal acetyltransferase
+1542	-	1921928	1922365	145	iron-dependent transcription repressor-like protein
+1543	+	1923130	1923324	64	hypothetical protein
+1544	+	1923378	1923740	120	rhodanese domain-containing protein
+1545	-	1923805	1924098	97	translation initiation factor Sui1
+1546	-	1924461	1925222	253	F420-0--gamma-glutamyl ligase
+1547	-	1925415	1926035	206	GTP-binding protein
+1548	+	1926147	1926890	247	hypothetical protein
+1549	+	1926936	1928246	436	hypothetical protein
+1550	-	1928639	1929622	327	GTP-binding protein
+1551	-	1930119	1930406	95	phosphoribosyl-ATP pyrophosphatase
+1552	-	1930399	1930857	152	hypothetical protein
+1553	-	1930854	1931465	203	glutamine amidotransferase subunit PdxT
+1554	-	1931503	1931664	53	preprotein translocase subunit SecG
+1555	+	1931777	1932046	89	thioredoxin
+1556	+	1932152	1934008	618	transport protein
+1557	+	1934436	1935368	310	ribulose-1,5-biphosphate synthetase
+1558	+	1935368	1936705	445	phosphomethylpyrimidine kinase / thiamin biosynthesis protein thiN
+1559	-	1936676	1937344	222	hypothetical protein
+1560	-	1937433	1938305	290	hypothetical protein
+1561	-	1938338	1938727	129	hypothetical protein
+1562	+	1938767	1939288	173	archaemetzincin-like protein
+1563	-	1939305	1940594	429	GTP-binding protein
+1564	-	1940807	1942639	610	ATPase RIL
+1565	+	1943072	1943344	90	hypothetical protein
+1566	-	1943391	1945250	619	ATPase
+1567	+	1945666	1947174	502	carboxypeptidase
+1568	+	1947330	1948373	347	oxidoreductase ( zinc-containing alcohol dehydrogenase)
+1569	+	1948844	1950673	609	DNA helicase II
+1570	+	1950679	1951686	335	hypothetical protein
+1571	+	1952017	1952652	211	riboflavin synthase subunit alpha
+1572	-	1952601	1953740	379	hypothetical protein
+1573	+	1954020	1955435	471	hypothetical protein
+1574	-	1955444	1955815	123	hypothetical protein
+1575	-	1955893	1956873	326	glucokinase
+1576	-	1956940	1957545	201	hypothetical protein
+1577	+	1957659	1958399	246	oxidoreductase
+1578	-	1958667	1959239	190	hypothetical protein
+1579	+	1959329	1962277	982	excinuclease ABC subunit A
+1580	+	1963333	1964412	359	geranylgeranyl hydrogenase-like protein
+1581	-	1964420	1965793	457	UDP-N-acetylglucosamine 2-epimerase
+1582	-	1965862	1966896	344	glycine cleavage system protein T
+1583	+	1967322	1968263	313	hypothetical protein
+1584	-	1968809	1969165	118	hypothetical protein
+1585	+	1969318	1970046	242	hypothetical protein
+1586	-	1970069	1970548	159	RNA-binding protein
+1587	+	1970949	1972238	429	ribonuclease R-like protein
+1588	-	1972518	1972826	102	30S ribosomal protein S10
+1589	-	1972830	1974095	421	elongation factor 1-alpha
+1590	-	1974250	1975203	317	homoserine dehydrogenase
+1591	-	1975200	1975724	174	hypothetical protein
+1592	-	1976001	1977305	434	IS1341-type transposase (TCE31)
+1593	+	1977350	1977748	132	IS200-type transposase (TCE31)
+1594	-	1977810	1979996	728	elongation factor EF-2
+1595	-	1981028	1981660	210	30S ribosomal protein S7
+1596	-	1981664	1982092	142	30S ribosomal protein S12
+1597	-	1982256	1982675	139	transcription elongation factor NusA-like protein
+1598	-	1982675	1983868	397	DNA-directed RNA polymerase subunit A''
+1599	-	1983861	1986776	971	DNA-directed RNA polymerase subunit A'
+1600	-	1986776	1988602	608	DNA-directed RNA polymerase subunit B'
+1601	-	1988604	1990175	523	DNA-directed RNA polymerase subunit beta''
+1602	-	1990176	1990403	75	DNA-directed RNA polymerase subunit H
+1603	-	1990743	1991663	306	hypothetical protein
+1604	-	1993643	1994266	207	transcription regulator-like protein
+1605	+	1994563	1996422	619	cell surface glycoprotein
+1606	+	1998404	2000962	852	major cell surface glycoprotein
