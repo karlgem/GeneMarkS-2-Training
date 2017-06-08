@@ -28,7 +28,7 @@ namespace gmsuite {
          * Constructor:
          *
          * @param order the model's order
-         * @param alphabet the alphabet used by the model
+         * @param alph the alphabet used by the model
          */
         UniformMarkov(unsigned order, const NumAlphabetDNA &alph);
         

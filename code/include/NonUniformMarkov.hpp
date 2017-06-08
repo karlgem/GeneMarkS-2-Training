@@ -32,7 +32,7 @@ namespace gmsuite {
          *
          * @param order the model's order
          * @param length the model's length
-         * @param alphabet the alphabet used by the model
+         * @param alph the alphabet used by the model
          */
         NonUniformMarkov(unsigned order, size_t length, const NumAlphabetDNA &alph);
         
