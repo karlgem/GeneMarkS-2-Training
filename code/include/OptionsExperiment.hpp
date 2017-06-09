@@ -35,7 +35,8 @@ namespace gmsuite {
             MATCH_RBS_TO_16S,
             SCORE_LABELED_STARTS,
             PROMOTER_IS_VALID_FOR_ARCHAEA,
-            PROMOTER_IS_VALID_FOR_BACTERIA
+            PROMOTER_IS_VALID_FOR_BACTERIA,
+            START_MODEL_STRATEGY_2
         }
         experiment_t;
         
@@ -161,6 +162,32 @@ namespace gmsuite {
         promoterIsValidForBacteria;
         
         
+        struct StartModelStrategy2Options : public GenReadSeqAndLabelsOptions {
+            string seq16S;                      // 16S rRNA tail match
+            size_t min16SMatch;               // the minimum accepted match length with 16S tail
+            bool allowAGSubstitution;           // whether A and G can be subsituted while matching
+            size_t fgioDistanceThresh;          // FGIO distance threshold
+            size_t igDistanceThresh;            // interior genes distance treshold
+            size_t fgioUpstreamLength;          // upstream length for fgio
+            size_t igUpstreamLength;            // upstream length for ig
+            size_t minGeneLength;               // minimu gene length
+            size_t matchToUpstreamOfLength;     // length of the upstream region we're matching against
+            string fn_out;                      // name of output file
+            
+            size_t upstreamLengthFGIOMatched;
+            size_t upstreamLengthFGIOUnmatched;
+            size_t upstreamLengthIGMatched;
+            size_t upstreamLengthIGUnmatched;
+            
+            
+            OptionsMFinder mfinderFGIOMatchedOptions;
+            OptionsMFinder mfinderFGIOUnmatchedOptions;
+            OptionsMFinder mfinderIGMatchedOptions;
+            OptionsMFinder mfinderIGUnmatchedOptions;
+        }
+        startModelStrategy2;
+        
+        
         /**********************************************\
          *              Option Processing             *
         \**********************************************/
@@ -177,7 +204,7 @@ namespace gmsuite {
         static void addProcessOptions_PromoterIsValidForArchaea(PromoterIsValidForArchaea &options, po::options_description &processOptions);
         static void addProcessOptions_PromoterIsValidForBacteria(PromoterIsValidForBacteria &options, po::options_description &processOptions);
         
-        
+        static void addProcessOptions_StartModelStrategy2Options(StartModelStrategy2Options &options, po::options_description &processOptions);
         
         
     };

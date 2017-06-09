@@ -50,6 +50,8 @@ namespace gmsuite {
         void runPromoterIsValidForAchaea();
         void runPromoterIsValidForBacteria();
         
+        void runStartModelStrategy2();
+        
         void runScoreStarts();
     };
 }

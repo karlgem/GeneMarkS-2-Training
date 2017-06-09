@@ -60,6 +60,8 @@ void ModuleExperiment::run() {
         runPromoterIsValidForAchaea();
     else if (options.experiment == OptionsExperiment::PROMOTER_IS_VALID_FOR_BACTERIA)
         runPromoterIsValidForBacteria();
+    else if (options.experiment == OptionsExperiment::START_MODEL_STRATEGY_2)
+        runStartModelStrategy2();
     
 }
 
@@ -1064,12 +1066,206 @@ void ModuleExperiment::runPromoterIsValidForBacteria() {
 
 
 
+// match upstreams to 16S rRNA and split labels into those that match and those that don't
+void splitGenesIntoMatchAndUnmatch (const NumSequence &sequence, const vector<Label*> &labels, size_t upstreamLength, string seq16S, size_t matchThresh, bool allowAGSubstitution, vector<Label*> &matched, vector<Label*> &unmatched) {
+    
+    AlphabetDNA alph;
+    CharNumConverter cnc(&alph);
+    
+    Sequence strMatchSeq (seq16S);
+    NumSequence matchSeq (strMatchSeq, cnc);
+    
+    pair<NumSequence::size_type, NumSequence::size_type> positionsOfMatches;
+    vector<pair<NumSequence::num_t, NumSequence::num_t> > substitutions;
+    if (allowAGSubstitution)
+        substitutions.push_back(pair<NumSequence::num_t, NumSequence::num_t> (cnc.convert('A'), cnc.convert('G')));
+    
+    for (size_t n = 0; n < labels.size(); n++) {
+        
+        NumSequence upstream = SequenceParser::extractUpstreamSequence(sequence, *labels[n], cnc, upstreamLength);
+        
+        NumSequence match = SequenceAlgorithms::longestMatchTo16S(matchSeq, upstream, positionsOfMatches, substitutions);
+        
+        // keep track of nonmatches
+        if (match.size() < matchThresh)
+            unmatched.push_back(labels[n]);
+        else
+            matched.push_back(labels[n]);
+    }
+
+}
 
 
+void runMotifFinder(const NumSequence &sequence, const vector<Label*> &labels, const OptionsMFinder &optionsMFinder, const NumAlphabetDNA  &numAlph, size_t upstreamLength, NonUniformMarkov* &motifMarkov, UnivariatePDF* &motifSpacer) {
+    
+    AlphabetDNA alph;
+    CharNumConverter cnc(&alph);
+    
+    vector<NumSequence> sequencesRaw;
+    SequenceParser::extractUpstreamSequences(sequence, labels, cnc, upstreamLength, sequencesRaw);
+    
+    vector<NumSequence> upstreams;
+    for (size_t n = 0; n < sequencesRaw.size(); n++) {
+        if (!sequencesRaw[n].containsInvalid(numAlph))
+            upstreams.push_back(sequencesRaw[n]);
+    }
+    
+    MotifFinder::Builder b;
+    MotifFinder mfinder = b.build(optionsMFinder);
+    
+    
+    vector<NumSequence::size_type> positions;
+    mfinder.findMotifs(upstreams, positions);
+    
+    // build RBS model
+    NonUniformCounts motifCounts(optionsMFinder.motifOrder, optionsMFinder.width, numAlph);
+    for (size_t n = 0; n < upstreams.size(); n++) {
+        motifCounts.count(upstreams[n].begin()+positions[n], upstreams[n].begin()+positions[n]+optionsMFinder.width);
+    }
+    
+    motifMarkov = new NonUniformMarkov(optionsMFinder.motifOrder, optionsMFinder.width, numAlph);
+    motifMarkov->construct(&motifCounts, optionsMFinder.pcounts);
+    
+    // build spacer distribution
+    // build histogram from positions
+    vector<double> positionCounts (upstreamLength - optionsMFinder.width+1, 0);
+    for (size_t n = 0; n < positions.size(); n++) {
+        // FIXME account for LEFT alignment
+        // below is only for right
+        positionCounts[upstreamLength - optionsMFinder.width - positions[n]]++;        // increment position
+    }
+    
+    motifSpacer = new UnivariatePDF(positionCounts, false, optionsMFinder.pcounts);
+    
+    
+}
 
 
+void toModFile(vector<pair<string, string> > &toMod, const NonUniformMarkov* motif, const UnivariatePDF* spacer, string name) {
+    typedef pair<string, string> mpair;
 
+    toMod.push_back(mpair(name, "1"));
+    toMod.push_back(mpair(name + "_ORDER", boost::lexical_cast<string>(motif->getOrder())));
+    toMod.push_back(mpair(name + "_WIDTH", boost::lexical_cast<string>(motif->getLength())));
+    toMod.push_back(mpair(name + "_MARGIN", "0"));
+    toMod.push_back(mpair(name + "_MAT", motif->toString()));
+    
+    toMod.push_back(mpair(name + "_MAX_DUR", boost::lexical_cast<string>(spacer->size() - 1)));
+    toMod.push_back(mpair(name + "_POS_DISTR", spacer->toString()));
+}
 
+void ModuleExperiment::runStartModelStrategy2() {
+    
+    OptionsExperiment::StartModelStrategy2Options expOptions = options.startModelStrategy2;
+    
+    // read sequence file
+    SequenceFile sequenceFile (expOptions.fn_seqeuence, SequenceFile::READ);
+    Sequence strSequence = sequenceFile.read();
+    
+    // read labels file
+    LabelFile labelFile (expOptions.fn_labels, LabelFile::READ);
+    vector<Label*> labels;
+    labelFile.read(labels);
+    
+    // filter short genes
+    if (expOptions.minGeneLength > 0) {
+        for (size_t n = 0; n < labels.size(); n++) {
+            size_t length = labels[n]->right - labels[n]->left + 1;
+            if (length < expOptions.minGeneLength) {
+                delete labels[n];
+                labels[n] = NULL;
+            }
+        }
+        
+        size_t sizeBefore = labels.size();
+        
+        vector<Label*>::iterator toRem = remove_if(labels.begin(), labels.end(), isNull);
+        labels.erase(toRem, labels.end());
+        
+        cout << "Number of genes filtered by gene length : " << sizeBefore - labels.size() << endl;
+    }
+    
+    // create numeric sequence
+    AlphabetDNA alph;
+    CharNumConverter cnc (&alph);
+    NumAlphabetDNA numAlph(alph, cnc);
+
+    NumSequence numSequence (strSequence, cnc);
+    
+    // split labels into sets based on operon status
+    vector<LabelsParser::operon_status_t> operonStatuses;
+    LabelsParser::partitionBasedOnOperonStatus(labels, expOptions.fgioDistanceThresh, expOptions.igDistanceThresh, operonStatuses);
+    
+    // get stats of operons
+    size_t numFGIO = 0, numIG = 0, numUNK = 0;
+    for (size_t n = 0; n < operonStatuses.size(); n++) {
+        if (operonStatuses[n] == LabelsParser::FGIO)        numFGIO++;
+        else if (operonStatuses[n] == LabelsParser::NFGIO)  numIG++;
+        else
+            numUNK++;
+    }
+    
+    // get FGIO and IG labels
+    vector<Label*> labelsFGIO (numFGIO);
+    vector<Label*> labelsIG (numIG);
+    size_t currFGIO = 0, currIG = 0;
+    
+    for (size_t n = 0; n < operonStatuses.size(); n++) {
+        if (operonStatuses[n] == LabelsParser::FGIO)        labelsFGIO[currFGIO++] = labels[n];
+        else if (operonStatuses[n] == LabelsParser::NFGIO)  labelsIG[currIG++] = labels[n];
+    }
+    
+    // extract upstreams
+    vector<Label*> labelsFGIO_Matched;
+    vector<Label*> labelsFGIO_Unmatched;
+    vector<Label*> labelsIG_Matched;
+    vector<Label*> labelsIG_Unmatched;
+    
+    // match to 16S rRNA
+    splitGenesIntoMatchAndUnmatch(numSequence, labelsFGIO, expOptions.matchToUpstreamOfLength, expOptions.seq16S, expOptions.min16SMatch, expOptions.allowAGSubstitution, labelsFGIO_Matched, labelsFGIO_Unmatched);
+    splitGenesIntoMatchAndUnmatch(numSequence, labelsIG, expOptions.matchToUpstreamOfLength, expOptions.seq16S, expOptions.min16SMatch, expOptions.allowAGSubstitution, labelsIG_Matched, labelsIG_Unmatched);
+    
+    
+    // print some stats
+    cout << "FGIO matched to 16S:   " << labelsFGIO_Matched.size()   << endl;
+    cout << "FGIO unmatched to 16S: " << labelsFGIO_Unmatched.size() << endl;
+    cout << "IG matched to 16S:     " << labelsIG_Matched.size()     << endl;
+    cout << "IG unmatched to 16S:   " << labelsIG_Unmatched.size()   << endl;
+    
+    
+    // run mfinder on each set
+    NonUniformMarkov *motifMarkovFGIO_Matched   ;
+    NonUniformMarkov *motifMarkovFGIO_Unmatched ;
+    NonUniformMarkov *motifMarkovIG_Matched     ;
+    NonUniformMarkov *motifMarkovIG_Unmatched   ;
+    
+    UnivariatePDF *motifSpacerFGIO_Matched      ;
+    UnivariatePDF *motifSpacerFGIO_Unmatched    ;
+    UnivariatePDF *motifSpacerIG_Matched        ;
+    UnivariatePDF *motifSpacerIG_Unmatched      ;
+    
+    
+    runMotifFinder(numSequence, labelsFGIO_Matched, expOptions.mfinderFGIOMatchedOptions, numAlph, expOptions.upstreamLengthFGIOMatched, motifMarkovFGIO_Matched, motifSpacerFGIO_Matched);
+    runMotifFinder(numSequence, labelsFGIO_Unmatched, expOptions.mfinderFGIOUnmatchedOptions, numAlph, expOptions.upstreamLengthFGIOUnmatched, motifMarkovFGIO_Unmatched, motifSpacerFGIO_Unmatched);
+    
+    runMotifFinder(numSequence, labelsIG_Matched, expOptions.mfinderIGMatchedOptions, numAlph, expOptions.upstreamLengthIGMatched, motifMarkovIG_Matched, motifSpacerIG_Matched);
+    runMotifFinder(numSequence, labelsIG_Unmatched, expOptions.mfinderIGUnmatchedOptions, numAlph, expOptions.upstreamLengthIGUnmatched, motifMarkovIG_Unmatched, motifSpacerIG_Unmatched);
+    
+    
+    // get string representations
+    vector<pair<string, string> > toMod;
+    
+    toModFile(toMod, motifMarkovFGIO_Matched,   motifSpacerFGIO_Matched,    "FGIO_MATCHED");
+    toModFile(toMod, motifMarkovFGIO_Unmatched, motifSpacerFGIO_Unmatched,  "FGIO_UNMATCHED");
+    toModFile(toMod, motifMarkovIG_Matched,     motifSpacerIG_Matched,      "IG_MATCHED");
+    toModFile(toMod, motifMarkovIG_Unmatched,   motifSpacerIG_Unmatched,    "IG_UNMATCHED");
+    
+    
+    // model file
+    ModelFile mfile(expOptions.fn_out, ModelFile::WRITE);
+    mfile.write(toMod);
+    
+}
 
 
 
