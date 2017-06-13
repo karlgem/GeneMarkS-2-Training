@@ -39,7 +39,7 @@ namespace gmsuite {
         bool parse(int argc, const char *argv[]);
         
         
-        static void addProcessOptions(OptionsMFinder &optionsMFinder, po::options_description &processOptions);
+        static void addProcessOptions(OptionsMFinder &optionsMFinder, po::options_description &processOptions, bool allowSingleLetter = true, string prefix="");
         
         
         // Below, create a variable for each parameter, to make for easy access

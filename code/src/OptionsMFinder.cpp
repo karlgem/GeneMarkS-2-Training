@@ -154,19 +154,33 @@ bool OptionsMFinder::parse(int argc, const char *argv[]) {
 
 
 
-void OptionsMFinder::addProcessOptions(OptionsMFinder &optionsMFinder, po::options_description &processOptions) {
+void OptionsMFinder::addProcessOptions(OptionsMFinder &optionsMFinder, po::options_description &processOptions, bool allowSingleLetter, string prefix) {
+    
+    prefix += "-";
+    
+    string opt_width        = prefix + "width"          + (allowSingleLetter ? ",w" : "");
+    string opt_motifOrder   = prefix + "motif-order"    + (allowSingleLetter ? ",o" : "");
+    string opt_bkgdOrder    = prefix + "bkgd-order"     + (allowSingleLetter ? ",b" : "");
+    string opt_align        = prefix + "align"          ;
+    string opt_tries        = prefix + "tries"          ;
+    string opt_maxIter      = prefix + "max-iter"       ;
+    string opt_maxEMIter    = prefix + "max-em-iter"    ;
+    string opt_shiftEvery   = prefix + "shift-every"    ;
+    string opt_pcount       = prefix + "pcount"         ;
+    string opt_filterThresh = prefix + "filter-thresh"  ;
+    
     
     processOptions.add_options()
-    ("width,w", po::value<unsigned>(&optionsMFinder.width)->default_value(6), "Width of motif")
-    ("motif-order,o", po::value<unsigned>(&optionsMFinder.motifOrder)->default_value(0), "Order of the motif's Markov model")
-    ("bkgd-order,b", po::value<unsigned>(&optionsMFinder.bkgdOrder)->default_value(0), "Order of the background's Markov model")
-    ("align", po::value<align_t>(&optionsMFinder.align)->default_value(MFinderModelParams::NONE), "If set, positional information is considered by the model")
-    ("tries", po::value<unsigned>(&optionsMFinder.tries)->default_value(10), "Number of restarts")
-    ("max-iter", po::value<unsigned>(&optionsMFinder.maxIter)->default_value(60), "Number of Gibbs iterations per single try")
-    ("max-em-iter", po::value<unsigned>(&optionsMFinder.maxEMIter)->default_value(10), "Number of EM iterations per single try")
-    ("shift-every", po::value<unsigned>(&optionsMFinder.shiftEvery)->default_value(10), "Number of iterations before shifting motif")
-    ("pcount", po::value<double>(&optionsMFinder.pcounts)->default_value(1), "Pseudocounts")
-    ("filter-thresh", po::value<double>(&optionsMFinder.filterThresh)->default_value(-std::numeric_limits<double>::infinity()), "Value for filtering out motifs with low score")
+    (opt_width.c_str(),         po::value<unsigned> (&optionsMFinder.width)->default_value(6), "Width of motif")
+    (opt_motifOrder.c_str(),    po::value<unsigned> (&optionsMFinder.motifOrder)->default_value(0), "Order of the motif's Markov model")
+    (opt_bkgdOrder.c_str(),     po::value<unsigned> (&optionsMFinder.bkgdOrder)->default_value(0), "Order of the background's Markov model")
+    (opt_align.c_str(),         po::value<align_t>  (&optionsMFinder.align)->default_value(MFinderModelParams::NONE), "If set, positional information is considered by the model")
+    (opt_tries.c_str(),         po::value<unsigned> (&optionsMFinder.tries)->default_value(10), "Number of restarts")
+    (opt_maxIter.c_str(),       po::value<unsigned> (&optionsMFinder.maxIter)->default_value(60), "Number of Gibbs iterations per single try")
+    (opt_maxEMIter.c_str(),     po::value<unsigned> (&optionsMFinder.maxEMIter)->default_value(10), "Number of EM iterations per single try")
+    (opt_shiftEvery.c_str(),    po::value<unsigned> (&optionsMFinder.shiftEvery)->default_value(10), "Number of iterations before shifting motif")
+    (opt_pcount.c_str(),        po::value<double>   (&optionsMFinder.pcounts)->default_value(1), "Pseudocounts")
+    (opt_filterThresh.c_str(),  po::value<double>   (&optionsMFinder.filterThresh)->default_value(-std::numeric_limits<double>::infinity()), "Value for filtering out motifs with low score")
     ;
 }
 

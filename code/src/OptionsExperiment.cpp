@@ -22,6 +22,7 @@ using namespace gmsuite;
 #define STR_SCORE_LABELED_STARTS    "score-labeled-starts"
 #define STR_PROMOTER_IS_VALID_FOR_ARCHAEA    "promoter-is-valid-for-archaea"
 #define STR_PROMOTER_IS_VALID_FOR_BACTERIA    "promoter-is-valid-for-bacteria"
+#define STR_START_MODEL_STRATEGY_2  "start-model-strategy-2"
 
 namespace gmsuite {
     // convert string to experiment_t
@@ -39,6 +40,7 @@ namespace gmsuite {
         else if (token == STR_SCORE_LABELED_STARTS)     unit = OptionsExperiment::SCORE_LABELED_STARTS;
         else if (token == STR_PROMOTER_IS_VALID_FOR_ARCHAEA)     unit = OptionsExperiment::PROMOTER_IS_VALID_FOR_ARCHAEA;
         else if (token == STR_PROMOTER_IS_VALID_FOR_BACTERIA)     unit = OptionsExperiment::PROMOTER_IS_VALID_FOR_BACTERIA;
+        else if (token == STR_START_MODEL_STRATEGY_2)   unit = OptionsExperiment::START_MODEL_STRATEGY_2;
         else
             throw boost::program_options::invalid_option_value(token);
         
@@ -151,6 +153,9 @@ bool OptionsExperiment::parse(int argc, const char **argv) {
         // Experiment: get start-model bacteria
         if (experiment == PROMOTER_IS_VALID_FOR_BACTERIA)
             addProcessOptions_PromoterIsValidForBacteria(promoterIsValidForBacteria, expDesc);
+        // Experiment: start model strategy 2
+        if (experiment == START_MODEL_STRATEGY_2)
+            addProcessOptions_StartModelStrategy2Options(startModelStrategy2, expDesc);
         
         cmdline_options.add(expDesc);
         
@@ -313,6 +318,45 @@ void OptionsExperiment::addProcessOptions_PromoterIsValidForBacteria(PromoterIsV
 }
 
 
+void OptionsExperiment::addProcessOptions_StartModelStrategy2Options(StartModelStrategy2Options &options, po::options_description &processOptions) {
+    
+    Options::addProcessOptions_GenReadSeqAndLabelsOptions(options, processOptions);
+
+    processOptions.add_options()
+    ("seq-16s",         po::value<string>(&options.seq16S)->default_value("TAAGGAGGTGA"), "Sequence to match to.")
+    ("min-match",       po::value<size_t>(&options.min16SMatch)->default_value(4), "Minimum accepted match length from upstream to 16S tail")
+    ("allow-ag-sub",    po::bool_switch(&options.allowAGSubstitution)->default_value(false), "Allow G to be substituted for A when matching to 16S tail")
+    ("fgio-thresh",     po::value<size_t>(&options.fgioDistanceThresh)->default_value(25), "Used to extract second genes in operon")
+    ("ig-thresh",       po::value<size_t>(&options.igDistanceThresh)->default_value(20), "Used to extract first genes in operon")
+    ("fgio-upstrLen",   po::value<size_t>(&options.fgioUpstreamLength)->default_value(40), "Upstream length for first genes in operon")
+    ("ig-upstrLen",     po::value<size_t>(&options.igUpstreamLength)->default_value(20), "Upstream length for interior genes")
+    ("min-gene-length", po::value<size_t>(&options.minGeneLength)->default_value(0), "Minimum gene length")
+    ("match-to-upstream-of-length", po::value<size_t> (&options.matchToUpstreamOfLength)->default_value(20), "Length of upstream region we're matching against")
+    ("fn_out",         po::value<string>(&options.fn_out)->required(), "Name of output file")
+    ("fgio-matched-upstream-length",    po::value<size_t> (&options.upstreamLengthFGIOMatched)->default_value(40), "FGIO Match Upstream Length")
+    ("fgio-unmatched-upstream-length",  po::value<size_t> (&options.upstreamLengthFGIOUnmatched)->default_value(40), "FGIO Unmatch Upstream Length")
+    ("ig-matched-upstream-length",      po::value<size_t> (&options.upstreamLengthIGMatched)->default_value(20), "IG Match Upstream Length")
+    ("ig-unmatched-upstream-length",    po::value<size_t> (&options.upstreamLengthIGUnmatched)->default_value(20), "IG Unmatch Upstream Length")
+    ;
+    
+    
+    // RBS mfinder options
+    po::options_description mfinderFGIOMatched ("FGIO Matched - Motif Finder ");
+    OptionsMFinder::addProcessOptions(options.mfinderFGIOMatchedOptions, mfinderFGIOMatched, false, "fgio-matched");
+    processOptions.add(mfinderFGIOMatched);
+    
+    po::options_description mfinderFGIOUnmatched ("FGIO Unmatched - Motif Finder ");
+    OptionsMFinder::addProcessOptions(options.mfinderFGIOUnmatchedOptions, mfinderFGIOUnmatched, false, "fgio-unmatched");
+    processOptions.add(mfinderFGIOUnmatched);
+    
+    po::options_description mfinderIGMatched ("IG Matched - Motif Finder ");
+    OptionsMFinder::addProcessOptions(options.mfinderIGMatchedOptions, mfinderIGMatched, false, "ig-matched");
+    processOptions.add(mfinderIGMatched);
+    
+    po::options_description mfinderIGUnmatched ("IG Unmatched - Motif Finder ");
+    OptionsMFinder::addProcessOptions(options.mfinderIGUnmatchedOptions, mfinderIGUnmatched, false, "ig-unmatched");
+    processOptions.add(mfinderIGUnmatched);
+}
 
 
 
