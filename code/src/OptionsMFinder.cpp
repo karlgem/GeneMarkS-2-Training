@@ -156,7 +156,8 @@ bool OptionsMFinder::parse(int argc, const char *argv[]) {
 
 void OptionsMFinder::addProcessOptions(OptionsMFinder &optionsMFinder, po::options_description &processOptions, bool allowSingleLetter, string prefix) {
     
-    prefix += "-";
+    if (!prefix.empty())
+        prefix += "-";
     
     string opt_width        = prefix + "width"          + (allowSingleLetter ? ",w" : "");
     string opt_motifOrder   = prefix + "motif-order"    + (allowSingleLetter ? ",o" : "");
