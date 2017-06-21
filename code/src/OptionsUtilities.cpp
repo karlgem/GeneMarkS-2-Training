@@ -510,8 +510,8 @@ void OptionsUtilities::addProcessOptions_ComputeGC(ComputeGC &options, po::optio
 void OptionsUtilities::addProcessOptions_SeparateFGIOAndIG(SeparateFGIOAndIG &options, po::options_description &processOptions) {
     processOptions.add_options()
     ("label,l", po::value<string>(&options.fn_label)->required(), "Label filename")
-    ("fgio", po::value<string>(&options.fnout_fgio)->required(), "Filename for FGIO labels")
-    ("ig", po::value<string>(&options.fnout_ig)->required(), "Filename for IG labels")
+    ("fgio", po::value<string>(&options.fnout_fgio)->default_value(""), "Filename for FGIO labels")
+    ("ig", po::value<string>(&options.fnout_ig)->default_value(""), "Filename for IG labels")
     ("dist-thresh-fgio", po::value<size_t>(&options.distThreshFGIO)->default_value(25), "Minimum distance between genes to be classified as FGIO")
     ("dist-thres-ig", po::value<size_t>(&options.distThreshIG)->default_value(22), "Maximum distance between genes to be classified as IG")
     ;

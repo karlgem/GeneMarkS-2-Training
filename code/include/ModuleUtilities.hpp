@@ -52,7 +52,7 @@ namespace gmsuite {
         void runExtractStartContextPerOperonStatus();
         void runExtractStartContextPerMotifStatus();
         void runComputeGC();
-        
+        void runSeparateFGIOAndIG();
     };
     
 }
