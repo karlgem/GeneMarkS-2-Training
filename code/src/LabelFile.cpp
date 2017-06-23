@@ -36,9 +36,11 @@ LabelFile::LabelFile(string path, access_t access, format_t format) {
     openFile();                         // open file
     
     // if format not specified (i.e. AUTO), try to guess what it is
-    if (this->format == AUTO) {
+    if (access == READ && this->format == AUTO) {
         this->format = detectFormat();      // detect format
     }
+    else if (access == WRITE && this->format == AUTO)
+        this->format = LST;
 }
 
 
@@ -307,18 +309,7 @@ void LabelFile::write_lst(const vector<Label *> &labels) const {
     out.open(params.path.c_str());
     
     // FIXME: add correct header information
-    out << "GeneMark.hmm PROKARYOTIC (Version 3.4.4)" << endl;
-    out << "Date: Tue Jun  7 11:17:04 2016" << endl;
-    out << "" << endl;
-    out << "Sequence file name: /storage2/starter/data/Escherichia_coli_K_12_substr__MG1655_uid57779/NC_000913.fa" << endl;
-    out << "Model file name: itr_6.rbs.mod" << endl;
-    out << "RBS: true" << endl;
-    out << "Model information: GeneMarkS_gcode_11" << endl;
-    out << endl;
-    out << "FASTA definition line: NC_000913" << endl;
-    out << "Predicted genes" << endl;
-    out << "Gene    Strand    LeftEnd    RightEnd       Gene     Class     RBS      RBS" << endl;
-    out << "#                                         Length            position  score" << endl;
+    out << "SequenceID: 1";
     out << endl;
     
     // FIXME: need to incorporate incomplete genes
@@ -329,6 +320,8 @@ void LabelFile::write_lst(const vector<Label *> &labels) const {
         out << labels[n]->left+1 << "\t";                                   // left
         out << labels[n]->right+1 << "\t";                                  // right
         out << labels[n]->right - labels[n]->left + 1 << "\t";              // length
+        out << labels[n]->geneClass << "\t";                                // gene class
+        out << labels[n]->meta << "\t";                                     // meta
         out << 1 << endl;
     }
     
