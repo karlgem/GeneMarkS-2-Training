@@ -1021,7 +1021,7 @@ void ModuleExperiment::runPromoterIsValidForBacteria() {
     // check whether enough leaderless
     double percentLeaderless = 0;
     if (numFGIO > 0)
-        percentLeaderless = numLeaderless / (double) numFGIO;
+        percentLeaderless = 100.0 * numLeaderless / (double) numFGIO;
     
     if (percentLeaderless < expOptions.minLeaderlessPercent) {
         cout << "no" << endl;
