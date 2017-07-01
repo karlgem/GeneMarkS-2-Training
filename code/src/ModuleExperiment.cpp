@@ -1020,8 +1020,8 @@ void ModuleExperiment::runPromoterIsValidForBacteria() {
     string rbsMaxDurStr = mfile.readValueForKey("PROMOTER_MAX_DUR");         // get maximum duration
     size_t rbsMaxDur = boost::lexical_cast<size_t>(rbsMaxDurStr);
     
-    string numLeaderlessStr = mfile.readValueForKey("NUM_LEADERLESS");       // get number of leaderless
-    string numFGIOStr = mfile.readValueForKey("NUM_FGIO");                   // get number of first-genes-in-operon
+    string numLeaderlessStr = mfile.readValueForKey("PROMOTER_NUM_LEADERLESS");       // get number of leaderless
+    string numFGIOStr = mfile.readValueForKey("PROMOTER_NUM_FGIO");                   // get number of first-genes-in-operon
     size_t numLeaderless = boost::lexical_cast<size_t>(numLeaderlessStr);
     size_t numFGIO = boost::lexical_cast<size_t>(numFGIOStr);
     
