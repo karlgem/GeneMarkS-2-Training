@@ -314,6 +314,8 @@ void OptionsExperiment::addProcessOptions_PromoterIsValidForBacteria(PromoterIsV
     ("fnmod", po::value<string>(&options.fnmod)->required(), "Name of mod file containing RBS spacer.")
     ("dist-thresh", po::value<size_t>(&options.distanceThresh)->default_value(15), "Distance threshold before which spacer indicates promoter.")
     ("score-thresh", po::value<double>(&options.scoreThresh)->default_value(0.1), "Minimum score above which spacer is considered localized.")
+    ("min-leaderless-percent", po::value<double>(&options.minLeaderlessPercent)->default_value(0.0), "Minimum percentage of leaderless transcripts")
+    ("min-leaderless-count", po::value<size_t>(&options.minLeaderlessCount)->default_value(0), "Minimum number of leaderless transcripts")
     ;
 }
 

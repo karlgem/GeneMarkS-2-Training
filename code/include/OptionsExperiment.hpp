@@ -158,6 +158,8 @@ namespace gmsuite {
             string fnmod;
             size_t distanceThresh;
             double scoreThresh;
+            double minLeaderlessPercent;
+            size_t minLeaderlessCount;
         }
         promoterIsValidForBacteria;
         

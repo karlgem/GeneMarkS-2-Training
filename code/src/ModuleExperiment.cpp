@@ -1020,6 +1020,25 @@ void ModuleExperiment::runPromoterIsValidForBacteria() {
     string rbsMaxDurStr = mfile.readValueForKey("PROMOTER_MAX_DUR");         // get maximum duration
     size_t rbsMaxDur = boost::lexical_cast<size_t>(rbsMaxDurStr);
     
+    string numLeaderlessStr = mfile.readValueForKey("NUM_LEADERLESS");       // get number of leaderless
+    string numFGIOStr = mfile.readValueForKey("NUM_FGIO");                   // get number of first-genes-in-operon
+    size_t numLeaderless = boost::lexical_cast<size_t>(numLeaderlessStr);
+    size_t numFGIO = boost::lexical_cast<size_t>(numFGIOStr);
+    
+    // check whether enough leaderless
+    double percentLeaderless = 0;
+    if (numFGIO > 0)
+        percentLeaderless = numLeaderless / (double) numFGIO;
+    
+    if (percentLeaderless < expOptions.minLeaderlessPercent) {
+        cout << "no" << endl;
+        return;
+    }
+    if (numLeaderless < expOptions.minLeaderlessCount) {
+        cout << "no" << endl;
+        return;
+    }
+    
     vector<double> rbsSpacer (rbsMaxDur, 0);
     
     // convert string to vector of probabilities
