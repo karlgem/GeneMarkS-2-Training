@@ -23,13 +23,13 @@ UnivariatePDF::UnivariatePDF() {
 }
 
 
-UnivariatePDF::UnivariatePDF(const vector<double> &weights, bool lnspace, double pcounts) {
+UnivariatePDF::UnivariatePDF(const vector<double> &weights, bool lnspace, double pcounts, bool norm) {
     
-    construct(weights, lnspace, pcounts);
+    construct(weights, lnspace, pcounts, norm);
 }
 
 // construct distribution from weights
-void UnivariatePDF::construct(const vector<double> &weights, bool lnspace, double pcounts) {
+void UnivariatePDF::construct(const vector<double> &weights, bool lnspace, double pcounts, bool norm) {
     this->probabilities = weights;
     
     // check if conversion necessary
@@ -42,7 +42,8 @@ void UnivariatePDF::construct(const vector<double> &weights, bool lnspace, doubl
             probabilities[n] += pcounts;
     }
     
-    normalize();
+    if (norm)
+        normalize();
     
     // compute cumulative distribution (for easy sampling)
     computeCumulativeDistribution();
@@ -155,7 +156,38 @@ string UnivariatePDF::toString() const {
 
 
 
-
+UnivariatePDF::localization_metric_t UnivariatePDF::localization(size_t windowLength) const {
+    
+    if (windowLength > this->probabilities.size())
+        throw invalid_argument("Window Length cannot be larger than probability vector size.");
+    
+    localization_metric_t result;
+    result.windowBegin = 0;
+    result.windowLength = windowLength;
+    result.windowTotal = 0;
+    
+    // make sure window length is less than the probability vector size
+    
+    // loop over distribution, accumulating results and computing the max.
+    
+    // for every location
+    for (size_t n = 0; n < this->probabilities.size()-windowLength+1; n++) {
+        
+        // sum over all elements in window
+        double accum = 0;
+        for (size_t i = 0; i < windowLength; i++) {
+            accum += this->probabilities[i+n];
+        }
+        
+        // check if this location has max
+        if (accum >= result.windowTotal) {
+            result.windowTotal = accum;
+            result.windowBegin = n;
+        }
+    }
+    
+    return result;
+}
 
 
 

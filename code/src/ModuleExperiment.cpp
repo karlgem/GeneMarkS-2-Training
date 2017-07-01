@@ -981,23 +981,16 @@ void ModuleExperiment::runPromoterIsValidForAchaea() {
         rbsSpacer[pos] = prob;
     }
     
+    // create distribution from vector
+    UnivariatePDF spacer (rbsSpacer, false, 0, false);
     
-    // find max location
-    double maxProb = -numeric_limits<double>::infinity();
-    size_t maxPos = 0;
-    
-    for (size_t n = 0; n < rbsSpacer.size(); n++) {
-        if (rbsSpacer[n] > maxProb) {
-            maxProb = rbsSpacer[n];
-            maxPos = n;
-        }
-    }
+    UnivariatePDF::localization_metric_t localization = spacer.localization(expOptions.windowSize);
     
     string promoterIsValid = "no";
     
     // check position and score
-    if (maxPos > expOptions.distanceThresh) {       // possibly promoter
-        if (maxProb > expOptions.scoreThresh) {     // definitely promoter
+    if (localization.windowBegin > expOptions.distanceThresh) {       // possibly promoter
+        if (localization.windowTotal > expOptions.scoreThresh) {     // definitely promoter
             promoterIsValid = "yes";
         }
     }
@@ -1056,22 +1049,16 @@ void ModuleExperiment::runPromoterIsValidForBacteria() {
     }
     
     
-    // find max location
-    double maxProb = -numeric_limits<double>::infinity();
-    size_t maxPos = 0;
+    // create distribution from vector
+    UnivariatePDF spacer (rbsSpacer, false, 0, false);
     
-    for (size_t n = 0; n < rbsSpacer.size(); n++) {
-        if (rbsSpacer[n] > maxProb) {
-            maxProb = rbsSpacer[n];
-            maxPos = n;
-        }
-    }
+    UnivariatePDF::localization_metric_t localization = spacer.localization(expOptions.windowSize);
     
     string promoterIsValid = "no";
     
     // check position and score
-    if (maxPos < expOptions.distanceThresh) {       // possibly promoter
-        if (maxProb > expOptions.scoreThresh) {     // definitely promoter
+    if (localization.windowBegin < expOptions.distanceThresh) {       // possibly promoter
+        if (localization.windowTotal > expOptions.scoreThresh) {     // definitely promoter
             promoterIsValid = "yes";
         }
     }
