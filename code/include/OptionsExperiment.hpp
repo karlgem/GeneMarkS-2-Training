@@ -162,6 +162,14 @@ namespace gmsuite {
             double minLeaderlessPercent;
             size_t minLeaderlessCount;
             size_t windowSize;
+            
+            string fnlabels;
+            string fnseq;
+            size_t fgioDistThresh;
+            size_t minGeneLength;
+            string matchTo;
+            bool allowAGSubstitution;
+            unsigned matchThresh;
         }
         promoterIsValidForBacteria;
         

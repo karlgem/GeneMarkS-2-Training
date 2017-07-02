@@ -1018,11 +1018,90 @@ void ModuleExperiment::runPromoterIsValidForBacteria() {
     size_t numLeaderless = boost::lexical_cast<size_t>(numLeaderlessStr);
     size_t numFGIO = boost::lexical_cast<size_t>(numFGIOStr);
     
-    // check whether enough leaderless
+    // if labels file provided, count leaderless and FGIO from it
+    if (!expOptions.fnlabels.empty() && !expOptions.fnseq.empty()) {
+        AlphabetDNA alph;
+        CharNumConverter cnc(&alph);
+        NumAlphabetDNA numAlph(alph, cnc);
+        
+        SequenceFile seqFile (expOptions.fnseq, SequenceFile::READ);
+        Sequence seqStr = seqFile.read();
+        NumSequence sequence(seqStr, cnc);
+        
+        
+        vector<Label*> labels;
+        LabelFile file (expOptions.fnlabels, LabelFile::READ);
+        file.read(labels);
+        
+        // remove short genes
+        for (size_t n = 0; n < labels.size(); n++) {
+            if (labels[n] == NULL)
+                throw invalid_argument("Label cannot be null");
+            
+            // "remove" short genes
+            if (labels[n]->right - labels[n]->left + 1 < expOptions.minGeneLength) {
+                delete labels[n];
+                labels[n] = NULL;
+            }
+        }
+        
+        // actually remove
+        vector<Label*>::iterator toRem = remove_if(labels.begin(), labels.end(), isNull);
+        labels.erase(toRem, labels.end());
+        
+        // split labels into sets based on operon status
+        vector<LabelsParser::operon_status_t> operonStatuses;
+        LabelsParser::partitionBasedOnOperonStatus(labels, expOptions.fgioDistThresh, expOptions.fgioDistThresh, operonStatuses);
+        
+        // count number of FGIO
+        size_t numFGIO = 0;
+        for (size_t n = 0; n < operonStatuses.size(); n++) {
+            if (operonStatuses[n] == LabelsParser::FGIO)        numFGIO++;
+        }
+        
+        // get FGIO upstreams
+        vector<Label*> labelsFGIO (numFGIO);
+        size_t currFGIO = 0;        // indices
+        
+        for (size_t n = 0; n < operonStatuses.size(); n++) {
+            if (operonStatuses[n] == LabelsParser::FGIO)        labelsFGIO[currFGIO++] = labels[n];
+        }
+        
+        vector<NumSequence> upstreamsPromoter;
+        
+        size_t upstrLen = 20;
+        
+        // match FGIO to 16S tail
+        vector<NumSequence> upstreamsFGIO;
+        SequenceParser::extractUpstreamSequences(sequence, labelsFGIO, cnc, upstrLen, upstreamsFGIO);
+        
+        Sequence strMatchSeq (expOptions.matchTo);
+        NumSequence matchSeq (strMatchSeq, cnc);
+        
+        pair<NumSequence::size_type, NumSequence::size_type> positionsOfMatches;
+        vector<pair<NumSequence::num_t, NumSequence::num_t> > substitutions;
+        if (expOptions.allowAGSubstitution)
+            substitutions.push_back(pair<NumSequence::num_t, NumSequence::num_t> (cnc.convert('A'), cnc.convert('G')));
+        
+        size_t skipFromStart = 3;
+        for (size_t n = 0; n < upstreamsFGIO.size(); n++) {
+            NumSequence match = SequenceAlgorithms::longestMatchTo16S(matchSeq, upstreamsFGIO[n], positionsOfMatches, substitutions);
+            
+            // keep track of nonmatches
+            if (match.size() < expOptions.matchThresh)
+                upstreamsPromoter.push_back(upstreamsFGIO[n].subseq(0, upstreamsFGIO[n].size() - skipFromStart));
+        }
+        
+        
+        numLeaderless = upstreamsPromoter.size();
+        numFGIO = upstreamsFGIO.size();
+    }
+    
     double percentLeaderless = 0;
     if (numFGIO > 0)
         percentLeaderless = 100.0 * numLeaderless / (double) numFGIO;
     
+    // check whether enough leaderless
     if (percentLeaderless < expOptions.minLeaderlessPercent) {
         cout << "no" << endl;
         return;
