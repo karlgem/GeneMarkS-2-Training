@@ -7,6 +7,7 @@
 //
 
 #include "OptionsExperiment.hpp"
+#include "NumSequence.hpp"
 #include <iostream>
 
 using namespace std;
@@ -318,6 +319,13 @@ void OptionsExperiment::addProcessOptions_PromoterIsValidForBacteria(PromoterIsV
     ("min-leaderless-percent", po::value<double>(&options.minLeaderlessPercent)->default_value(0.0), "Minimum percentage of leaderless transcripts")
     ("min-leaderless-count", po::value<size_t>(&options.minLeaderlessCount)->default_value(0), "Minimum number of leaderless transcripts")
     ("window-size", po::value<size_t>(&options.windowSize)->default_value(1), "Size of window in which to determine localization")
+    ("fnlabels", po::value<string>(&options.fnlabels)->default_value(""), "Labels file, if provided, is used to calculate number of leaderless and first-genes-in-operon")
+    ("fnseq", po::value<string> (&options.fnseq)->default_value(""), "Sequence file")
+    ("min-gene-length", po::value<NumSequence::size_type>(&options.minGeneLength)->default_value(300), "Minimum gene length allowed in training")
+    ("match-to", po::value<string>(&options.matchTo)->default_value("TAAGGAGGTGA"), "16S tail")
+    ("allow-ag-substitution", po::bool_switch(&options.allowAGSubstitution)->default_value(true), "Allow AG substitution.")
+    ("match-thresh", po::value<unsigned>(&options.matchThresh)->default_value(4), "Match threshold for 16S tail.")
+    ("fgio-distance-thresh", po::value<size_t>(&options.fgioDistThresh)->default_value(25), "Minimum distance between genes classified as first-genes-in-operon")
     ;
 }
 
