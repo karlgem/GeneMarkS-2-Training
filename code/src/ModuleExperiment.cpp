@@ -62,6 +62,8 @@ void ModuleExperiment::run() {
         runPromoterIsValidForBacteria();
     else if (options.experiment == OptionsExperiment::START_MODEL_STRATEGY_2)
         runStartModelStrategy2();
+    else if (options.experiment == OptionsExperiment::PROMOTER_AND_RBS_MATCH)
+        runPromoterAndRBSMatch();
     
 }
 

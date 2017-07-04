@@ -53,6 +53,7 @@ namespace gmsuite {
         void runStartModelStrategy2();
         
         void runScoreStarts();
+        void runPromoterAndRBSMatch();
     };
 }
 
