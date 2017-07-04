@@ -391,6 +391,7 @@ void OptionsExperiment::addProcessOptions_RBSConsensusAnd16SMatch(RBSConsensusAn
     processOptions.add_options()
     ("fnmod", po::value<string>(&options.fnmod)->required(), "Name of mod file containing RBS.")
     ("match-thresh", po::value<unsigned>(&options.matchThresh)->default_value(4), "Match threshold for 16S tail.")
+    ("match-to", po::value<string>(&options.matchTo)->default_value("TAAGGAGGTGA"), "16S tail")
     ("allow-ag-sub",    po::bool_switch(&options.allowAGSubstitution)->default_value(true), "Allow G to be substituted for A when matching to 16S tail")
     ;
 }

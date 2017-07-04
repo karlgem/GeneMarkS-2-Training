@@ -65,6 +65,8 @@ void ModuleExperiment::run() {
         runStartModelStrategy2();
     else if (options.experiment == OptionsExperiment::PROMOTER_AND_RBS_MATCH)
         runPromoterAndRBSMatch();
+    else if (options.experiment == OptionsExperiment::RBS_CONSENSUS_AND_16S_MATCH)
+        runRbsConsensus16SMatch();
     
 }
 
