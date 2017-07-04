@@ -124,7 +124,7 @@ GMS2Trainer::GMS2Trainer(unsigned pcounts,
     this->FGIO_DIST_THRESH = FGIO_DIST_THRESH;
     this->NFGIO_DIST_THRES = 22;
     
-    if (genomeClass == ProkGeneStartModel::C2 || genomeClass == ProkGeneStartModel::C3) {
+    if (genomeClass == ProkGeneStartModel::C2 || genomeClass == ProkGeneStartModel::C3 || genomeClass == ProkGeneStartModel::C5) {
         this->UPSTR_LEN_IG = upstreamLength;
     }
     
@@ -428,8 +428,10 @@ void GMS2Trainer::estimateParametersMotifModel(const NumSequence &sequence, cons
     MotifFinder mfinder = b.build();
     
     // if genome is class 1, search for RBS
-    if (genomeClass == ProkGeneStartModel::C1) {
+    if (genomeClass == ProkGeneStartModel::C1 || genomeClass == ProkGeneStartModel::C5) {
         this->genomeType = "pure-rbs";
+        if (genomeClass == ProkGeneStartModel::C5)
+            this->genomeType = "class-c";
         
         // START: REMOVE THIS
         // copy only usable labels
