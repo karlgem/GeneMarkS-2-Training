@@ -54,6 +54,7 @@ namespace gmsuite {
         
         void runScoreStarts();
         void runPromoterAndRBSMatch();
+        void runRbsConsensus16SMatch();
     };
 }
 

@@ -25,6 +25,7 @@ using namespace gmsuite;
 #define STR_PROMOTER_IS_VALID_FOR_BACTERIA    "promoter-is-valid-for-bacteria"
 #define STR_START_MODEL_STRATEGY_2  "start-model-strategy-2"
 #define STR_PROMOTER_AND_RBS_MATCH "promoter-and-rbs-match"
+#define STR_RBS_CONSENSUS_AND_16S_MATCH "rbs-consensus-and-16s-match"
 
 namespace gmsuite {
     // convert string to experiment_t
@@ -44,6 +45,7 @@ namespace gmsuite {
         else if (token == STR_PROMOTER_IS_VALID_FOR_BACTERIA)     unit = OptionsExperiment::PROMOTER_IS_VALID_FOR_BACTERIA;
         else if (token == STR_START_MODEL_STRATEGY_2)   unit = OptionsExperiment::START_MODEL_STRATEGY_2;
         else if (token == STR_PROMOTER_AND_RBS_MATCH)   unit = OptionsExperiment::PROMOTER_AND_RBS_MATCH;
+        else if (token == STR_RBS_CONSENSUS_AND_16S_MATCH) unit = OptionsExperiment::RBS_CONSENSUS_AND_16S_MATCH;
         else
             throw boost::program_options::invalid_option_value(token);
         
@@ -161,6 +163,8 @@ bool OptionsExperiment::parse(int argc, const char **argv) {
             addProcessOptions_StartModelStrategy2Options(startModelStrategy2, expDesc);
         if (experiment == PROMOTER_AND_RBS_MATCH)
             addProcessOptions_PromoterAndRBSMatchOptions(promoterAndRBSMatch, expDesc);
+        if (experiment == RBS_CONSENSUS_AND_16S_MATCH)
+            addProcessOptions_RBSConsensusAnd16SMatch(rbsConsensusAnd16SMatch, expDesc);
         
         cmdline_options.add(expDesc);
         
@@ -383,7 +387,14 @@ void OptionsExperiment::addProcessOptions_StartModelStrategy2Options(StartModelS
 }
 
 
-
+void OptionsExperiment::addProcessOptions_RBSConsensusAnd16SMatch(RBSConsensusAnd16SMatch &options, po::options_description &processOptions){
+    processOptions.add_options()
+    ("fnmod", po::value<string>(&options.fnmod)->required(), "Name of mod file containing RBS.")
+    ("match-thresh", po::value<unsigned>(&options.matchThresh)->default_value(4), "Match threshold for 16S tail.")
+    ("match-to", po::value<string>(&options.matchTo)->default_value("TAAGGAGGTGA"), "16S tail")
+    ("allow-ag-sub",    po::bool_switch(&options.allowAGSubstitution)->default_value(true), "Allow G to be substituted for A when matching to 16S tail")
+    ;
+}
 
 
 

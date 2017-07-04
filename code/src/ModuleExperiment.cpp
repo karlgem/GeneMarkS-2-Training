@@ -65,6 +65,8 @@ void ModuleExperiment::run() {
         runStartModelStrategy2();
     else if (options.experiment == OptionsExperiment::PROMOTER_AND_RBS_MATCH)
         runPromoterAndRBSMatch();
+    else if (options.experiment == OptionsExperiment::RBS_CONSENSUS_AND_16S_MATCH)
+        runRbsConsensus16SMatch();
     
 }
 
@@ -1450,7 +1452,44 @@ void ModuleExperiment::runPromoterAndRBSMatch() {
         cout << "no" << endl;
 }
 
-
+void ModuleExperiment::runRbsConsensus16SMatch() {
+    OptionsExperiment::RBSConsensusAnd16SMatch expOptions = options.rbsConsensusAnd16SMatch;
+    
+    // open mod file
+    ModelFile mfile (expOptions.fnmod, ModelFile::READ);
+    
+    string rbsMatStr = mfile.readValueForKey("RBS_MAT");
+    map<char, vector<double> >rbsMat;
+    
+    matrixStringToMapOfVectors(rbsMatStr, rbsMat);
+    
+    // get consensus
+    string rbsConsensus = getConsensus(rbsMat);
+    
+    AlphabetDNA alph;
+    CharNumConverter cnc(&alph);
+    NumSequence rbsConsensusNum (Sequence(rbsConsensus), cnc);
+    
+    // get consensus
+    NumSequence matchTo (Sequence(expOptions.matchTo), cnc);
+    
+    pair<NumSequence::size_type, NumSequence::size_type> positionsOfMatches;
+    vector<pair<NumSequence::num_t, NumSequence::num_t> > substitutions;
+    if (expOptions.allowAGSubstitution)
+        substitutions.push_back(pair<NumSequence::num_t, NumSequence::num_t> (cnc.convert('A'), cnc.convert('G')));
+    
+    NumSequence matchedSeq = SequenceAlgorithms::longestMatchTo16S(matchTo, rbsConsensusNum, positionsOfMatches, substitutions);
+    
+    
+    // match consensus
+    size_t longestMatchLength = matchedSeq.size();
+    
+    if (longestMatchLength >= expOptions.matchThresh)
+        cout << "yes" << endl;
+    else
+        cout << "no" << endl;
+    
+}
 
 
 
