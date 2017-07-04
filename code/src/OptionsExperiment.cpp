@@ -24,6 +24,7 @@ using namespace gmsuite;
 #define STR_PROMOTER_IS_VALID_FOR_ARCHAEA    "promoter-is-valid-for-archaea"
 #define STR_PROMOTER_IS_VALID_FOR_BACTERIA    "promoter-is-valid-for-bacteria"
 #define STR_START_MODEL_STRATEGY_2  "start-model-strategy-2"
+#define STR_PROMOTER_AND_RBS_MATCH "promoter-and-rbs-match"
 
 namespace gmsuite {
     // convert string to experiment_t
@@ -42,6 +43,7 @@ namespace gmsuite {
         else if (token == STR_PROMOTER_IS_VALID_FOR_ARCHAEA)     unit = OptionsExperiment::PROMOTER_IS_VALID_FOR_ARCHAEA;
         else if (token == STR_PROMOTER_IS_VALID_FOR_BACTERIA)     unit = OptionsExperiment::PROMOTER_IS_VALID_FOR_BACTERIA;
         else if (token == STR_START_MODEL_STRATEGY_2)   unit = OptionsExperiment::START_MODEL_STRATEGY_2;
+        else if (token == STR_PROMOTER_AND_RBS_MATCH)   unit = OptionsExperiment::PROMOTER_AND_RBS_MATCH;
         else
             throw boost::program_options::invalid_option_value(token);
         
