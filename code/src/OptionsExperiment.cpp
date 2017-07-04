@@ -24,6 +24,7 @@ using namespace gmsuite;
 #define STR_PROMOTER_IS_VALID_FOR_ARCHAEA    "promoter-is-valid-for-archaea"
 #define STR_PROMOTER_IS_VALID_FOR_BACTERIA    "promoter-is-valid-for-bacteria"
 #define STR_START_MODEL_STRATEGY_2  "start-model-strategy-2"
+#define STR_PROMOTER_AND_RBS_MATCH "promoter-and-rbs-match"
 
 namespace gmsuite {
     // convert string to experiment_t
@@ -42,6 +43,7 @@ namespace gmsuite {
         else if (token == STR_PROMOTER_IS_VALID_FOR_ARCHAEA)     unit = OptionsExperiment::PROMOTER_IS_VALID_FOR_ARCHAEA;
         else if (token == STR_PROMOTER_IS_VALID_FOR_BACTERIA)     unit = OptionsExperiment::PROMOTER_IS_VALID_FOR_BACTERIA;
         else if (token == STR_START_MODEL_STRATEGY_2)   unit = OptionsExperiment::START_MODEL_STRATEGY_2;
+        else if (token == STR_PROMOTER_AND_RBS_MATCH)   unit = OptionsExperiment::PROMOTER_AND_RBS_MATCH;
         else
             throw boost::program_options::invalid_option_value(token);
         
@@ -157,6 +159,8 @@ bool OptionsExperiment::parse(int argc, const char **argv) {
         // Experiment: start model strategy 2
         if (experiment == START_MODEL_STRATEGY_2)
             addProcessOptions_StartModelStrategy2Options(startModelStrategy2, expDesc);
+        if (experiment == PROMOTER_AND_RBS_MATCH)
+            addProcessOptions_PromoterAndRBSMatchOptions(promoterAndRBSMatch, expDesc);
         
         cmdline_options.add(expDesc);
         
@@ -326,6 +330,14 @@ void OptionsExperiment::addProcessOptions_PromoterIsValidForBacteria(PromoterIsV
     ("allow-ag-substitution", po::bool_switch(&options.allowAGSubstitution)->default_value(true), "Allow AG substitution.")
     ("match-thresh", po::value<unsigned>(&options.matchThresh)->default_value(4), "Match threshold for 16S tail.")
     ("fgio-distance-thresh", po::value<size_t>(&options.fgioDistThresh)->default_value(25), "Minimum distance between genes classified as first-genes-in-operon")
+    ;
+}
+
+
+void OptionsExperiment::addProcessOptions_PromoterAndRBSMatchOptions(PromoterAndRBSMatch &options, po::options_description &processOptions) {
+    processOptions.add_options()
+    ("fnmod", po::value<string>(&options.fnmod)->required(), "Name of mod file containing RBS spacer.")
+    ("match-thresh", po::value<size_t>(&options.numberOfMatches)->default_value(4), "Match threshold for 16S tail.")
     ;
 }
 

@@ -28,6 +28,7 @@
 #include <algorithm>
 #include <iostream>
 #include <boost/shared_ptr.hpp>
+#include <map>
 
 using namespace std;
 using namespace gmsuite;
@@ -62,6 +63,8 @@ void ModuleExperiment::run() {
         runPromoterIsValidForBacteria();
     else if (options.experiment == OptionsExperiment::START_MODEL_STRATEGY_2)
         runStartModelStrategy2();
+    else if (options.experiment == OptionsExperiment::PROMOTER_AND_RBS_MATCH)
+        runPromoterAndRBSMatch();
     
 }
 
@@ -1353,10 +1356,99 @@ void ModuleExperiment::runStartModelStrategy2() {
 }
 
 
+void matrixStringToMapOfVectors(const string &matStr, map<char, vector<double> > &mapVec) {
+    
+    std::istringstream ss(matStr);
+    std::string line;
+    while (std::getline(ss, line)) {
+        std::istringstream ssWord (line);
+        string word;
+        
+        char letter;
+        vector<double> probs;
+        
+        bool isLetter = true;
+        while (std::getline(ssWord, word, '\t')) {
+            
+            if (isLetter)
+                letter = word[0];
+            else
+                probs.push_back(boost::lexical_cast<double>(word));
+            
+            isLetter = false;
+        }
+        
+        mapVec.insert( std::pair<char, vector<double> >(letter, probs));
+    }
+    
+}
+
+string getConsensus(map<char, vector<double> > &mapVec) {
+    string consensus = "";
+    
+    char letters [4]; letters[0] = 'A'; letters[1] = 'C'; letters[2] = 'G'; letters[3] = 'T';
+    
+    size_t lengthOfSequence = mapVec['A'].size();
+    
+    for (size_t n = 0; n < lengthOfSequence; n++) {
+        double maxValue = 0;
+        char maxChar = ' ';
+        
+        for (size_t l = 0; l < 4; l++) {
+            char currLetter = letters[l];
+            double currValue = mapVec[currLetter][n];
+            
+            if (maxValue < currValue) {
+                maxValue = currValue;
+                maxChar = currLetter;
+            }
+        }
+        
+        consensus += string(1, maxChar);
+    }
+    
+    return consensus;
+}
 
 
-
-
+void ModuleExperiment::runPromoterAndRBSMatch() {
+    
+    OptionsExperiment::PromoterAndRBSMatch expOptions = options.promoterAndRBSMatch;
+    
+    // open mod file
+    ModelFile mfile (expOptions.fnmod, ModelFile::READ);
+    
+    string promoterMatStr = mfile.readValueForKey("PROMOTER_MAT");          // promoter matrix
+    string rbsMatStr = mfile.readValueForKey("RBS_MAT");                    // RBS matrix
+    
+    
+    map<char, vector<double> > promoterMat, rbsMat;
+    
+    matrixStringToMapOfVectors(promoterMatStr, promoterMat);
+    matrixStringToMapOfVectors(rbsMatStr, rbsMat);
+    
+    // get consensus
+    string promoterConsensus = getConsensus(promoterMat);
+    string rbsConsensus = getConsensus(rbsMat);
+    
+    AlphabetDNA alph;
+    CharNumConverter cnc(&alph);
+    
+    NumSequence promoterConsensusNum (Sequence(promoterConsensus), cnc);
+    NumSequence rbsConsensusNum (Sequence(rbsConsensus), cnc);
+    
+    std::pair<NumSequence::size_type, NumSequence::size_type> positionsOfMatches;
+    NumSequence matchedSeq = SequenceAlgorithms::longestMatchTo16S(promoterConsensusNum, rbsConsensusNum, positionsOfMatches);
+                                                      
+                                                      
+    // match consensus
+    size_t longestMatchLength = matchedSeq.size();
+    
+    if (longestMatchLength >= expOptions.numberOfMatches)
+        cout << "yes" << endl;
+    else
+        cout << "no" << endl;
+}
 
 
 
