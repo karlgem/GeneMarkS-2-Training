@@ -40,7 +40,7 @@ using namespace gmsuite;
 string usage_message(string progName) {
     stringstream ssm;
     
-    ssm << "KGSuite, version " << VERSION_NUMBER_MAJOR << "." << VERSION_NUMBER_MINOR << "." << BUILD_NUMBER << endl;
+    ssm << "BioGem, version " << VERSION_NUMBER_MAJOR << "." << VERSION_NUMBER_MINOR << "." << BUILD_NUMBER << endl;
     ssm << "Usage: " << progName << " mode" << endl;
     ssm << "The valid modes are:" << endl;
     ssm << "\t" << MOD_GMS2 << "\t" << "GeneMarkS2" << endl;
