@@ -699,7 +699,7 @@ void GMS2Trainer::estimateParametersMotifModel_Promoter(const NumSequence &seque
     }
     
     vector<NumSequence> upstreamsFGIO;
-    SequenceParser::extractUpstreamSequences(sequence, labelsFGIO, cnc, this->UPSTR_LEN_FGIO, upstreamsFGIO);
+    SequenceParser::extractUpstreamSequences(sequence, labelsFGIO, cnc, this->UPSTR_LEN_FGIO, upstreamsFGIO, true);
     
     vector<NumSequence> upstreamsIG;
     SequenceParser::extractUpstreamSequences(sequence, labelsIG, cnc, this->UPSTR_LEN_IG, upstreamsIG);
@@ -1241,8 +1241,8 @@ void GMS2Trainer::selectLabelsForCodingParameters(const vector<Label*> &labels, 
         if (labels[n]->right - labels[n]->left + 1 <= MIN_GENE_LEN)
             useCoding[n] = false;
         
-        // train on native
-        else if (trainOnNative) {
+        // remove all atypical genes, and keep all native (including short)
+        if (trainOnNative) {
             useCoding[n] = (labels[n]->geneClass.find("native") != string::npos);
         }
     }
