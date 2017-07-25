@@ -1238,11 +1238,11 @@ void GMS2Trainer::selectLabelsForCodingParameters(const vector<Label*> &labels, 
             throw invalid_argument("Label cannot be null");
         
         // "remove" short genes
-        if (labels[n]->right - labels[n]->left + 1 < MIN_GENE_LEN)
+        if (labels[n]->right - labels[n]->left + 1 <= MIN_GENE_LEN)
             useCoding[n] = false;
         
         // train on native
-        if (trainOnNative) {
+        else if (trainOnNative) {
             useCoding[n] = (labels[n]->geneClass.find("native") != string::npos);
         }
     }
