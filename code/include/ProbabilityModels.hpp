@@ -41,8 +41,7 @@ namespace gmsuite {
         /**
          * Construct counts from a set of motifs.
          *
-         * @param sequences the sequences
-         * @param positions the positions of motifs in these sequences
+         * @param counts sequences
          */
         virtual void construct(const CountModels* counts) = 0;
         

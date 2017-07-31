@@ -63,8 +63,7 @@ namespace gmsuite {
         /**
          * Construct probabilities from counts
          *
-         * @param sequences the sequences
-         * @param positions the positions of motifs in these sequences
+         * @param counts sequences
          */
         void construct(const CountModels* counts);
         

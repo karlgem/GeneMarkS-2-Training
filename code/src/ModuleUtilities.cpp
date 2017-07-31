@@ -58,6 +58,8 @@ void ModuleUtilities::run() {
         runExtractStartContextPerMotifStatus();
     else if (options.utility == OptionsUtilities::COMPUTE_GC)
         runComputeGC();
+    else if (options.utility == OptionsUtilities::SEPARATE_FGIO_AND_IG)
+        runSeparateFGIOAndIG();
     
 //    else            // unrecognized utility to run
 //        throw invalid_argument("Unknown utility function " + options.utility);
@@ -798,7 +800,48 @@ void ModuleUtilities::runComputeGC() {
 }
 
 
-
+void ModuleUtilities::runSeparateFGIOAndIG() {
+    OptionsUtilities::SeparateFGIOAndIG utilOpt = options.separateFGIOAndIG;
+    
+    // read labels file
+    LabelFile labelFile (utilOpt.fn_label, LabelFile::READ);
+    vector<Label*> labels;
+    labelFile.read(labels);
+    
+    // split labels into sets based on operon status
+    vector<LabelsParser::operon_status_t> operonStatuses;
+    LabelsParser::partitionBasedOnOperonStatus(labels, utilOpt.distThreshFGIO, utilOpt.distThreshIG, operonStatuses);
+    
+    // get stats of operons
+    size_t numFGIO = 0, numIG = 0, numUNK = 0;
+    for (size_t n = 0; n < operonStatuses.size(); n++) {
+        if (operonStatuses[n] == LabelsParser::FGIO)        numFGIO++;
+        else if (operonStatuses[n] == LabelsParser::NFGIO)  numIG++;
+        else
+            numUNK++;
+    }
+    
+    // get FGIO and IG labels
+    vector<Label*> labelsFGIO (numFGIO);
+    vector<Label*> labelsIG (numIG);
+    size_t currFGIO = 0, currIG = 0;
+    
+    for (size_t n = 0; n < operonStatuses.size(); n++) {
+        if (operonStatuses[n] == LabelsParser::FGIO)        labelsFGIO[currFGIO++] = labels[n];
+        else if (operonStatuses[n] == LabelsParser::NFGIO)  labelsIG[currIG++] = labels[n];
+    }
+    
+    // write labels to file
+    if (!utilOpt.fnout_fgio.empty()) {
+        LabelFile fgioFile (utilOpt.fnout_fgio, LabelFile::WRITE);
+        fgioFile.write(labelsFGIO);
+    }
+    
+    if (!utilOpt.fnout_ig.empty()) {
+        LabelFile igFile (utilOpt.fnout_ig, LabelFile::WRITE);
+        igFile.write(labelsIG);
+    }
+}
 
 
 

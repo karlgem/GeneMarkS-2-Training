@@ -35,7 +35,10 @@ namespace gmsuite {
             MATCH_RBS_TO_16S,
             SCORE_LABELED_STARTS,
             PROMOTER_IS_VALID_FOR_ARCHAEA,
-            PROMOTER_IS_VALID_FOR_BACTERIA
+            PROMOTER_IS_VALID_FOR_BACTERIA,
+            START_MODEL_STRATEGY_2,
+            PROMOTER_AND_RBS_MATCH,
+            RBS_CONSENSUS_AND_16S_MATCH
         }
         experiment_t;
         
@@ -149,6 +152,7 @@ namespace gmsuite {
             string fnmod;
             size_t distanceThresh;
             double scoreThresh;
+            size_t windowSize;
         }
         promoterIsValidForArchaea;
         
@@ -157,8 +161,60 @@ namespace gmsuite {
             string fnmod;
             size_t distanceThresh;
             double scoreThresh;
+            double minLeaderlessPercent;
+            size_t minLeaderlessCount;
+            size_t windowSize;
+            
+            string fnlabels;
+            string fnseq;
+            size_t fgioDistThresh;
+            size_t minGeneLength;
+            string matchTo;
+            bool allowAGSubstitution;
+            unsigned matchThresh;
         }
         promoterIsValidForBacteria;
+        
+        // promoter/rbs match
+        struct PromoterAndRBSMatch : public GenericOptions {
+            string fnmod;
+            size_t numberOfMatches;
+        }
+        promoterAndRBSMatch;
+        
+        struct RBSConsensusAnd16SMatch : public GenericOptions {
+            string fnmod;
+            string matchTo;             // 16S
+            bool allowAGSubstitution;
+            unsigned matchThresh;
+        }
+        rbsConsensusAnd16SMatch;
+        
+        
+        struct StartModelStrategy2Options : public GenReadSeqAndLabelsOptions {
+            string seq16S;                      // 16S rRNA tail match
+            size_t min16SMatch;               // the minimum accepted match length with 16S tail
+            bool allowAGSubstitution;           // whether A and G can be subsituted while matching
+            size_t fgioDistanceThresh;          // FGIO distance threshold
+            size_t igDistanceThresh;            // interior genes distance treshold
+            size_t fgioUpstreamLength;          // upstream length for fgio
+            size_t igUpstreamLength;            // upstream length for ig
+            size_t minGeneLength;               // minimu gene length
+            size_t matchToUpstreamOfLength;     // length of the upstream region we're matching against
+            string fn_out;                      // name of output file
+            
+            size_t upstreamLengthFGIOMatched;
+            size_t upstreamLengthFGIOUnmatched;
+            size_t upstreamLengthIGMatched;
+            size_t upstreamLengthIGUnmatched;
+            
+            
+            OptionsMFinder mfinderFGIOMatchedOptions;
+            OptionsMFinder mfinderFGIOUnmatchedOptions;
+            OptionsMFinder mfinderIGMatchedOptions;
+            OptionsMFinder mfinderIGUnmatchedOptions;
+        }
+        startModelStrategy2;
         
         
         /**********************************************\
@@ -177,7 +233,9 @@ namespace gmsuite {
         static void addProcessOptions_PromoterIsValidForArchaea(PromoterIsValidForArchaea &options, po::options_description &processOptions);
         static void addProcessOptions_PromoterIsValidForBacteria(PromoterIsValidForBacteria &options, po::options_description &processOptions);
         
-        
+        static void addProcessOptions_StartModelStrategy2Options(StartModelStrategy2Options &options, po::options_description &processOptions);
+        static void addProcessOptions_PromoterAndRBSMatchOptions(PromoterAndRBSMatch &options, po::options_description &processOptions);
+        static void addProcessOptions_RBSConsensusAnd16SMatch(RBSConsensusAnd16SMatch &options, po::options_description &processOptions);
         
         
     };

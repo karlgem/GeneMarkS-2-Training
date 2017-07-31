@@ -40,6 +40,8 @@ namespace gmsuite {
             unit = ProkGeneStartModel::C3;
         else if (token == "4")
             unit = ProkGeneStartModel::C4;
+        else if (token == "5")
+            unit = ProkGeneStartModel::C5;
     //    else
     //        throw boost::program_options::validation_error("Invalid genome class");
         

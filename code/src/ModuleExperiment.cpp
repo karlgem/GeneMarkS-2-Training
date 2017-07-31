@@ -28,6 +28,7 @@
 #include <algorithm>
 #include <iostream>
 #include <boost/shared_ptr.hpp>
+#include <map>
 
 using namespace std;
 using namespace gmsuite;
@@ -60,6 +61,12 @@ void ModuleExperiment::run() {
         runPromoterIsValidForAchaea();
     else if (options.experiment == OptionsExperiment::PROMOTER_IS_VALID_FOR_BACTERIA)
         runPromoterIsValidForBacteria();
+    else if (options.experiment == OptionsExperiment::START_MODEL_STRATEGY_2)
+        runStartModelStrategy2();
+    else if (options.experiment == OptionsExperiment::PROMOTER_AND_RBS_MATCH)
+        runPromoterAndRBSMatch();
+    else if (options.experiment == OptionsExperiment::RBS_CONSENSUS_AND_16S_MATCH)
+        runRbsConsensus16SMatch();
     
 }
 
@@ -979,23 +986,16 @@ void ModuleExperiment::runPromoterIsValidForAchaea() {
         rbsSpacer[pos] = prob;
     }
     
+    // create distribution from vector
+    UnivariatePDF spacer (rbsSpacer, false, 0, false);
     
-    // find max location
-    double maxProb = -numeric_limits<double>::infinity();
-    size_t maxPos = 0;
-    
-    for (size_t n = 0; n < rbsSpacer.size(); n++) {
-        if (rbsSpacer[n] > maxProb) {
-            maxProb = rbsSpacer[n];
-            maxPos = n;
-        }
-    }
+    UnivariatePDF::localization_metric_t localization = spacer.localization(expOptions.windowSize);
     
     string promoterIsValid = "no";
     
     // check position and score
-    if (maxPos > expOptions.distanceThresh) {       // possibly promoter
-        if (maxProb > expOptions.scoreThresh) {     // definitely promoter
+    if (localization.windowBegin > expOptions.distanceThresh) {       // possibly promoter
+        if (localization.windowTotal > expOptions.scoreThresh) {     // definitely promoter
             promoterIsValid = "yes";
         }
     }
@@ -1018,6 +1018,104 @@ void ModuleExperiment::runPromoterIsValidForBacteria() {
     string rbsMaxDurStr = mfile.readValueForKey("PROMOTER_MAX_DUR");         // get maximum duration
     size_t rbsMaxDur = boost::lexical_cast<size_t>(rbsMaxDurStr);
     
+    string numLeaderlessStr = mfile.readValueForKey("PROMOTER_NUM_LEADERLESS");       // get number of leaderless
+    string numFGIOStr = mfile.readValueForKey("PROMOTER_NUM_FGIO");                   // get number of first-genes-in-operon
+    size_t numLeaderless = boost::lexical_cast<size_t>(numLeaderlessStr);
+    size_t numFGIO = boost::lexical_cast<size_t>(numFGIOStr);
+    
+    // if labels file provided, count leaderless and FGIO from it
+    if (!expOptions.fnlabels.empty() && !expOptions.fnseq.empty()) {
+        AlphabetDNA alph;
+        CharNumConverter cnc(&alph);
+        NumAlphabetDNA numAlph(alph, cnc);
+        
+        SequenceFile seqFile (expOptions.fnseq, SequenceFile::READ);
+        Sequence seqStr = seqFile.read();
+        NumSequence sequence(seqStr, cnc);
+        
+        
+        vector<Label*> labels;
+        LabelFile file (expOptions.fnlabels, LabelFile::READ);
+        file.read(labels);
+        
+        // remove short genes
+        for (size_t n = 0; n < labels.size(); n++) {
+            if (labels[n] == NULL)
+                throw invalid_argument("Label cannot be null");
+            
+            // "remove" short genes
+            if (labels[n]->right - labels[n]->left + 1 < expOptions.minGeneLength) {
+                delete labels[n];
+                labels[n] = NULL;
+            }
+        }
+        
+        // actually remove
+        vector<Label*>::iterator toRem = remove_if(labels.begin(), labels.end(), isNull);
+        labels.erase(toRem, labels.end());
+        
+        // split labels into sets based on operon status
+        vector<LabelsParser::operon_status_t> operonStatuses;
+        LabelsParser::partitionBasedOnOperonStatus(labels, expOptions.fgioDistThresh, expOptions.fgioDistThresh, operonStatuses);
+        
+        // count number of FGIO
+        size_t numFGIO = 0;
+        for (size_t n = 0; n < operonStatuses.size(); n++) {
+            if (operonStatuses[n] == LabelsParser::FGIO)        numFGIO++;
+        }
+        
+        // get FGIO upstreams
+        vector<Label*> labelsFGIO (numFGIO);
+        size_t currFGIO = 0;        // indices
+        
+        for (size_t n = 0; n < operonStatuses.size(); n++) {
+            if (operonStatuses[n] == LabelsParser::FGIO)        labelsFGIO[currFGIO++] = labels[n];
+        }
+        
+        vector<NumSequence> upstreamsPromoter;
+        
+        size_t upstrLen = 20;
+        
+        // match FGIO to 16S tail
+        vector<NumSequence> upstreamsFGIO;
+        SequenceParser::extractUpstreamSequences(sequence, labelsFGIO, cnc, upstrLen, upstreamsFGIO);
+        
+        Sequence strMatchSeq (expOptions.matchTo);
+        NumSequence matchSeq (strMatchSeq, cnc);
+        
+        pair<NumSequence::size_type, NumSequence::size_type> positionsOfMatches;
+        vector<pair<NumSequence::num_t, NumSequence::num_t> > substitutions;
+        if (expOptions.allowAGSubstitution)
+            substitutions.push_back(pair<NumSequence::num_t, NumSequence::num_t> (cnc.convert('A'), cnc.convert('G')));
+        
+        size_t skipFromStart = 3;
+        for (size_t n = 0; n < upstreamsFGIO.size(); n++) {
+            NumSequence match = SequenceAlgorithms::longestMatchTo16S(matchSeq, upstreamsFGIO[n], positionsOfMatches, substitutions);
+            
+            // keep track of nonmatches
+            if (match.size() < expOptions.matchThresh)
+                upstreamsPromoter.push_back(upstreamsFGIO[n].subseq(0, upstreamsFGIO[n].size() - skipFromStart));
+        }
+        
+        
+        numLeaderless = upstreamsPromoter.size();
+        numFGIO = upstreamsFGIO.size();
+    }
+    
+    double percentLeaderless = 0;
+    if (numFGIO > 0)
+        percentLeaderless = 100.0 * numLeaderless / (double) numFGIO;
+    
+    // check whether enough leaderless
+    if (percentLeaderless < expOptions.minLeaderlessPercent) {
+        cout << "no" << endl;
+        return;
+    }
+    if (numLeaderless < expOptions.minLeaderlessCount) {
+        cout << "no" << endl;
+        return;
+    }
+    
     vector<double> rbsSpacer (rbsMaxDur, 0);
     
     // convert string to vector of probabilities
@@ -1035,22 +1133,16 @@ void ModuleExperiment::runPromoterIsValidForBacteria() {
     }
     
     
-    // find max location
-    double maxProb = -numeric_limits<double>::infinity();
-    size_t maxPos = 0;
+    // create distribution from vector
+    UnivariatePDF spacer (rbsSpacer, false, 0, false);
     
-    for (size_t n = 0; n < rbsSpacer.size(); n++) {
-        if (rbsSpacer[n] > maxProb) {
-            maxProb = rbsSpacer[n];
-            maxPos = n;
-        }
-    }
+    UnivariatePDF::localization_metric_t localization = spacer.localization(expOptions.windowSize);
     
     string promoterIsValid = "no";
     
     // check position and score
-    if (maxPos < expOptions.distanceThresh) {       // possibly promoter
-        if (maxProb > expOptions.scoreThresh) {     // definitely promoter
+    if (localization.windowBegin < expOptions.distanceThresh) {       // possibly promoter
+        if (localization.windowTotal > expOptions.scoreThresh) {     // definitely promoter
             promoterIsValid = "yes";
         }
     }
@@ -1064,20 +1156,340 @@ void ModuleExperiment::runPromoterIsValidForBacteria() {
 
 
 
+// match upstreams to 16S rRNA and split labels into those that match and those that don't
+void splitGenesIntoMatchAndUnmatch (const NumSequence &sequence, const vector<Label*> &labels, size_t upstreamLength, string seq16S, size_t matchThresh, bool allowAGSubstitution, vector<Label*> &matched, vector<Label*> &unmatched) {
+    
+    AlphabetDNA alph;
+    CharNumConverter cnc(&alph);
+    
+    Sequence strMatchSeq (seq16S);
+    NumSequence matchSeq (strMatchSeq, cnc);
+    
+    pair<NumSequence::size_type, NumSequence::size_type> positionsOfMatches;
+    vector<pair<NumSequence::num_t, NumSequence::num_t> > substitutions;
+    if (allowAGSubstitution)
+        substitutions.push_back(pair<NumSequence::num_t, NumSequence::num_t> (cnc.convert('A'), cnc.convert('G')));
+    
+    for (size_t n = 0; n < labels.size(); n++) {
+        
+        NumSequence upstream = SequenceParser::extractUpstreamSequence(sequence, *labels[n], cnc, upstreamLength);
+        
+        NumSequence match = SequenceAlgorithms::longestMatchTo16S(matchSeq, upstream, positionsOfMatches, substitutions);
+        
+        // keep track of nonmatches
+        if (match.size() < matchThresh)
+            unmatched.push_back(labels[n]);
+        else
+            matched.push_back(labels[n]);
+    }
+
+}
 
 
+void runMotifFinder(const NumSequence &sequence, const vector<Label*> &labels, const OptionsMFinder &optionsMFinder, const NumAlphabetDNA  &numAlph, size_t upstreamLength, NonUniformMarkov* &motifMarkov, UnivariatePDF* &motifSpacer) {
+    
+    AlphabetDNA alph;
+    CharNumConverter cnc(&alph);
+    
+    vector<NumSequence> sequencesRaw;
+    SequenceParser::extractUpstreamSequences(sequence, labels, cnc, upstreamLength, sequencesRaw);
+    
+    vector<NumSequence> upstreams;
+    for (size_t n = 0; n < sequencesRaw.size(); n++) {
+        if (!sequencesRaw[n].containsInvalid(numAlph))
+            upstreams.push_back(sequencesRaw[n]);
+    }
+    
+    MotifFinder::Builder b;
+    MotifFinder mfinder = b.build(optionsMFinder);
+    
+    
+    vector<NumSequence::size_type> positions;
+    mfinder.findMotifs(upstreams, positions);
+    
+    // build RBS model
+    NonUniformCounts motifCounts(optionsMFinder.motifOrder, optionsMFinder.width, numAlph);
+    for (size_t n = 0; n < upstreams.size(); n++) {
+        motifCounts.count(upstreams[n].begin()+positions[n], upstreams[n].begin()+positions[n]+optionsMFinder.width);
+    }
+    
+    motifMarkov = new NonUniformMarkov(optionsMFinder.motifOrder, optionsMFinder.width, numAlph);
+    motifMarkov->construct(&motifCounts, optionsMFinder.pcounts);
+    
+    // build spacer distribution
+    // build histogram from positions
+    vector<double> positionCounts (upstreamLength - optionsMFinder.width+1, 0);
+    for (size_t n = 0; n < positions.size(); n++) {
+        // FIXME account for LEFT alignment
+        // below is only for right
+        positionCounts[upstreamLength - optionsMFinder.width - positions[n]]++;        // increment position
+    }
+    
+    motifSpacer = new UnivariatePDF(positionCounts, false, optionsMFinder.pcounts);
+    
+    
+}
 
 
+void toModFile(vector<pair<string, string> > &toMod, const NonUniformMarkov* motif, const UnivariatePDF* spacer, string name) {
+    typedef pair<string, string> mpair;
+
+    toMod.push_back(mpair(name, "1"));
+    toMod.push_back(mpair(name + "_ORDER", boost::lexical_cast<string>(motif->getOrder())));
+    toMod.push_back(mpair(name + "_WIDTH", boost::lexical_cast<string>(motif->getLength())));
+    toMod.push_back(mpair(name + "_MARGIN", "0"));
+    toMod.push_back(mpair(name + "_MAT", motif->toString()));
+    
+    toMod.push_back(mpair(name + "_MAX_DUR", boost::lexical_cast<string>(spacer->size() - 1)));
+    toMod.push_back(mpair(name + "_POS_DISTR", spacer->toString()));
+}
+
+void ModuleExperiment::runStartModelStrategy2() {
+    
+    OptionsExperiment::StartModelStrategy2Options expOptions = options.startModelStrategy2;
+    
+    // read sequence file
+    SequenceFile sequenceFile (expOptions.fn_seqeuence, SequenceFile::READ);
+    Sequence strSequence = sequenceFile.read();
+    
+    // read labels file
+    LabelFile labelFile (expOptions.fn_labels, LabelFile::READ);
+    vector<Label*> labels;
+    labelFile.read(labels);
+    
+    // filter short genes
+    if (expOptions.minGeneLength > 0) {
+        for (size_t n = 0; n < labels.size(); n++) {
+            size_t length = labels[n]->right - labels[n]->left + 1;
+            if (length < expOptions.minGeneLength) {
+                delete labels[n];
+                labels[n] = NULL;
+            }
+        }
+        
+        size_t sizeBefore = labels.size();
+        
+        vector<Label*>::iterator toRem = remove_if(labels.begin(), labels.end(), isNull);
+        labels.erase(toRem, labels.end());
+        
+        cout << "Number of genes filtered by gene length : " << sizeBefore - labels.size() << endl;
+    }
+    
+    // create numeric sequence
+    AlphabetDNA alph;
+    CharNumConverter cnc (&alph);
+    NumAlphabetDNA numAlph(alph, cnc);
+
+    NumSequence numSequence (strSequence, cnc);
+    
+    // split labels into sets based on operon status
+    vector<LabelsParser::operon_status_t> operonStatuses;
+    LabelsParser::partitionBasedOnOperonStatus(labels, expOptions.fgioDistanceThresh, expOptions.igDistanceThresh, operonStatuses);
+    
+    // get stats of operons
+    size_t numFGIO = 0, numIG = 0, numUNK = 0;
+    for (size_t n = 0; n < operonStatuses.size(); n++) {
+        if (operonStatuses[n] == LabelsParser::FGIO)        numFGIO++;
+        else if (operonStatuses[n] == LabelsParser::NFGIO)  numIG++;
+        else
+            numUNK++;
+    }
+    
+    // get FGIO and IG labels
+    vector<Label*> labelsFGIO (numFGIO);
+    vector<Label*> labelsIG (numIG);
+    size_t currFGIO = 0, currIG = 0;
+    
+    for (size_t n = 0; n < operonStatuses.size(); n++) {
+        if (operonStatuses[n] == LabelsParser::FGIO)        labelsFGIO[currFGIO++] = labels[n];
+        else if (operonStatuses[n] == LabelsParser::NFGIO)  labelsIG[currIG++] = labels[n];
+    }
+    
+    // extract upstreams
+    vector<Label*> labelsFGIO_Matched;
+    vector<Label*> labelsFGIO_Unmatched;
+    vector<Label*> labelsIG_Matched;
+    vector<Label*> labelsIG_Unmatched;
+    
+    // match to 16S rRNA
+    splitGenesIntoMatchAndUnmatch(numSequence, labelsFGIO, expOptions.matchToUpstreamOfLength, expOptions.seq16S, expOptions.min16SMatch, expOptions.allowAGSubstitution, labelsFGIO_Matched, labelsFGIO_Unmatched);
+    splitGenesIntoMatchAndUnmatch(numSequence, labelsIG, expOptions.matchToUpstreamOfLength, expOptions.seq16S, expOptions.min16SMatch, expOptions.allowAGSubstitution, labelsIG_Matched, labelsIG_Unmatched);
+    
+    
+    // print some stats
+    cout << "FGIO matched to 16S:   " << labelsFGIO_Matched.size()   << endl;
+    cout << "FGIO unmatched to 16S: " << labelsFGIO_Unmatched.size() << endl;
+    cout << "IG matched to 16S:     " << labelsIG_Matched.size()     << endl;
+    cout << "IG unmatched to 16S:   " << labelsIG_Unmatched.size()   << endl;
+    
+    
+    // run mfinder on each set
+    NonUniformMarkov *motifMarkovFGIO_Matched   ;
+    NonUniformMarkov *motifMarkovFGIO_Unmatched ;
+    NonUniformMarkov *motifMarkovIG_Matched     ;
+    NonUniformMarkov *motifMarkovIG_Unmatched   ;
+    
+    UnivariatePDF *motifSpacerFGIO_Matched      ;
+    UnivariatePDF *motifSpacerFGIO_Unmatched    ;
+    UnivariatePDF *motifSpacerIG_Matched        ;
+    UnivariatePDF *motifSpacerIG_Unmatched      ;
+    
+    
+    runMotifFinder(numSequence, labelsFGIO_Matched, expOptions.mfinderFGIOMatchedOptions, numAlph, expOptions.upstreamLengthFGIOMatched, motifMarkovFGIO_Matched, motifSpacerFGIO_Matched);
+    runMotifFinder(numSequence, labelsFGIO_Unmatched, expOptions.mfinderFGIOUnmatchedOptions, numAlph, expOptions.upstreamLengthFGIOUnmatched, motifMarkovFGIO_Unmatched, motifSpacerFGIO_Unmatched);
+    
+    runMotifFinder(numSequence, labelsIG_Matched, expOptions.mfinderIGMatchedOptions, numAlph, expOptions.upstreamLengthIGMatched, motifMarkovIG_Matched, motifSpacerIG_Matched);
+    runMotifFinder(numSequence, labelsIG_Unmatched, expOptions.mfinderIGUnmatchedOptions, numAlph, expOptions.upstreamLengthIGUnmatched, motifMarkovIG_Unmatched, motifSpacerIG_Unmatched);
+    
+    
+    // get string representations
+    vector<pair<string, string> > toMod;
+    
+    toModFile(toMod, motifMarkovFGIO_Matched,   motifSpacerFGIO_Matched,    "FGIO_MATCHED");
+    toModFile(toMod, motifMarkovFGIO_Unmatched, motifSpacerFGIO_Unmatched,  "FGIO_UNMATCHED");
+    toModFile(toMod, motifMarkovIG_Matched,     motifSpacerIG_Matched,      "IG_MATCHED");
+    toModFile(toMod, motifMarkovIG_Unmatched,   motifSpacerIG_Unmatched,    "IG_UNMATCHED");
+    
+    
+    // model file
+    ModelFile mfile(expOptions.fn_out, ModelFile::WRITE);
+    mfile.write(toMod);
+    
+}
 
 
+void matrixStringToMapOfVectors(const string &matStr, map<char, vector<double> > &mapVec) {
+    
+    std::istringstream ss(matStr);
+    std::string line;
+    while (std::getline(ss, line)) {
+        std::istringstream ssWord (line);
+        string word;
+        
+        char letter;
+        vector<double> probs;
+        
+        bool isLetter = true;
+        while (std::getline(ssWord, word, '\t')) {
+            
+            if (isLetter)
+                letter = word[0];
+            else
+                probs.push_back(boost::lexical_cast<double>(word));
+            
+            isLetter = false;
+        }
+        
+        mapVec.insert( std::pair<char, vector<double> >(letter, probs));
+    }
+    
+}
+
+string getConsensus(map<char, vector<double> > &mapVec) {
+    string consensus = "";
+    
+    char letters [4]; letters[0] = 'A'; letters[1] = 'C'; letters[2] = 'G'; letters[3] = 'T';
+    
+    size_t lengthOfSequence = mapVec['A'].size();
+    
+    for (size_t n = 0; n < lengthOfSequence; n++) {
+        double maxValue = 0;
+        char maxChar = ' ';
+        
+        for (size_t l = 0; l < 4; l++) {
+            char currLetter = letters[l];
+            double currValue = mapVec[currLetter][n];
+            
+            if (maxValue < currValue) {
+                maxValue = currValue;
+                maxChar = currLetter;
+            }
+        }
+        
+        consensus += string(1, maxChar);
+    }
+    
+    return consensus;
+}
 
 
+void ModuleExperiment::runPromoterAndRBSMatch() {
+    
+    OptionsExperiment::PromoterAndRBSMatch expOptions = options.promoterAndRBSMatch;
+    
+    // open mod file
+    ModelFile mfile (expOptions.fnmod, ModelFile::READ);
+    
+    string promoterMatStr = mfile.readValueForKey("PROMOTER_MAT");          // promoter matrix
+    string rbsMatStr = mfile.readValueForKey("RBS_MAT");                    // RBS matrix
+    
+    
+    map<char, vector<double> > promoterMat, rbsMat;
+    
+    matrixStringToMapOfVectors(promoterMatStr, promoterMat);
+    matrixStringToMapOfVectors(rbsMatStr, rbsMat);
+    
+    // get consensus
+    string promoterConsensus = getConsensus(promoterMat);
+    string rbsConsensus = getConsensus(rbsMat);
+    
+    AlphabetDNA alph;
+    CharNumConverter cnc(&alph);
+    
+    NumSequence promoterConsensusNum (Sequence(promoterConsensus), cnc);
+    NumSequence rbsConsensusNum (Sequence(rbsConsensus), cnc);
+    
+    std::pair<NumSequence::size_type, NumSequence::size_type> positionsOfMatches;
+    NumSequence matchedSeq = SequenceAlgorithms::longestMatchTo16S(promoterConsensusNum, rbsConsensusNum, positionsOfMatches);
+                                                      
+                                                      
+    // match consensus
+    size_t longestMatchLength = matchedSeq.size();
+    
+    if (longestMatchLength >= expOptions.numberOfMatches)
+        cout << "yes" << endl;
+    else
+        cout << "no" << endl;
+}
 
-
-
-
-
-
+void ModuleExperiment::runRbsConsensus16SMatch() {
+    OptionsExperiment::RBSConsensusAnd16SMatch expOptions = options.rbsConsensusAnd16SMatch;
+    
+    // open mod file
+    ModelFile mfile (expOptions.fnmod, ModelFile::READ);
+    
+    string rbsMatStr = mfile.readValueForKey("RBS_MAT");
+    map<char, vector<double> >rbsMat;
+    
+    matrixStringToMapOfVectors(rbsMatStr, rbsMat);
+    
+    // get consensus
+    string rbsConsensus = getConsensus(rbsMat);
+    
+    AlphabetDNA alph;
+    CharNumConverter cnc(&alph);
+    NumSequence rbsConsensusNum (Sequence(rbsConsensus), cnc);
+    
+    // get consensus
+    NumSequence matchTo (Sequence(expOptions.matchTo), cnc);
+    
+    pair<NumSequence::size_type, NumSequence::size_type> positionsOfMatches;
+    vector<pair<NumSequence::num_t, NumSequence::num_t> > substitutions;
+    if (expOptions.allowAGSubstitution)
+        substitutions.push_back(pair<NumSequence::num_t, NumSequence::num_t> (cnc.convert('A'), cnc.convert('G')));
+    
+    NumSequence matchedSeq = SequenceAlgorithms::longestMatchTo16S(matchTo, rbsConsensusNum, positionsOfMatches, substitutions);
+    
+    
+    // match consensus
+    size_t longestMatchLength = matchedSeq.size();
+    
+    if (longestMatchLength >= expOptions.matchThresh)
+        cout << "yes" << endl;
+    else
+        cout << "no" << endl;
+    
+}
 
 
 
