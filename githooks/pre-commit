@@ -36,4 +36,14 @@ if [ `git rev-parse --abbrev-ref HEAD` == "develop" ]; then
 elif [ `git rev-parse --abbrev-ref HEAD` == "master" ]; then
     # do master stuff
     echo "master branch";
+    if [ -z "$MAJOR" ]; then
+        tag="VERSION_NUMBER_MAJOR";     # update Major
+    else
+        tag="VERSION_NUMBER_MINOR";     # update Minor
+    fi
+
+    # update VersionNumber.h file
+    oldNum=`awk '/$tag [0-9]+/ {print $3}' $rootDir/code/include/VersionNumber.h`;
+    newNum=$(($oldNum+1));
+    sed -i "" -E "s/$tag $oldNum/$tag $newNum/g" $rootDir/code/include/VersionNumber.h;
 fi
