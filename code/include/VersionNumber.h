@@ -12,7 +12,7 @@
 #define VERSION_NUMBER_MAJOR 0
 #define VERSION_NUMBER_MINOR 1
 
-#define BUILD_NUMBER 6
+#define BUILD_NUMBER 7
 
 
 #endif /* VersionNumber_h */

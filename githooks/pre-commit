@@ -31,7 +31,7 @@ if [ `git rev-parse --abbrev-ref HEAD` == "develop" ]; then
     # do development stuff
     oldNum=`awk '/BUILD_NUMBER [0-9]+/ {print $3}' $rootDir/code/include/VersionNumber.h`;
     newNum=$(($oldNum+1));
-    sed -i -E "s/BUILD_NUMBER $oldNum/BUILD_NUMBER $newNum/g" $rootDir/code/include/VersionNumber.h;
+    sed -i "" -E "s/BUILD_NUMBER $oldNum/BUILD_NUMBER $newNum/g" $rootDir/code/include/VersionNumber.h;
 
 elif [ `git rev-parse --abbrev-ref HEAD` == "master" ]; then
     # do master stuff
