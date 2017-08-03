@@ -124,7 +124,7 @@ GMS2Trainer::GMS2Trainer(unsigned pcounts,
     this->FGIO_DIST_THRESH = FGIO_DIST_THRESH;
     this->NFGIO_DIST_THRES = 22;
     
-    if (genomeClass == ProkGeneStartModel::C2 || genomeClass == ProkGeneStartModel::C3) {
+    if (genomeClass == ProkGeneStartModel::C2 || genomeClass == ProkGeneStartModel::C3 || genomeClass == ProkGeneStartModel::C5) {
         this->UPSTR_LEN_IG = upstreamLength;
     }
     
@@ -428,8 +428,10 @@ void GMS2Trainer::estimateParametersMotifModel(const NumSequence &sequence, cons
     MotifFinder mfinder = b.build();
     
     // if genome is class 1, search for RBS
-    if (genomeClass == ProkGeneStartModel::C1) {
+    if (genomeClass == ProkGeneStartModel::C1 || genomeClass == ProkGeneStartModel::C5) {
         this->genomeType = "pure-rbs";
+        if (genomeClass == ProkGeneStartModel::C5)
+            this->genomeType = "class-c";
         
         // START: REMOVE THIS
         // copy only usable labels
@@ -697,7 +699,7 @@ void GMS2Trainer::estimateParametersMotifModel_Promoter(const NumSequence &seque
     }
     
     vector<NumSequence> upstreamsFGIO;
-    SequenceParser::extractUpstreamSequences(sequence, labelsFGIO, cnc, this->UPSTR_LEN_FGIO, upstreamsFGIO);
+    SequenceParser::extractUpstreamSequences(sequence, labelsFGIO, cnc, this->UPSTR_LEN_FGIO, upstreamsFGIO, true);
     
     vector<NumSequence> upstreamsIG;
     SequenceParser::extractUpstreamSequences(sequence, labelsIG, cnc, this->UPSTR_LEN_IG, upstreamsIG);
@@ -1236,10 +1238,10 @@ void GMS2Trainer::selectLabelsForCodingParameters(const vector<Label*> &labels, 
             throw invalid_argument("Label cannot be null");
         
         // "remove" short genes
-        if (labels[n]->right - labels[n]->left + 1 < MIN_GENE_LEN)
+        if (labels[n]->right - labels[n]->left + 1 <= MIN_GENE_LEN)
             useCoding[n] = false;
         
-        // train on native
+        // remove all atypical genes, and keep all native (including short)
         if (trainOnNative) {
             useCoding[n] = (labels[n]->geneClass.find("native") != string::npos);
         }

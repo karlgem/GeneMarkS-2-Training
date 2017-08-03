@@ -28,7 +28,8 @@ namespace gmsuite {
          *
          * @param order the model's order
          * @param period the model's period
-         * @param alphabet the alphabet used by the model
+         * @param alph the alphabet used by the model
+         * @param geneticCode the genetic code
          */
         CodingMarkov(unsigned order, size_t period, const NumAlphabetDNA &alph, const NumGeneticCode &geneticCode);
         

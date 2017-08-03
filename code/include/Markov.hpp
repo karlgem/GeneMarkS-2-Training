@@ -158,7 +158,7 @@ namespace gmsuite {
          * Get cumulative distribution frequency for each conditional probability.
          *
          * @param currentOrder the order of the "original" probabilities
-         * @param currentProbs the "original" probabilities
+         * @param probs the "original" probabilities
          */
         void getCDFPerConditional(unsigned currentOrder, vector<double> &probs) const;
         

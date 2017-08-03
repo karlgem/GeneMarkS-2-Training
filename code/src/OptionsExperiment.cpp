@@ -7,6 +7,7 @@
 //
 
 #include "OptionsExperiment.hpp"
+#include "NumSequence.hpp"
 #include <iostream>
 
 using namespace std;
@@ -22,6 +23,9 @@ using namespace gmsuite;
 #define STR_SCORE_LABELED_STARTS    "score-labeled-starts"
 #define STR_PROMOTER_IS_VALID_FOR_ARCHAEA    "promoter-is-valid-for-archaea"
 #define STR_PROMOTER_IS_VALID_FOR_BACTERIA    "promoter-is-valid-for-bacteria"
+#define STR_START_MODEL_STRATEGY_2  "start-model-strategy-2"
+#define STR_PROMOTER_AND_RBS_MATCH "promoter-and-rbs-match"
+#define STR_RBS_CONSENSUS_AND_16S_MATCH "rbs-consensus-and-16s-match"
 
 namespace gmsuite {
     // convert string to experiment_t
@@ -39,6 +43,9 @@ namespace gmsuite {
         else if (token == STR_SCORE_LABELED_STARTS)     unit = OptionsExperiment::SCORE_LABELED_STARTS;
         else if (token == STR_PROMOTER_IS_VALID_FOR_ARCHAEA)     unit = OptionsExperiment::PROMOTER_IS_VALID_FOR_ARCHAEA;
         else if (token == STR_PROMOTER_IS_VALID_FOR_BACTERIA)     unit = OptionsExperiment::PROMOTER_IS_VALID_FOR_BACTERIA;
+        else if (token == STR_START_MODEL_STRATEGY_2)   unit = OptionsExperiment::START_MODEL_STRATEGY_2;
+        else if (token == STR_PROMOTER_AND_RBS_MATCH)   unit = OptionsExperiment::PROMOTER_AND_RBS_MATCH;
+        else if (token == STR_RBS_CONSENSUS_AND_16S_MATCH) unit = OptionsExperiment::RBS_CONSENSUS_AND_16S_MATCH;
         else
             throw boost::program_options::invalid_option_value(token);
         
@@ -151,6 +158,13 @@ bool OptionsExperiment::parse(int argc, const char **argv) {
         // Experiment: get start-model bacteria
         if (experiment == PROMOTER_IS_VALID_FOR_BACTERIA)
             addProcessOptions_PromoterIsValidForBacteria(promoterIsValidForBacteria, expDesc);
+        // Experiment: start model strategy 2
+        if (experiment == START_MODEL_STRATEGY_2)
+            addProcessOptions_StartModelStrategy2Options(startModelStrategy2, expDesc);
+        if (experiment == PROMOTER_AND_RBS_MATCH)
+            addProcessOptions_PromoterAndRBSMatchOptions(promoterAndRBSMatch, expDesc);
+        if (experiment == RBS_CONSENSUS_AND_16S_MATCH)
+            addProcessOptions_RBSConsensusAnd16SMatch(rbsConsensusAnd16SMatch, expDesc);
         
         cmdline_options.add(expDesc);
         
@@ -301,6 +315,7 @@ void OptionsExperiment::addProcessOptions_PromoterIsValidForArchaea(PromoterIsVa
     ("fnmod", po::value<string>(&options.fnmod)->required(), "Name of mod file containing RBS spacer.")
     ("dist-thresh", po::value<size_t>(&options.distanceThresh)->default_value(22), "Distance threshold after which spacer indicates promoter.")
     ("score-thresh", po::value<double>(&options.scoreThresh)->default_value(0.1), "Minimum score above which spacer is considered localized.")
+    ("window-size", po::value<size_t>(&options.windowSize)->default_value(1), "Size of window in which to determine localization")
     ;
 }
 
@@ -309,13 +324,77 @@ void OptionsExperiment::addProcessOptions_PromoterIsValidForBacteria(PromoterIsV
     ("fnmod", po::value<string>(&options.fnmod)->required(), "Name of mod file containing RBS spacer.")
     ("dist-thresh", po::value<size_t>(&options.distanceThresh)->default_value(15), "Distance threshold before which spacer indicates promoter.")
     ("score-thresh", po::value<double>(&options.scoreThresh)->default_value(0.1), "Minimum score above which spacer is considered localized.")
+    ("min-leaderless-percent", po::value<double>(&options.minLeaderlessPercent)->default_value(0.0), "Minimum percentage of leaderless transcripts")
+    ("min-leaderless-count", po::value<size_t>(&options.minLeaderlessCount)->default_value(0), "Minimum number of leaderless transcripts")
+    ("window-size", po::value<size_t>(&options.windowSize)->default_value(1), "Size of window in which to determine localization")
+    ("fnlabels", po::value<string>(&options.fnlabels)->default_value(""), "Labels file, if provided, is used to calculate number of leaderless and first-genes-in-operon")
+    ("fnseq", po::value<string> (&options.fnseq)->default_value(""), "Sequence file")
+    ("min-gene-length", po::value<NumSequence::size_type>(&options.minGeneLength)->default_value(300), "Minimum gene length allowed in training")
+    ("match-to", po::value<string>(&options.matchTo)->default_value("TAAGGAGGTGA"), "16S tail")
+    ("allow-ag-substitution", po::bool_switch(&options.allowAGSubstitution)->default_value(true), "Allow AG substitution.")
+    ("match-thresh", po::value<unsigned>(&options.matchThresh)->default_value(4), "Match threshold for 16S tail.")
+    ("fgio-distance-thresh", po::value<size_t>(&options.fgioDistThresh)->default_value(25), "Minimum distance between genes classified as first-genes-in-operon")
     ;
 }
 
 
+void OptionsExperiment::addProcessOptions_PromoterAndRBSMatchOptions(PromoterAndRBSMatch &options, po::options_description &processOptions) {
+    processOptions.add_options()
+    ("fnmod", po::value<string>(&options.fnmod)->required(), "Name of mod file containing RBS spacer.")
+    ("match-thresh", po::value<size_t>(&options.numberOfMatches)->default_value(4), "Match threshold for 16S tail.")
+    ;
+}
 
 
+void OptionsExperiment::addProcessOptions_StartModelStrategy2Options(StartModelStrategy2Options &options, po::options_description &processOptions) {
+    
+    Options::addProcessOptions_GenReadSeqAndLabelsOptions(options, processOptions);
 
+    processOptions.add_options()
+    ("seq-16s",         po::value<string>(&options.seq16S)->default_value("TAAGGAGGTGA"), "Sequence to match to.")
+    ("min-match",       po::value<size_t>(&options.min16SMatch)->default_value(4), "Minimum accepted match length from upstream to 16S tail")
+    ("allow-ag-sub",    po::bool_switch(&options.allowAGSubstitution)->default_value(false), "Allow G to be substituted for A when matching to 16S tail")
+    ("fgio-thresh",     po::value<size_t>(&options.fgioDistanceThresh)->default_value(25), "Used to extract second genes in operon")
+    ("ig-thresh",       po::value<size_t>(&options.igDistanceThresh)->default_value(20), "Used to extract first genes in operon")
+    ("fgio-upstrLen",   po::value<size_t>(&options.fgioUpstreamLength)->default_value(40), "Upstream length for first genes in operon")
+    ("ig-upstrLen",     po::value<size_t>(&options.igUpstreamLength)->default_value(20), "Upstream length for interior genes")
+    ("min-gene-length", po::value<size_t>(&options.minGeneLength)->default_value(0), "Minimum gene length")
+    ("match-to-upstream-of-length", po::value<size_t> (&options.matchToUpstreamOfLength)->default_value(20), "Length of upstream region we're matching against")
+    ("fn_out",         po::value<string>(&options.fn_out)->required(), "Name of output file")
+    ("fgio-matched-upstream-length",    po::value<size_t> (&options.upstreamLengthFGIOMatched)->default_value(40), "FGIO Match Upstream Length")
+    ("fgio-unmatched-upstream-length",  po::value<size_t> (&options.upstreamLengthFGIOUnmatched)->default_value(40), "FGIO Unmatch Upstream Length")
+    ("ig-matched-upstream-length",      po::value<size_t> (&options.upstreamLengthIGMatched)->default_value(20), "IG Match Upstream Length")
+    ("ig-unmatched-upstream-length",    po::value<size_t> (&options.upstreamLengthIGUnmatched)->default_value(20), "IG Unmatch Upstream Length")
+    ;
+    
+    
+    // RBS mfinder options
+    po::options_description mfinderFGIOMatched ("FGIO Matched - Motif Finder ");
+    OptionsMFinder::addProcessOptions(options.mfinderFGIOMatchedOptions, mfinderFGIOMatched, false, "fgio-matched");
+    processOptions.add(mfinderFGIOMatched);
+    
+    po::options_description mfinderFGIOUnmatched ("FGIO Unmatched - Motif Finder ");
+    OptionsMFinder::addProcessOptions(options.mfinderFGIOUnmatchedOptions, mfinderFGIOUnmatched, false, "fgio-unmatched");
+    processOptions.add(mfinderFGIOUnmatched);
+    
+    po::options_description mfinderIGMatched ("IG Matched - Motif Finder ");
+    OptionsMFinder::addProcessOptions(options.mfinderIGMatchedOptions, mfinderIGMatched, false, "ig-matched");
+    processOptions.add(mfinderIGMatched);
+    
+    po::options_description mfinderIGUnmatched ("IG Unmatched - Motif Finder ");
+    OptionsMFinder::addProcessOptions(options.mfinderIGUnmatchedOptions, mfinderIGUnmatched, false, "ig-unmatched");
+    processOptions.add(mfinderIGUnmatched);
+}
+
+
+void OptionsExperiment::addProcessOptions_RBSConsensusAnd16SMatch(RBSConsensusAnd16SMatch &options, po::options_description &processOptions){
+    processOptions.add_options()
+    ("fnmod", po::value<string>(&options.fnmod)->required(), "Name of mod file containing RBS.")
+    ("match-thresh", po::value<unsigned>(&options.matchThresh)->default_value(4), "Match threshold for 16S tail.")
+    ("match-to", po::value<string>(&options.matchTo)->default_value("TAAGGAGGTGA"), "16S tail")
+    ("allow-ag-sub",    po::bool_switch(&options.allowAGSubstitution)->default_value(true), "Allow G to be substituted for A when matching to 16S tail")
+    ;
+}
 
 
 
