@@ -22,4 +22,8 @@ if [ `git rev-parse --abbrev-ref HEAD` == "master" ]; then
     # reset build number
     oldNum=`awk '/BUILD_NUMBER [0-9]+/ {print $3}' $fnVN`;
     sed -i "" -E "s/BUILD_NUMBER $oldNum/BUILD_NUMBER 0/g" $fnVN;
+
+    # ammend the commit with new version of VersionNumber.h
+    git add $fnVN;
+    git commit --amend -C HEAD --no-verify
 fi
