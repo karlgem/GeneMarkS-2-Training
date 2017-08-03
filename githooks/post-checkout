@@ -1,0 +1,33 @@
+#!/bin/sh
+
+rootDir=`git rev-parse --show-toplevel`;
+
+# this is a file checkout – do nothing
+if [ "$3" == "0" ]; then exit; fi
+
+BRANCH_NAME=$(git symbolic-ref --short -q HEAD)
+NUM_CHECKOUTS=`git reflog --date=local | grep -o ${BRANCH_NAME} | wc -l`
+
+# if we're on a release branch
+echo "$BRANCH_NAME" | grep -q "^release-";
+
+if [ $? -eq 0 ]; then
+    #if the refs of the previous and new heads are the same 
+    #AND the number of checkouts equals one, a new branch has been created
+    if [ "$1" == "$2"  ] && [ ${NUM_CHECKOUTS} -eq 1 ]; then
+
+        fnVN=$rootDir/code/include/VersionNumber.h;
+
+        if [ ${MAJOR+x} ]; then
+            oldNum=`awk '/VERSION_NUMBER_MAJOR [0-9]+/ {print $3}' $fnVN`;
+            newNum=$(($oldNum+1));
+            sed -i "" -E "s/VERSION_NUMBER_MAJOR $oldNum/VERSION_NUMBER_MAJOR $newNum/g" $fnVN;
+        else
+            oldNum=`awk '/VERSION_NUMBER_MINOR [0-9]+/ {print $3}' $fnVN`;
+            newNum=$(($oldNum+1));
+            sed -i "" -E "s/VERSION_NUMBER_MINOR $oldNum/VERSION_NUMBER_MINOR $newNum/g" $fnVN;
+        fi
+
+        git add $fnVN;
+   fi
+fi
