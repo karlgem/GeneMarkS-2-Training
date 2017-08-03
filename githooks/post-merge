@@ -18,4 +18,8 @@ if [ `git rev-parse --abbrev-ref HEAD` == "master" ]; then
         newNum$(($oldNum+1));
         sed -i "" -E "s/VERSION_NUMBER_MINOR $oldNum/VERSION_NUMBER_MINOR $newNum/g" $fnVN;
     fi
+
+    # reset build number
+    oldNum=`awk '/BUILD_NUMBER [0-9]+/ {print $3}' $fnVN`;
+    sed -i "" -E "s/BUILD_NUMBER $oldNUM/BUILD_NUMBER 0/g" $fnVN;
 fi
