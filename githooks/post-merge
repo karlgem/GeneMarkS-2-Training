@@ -11,11 +11,11 @@ if [ `git rev-parse --abbrev-ref HEAD` == "master" ]; then
     # check if MAJOR flag is set
     if [ ${MAJOR+x} ]; then
         oldNum=`awk '/VERSION_NUMBER_MAJOR [0-9]+/ {print $3}' $fnVN`;
-        newNum$(($oldNum+1));
+        newNum=$(($oldNum+1));
         sed -i "" -E "s/VERSION_NUMBER_MAJOR $oldNum/VERSION_NUMBER_MAJOR $newNum/g" $fnVN;
     else
         oldNum=`awk '/VERSION_NUMBER_MINOR [0-9]+/ {print $3}' $fnVN`;
-        newNum$(($oldNum+1));
+        newNum=$(($oldNum+1));
         sed -i "" -E "s/VERSION_NUMBER_MINOR $oldNum/VERSION_NUMBER_MINOR $newNum/g" $fnVN;
     fi
 
