@@ -24,26 +24,18 @@ allownonascii=$(git config --bool hooks.allownonascii)
 
 
 rootDir=`git rev-parse --show-toplevel`;
-echo "Hi Katherine"
 
-# If on develop branch
-if [ `git rev-parse --abbrev-ref HEAD` == "develop" ]; then
-    # do development stuff
-    oldNum=`awk '/BUILD_NUMBER [0-9]+/ {print $3}' $rootDir/code/include/VersionNumber.h`;
-    newNum=$(($oldNum+1));
-    sed -i "" -E "s/BUILD_NUMBER $oldNum/BUILD_NUMBER $newNum/g" $rootDir/code/include/VersionNumber.h;
+# check if elements are staged
+git diff --cached --quiet --exit-code
 
-elif [ `git rev-parse --abbrev-ref HEAD` == "master" ]; then
-    # do master stuff
-    echo "master branch";
-    if [ -z "$MAJOR" ]; then
-        tag="VERSION_NUMBER_MAJOR";     # update Major
-    else
-        tag="VERSION_NUMBER_MINOR";     # update Minor
+# make sure there are staged elements
+if [ $? -ne 0 ]; then       # something is staged   
+
+    # If on develop branch
+    if [ `git rev-parse --abbrev-ref HEAD` == "develop" ]; then
+        # update build number
+        oldNum=`awk '/BUILD_NUMBER [0-9]+/ {print $3}' $rootDir/code/include/VersionNumber.h`;
+        newNum=$(($oldNum+1));
+        sed -i "" -E "s/BUILD_NUMBER $oldNum/BUILD_NUMBER $newNum/g" $rootDir/code/include/VersionNumber.h;
     fi
-
-    # update VersionNumber.h file
-    oldNum=`awk '/$tag [0-9]+/ {print $3}' $rootDir/code/include/VersionNumber.h`;
-    newNum=$(($oldNum+1));
-    sed -i "" -E "s/$tag $oldNum/$tag $newNum/g" $rootDir/code/include/VersionNumber.h;
 fi

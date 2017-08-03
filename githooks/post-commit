@@ -17,11 +17,5 @@ if [[ ! -z $filediff ]]; then
         # do development stuff
         git add $rootDir/code/include/VersionNumber.h;
         git commit --amend -C HEAD --no-verify
-    
-    elif [ `git rev-parse --abbrev-ref HEAD` == "master" ]; then
-        # do master stuff
-        echo "master branch";
-        git add $rootDir/code/include/VersionNumber.h;
-        git commit --amend -C HEAD --no-verify
     fi
 fi
