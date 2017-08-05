@@ -124,7 +124,7 @@ GMS2Trainer::GMS2Trainer(unsigned pcounts,
     this->FGIO_DIST_THRESH = FGIO_DIST_THRESH;
     this->NFGIO_DIST_THRES = 22;
     
-    if (genomeClass == ProkGeneStartModel::C2 || genomeClass == ProkGeneStartModel::C3 || genomeClass == ProkGeneStartModel::C5) {
+    if (genomeClass == ProkGeneStartModel::C2 || genomeClass == ProkGeneStartModel::C3 || genomeClass == ProkGeneStartModel::C5 || genomeClass == ProkGeneStartModel::C6) {
         this->UPSTR_LEN_IG = upstreamLength;
     }
     
@@ -507,6 +507,10 @@ void GMS2Trainer::estimateParametersMotifModel(const NumSequence &sequence, cons
     else if (genomeClass == ProkGeneStartModel::C3) {
         this->genomeType = "bacteria-promoter";
         estimateParametersMotifModel_Tuberculosis(sequence, labels, use);
+    }
+    else if (genomeClass == ProkGeneStartModel::C6) {
+        this->genomeType = "archaea-promoter-2";
+        estimateParametersMotifModel_groupA2(sequence, labels, use);
     }
     // if genome is class 4: RBS and upstream signature
     else {
@@ -1253,6 +1257,109 @@ void GMS2Trainer::selectLabelsForCodingParameters(const vector<Label*> &labels, 
 
 
 
+
+void GMS2Trainer::estimateParametersMotifModel_groupA2(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use) {
+    
+    AlphabetDNA alph;
+    CharNumConverter cnc(&alph);
+    NumAlphabetDNA numAlph(alph, cnc);
+    
+    
+    // copy only usable labels
+    size_t numUse = labels.size();
+    if (use.size() > 0) {
+        numUse = 0;
+        for (size_t n = 0; n < labels.size(); n++)
+            if (use[n])
+                numUse++;
+    }
+    
+    vector<Label*> useLabels (numUse);
+    size_t pos = 0;
+    for (size_t n = 0; n < labels.size(); n++) {
+        if (use[n])
+            useLabels[pos++] = labels[n];
+    }
+    
+    // split labels into sets based on operon status
+    vector<LabelsParser::operon_status_t> operonStatuses;
+    LabelsParser::partitionBasedOnOperonStatus(useLabels, FGIO_DIST_THRESH, NFGIO_DIST_THRES, operonStatuses);
+    
+    size_t numFGIO = 0, numIG = 0, numUNK = 0;
+    for (size_t n = 0; n < operonStatuses.size(); n++) {
+        if (operonStatuses[n] == LabelsParser::FGIO)        numFGIO++;
+        else if (operonStatuses[n] == LabelsParser::NFGIO)  numIG++;
+        else
+            numUNK++;
+    }
+    
+    // get FGIO and IG upstreams and run motif search
+    vector<Label*> labelsFGIO (numFGIO);
+    vector<Label*> labelsIG (numIG);
+    size_t currFGIO = 0, currIG = 0;        // indices
+    
+    for (size_t n = 0; n < operonStatuses.size(); n++) {
+        if (operonStatuses[n] == LabelsParser::FGIO)        labelsFGIO[currFGIO++] = useLabels[n];
+        else if (operonStatuses[n] == LabelsParser::NFGIO)  labelsIG[currIG++] = useLabels[n];
+    }
+    
+    vector<NumSequence> upstreamsRBS;
+    vector<NumSequence> upstreamsPromoter;
+    
+    size_t upstrLenForMatching = 20;
+    size_t upstrLenForPromoter = 40;
+    
+    // match FGIO to 16S tail
+    vector<NumSequence> upstreamsFGIOForMatching, upstreamsFGIOForPromoter;
+    SequenceParser::extractUpstreamSequences(sequence, labelsFGIO, cnc, upstrLenForMatching, upstreamsFGIOForMatching, true);
+    SequenceParser::extractUpstreamSequences(sequence, labelsFGIO, cnc, upstrLenForPromoter, upstreamsFGIOForPromoter, true);
+    
+    assert(upstreamsFGIOForPromoter.size() == upstreamsFGIOForMatching.size());
+    
+    Sequence strMatchSeq (matchTo);
+    NumSequence matchSeq (strMatchSeq, cnc);
+    
+    pair<NumSequence::size_type, NumSequence::size_type> positionsOfMatches;
+    vector<pair<NumSequence::num_t, NumSequence::num_t> > substitutions;
+    if (allowAGSubstitution)
+        substitutions.push_back(pair<NumSequence::num_t, NumSequence::num_t> (cnc.convert('A'), cnc.convert('G')));
+    
+    size_t skipFromStart = 3;
+    for (size_t n = 0; n < upstreamsFGIOForMatching.size(); n++) {
+        NumSequence match = SequenceAlgorithms::longestMatchTo16S(matchSeq, upstreamsFGIOForMatching[n], positionsOfMatches, substitutions);
+        
+        // keep track of nonmatches
+        if (match.size() < matchThresh)
+            upstreamsPromoter.push_back(upstreamsFGIOForPromoter[n]);
+        else
+            upstreamsRBS.push_back(upstreamsFGIOForMatching[n]);
+    }
+    
+    
+    vector<NumSequence> upstreamsIG;
+    SequenceParser::extractUpstreamSequences(sequence, labelsIG, cnc, upstrLenForMatching, upstreamsIG);
+    for (size_t n = 0; n < upstreamsIG.size(); n++) {
+        upstreamsRBS.push_back(upstreamsIG[n]);
+    }
+    
+    this->numLeaderless = upstreamsPromoter.size();
+    this->numFGIO = upstreamsFGIOForMatching.size();
+    
+    
+    runMotifFinder(upstreamsPromoter, *this->optionsMFinder, *this->alphabet, upstrLenForPromoter, this->promoter, this->promoterSpacer);
+    runMotifFinder(upstreamsRBS, *this->optionsMFinder, *this->alphabet, upstrLenForMatching, this->rbs, this->rbsSpacer);
+    
+//    // shift probabilities
+//    vector<double> extendedProbs (promoterSpacer->size()+skipFromStart, 0);
+//    for (size_t n = 0; n < promoterSpacer->size(); n++) {
+//        extendedProbs[n+skipFromStart] = (*promoterSpacer)[n];
+//    }
+//    
+//    delete promoterSpacer;
+//    promoterSpacer = new UnivariatePDF(extendedProbs);
+    
+    
+}
 
 
 

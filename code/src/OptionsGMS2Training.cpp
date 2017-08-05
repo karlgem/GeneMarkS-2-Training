@@ -33,15 +33,17 @@ namespace gmsuite {
         std::string token;
         in >> token;
         if (token == "1")
-            unit = ProkGeneStartModel::C1;
+            unit = ProkGeneStartModel::C1;      // class D
         else if (token == "2")
-            unit = ProkGeneStartModel::C2;
+            unit = ProkGeneStartModel::C2;      // class A
         else if (token == "3")
-            unit = ProkGeneStartModel::C3;
+            unit = ProkGeneStartModel::C3;      // class B
         else if (token == "4")
-            unit = ProkGeneStartModel::C4;
+            unit = ProkGeneStartModel::C4;      // class E
         else if (token == "5")
-            unit = ProkGeneStartModel::C5;
+            unit = ProkGeneStartModel::C5;      // class C
+        else if (token == "6")
+            unit = ProkGeneStartModel::C6;      // arhcaea step 2
     //    else
     //        throw boost::program_options::validation_error("Invalid genome class");
         
@@ -115,7 +117,7 @@ bool OptionsGMS2Training::parse(int argc, const char *argv[]) {
         
         
         // GMS2 model parameters
-        ("genome-class", po::value<ProkGeneStartModel::genome_class_t>(&genomeClass)->required(), "The genome's class: 1,2,3")
+        ("genome-class", po::value<ProkGeneStartModel::genome_class_t>(&genomeClass)->required(), "The genome's class: 1,2,3,4,5,6")
         ("pcounts", po::value<double>(&pcounts)->default_value(1), "Pseudocounts for gms2 models")
         ("coding-order", po::value<unsigned>(&codingOrder)->default_value(4), "Order for coding Markov model")
         ("noncoding-order", po::value<unsigned>(&noncodingOrder)->default_value(2), "Order for noncoding Markov model")

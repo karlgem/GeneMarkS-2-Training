@@ -92,7 +92,8 @@ namespace gmsuite {
         void estimateParametersMotifModel_Synechocystis(const NumSequence &sequence, const vector<Label*> &labels, const vector<bool> &use = vector<bool>());
         
         void estimateParametersMotifModel_Promoter_DEPRECATED(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use = vector<bool>());
-        
+        void estimateParametersMotifModel_groupA2(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use);
+            
         // parameters
         unsigned pcounts;
         unsigned codingOrder;
