@@ -1311,8 +1311,15 @@ void GMS2Trainer::estimateParametersMotifModel_groupA2(const NumSequence &sequen
     
     // match FGIO to 16S tail
     vector<NumSequence> upstreamsFGIOForMatching, upstreamsFGIOForPromoter;
-    SequenceParser::extractUpstreamSequences(sequence, labelsFGIO, cnc, upstrLenForMatching, upstreamsFGIOForMatching, true);
     SequenceParser::extractUpstreamSequences(sequence, labelsFGIO, cnc, upstrLenForPromoter, upstreamsFGIOForPromoter, true);
+    
+    upstreamsFGIOForMatching.resize(upstreamsFGIOForPromoter.size());
+    for (size_t n = 0; n < upstreamsFGIOForPromoter.size(); n++) {
+        upstreamsFGIOForMatching[n] = upstreamsFGIOForPromoter[n].subseq(upstrLenForPromoter - upstrLenForMatching, upstrLenForMatching);
+        assert(upstreamsFGIOForMatching[n].size() == upstrLenForMatching);
+    }
+//    SequenceParser::extractUpstreamSequences(sequence, labelsFGIO, cnc, upstrLenForMatching, upstreamsFGIOForMatching, true);
+    
     
     assert(upstreamsFGIOForPromoter.size() == upstreamsFGIOForMatching.size());
     
