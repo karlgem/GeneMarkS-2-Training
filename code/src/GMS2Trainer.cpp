@@ -1352,8 +1352,10 @@ void GMS2Trainer::estimateParametersMotifModel_groupA2(const NumSequence &sequen
     this->numLeaderless = upstreamsPromoter.size();
     this->numFGIO = upstreamsFGIOForMatching.size();
     
-    
-    runMotifFinder(upstreamsPromoter, *this->optionsMFinder, *this->alphabet, upstrLenForPromoter, this->promoter, this->promoterSpacer);
+    OptionsMFinder optionMFinderPromoter (*this->optionsMFinder);
+    optionMFinderPromoter.width = widthArchaeaPromoter;
+
+    runMotifFinder(upstreamsPromoter, optionMFinderPromoter, *this->alphabet, upstrLenForPromoter, this->promoter, this->promoterSpacer);
     runMotifFinder(upstreamsRBS, *this->optionsMFinder, *this->alphabet, upstrLenForMatching, this->rbs, this->rbsSpacer);
     
 //    // shift probabilities
