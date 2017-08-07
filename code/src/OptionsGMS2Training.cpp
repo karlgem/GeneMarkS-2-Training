@@ -139,6 +139,7 @@ bool OptionsGMS2Training::parse(int argc, const char *argv[]) {
         ("upstream-sig-order", po::value<unsigned> (&upstreamSignatureOrder)->default_value(2), "Order of upstream signature model")
         ("train-noncoding-on-genome", po::bool_switch(&trainNonCodingOnFullGenome)->default_value(false), "If set, non-coding is trained on full genome, rather than only on intergenic regionns")
         ("fgio-dist-thresh", po::value<unsigned>(&fgioDistThresh)->default_value(25), "Distance threshold to separate first-genes-in-operon")
+        ("cut-prom-train-seqs", po::bool_switch(&cutPromTrainSeqs)->default_value(false), "If set, promoter is trained on fragment of total upstream")
 //        // MFinder options
 //        ("pcounts-mfinder", po::value<double>(&optionsMFinder.pcounts)->default_value(1), "Pseudocounts for mfinder models")
 //        ("width", po::value<unsigned>(&optionsMFinder.width)->default_value(6), "Width of motif in MFinder")
@@ -274,6 +275,7 @@ void OptionsGMS2Training::addProcessOptions(OptionsGMS2Training &options, po::op
     ("upstream-sig-order", po::value<unsigned> (&options.upstreamSignatureOrder)->default_value(2), "Order of upstream signature model")
     ("train-noncoding-on-genome", po::bool_switch(&options.trainNonCodingOnFullGenome)->default_value(false), "If set, non-coding is trained on full genome, rather than only on intergenic regionns")
     ("fgio-dist-thresh", po::value<unsigned>(&options.fgioDistThresh)->default_value(25), "Distance threshold to separate first-genes-in-operon")
+    ("cut-prom-train-seqs", po::bool_switch(&options.cutPromTrainSeqs)->default_value(false), "If set, promoter is trained on fragment of total upstream")
     ;
     
     

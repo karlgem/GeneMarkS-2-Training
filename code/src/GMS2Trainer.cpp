@@ -95,7 +95,8 @@ GMS2Trainer::GMS2Trainer(unsigned pcounts,
                          NumSequence::size_type upstreamSignatureLength,
                          unsigned upstreamSignatureOrder,
                          bool trainNonCodingOnFullGenome,
-                         unsigned FGIO_DIST_THRESH) {
+                         unsigned FGIO_DIST_THRESH,
+                         bool cutPromTrainSeqs) {
     
     this->pcounts = pcounts;
     this->codingOrder = codingOrder;
@@ -123,6 +124,7 @@ GMS2Trainer::GMS2Trainer(unsigned pcounts,
     
     this->FGIO_DIST_THRESH = FGIO_DIST_THRESH;
     this->NFGIO_DIST_THRES = 22;
+    this->cutPromTrainSeqs = cutPromTrainSeqs;
     
     if (genomeClass == ProkGeneStartModel::C2 || genomeClass == ProkGeneStartModel::C3 || genomeClass == ProkGeneStartModel::C5 || genomeClass == ProkGeneStartModel::C6) {
         this->UPSTR_LEN_IG = upstreamLength;
@@ -705,6 +707,13 @@ void GMS2Trainer::estimateParametersMotifModel_Promoter(const NumSequence &seque
     vector<NumSequence> upstreamsFGIO;
     SequenceParser::extractUpstreamSequences(sequence, labelsFGIO, cnc, this->UPSTR_LEN_FGIO, upstreamsFGIO, true);
     
+    // take first
+    if (cutPromTrainSeqs) {
+        for (size_t n = 0; n < upstreamsFGIO.size(); n++) {
+            upstreamsFGIO[n] = upstreamsFGIO[n].subseq(0, this->UPSTR_LEN_FGIO - 15);
+        }
+    }
+    
     vector<NumSequence> upstreamsIG;
     SequenceParser::extractUpstreamSequences(sequence, labelsIG, cnc, this->UPSTR_LEN_IG, upstreamsIG);
     
@@ -718,6 +727,18 @@ void GMS2Trainer::estimateParametersMotifModel_Promoter(const NumSequence &seque
     
     runMotifFinder(upstreamsFGIO, optionMFinderFGIO, *this->alphabet, this->UPSTR_LEN_FGIO, this->promoter, this->promoterSpacer);
     runMotifFinder(upstreamsIG, *this->optionsMFinder, *this->alphabet, this->UPSTR_LEN_IG, this->rbs, this->rbsSpacer);
+    
+    
+    // shift probabilities
+    if (cutPromTrainSeqs) {
+        vector<double> extendedProbs (promoterSpacer->size()+15, 0);
+        for (size_t n = 0; n < promoterSpacer->size(); n++) {
+            extendedProbs[n+15] = (*promoterSpacer)[n];
+        }
+        
+        delete promoterSpacer;
+        promoterSpacer = new UnivariatePDF(extendedProbs);
+    }
     
 }
 
@@ -1354,6 +1375,13 @@ void GMS2Trainer::estimateParametersMotifModel_groupA2(const NumSequence &sequen
     
     OptionsMFinder optionMFinderPromoter (*this->optionsMFinder);
     optionMFinderPromoter.width = widthArchaeaPromoter;
+    
+    // take first
+    if (cutPromTrainSeqs) {
+        for (size_t n = 0; n < upstreamsPromoter.size(); n++) {
+            upstreamsPromoter[n] = upstreamsPromoter[n].subseq(0, this->UPSTR_LEN_FGIO - 15);
+        }
+    }
 
     runMotifFinder(upstreamsPromoter, optionMFinderPromoter, *this->alphabet, upstrLenForPromoter, this->promoter, this->promoterSpacer);
     runMotifFinder(upstreamsRBS, *this->optionsMFinder, *this->alphabet, upstrLenForMatching, this->rbs, this->rbsSpacer);
@@ -1367,6 +1395,16 @@ void GMS2Trainer::estimateParametersMotifModel_groupA2(const NumSequence &sequen
 //    delete promoterSpacer;
 //    promoterSpacer = new UnivariatePDF(extendedProbs);
     
+    // shift probabilities
+    if (cutPromTrainSeqs) {
+        vector<double> extendedProbs (promoterSpacer->size()+15, 0);
+        for (size_t n = 0; n < promoterSpacer->size(); n++) {
+            extendedProbs[n+15] = (*promoterSpacer)[n];
+        }
+        
+        delete promoterSpacer;
+        promoterSpacer = new UnivariatePDF(extendedProbs);
+    }
     
 }
 
