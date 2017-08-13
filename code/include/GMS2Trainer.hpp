@@ -71,7 +71,8 @@ namespace gmsuite {
                     NumSequence::size_type upstreamSignatureLength = 35,
                     unsigned upstreamSignatureOrder = 2,
                     bool trainNonCodingOnFullGenome=false,
-                    unsigned FGIO_DIST_THRESH = 25);
+                    unsigned FGIO_DIST_THRESH = 25,
+                    bool cutPromTrainSeqs = false);
         
         ~GMS2Trainer();
         
@@ -92,7 +93,8 @@ namespace gmsuite {
         void estimateParametersMotifModel_Synechocystis(const NumSequence &sequence, const vector<Label*> &labels, const vector<bool> &use = vector<bool>());
         
         void estimateParametersMotifModel_Promoter_DEPRECATED(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use = vector<bool>());
-        
+        void estimateParametersMotifModel_groupA2(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use);
+            
         // parameters
         unsigned pcounts;
         unsigned codingOrder;
@@ -144,6 +146,8 @@ namespace gmsuite {
         
         map<CharNumConverter::seq_t, double> startProbs;
         map<CharNumConverter::seq_t, double> stopProbs;
+        
+        bool cutPromTrainSeqs;      // when set, promoters are trained on fragment of total sequence
         
         
         
