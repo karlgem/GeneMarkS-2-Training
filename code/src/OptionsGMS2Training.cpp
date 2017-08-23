@@ -32,17 +32,17 @@ namespace gmsuite {
     {
         std::string token;
         in >> token;
-        if (token == "1")
+        if (token == "D")
             unit = ProkGeneStartModel::D;      // class D
-        else if (token == "2")
+        else if (token == "A")
             unit = ProkGeneStartModel::A;      // class A
-        else if (token == "3")
+        else if (token == "B")
             unit = ProkGeneStartModel::B;      // class B
-        else if (token == "4")
+        else if (token == "E")
             unit = ProkGeneStartModel::E;      // class E
-        else if (token == "5")
+        else if (token == "C")
             unit = ProkGeneStartModel::C;      // class C
-        else if (token == "6")
+        else if (token == "A2")
             unit = ProkGeneStartModel::A2;      // arhcaea step 2
     //    else
     //        throw boost::program_options::validation_error("Invalid genome class");
@@ -117,7 +117,7 @@ bool OptionsGMS2Training::parse(int argc, const char *argv[]) {
         
         
         // GMS2 model parameters
-        ("genome-class", po::value<ProkGeneStartModel::genome_group_t>(&genomeClass)->required(), "The genome's class: 1,2,3,4,5,6")
+        ("genome-class", po::value<ProkGeneStartModel::genome_group_t>(&genomeGroup)->required(), "The genome's class: 1,2,3,4,5,6")
         ("pcounts", po::value<double>(&pcounts)->default_value(1), "Pseudocounts for gms2 models")
         ("coding-order", po::value<unsigned>(&codingOrder)->default_value(4), "Order for coding Markov model")
         ("noncoding-order", po::value<unsigned>(&noncodingOrder)->default_value(2), "Order for noncoding Markov model")
@@ -256,7 +256,7 @@ bool OptionsGMS2Training::parse(int argc, const char *argv[]) {
 void OptionsGMS2Training::addProcessOptions(OptionsGMS2Training &options, po::options_description &processOptions) {
  
     processOptions.add_options()
-    ("genome-class", po::value<ProkGeneStartModel::genome_group_t>(&options.genomeClass)->required(), "The genome's class: 1,2,3")
+    ("genome-group", po::value<ProkGeneStartModel::genome_group_t>(&options.genomeGroup)->required(), "The genome's group: A,B,C,D,E,A2")
     ("pcounts", po::value<double>(&options.pcounts)->default_value(1), "Pseudocounts for gms2 models")
     ("coding-order", po::value<unsigned>(&options.codingOrder)->default_value(4), "Order for coding Markov model")
     ("noncoding-order", po::value<unsigned>(&options.noncodingOrder)->default_value(2), "Order for noncoding Markov model")

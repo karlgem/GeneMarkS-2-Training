@@ -55,7 +55,7 @@ namespace gmsuite {
         string fn_labels;               /**< Input filename containing labels */
         string fn_outmod;               /**< Output model file */
         size_t upstrLength;             /**< Length of upstream sequences for motif search */
-        genome_group_t genomeClass;     /**< The genome's class */
+        genome_group_t genomeGroup;     /**< The genome's class */
         gcode_t geneticCode;            /**< Genetic code */
         string fn_settings;             /**< Settings to place in output mod file */
         bool runMotifSearch;            /**< Run motif search */
