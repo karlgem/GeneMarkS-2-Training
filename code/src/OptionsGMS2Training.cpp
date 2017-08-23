@@ -30,6 +30,9 @@ OptionsGMS2Training::OptionsGMS2Training(string mode) : Options(mode), optionsMF
 namespace gmsuite {
     std::istream& operator>>(std::istream& in, ProkGeneStartModel::genome_group_t& unit)
     {
+        
+        using namespace boost::program_options;
+        
         std::string token;
         in >> token;
         if (token == "D")
@@ -44,8 +47,8 @@ namespace gmsuite {
             unit = ProkGeneStartModel::C;      // class C
         else if (token == "A2")
             unit = ProkGeneStartModel::A2;      // arhcaea step 2
-    //    else
-    //        throw boost::program_options::validation_error("Invalid genome class");
+        else
+            throw validation_error(validation_error::invalid_option_value);
         
         return in;
     }
