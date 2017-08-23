@@ -125,23 +125,23 @@ ModuleGMS2::genome_class_t ModuleGMS2::classifyGenome(const NumSequence &numSeq,
     
     // default is class 1
     if (!maxFound)
-        return ProkGeneStartModel::C1;
+        return ProkGeneStartModel::D;
     
     // decide start class
     if (maxProb > options.CLASS_PROB_THRESHOLD) {
         
         // Class 1: rbs
         if (posOfMax < options.CLASS_DIST_THRESHOLD)
-            genomeClass = ProkGeneStartModel::C1;
+            genomeClass = ProkGeneStartModel::D;
         
         // Class 2: promoter
         else
-            genomeClass = ProkGeneStartModel::C3;
+            genomeClass = ProkGeneStartModel::B;
         
     }
     // Class 3
     else
-        genomeClass = ProkGeneStartModel::C2;
+        genomeClass = ProkGeneStartModel::A;
     
     return genomeClass;
 }

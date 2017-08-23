@@ -17,8 +17,14 @@ namespace gmsuite {
     
     public:
         
-        // class of genome
-        typedef enum {C1, C2, C3, C4, C5, C6} genome_class_t;           // C5: non-canonical rbs
+        // Genome groups:
+        // A: Archaea leaderless
+        // B: Bacteria leaderless
+        // C: non-SD RBS
+        // D: SD RBS
+        // E: Upstream signature + RBS
+        // A2: Archaea leaderless step 2
+        typedef enum {A, B, C, D, E, A2} genome_class_t;
     };
 }
 

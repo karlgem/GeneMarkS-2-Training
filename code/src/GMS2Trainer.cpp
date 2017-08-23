@@ -126,7 +126,7 @@ GMS2Trainer::GMS2Trainer(unsigned pcounts,
     this->NFGIO_DIST_THRES = 22;
     this->cutPromTrainSeqs = cutPromTrainSeqs;
     
-    if (genomeClass == ProkGeneStartModel::C2 || genomeClass == ProkGeneStartModel::C3 || genomeClass == ProkGeneStartModel::C5 || genomeClass == ProkGeneStartModel::C6) {
+    if (genomeClass == ProkGeneStartModel::A || genomeClass == ProkGeneStartModel::B || genomeClass == ProkGeneStartModel::C || genomeClass == ProkGeneStartModel::A2) {
         this->UPSTR_LEN_IG = upstreamLength;
     }
     
@@ -430,9 +430,9 @@ void GMS2Trainer::estimateParametersMotifModel(const NumSequence &sequence, cons
     MotifFinder mfinder = b.build();
     
     // if genome is class 1, search for RBS
-    if (genomeClass == ProkGeneStartModel::C1 || genomeClass == ProkGeneStartModel::C5) {
+    if (genomeClass == ProkGeneStartModel::D || genomeClass == ProkGeneStartModel::C) {
         this->genomeType = "pure-rbs";
-        if (genomeClass == ProkGeneStartModel::C5)
+        if (genomeClass == ProkGeneStartModel::C)
             this->genomeType = "class-c";
         
         // START: REMOVE THIS
@@ -501,16 +501,16 @@ void GMS2Trainer::estimateParametersMotifModel(const NumSequence &sequence, cons
         
     }
     // if genome is class 2: promoter and RBS in archaea
-    else if (genomeClass == ProkGeneStartModel::C2) {
+    else if (genomeClass == ProkGeneStartModel::A) {
         this->genomeType = "archaea-promoter";
         estimateParametersMotifModel_Promoter(sequence, labels, use);
     }
     // if genome is class 3: promoter and RBS in bacteria
-    else if (genomeClass == ProkGeneStartModel::C3) {
+    else if (genomeClass == ProkGeneStartModel::B) {
         this->genomeType = "bacteria-promoter";
         estimateParametersMotifModel_Tuberculosis(sequence, labels, use);
     }
-    else if (genomeClass == ProkGeneStartModel::C6) {
+    else if (genomeClass == ProkGeneStartModel::A2) {
         this->genomeType = "archaea-promoter-2";
         estimateParametersMotifModel_groupA2(sequence, labels, use);
     }

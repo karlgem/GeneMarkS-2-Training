@@ -157,7 +157,7 @@ void ModuleExperiment::runMatchSeqToNoncoding() {
     OptionsMFinder optionsMFinder;
     
     // run training step
-    GMS2Trainer trainer((unsigned) expOptions.pcounts, 0, expOptions.order, 0, 40, 0, ProkGeneStartModel::C1, optionsMFinder, numAlph, 300, numGeneticCode, -15, false);
+    GMS2Trainer trainer((unsigned) expOptions.pcounts, 0, expOptions.order, 0, 40, 0, ProkGeneStartModel::D, optionsMFinder, numAlph, 300, numGeneticCode, -15, false);
     
     trainer.estimateParameters(numSequence, labels);
     

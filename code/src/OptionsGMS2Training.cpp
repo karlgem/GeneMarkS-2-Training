@@ -33,17 +33,17 @@ namespace gmsuite {
         std::string token;
         in >> token;
         if (token == "1")
-            unit = ProkGeneStartModel::C1;      // class D
+            unit = ProkGeneStartModel::D;      // class D
         else if (token == "2")
-            unit = ProkGeneStartModel::C2;      // class A
+            unit = ProkGeneStartModel::A;      // class A
         else if (token == "3")
-            unit = ProkGeneStartModel::C3;      // class B
+            unit = ProkGeneStartModel::B;      // class B
         else if (token == "4")
-            unit = ProkGeneStartModel::C4;      // class E
+            unit = ProkGeneStartModel::E;      // class E
         else if (token == "5")
-            unit = ProkGeneStartModel::C5;      // class C
+            unit = ProkGeneStartModel::C;      // class C
         else if (token == "6")
-            unit = ProkGeneStartModel::C6;      // arhcaea step 2
+            unit = ProkGeneStartModel::A2;      // arhcaea step 2
     //    else
     //        throw boost::program_options::validation_error("Invalid genome class");
         
