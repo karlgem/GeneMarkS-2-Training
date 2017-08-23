@@ -1,0 +1,49 @@
+#!/bin/sh
+
+rootDir=`git rev-parse --show-toplevel`;
+
+
+branch_name=$(git rev-parse --abbrev-ref HEAD)
+reflog_message=$(git reflog -1)
+merged_branch_name=$(echo $reflog_message | cut -d" " -f 4 | sed "s/://")
+
+# if the merge was caused by a "git pull", we can safely ignore it
+if [[ $reflog_message =~ "pull" ]]; then
+    exit 0
+fi
+
+
+# if merge is from release
+if [[ $merged_branch_name =~ "release-" ]]; then
+	
+	# if merge is into master
+	if [[ $branch_name == "master" ]]; then
+
+		# Tag the merge
+		fnVN=$rootDir/code/include/VersionNumber.h;
+
+        majorNum=`awk '/VERSION_NUMBER_MAJOR [0-9]+/ {print $3}' $fnVN`;
+        minorNum=`awk '/VERSION_NUMBER_MINOR [0-9]+/ {print $3}' $fnVN`;
+
+        git tag -a "$majorNum.$minorNum" -m "Bump to version $majorNum.$minorNum";
+	fi
+# if merge is not from release branch
+else
+
+	# if merge is into develop
+	if [[ $branch_name == "develop" ]]; then
+
+		# Update the build number
+		fnVN=$rootDir/code/include/VersionNumber.h;
+
+		oldNum=`awk '/BUILD_NUMBER [0-9]+/ {print $3}' $fnVN`;
+        newNum=$(($oldNum+1));
+        sed -i "" -E "s/BUILD_NUMBER $oldNum/BUILD_NUMBER $newNum/g" $fnVN;
+
+        # add file and commit
+        git add $fnVN;
+        git commit --amend -C HEAD --no-verify;
+	fi
+
+fi
+	
