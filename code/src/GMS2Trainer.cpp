@@ -431,9 +431,9 @@ void GMS2Trainer::estimateParametersMotifModel(const NumSequence &sequence, cons
     
     // if genome is class 1, search for RBS
     if (genomeClass == ProkGeneStartModel::D || genomeClass == ProkGeneStartModel::C) {
-        this->genomeType = "pure-rbs";
+        this->genomeType = "group-d";
         if (genomeClass == ProkGeneStartModel::C)
-            this->genomeType = "class-c";
+            this->genomeType = "group-c";
         
         // START: REMOVE THIS
         // copy only usable labels
@@ -502,21 +502,21 @@ void GMS2Trainer::estimateParametersMotifModel(const NumSequence &sequence, cons
     }
     // if genome is class 2: promoter and RBS in archaea
     else if (genomeClass == ProkGeneStartModel::A) {
-        this->genomeType = "archaea-promoter";
+        this->genomeType = "group-a";
         estimateParametersMotifModel_Promoter(sequence, labels, use);
     }
     // if genome is class 3: promoter and RBS in bacteria
     else if (genomeClass == ProkGeneStartModel::B) {
-        this->genomeType = "bacteria-promoter";
+        this->genomeType = "group-b";
         estimateParametersMotifModel_Tuberculosis(sequence, labels, use);
     }
     else if (genomeClass == ProkGeneStartModel::A2) {
-        this->genomeType = "archaea-promoter-2";
+        this->genomeType = "group-a2";
         estimateParametersMotifModel_groupA2(sequence, labels, use);
     }
     // if genome is class 4: RBS and upstream signature
     else {
-        this->genomeType = "upstream-signature";
+        this->genomeType = "group-e";
         estimateParametersMotifModel_Synechocystis(sequence, labels, use);
     }
     
