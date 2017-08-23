@@ -28,7 +28,7 @@ OptionsGMS2Training::OptionsGMS2Training(string mode) : Options(mode), optionsMF
 }
 
 namespace gmsuite {
-    std::istream& operator>>(std::istream& in, ProkGeneStartModel::genome_class_t& unit)
+    std::istream& operator>>(std::istream& in, ProkGeneStartModel::genome_group_t& unit)
     {
         std::string token;
         in >> token;
@@ -67,7 +67,7 @@ namespace gmsuite {
 
 void validate(boost::any& v,
               const std::vector<std::string>& values,
-              ProkGeneStartModel::genome_class_t * target_type, int)
+              ProkGeneStartModel::genome_group_t * target_type, int)
 {
     static sregex expr = sregex::compile("^\\s*(\\d)*");
     using namespace boost::program_options;
@@ -82,7 +82,7 @@ void validate(boost::any& v,
     // int.
     smatch match;
     if (regex_search(s, match, expr)) {
-//        v = boost::any(ProkGeneStartModel::genome_class_t(boost::lexical_cast<int>(match[1])));
+//        v = boost::any(ProkGeneStartModel::genome_group_t(boost::lexical_cast<int>(match[1])));
     } else {
         throw validation_error(validation_error::invalid_option_value);
     }
@@ -117,7 +117,7 @@ bool OptionsGMS2Training::parse(int argc, const char *argv[]) {
         
         
         // GMS2 model parameters
-        ("genome-class", po::value<ProkGeneStartModel::genome_class_t>(&genomeClass)->required(), "The genome's class: 1,2,3,4,5,6")
+        ("genome-class", po::value<ProkGeneStartModel::genome_group_t>(&genomeClass)->required(), "The genome's class: 1,2,3,4,5,6")
         ("pcounts", po::value<double>(&pcounts)->default_value(1), "Pseudocounts for gms2 models")
         ("coding-order", po::value<unsigned>(&codingOrder)->default_value(4), "Order for coding Markov model")
         ("noncoding-order", po::value<unsigned>(&noncodingOrder)->default_value(2), "Order for noncoding Markov model")
@@ -256,7 +256,7 @@ bool OptionsGMS2Training::parse(int argc, const char *argv[]) {
 void OptionsGMS2Training::addProcessOptions(OptionsGMS2Training &options, po::options_description &processOptions) {
  
     processOptions.add_options()
-    ("genome-class", po::value<ProkGeneStartModel::genome_class_t>(&options.genomeClass)->required(), "The genome's class: 1,2,3")
+    ("genome-class", po::value<ProkGeneStartModel::genome_group_t>(&options.genomeClass)->required(), "The genome's class: 1,2,3")
     ("pcounts", po::value<double>(&options.pcounts)->default_value(1), "Pseudocounts for gms2 models")
     ("coding-order", po::value<unsigned>(&options.codingOrder)->default_value(4), "Order for coding Markov model")
     ("noncoding-order", po::value<unsigned>(&options.noncodingOrder)->default_value(2), "Order for noncoding Markov model")

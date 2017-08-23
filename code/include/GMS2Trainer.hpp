@@ -42,7 +42,7 @@ namespace gmsuite {
         
     public:
         
-        typedef ProkGeneStartModel::genome_class_t genome_class_t;
+        typedef ProkGeneStartModel::genome_group_t genome_group_t;
         
         /**
          * Default constructor:
@@ -55,7 +55,7 @@ namespace gmsuite {
                     unsigned startContextOrder,
                     NumSequence::size_type upstreamLength,
                     NumSequence::size_type startContextLength,
-                    genome_class_t genomeClass,
+                    genome_group_t genomeClass,
                     const OptionsMFinder &optionsMFinder,
                     const NumAlphabetDNA &alph,
                     const NumSequence::size_type MIN_GENE_LEN,
@@ -102,7 +102,7 @@ namespace gmsuite {
         unsigned startContextOrder;
         NumSequence::size_type upstreamLength;          // for genome
         NumSequence::size_type startContextLength;
-        genome_class_t genomeClass;
+        genome_group_t genomeClass;
         const OptionsMFinder* optionsMFinder;
         const NumAlphabetDNA *alphabet;
         const NumGeneticCode *numGeneticCode;

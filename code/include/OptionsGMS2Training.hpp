@@ -48,14 +48,14 @@ namespace gmsuite {
         // Below, create a variable for each parameter, to make for easy access
     public:
         
-        typedef ProkGeneStartModel::genome_class_t genome_class_t;
+        typedef ProkGeneStartModel::genome_group_t genome_group_t;
         typedef GeneticCode::gcode_t gcode_t;
         
         string fn_sequence;             /**< Input filename containing DNA sequence */
         string fn_labels;               /**< Input filename containing labels */
         string fn_outmod;               /**< Output model file */
         size_t upstrLength;             /**< Length of upstream sequences for motif search */
-        genome_class_t genomeClass;     /**< The genome's class */
+        genome_group_t genomeClass;     /**< The genome's class */
         gcode_t geneticCode;            /**< Genetic code */
         string fn_settings;             /**< Settings to place in output mod file */
         bool runMotifSearch;            /**< Run motif search */

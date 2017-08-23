@@ -30,7 +30,7 @@ namespace gmsuite {
         
     public:
         
-        typedef ProkGeneStartModel::genome_class_t genome_class_t;
+        typedef ProkGeneStartModel::genome_group_t genome_group_t;
         
         /**
          * Constructor: initialize the GMS2 module with option parameters
@@ -49,7 +49,7 @@ namespace gmsuite {
          * Estimate parameters for GMS2 where, given parsing (labels) of the sequence and the genome class,
          * parameters are estimated for the corresponding models
          */
-        void estimateModelParameters(const NumSequence &sequence, const vector<Label*> &labels, genome_class_t genomeClass, GMS2Trainer &trainer);
+        void estimateModelParameters(const NumSequence &sequence, const vector<Label*> &labels, genome_group_t genomeClass, GMS2Trainer &trainer);
         
     private:
         
@@ -67,7 +67,7 @@ namespace gmsuite {
         
         
         
-        genome_class_t classifyGenome(const NumSequence &numSeq, const CharNumConverter &cnc, const vector<Label*> labels, NumSequence::size_type upstrLength) const;
+        genome_group_t classifyGenome(const NumSequence &numSeq, const CharNumConverter &cnc, const vector<Label*> labels, NumSequence::size_type upstrLength) const;
         
     };
     
