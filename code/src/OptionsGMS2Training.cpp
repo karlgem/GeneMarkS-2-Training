@@ -114,56 +114,9 @@ bool OptionsGMS2Training::parse(int argc, const char *argv[]) {
         ("fn-sequence,s", po::value<string>(&fn_sequence)->required(), "Name of sequence file")
         ("fn-labels,l", po::value<string>(&fn_labels)->required(), "Name of labels file")
         ("fn-mod,m", po::value<string>(&fn_outmod)->required(), "Name of output model file")
-        
-        
-        // GMS2 model parameters
-        ("genome-class", po::value<ProkGeneStartModel::genome_group_t>(&genomeGroup)->required(), "The genome's class: 1,2,3,4,5,6")
-        ("pcounts", po::value<double>(&pcounts)->default_value(1), "Pseudocounts for gms2 models")
-        ("coding-order", po::value<unsigned>(&codingOrder)->default_value(4), "Order for coding Markov model")
-        ("noncoding-order", po::value<unsigned>(&noncodingOrder)->default_value(2), "Order for noncoding Markov model")
-        ("sc-order", po::value<unsigned>(&startContextOrder)->default_value(0), "Order for start-context model")
-        ("sc-length", po::value<NumSequence::size_type>(&startContextLength)->default_value(18), "Length of start-context model")
-        ("upstream-length", po::value<NumSequence::size_type>(&upstreamLength)->default_value(40), "Length of upstream region for motif search")
-        ("MIN_GENE_LEN", po::value<NumSequence::size_type>(&MIN_GENE_LEN)->default_value(300), "Minimum gene length allowed in training")
-        ("sc-margin", po::value<int>(&startContextMargin)->default_value(-15), "Margin for start context matrix")
-        ("genetic-code", po::value<gcode_t>(&geneticCode)->default_value(GeneticCode::ELEVEN), "Genetic code")
-        ("train-on-native-only", po::value<bool>(&trainOnNativeOnly)->default_value(false), "Train on native genes only")
-        ("fn-settings", po::value<string>(&fn_settings), "Settings to put in output model file.")
-        ("run-motif-search", po::value<bool>(&runMotifSearch)->default_value(true), "Enable/disable motif search.")
-        ("upstream-length-fgio", po::value<size_t>(&upstrLenFGIO)->default_value(40), "Upstream length of first-gene-in-operon.")
-        ("width-archaea-promoter", po::value<unsigned>(&widthArchaeaPromoter)->default_value(12), "Width for promoters in Archaea.")
-        ("match-to", po::value<string>(&matchTo)->default_value("TAAGGAGGTGA"), "16S tail")
-        ("allow-ag-substitution", po::bool_switch(&allowAGSubstitution)->default_value(true), "Allow AG substitution.")
-        ("match-thresh", po::value<unsigned>(&matchThresh)->default_value(4), "Match threshold for 16S tail.")
-        ("upstream-sig-length", po::value<NumSequence::size_type>(&upstreamSignatureLength)->default_value(35), "Length of full upstream signature model")
-        ("upstream-sig-order", po::value<unsigned> (&upstreamSignatureOrder)->default_value(2), "Order of upstream signature model")
-        ("train-noncoding-on-genome", po::bool_switch(&trainNonCodingOnFullGenome)->default_value(false), "If set, non-coding is trained on full genome, rather than only on intergenic regionns")
-        ("fgio-dist-thresh", po::value<unsigned>(&fgioDistThresh)->default_value(25), "Distance threshold to separate first-genes-in-operon")
-        ("cut-prom-train-seqs", po::bool_switch(&cutPromTrainSeqs)->default_value(false), "If set, promoter is trained on fragment of total upstream")
-//        // MFinder options
-//        ("pcounts-mfinder", po::value<double>(&optionsMFinder.pcounts)->default_value(1), "Pseudocounts for mfinder models")
-//        ("width", po::value<unsigned>(&optionsMFinder.width)->default_value(6), "Width of motif in MFinder")
-//        ("motif-order", po::value<unsigned>(&optionsMFinder.motifOrder)->default_value(0), "Order for motif Markov model")
-//        ("bkgd-order", po::value<unsigned>(&optionsMFinder.bkgdOrder)->default_value(0), "Order for background model in MFinder")
-//        ("align", po::value<string>(&optionsMFinder.align)->default_value("none"), "Set to left or right to allow use of spacer distribution in mfinder")
-//        ("tries", po::value<unsigned>(&optionsMFinder.tries)->default_value(10), "Number of tries in mfinder")
         ;
         
-        po::options_description prediction("Prediction Parameters");
-        prediction.add_options()
-        ("NON_P_N", po::value<double>(&nonProbN)->default_value(0.6), "Probability for N value in non-coding region")
-        ("COD_P_N", po::value<double>(&codProbN)->default_value(0.4), "Probability for N value in coding region")
-        ("NON_DURATION_DECAY", po::value<double>(&nonDurationDecay)->default_value(150), "Duration decay for non-coding region")
-        ("COD_DURATION_DECAY", po::value<double>(&codDurationDecay)->default_value(300), "Duration decay for coding region")
-        ("GENE_MIN_LENGTH", po::value<NumSequence::size_type>(&geneMinLengthPrediction)->default_value(89), "Minimum length for genes in prediction step")
-        ;
-        
-        config.add(prediction);
-        
-        // mfinder options
-        po::options_description mfinder("Motif Finder");
-        OptionsMFinder::addProcessOptions(optionsMFinder, mfinder);
-        config.add(mfinder);
+        addProcessOptions(*this, config);
         
         // Create set of hidden arguments (which can correspond to positional arguments). This is used
         // to add positional arguments, while not putting their description in the "options" section.
@@ -276,6 +229,9 @@ void OptionsGMS2Training::addProcessOptions(OptionsGMS2Training &options, po::op
     ("train-noncoding-on-genome", po::bool_switch(&options.trainNonCodingOnFullGenome)->default_value(false), "If set, non-coding is trained on full genome, rather than only on intergenic regionns")
     ("fgio-dist-thresh", po::value<unsigned>(&options.fgioDistThresh)->default_value(25), "Distance threshold to separate first-genes-in-operon")
     ("cut-prom-train-seqs", po::bool_switch(&options.cutPromTrainSeqs)->default_value(false), "If set, promoter is trained on fragment of total upstream")
+    ("match-to", po::value<string>(&options.matchTo)->default_value("TAAGGAGGTGA"), "16S tail")
+    ("allow-ag-substitution", po::bool_switch(&options.allowAGSubstitution)->default_value(true), "Allow AG substitution.")
+    ("match-thresh", po::value<unsigned>(&options.matchThresh)->default_value(4), "Match threshold for 16S tail.")
     ;
     
     
@@ -294,6 +250,7 @@ void OptionsGMS2Training::addProcessOptions(OptionsGMS2Training &options, po::op
     po::options_description mfinder("Motif Finder");
     OptionsMFinder::addProcessOptions(options.optionsMFinder, mfinder);
     processOptions.add(mfinder);
+    
     
 }
 
