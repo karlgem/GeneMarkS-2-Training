@@ -154,6 +154,7 @@ bool OptionsGMS2Training::parse(int argc, const char *argv[]) {
                   positional(pos).                              // specify which are positional
                   run(),                                        // parse options
                   vm);                                          // specify storage container
+        
         if (vm.count("config") > 0) {
             config_fnames = vm["config"].as<std::vector<std::string> >();
 
@@ -181,20 +182,6 @@ bool OptionsGMS2Training::parse(int argc, const char *argv[]) {
         
         // try parsing arguments.
         po::notify(vm);
-        
-//        // get genome sequence
-//        switch (vm["genome-class"].as<int>()) {
-//            case 1:
-//                genomeClass = ProkGeneStartModel::C1;
-//                break;
-//            case 2:
-//                genomeClass = ProkGeneStartModel::C2;
-//            case 3:
-//                genomeClass = ProkGeneStartModel::C3;
-//                
-//            default:
-//                throw invalid_argument("Unknown genome class");
-//        }
         
     }
     catch (exception &ex) {
