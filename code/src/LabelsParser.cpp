@@ -83,3 +83,29 @@ void LabelsParser::partitionBasedOnOperonStatus(const vector<Label*> &labels, si
         }
     }
 }
+
+
+
+void LabelsParser::splitBasedOnPartition(const vector<Label*> &labels, const vector<operon_status_t> &status, vector<Label*> &labelsFGIO, vector<Label*> &labelsIGIO, vector<Label*> &labelsAMBIG ) {
+    
+    size_t numFGIO = 0, numIG = 0, numUNK = 0;
+    for (size_t n = 0; n < status.size(); n++) {
+        if (status[n] == LabelsParser::FGIO)        numFGIO++;
+        else if (status[n] == LabelsParser::NFGIO)  numIG++;
+        else
+            numUNK++;
+    }
+    
+    // get FGIO and IG upstreams and run motif search
+    labelsFGIO.resize(numFGIO);
+    labelsIGIO.resize(numIG);
+    size_t currFGIO = 0, currIG = 0;        // indices
+    
+    for (size_t n = 0; n < status.size(); n++) {
+        if (status[n] == LabelsParser::FGIO)        labelsFGIO[currFGIO++] = labels[n];
+        else if (status[n] == LabelsParser::NFGIO)  labelsIGIO[currIG++] = labels[n];
+    }
+    
+}
+
+

@@ -31,6 +31,8 @@ namespace gmsuite {
         static void partitionBasedOnOperonStatus(const vector<Label*> &labels, size_t fgioThresh, size_t nfgioThresh,
                                                  vector<operon_status_t> &status);
         
+        static void splitBasedOnPartition(const vector<Label*> &labels, const vector<operon_status_t> &status, vector<Label*> &labelsFGIO, vector<Label*> &labelsIGIO, vector<Label*> &labelsAMBIG );
+        
     };
 }
 

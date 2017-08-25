@@ -545,6 +545,22 @@ void GMS2Trainer::estimateParametersMotifModel(const NumSequence &sequence, cons
             throw invalid_argument("Labels and Use vector should have the same length");
     }
     
+    // copy only usable labels
+    size_t numUse = labels.size();
+    if (use.size() > 0) {
+        numUse = 0;
+        for (size_t n = 0; n < labels.size(); n++)
+            if (use[n])
+                numUse++;
+    }
+    
+    vector<Label*> useLabels (numUse);
+    size_t pos = 0;
+    for (size_t n = 0; n < labels.size(); n++) {
+        if (use[n])
+            useLabels[pos++] = labels[n];
+    }
+    
     AlphabetDNA alph;
     CharNumConverter cnc(&alph);
     NumAlphabetDNA numAlph(alph, cnc);
@@ -637,12 +653,12 @@ void GMS2Trainer::estimateParametersMotifModel(const NumSequence &sequence, cons
     // if genome is class 2: promoter and RBS in archaea
     else if (params.genomeGroup == ProkGeneStartModel::A) {
         this->genomeType = "group-a";
-        estimateParametersMotifModel_Promoter(sequence, labels, use);
+        estimateParametersMotifModel_GroupA(sequence, labels, use);
     }
     // if genome is class 3: promoter and RBS in bacteria
     else if (params.genomeGroup == ProkGeneStartModel::B) {
         this->genomeType = "group-b";
-        estimateParametersMotifModel_Tuberculosis(sequence, labels, use);
+        estimateParametersMotifModel_GroupB(sequence, labels, use);
     }
     else if (params.genomeGroup == ProkGeneStartModel::A2) {
         this->genomeType = "group-a2";
@@ -651,7 +667,7 @@ void GMS2Trainer::estimateParametersMotifModel(const NumSequence &sequence, cons
     // if genome is class 4: RBS and upstream signature
     else {
         this->genomeType = "group-e";
-        estimateParametersMotifModel_Synechocystis(sequence, labels, use);
+        estimateParametersMotifModel_GroupE(sequence, labels, use);
     }
     
 }
@@ -793,7 +809,7 @@ vector<GeneStat> separateLabelsViaOperonStatus(const vector<Label*> &labels, uns
 }
 
 
-void GMS2Trainer::estimateParametersMotifModel_Promoter(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use) {
+void GMS2Trainer::estimateParametersMotifModel_GroupA(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use) {
     
     AlphabetDNA alph;
     CharNumConverter cnc(&alph);
@@ -878,7 +894,7 @@ void GMS2Trainer::estimateParametersMotifModel_Promoter(const NumSequence &seque
 
 
 
-void GMS2Trainer::estimateParametersMotifModel_Tuberculosis(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use) {
+void GMS2Trainer::estimateParametersMotifModel_GroupB(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use) {
     
     AlphabetDNA alph;
     CharNumConverter cnc(&alph);
@@ -978,7 +994,7 @@ void GMS2Trainer::estimateParametersMotifModel_Tuberculosis(const NumSequence &s
 }
 
 
-void GMS2Trainer::estimateParametersMotifModel_Synechocystis(const NumSequence &sequence, const vector<Label*> &labels, const vector<bool> &use) {
+void GMS2Trainer::estimateParametersMotifModel_GroupE(const NumSequence &sequence, const vector<Label*> &labels, const vector<bool> &use) {
     
     AlphabetDNA alph;
     CharNumConverter cnc(&alph);
@@ -1073,140 +1089,6 @@ void GMS2Trainer::estimateParametersMotifModel_Synechocystis(const NumSequence &
     
     
 }
-
-
-// DEPRECATED
-//void GMS2Trainer::estimateParametersMotifModel_Promoter_DEPRECATED(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use) {
-//
-//    // split sequences into first in operon and the rest
-//
-//    // FIXME: make it more efficient
-//
-//    // copy only usable labels
-//    size_t numUse = labels.size();
-//    if (use.size() > 0) {
-//        numUse = 0;
-//        for (size_t n = 0; n < labels.size(); n++)
-//            if (use[n])
-//                numUse++;
-//    }
-//
-//    vector<Label*> useLabels (numUse);
-//    size_t pos = 0;
-//    for (size_t n = 0; n < labels.size(); n++) {
-//        if (use[n])
-//            useLabels[pos++] = labels[n];
-//    }
-//
-//
-//    // get upstream regions
-//    vector<NumSequence> upstreamsFGIO_style;
-//    vector<NumSequence> upstreamsNFGIO_style;
-//
-//    long long upstr_min_value = MIN_UPSTR_LEN_FGIO;
-//    NumSequence::size_type upstrLength = this->upstreamLength - upstr_min_value;
-//
-//    SequenceParser::extractStartContextSequences(sequence, useLabels, *alphabet->getCNC(), -this->upstreamLength, upstrLength, upstreamsFGIO_style);
-//
-//    if (UPSTR_LEN_NFGIO == 0)
-//        upstreamsNFGIO_style = upstreamsFGIO_style;
-//    else
-//        SequenceParser::extractStartContextSequences(sequence, useLabels, *alphabet->getCNC(), -this->UPSTR_LEN_NFGIO, this->UPSTR_LEN_NFGIO, upstreamsNFGIO_style);
-//
-//
-//    vector<GeneStat> status = separateLabelsViaOperonStatus(useLabels, FGIO_DIST_THRESH, NFGIO_DIST_THRES);
-//
-//    vector<NumSequence> upstreamsFGIO;
-//    vector<NumSequence> upstreamsNFGIO;
-//
-//    // split sequences
-//    for (size_t n = 0; n < status.size(); n++) {
-//        if (status[n] == IGNORE)
-//            continue;
-//
-//        if (status[n] == FIRST_OP)
-//            upstreamsFGIO.push_back(upstreamsFGIO_style[n]);
-//        else
-//            upstreamsNFGIO.push_back(upstreamsNFGIO_style[n]);
-//    }
-//
-//
-//    // build motif finder
-//    MotifFinder::Builder b;
-//
-//    b.setAlign(optionsMFinder->align);
-//    b.setWidth(optionsMFinder->width);
-//    b.setMaxIter(optionsMFinder->maxIter);
-//    b.setPcounts(optionsMFinder->pcounts);
-//    b.setNumTries(optionsMFinder->tries);
-//    b.setBackOrder(optionsMFinder->bkgdOrder);
-//    b.setMaxEMIter(optionsMFinder->maxEMIter);
-//    b.setMotifOrder(optionsMFinder->motifOrder);
-//    b.setShiftEvery(optionsMFinder->shiftEvery);
-//
-//    MotifFinder mfinder = b.build();
-//
-//    // remove N's
-//    vector<NumSequence> upstreamsFGIO_noN;          // upstreams of first genes in operon that don't contain N
-//    vector<NumSequence> upstreamsNFGIO_noN;         // upstreams of non-first genes in operon that don't contain N
-//
-//    filterNs(upstreamsFGIO, upstreamsFGIO_noN);
-//    filterNs(upstreamsNFGIO, upstreamsNFGIO_noN);
-//
-//    vector<NumSequence::size_type> positionsFGIO, positionsNFGIO;
-//
-//    // run MFinder in operons
-//    mfinder.findMotifs(upstreamsFGIO_noN, positionsFGIO);
-//
-//    // build Promoter model
-//    NonUniformCounts promoterCounts(optionsMFinder->motifOrder, optionsMFinder->width, *this->alphabet);
-//    for (size_t n = 0; n < upstreamsFGIO_noN.size(); n++) {
-//        promoterCounts.count(upstreamsFGIO_noN[n].begin()+positionsFGIO[n], upstreamsFGIO_noN[n].begin()+positionsFGIO[n]+optionsMFinder->width);
-//    }
-//
-//    promoter = new NonUniformMarkov(optionsMFinder->motifOrder, optionsMFinder->width, *this->alphabet);
-//    promoter->construct(&promoterCounts, optionsMFinder->pcounts);
-//
-//    // build spacer distribution
-//    // build histogram from positions
-//    vector<double> positionCounts_promoter (this->upstreamLength - optionsMFinder->width+1, 0);
-//    for (size_t n = 0; n < positionsFGIO.size(); n++) {
-//        // FIXME account for LEFT alignment
-//        // below is only for right
-//        positionCounts_promoter[upstreamLength - optionsMFinder->width - positionsFGIO[n]]++;        // increment position
-//    }
-//
-//    promoterSpacer = new UnivariatePDF(positionCounts_promoter, false, params.pcounts);
-//
-//
-//    // run MFinder on RBS
-//    mfinder.findMotifs(upstreamsNFGIO_noN, positionsNFGIO);
-//
-//
-//    // build RBS model
-//    NonUniformCounts rbsCounts(optionsMFinder->motifOrder, optionsMFinder->width, *this->alphabet);
-//    for (size_t n = 0; n < upstreamsNFGIO_noN.size(); n++) {
-//        rbsCounts.count(upstreamsNFGIO_noN[n].begin()+positionsNFGIO[n], upstreamsNFGIO_noN[n].begin()+positionsNFGIO[n]+optionsMFinder->width);
-//    }
-//
-//    rbs = new NonUniformMarkov(optionsMFinder->motifOrder, optionsMFinder->width, *this->alphabet);
-//    rbs->construct(&rbsCounts, optionsMFinder->pcounts);
-//
-//    // build spacer distribution
-//    // build histogram from positions
-//    size_t upstrLenNFGIO = (UPSTR_LEN_NFGIO == 0 ? upstreamLength : UPSTR_LEN_NFGIO);
-//    vector<double> positionCounts_rbs (upstrLenNFGIO - optionsMFinder->width+1, 0);
-//    for (size_t n = 0; n < positionsNFGIO.size(); n++) {
-//        // FIXME account for LEFT alignment
-//        // below is only for right
-//        positionCounts_rbs[upstrLenNFGIO - optionsMFinder->width - positionsFGIO[n]]++;        // increment position
-//    }
-//
-//    rbsSpacer = new UnivariatePDF(positionCounts_rbs, false, params.pcounts);
-//
-//
-//
-//}
 
 void GMS2Trainer::estimateParameters(const NumSequence &sequence, const vector<gmsuite::Label *> &labels) {
     
@@ -1542,6 +1424,62 @@ void GMS2Trainer::estimateParametersMotifModel_groupA2(const NumSequence &sequen
     
 }
 
+
+
+void GMS2Trainer::estimateParametersMotifModel_GroupC(const NumSequence &sequence, const vector<Label *> &labels) {
+    this->estimateParametersMotifModel_GroupD(sequence, labels);
+}
+
+
+void GMS2Trainer::estimateParametersMotifModel_GroupD(const NumSequence &sequence, const vector<Label *> &labels) {
+    
+    MotifFinder::Builder b;
+    MotifFinder mfinder = b.build(*this->optionsMFinder);
+    
+    
+    // split labels into sets based on operon status
+    vector<LabelsParser::operon_status_t> operonStatuses;
+    LabelsParser::partitionBasedOnOperonStatus(labels, params.fgioDistanceThresh, params.igioDistanceThresh, operonStatuses);
+    
+    vector<Label*> labelsFGIO, labelsIGIO, labelsAMBIG;
+    LabelsParser::splitBasedOnPartition(labels, operonStatuses, labelsFGIO, labelsIGIO, labelsAMBIG);
+    
+    this->numFGIO = labelsFGIO.size();
+    
+    // extract upstream of each label
+    vector<NumSequence> upstreamsRaw;
+    SequenceParser::extractUpstreamSequences(sequence, labels, *alphabet->getCNC(), params.groupD_upstreamLengthRBS, upstreamsRaw, false, params.minimumGeneLengthTraining);
+    
+    vector<NumSequence> upstreams;
+    for (size_t n = 0; n < upstreamsRaw.size(); n++) {
+        if (!upstreamsRaw[n].containsInvalid(*this->alphabet))
+            upstreams.push_back(upstreamsRaw[n]);
+    }
+    
+    vector<NumSequence::size_type> positions;
+    mfinder.findMotifs(upstreams, positions);
+    
+    // build RBS model
+    NonUniformCounts rbsCounts(optionsMFinder->motifOrder, optionsMFinder->width, *this->alphabet);
+    for (size_t n = 0; n < upstreams.size(); n++) {
+        rbsCounts.count(upstreams[n].begin()+positions[n], upstreams[n].begin()+positions[n]+optionsMFinder->width);
+    }
+    
+    rbs = new NonUniformMarkov(optionsMFinder->motifOrder, optionsMFinder->width, *this->alphabet);
+    rbs->construct(&rbsCounts, optionsMFinder->pcounts);
+    
+    // build spacer distribution
+    // build histogram from positions
+    vector<double> positionCounts (params.groupD_upstreamLengthRBS - optionsMFinder->width+1, 0);
+    for (size_t n = 0; n < positions.size(); n++) {
+        // FIXME account for LEFT alignment
+        // below is only for right
+        positionCounts[params.groupD_upstreamLengthRBS - optionsMFinder->width - positions[n]]++;        // increment position
+    }
+    
+    rbsSpacer = new UnivariatePDF(positionCounts, false, params.pcounts);
+    
+}
 
 
 

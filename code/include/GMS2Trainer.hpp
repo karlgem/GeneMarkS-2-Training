@@ -220,13 +220,13 @@ namespace gmsuite {
         void estimateParametersMotifModel(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use = vector<bool>());
         void estimateParametersStartStopCodons(const NumSequence &sequence, const vector<Label*> &labels, const vector<bool> &use = vector<bool>());
         
-        void estimateParametersMotifModel_Promoter(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use = vector<bool>());
+        void estimateParametersMotifModel_GroupA(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use = vector<bool>());
+        void estimateParametersMotifModel_groupA2(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use = vector<bool>());
+        void estimateParametersMotifModel_GroupB(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use = vector<bool>());
+        void estimateParametersMotifModel_GroupC(const NumSequence &sequence, const vector<Label *> &labels);
+        void estimateParametersMotifModel_GroupD(const NumSequence &sequence, const vector<Label *> &labels);
+        void estimateParametersMotifModel_GroupE(const NumSequence &sequence, const vector<Label*> &labels, const vector<bool> &use = vector<bool>());
         
-        void estimateParametersMotifModel_Tuberculosis(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use = vector<bool>());
-        void estimateParametersMotifModel_Synechocystis(const NumSequence &sequence, const vector<Label*> &labels, const vector<bool> &use = vector<bool>());
-        
-        void estimateParametersMotifModel_Promoter_DEPRECATED(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use = vector<bool>());
-        void estimateParametersMotifModel_groupA2(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use);
             
         
         const OptionsMFinder* optionsMFinder;
