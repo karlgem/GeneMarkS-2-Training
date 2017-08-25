@@ -228,38 +228,10 @@ namespace gmsuite {
         void estimateParametersMotifModel_Promoter_DEPRECATED(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use = vector<bool>());
         void estimateParametersMotifModel_groupA2(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use);
             
-        // parameters
-//        NumSequence::size_type upstreamLength;          // for genome
-//        NumSequence::size_type startContextLength;
-//        genome_group_t genomeClass;
+        
         const OptionsMFinder* optionsMFinder;
-//        const NumAlphabetDNA *alphabet;
-//        const NumGeneticCode *numGeneticCode;
-//        NumSequence::size_type MIN_GENE_LEN;            // minimum gene length
-//        NumSequence::size_type MIN_UPSTR_LEN_FGIO;           // minimum upstream length for first-genes-in-operon
-//        NumSequence::size_type UPSTR_LEN_NFGIO;         // deprecated
-//        NumSequence::size_type UPSTR_LEN_IG;
-//        NumSequence::size_type UPSTR_LEN_FGIO;
-//        unsigned FGIO_DIST_THRESH;
-//        unsigned NFGIO_DIST_THRES;
-//        int scMargin;
-//        bool trainOnNative;
-//        bool runMotifSearch;
-//        unsigned widthArchaeaPromoter;
-//        bool trainNonCodingOnFullGenome;
-//        size_t numLeaderless;
-//        size_t numFGIO;
-//        string genomeType;
-//
-//        string matchTo;
-//        bool allowAGSubstitution;
-//        unsigned matchThresh;
-//
-//        NumSequence::size_type upstreamSignatureLength;
-//        unsigned upstreamSignatureOrder;
         
         // public variables for models
-//        NonUniformMarkov *motif;
         UniformMarkov *noncoding;
         PeriodicMarkov *coding;
         NonUniformMarkov *startContextRBS;
