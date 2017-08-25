@@ -28,6 +28,7 @@ using namespace gmsuite;
 
 typedef enum {FIRST_OP, NOT_FIRST_OP, IGNORE} GeneStat;         // gene status
 
+// Function Prototypes
 void filterNs (const vector<NumSequence> &original, vector<NumSequence> &filtered) {
     
     
@@ -53,6 +54,8 @@ void filterNs (const vector<NumSequence> &original, vector<NumSequence> &filtere
         filtered = original;
     }
 }
+
+
 
 
 
@@ -288,7 +291,7 @@ GMS2Trainer::GMS2Trainer(
     
 }
 
-
+// Esimate parameters for start/stop codons
 void GMS2Trainer::estimateParametersStartStopCodons(const NumSequence &sequence, const vector<Label*> &labels, const vector<bool> &use) {
     
     // check if all labels should be used
@@ -367,6 +370,7 @@ void GMS2Trainer::estimateParametersStartStopCodons(const NumSequence &sequence,
     
 }
 
+// Estimate parameters for gene coding model
 void GMS2Trainer::estimateParamtersCoding(const NumSequence &sequence, const vector<Label *> &labels, NumSequence::size_type scSize, const vector<bool> &use) {
     
     // check if all labels should be used
@@ -467,7 +471,7 @@ void GMS2Trainer::estimateParamtersNonCoding(const NumSequence &sequence, const 
     noncoding->construct(&counts, params.pcounts);
 }
 
-
+// Estimate parameters for start-context model
 void GMS2Trainer::estimateParametersStartContext(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use) {
     // check if all labels should be used
     bool useAll = true;
@@ -536,7 +540,7 @@ void GMS2Trainer::estimateParametersStartContext(const NumSequence &sequence, co
 }
 
 
-// Output: should set "rbsSpacer" and "rbs" variables
+// Estimate parameters for motif models (based on genome group)
 void GMS2Trainer::estimateParametersMotifModel(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use) {
     
     // check if all labels should be used
@@ -560,116 +564,32 @@ void GMS2Trainer::estimateParametersMotifModel(const NumSequence &sequence, cons
         if (use[n])
             useLabels[pos++] = labels[n];
     }
+
     
-    AlphabetDNA alph;
-    CharNumConverter cnc(&alph);
-    NumAlphabetDNA numAlph(alph, cnc);
-    
-    MotifFinder::Builder b;
-    b.setAlign(optionsMFinder->align);
-    b.setWidth(optionsMFinder->width);
-    b.setMaxIter(optionsMFinder->maxIter);
-    b.setPcounts(optionsMFinder->pcounts);
-    b.setNumTries(optionsMFinder->tries);
-    b.setBackOrder(optionsMFinder->bkgdOrder);
-    b.setMaxEMIter(optionsMFinder->maxEMIter);
-    b.setMotifOrder(optionsMFinder->motifOrder);
-    b.setShiftEvery(optionsMFinder->shiftEvery);
-    
-    
-    MotifFinder mfinder = b.build();
-    
-    // if genome is class 1, search for RBS
-    if (params.genomeGroup == ProkGeneStartModel::D || params.genomeGroup == ProkGeneStartModel::C) {
-        this->genomeType = "group-d";
-        if (params.genomeGroup == ProkGeneStartModel::C)
-            this->genomeType = "group-c";
-        
-        // START: REMOVE THIS
-        // copy only usable labels
-        size_t numUse = labels.size();
-        if (use.size() > 0) {
-            numUse = 0;
-            for (size_t n = 0; n < labels.size(); n++)
-                if (use[n])
-                    numUse++;
-        }
-        
-        vector<Label*> useLabels (numUse);
-        size_t pos = 0;
-        for (size_t n = 0; n < labels.size(); n++) {
-            if (use[n])
-                useLabels[pos++] = labels[n];
-        }
-        
-        // split labels into sets based on operon status
-        vector<LabelsParser::operon_status_t> operonStatuses;
-        LabelsParser::partitionBasedOnOperonStatus(useLabels, params.fgioDistanceThresh, params.igioDistanceThresh, operonStatuses);
-        
-        size_t numFGIO = 0, numIG = 0, numUNK = 0;
-        for (size_t n = 0; n < operonStatuses.size(); n++) {
-            if (operonStatuses[n] == LabelsParser::FGIO)        numFGIO++;
-            else if (operonStatuses[n] == LabelsParser::NFGIO)  numIG++;
-            else
-                numUNK++;
-        }
-        this->numFGIO = numFGIO;
-        // END: REMOVE THIS
-        
-        // extract upstream of each label
-        vector<NumSequence> upstreamsRaw;
-        SequenceParser::extractUpstreamSequences(sequence, labels, *alphabet->getCNC(), params.groupD_upstreamLengthRBS, upstreamsRaw, false, params.minimumGeneLengthTraining, use);
-        
-        vector<NumSequence> upstreams;
-        for (size_t n = 0; n < upstreamsRaw.size(); n++) {
-            if (!upstreamsRaw[n].containsInvalid(numAlph))
-                upstreams.push_back(upstreamsRaw[n]);
-        }
-        
-        vector<NumSequence::size_type> positions;
-        mfinder.findMotifs(upstreams, positions);
-        
-        // build RBS model
-        NonUniformCounts rbsCounts(optionsMFinder->motifOrder, optionsMFinder->width, *this->alphabet);
-        for (size_t n = 0; n < upstreams.size(); n++) {
-            rbsCounts.count(upstreams[n].begin()+positions[n], upstreams[n].begin()+positions[n]+optionsMFinder->width);
-        }
-        
-        rbs = new NonUniformMarkov(optionsMFinder->motifOrder, optionsMFinder->width, *this->alphabet);
-        rbs->construct(&rbsCounts, optionsMFinder->pcounts);
-        
-        // build spacer distribution
-        // build histogram from positions
-        vector<double> positionCounts (params.groupD_upstreamLengthRBS - optionsMFinder->width+1, 0);
-        for (size_t n = 0; n < positions.size(); n++) {
-            // FIXME account for LEFT alignment
-            // below is only for right
-            positionCounts[params.groupD_upstreamLengthRBS - optionsMFinder->width - positions[n]]++;        // increment position
-        }
-        
-        rbsSpacer = new UnivariatePDF(positionCounts, false, params.pcounts);
-        
-    }
-    // if genome is class 2: promoter and RBS in archaea
-    else if (params.genomeGroup == ProkGeneStartModel::A) {
+    if (params.genomeGroup == ProkGeneStartModel::A) {
         this->genomeType = "group-a";
-        estimateParametersMotifModel_GroupA(sequence, labels, use);
-    }
-    // if genome is class 3: promoter and RBS in bacteria
-    else if (params.genomeGroup == ProkGeneStartModel::B) {
-        this->genomeType = "group-b";
-        estimateParametersMotifModel_GroupB(sequence, labels, use);
+        estimateParametersMotifModel_GroupA(sequence, useLabels);
     }
     else if (params.genomeGroup == ProkGeneStartModel::A2) {
         this->genomeType = "group-a2";
-        estimateParametersMotifModel_groupA2(sequence, labels, use);
+        estimateParametersMotifModel_groupA2(sequence, useLabels);
     }
-    // if genome is class 4: RBS and upstream signature
+    else if (params.genomeGroup == ProkGeneStartModel::B) {
+        this->genomeType = "group-b";
+        estimateParametersMotifModel_GroupB(sequence, useLabels);
+    }
+    else if (params.genomeGroup == ProkGeneStartModel::C) {
+        this->genomeType = "group-c";
+        estimateParametersMotifModel_GroupC(sequence, useLabels);
+    }
+    else if (params.genomeGroup == ProkGeneStartModel::D) {
+        this->genomeType = "group-d";
+        estimateParametersMotifModel_GroupD(sequence, useLabels);
+    }
     else {
         this->genomeType = "group-e";
-        estimateParametersMotifModel_GroupE(sequence, labels, use);
+        estimateParametersMotifModel_GroupE(sequence, useLabels);
     }
-    
 }
 
 
@@ -809,287 +729,6 @@ vector<GeneStat> separateLabelsViaOperonStatus(const vector<Label*> &labels, uns
 }
 
 
-void GMS2Trainer::estimateParametersMotifModel_GroupA(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use) {
-    
-    AlphabetDNA alph;
-    CharNumConverter cnc(&alph);
-    NumAlphabetDNA numAlph(alph, cnc);
-    
-    
-    // copy only usable labels
-    size_t numUse = labels.size();
-    if (use.size() > 0) {
-        numUse = 0;
-        for (size_t n = 0; n < labels.size(); n++)
-            if (use[n])
-                numUse++;
-    }
-    
-    vector<Label*> useLabels (numUse);
-    size_t pos = 0;
-    for (size_t n = 0; n < labels.size(); n++) {
-        if (use[n])
-            useLabels[pos++] = labels[n];
-    }
-    
-    // split labels into sets based on operon status
-    vector<LabelsParser::operon_status_t> operonStatuses;
-    LabelsParser::partitionBasedOnOperonStatus(useLabels, params.fgioDistanceThresh, params.igioDistanceThresh, operonStatuses);
-    
-    size_t numFGIO = 0, numIG = 0, numUNK = 0;
-    for (size_t n = 0; n < operonStatuses.size(); n++) {
-        if (operonStatuses[n] == LabelsParser::FGIO)        numFGIO++;
-        else if (operonStatuses[n] == LabelsParser::NFGIO)  numIG++;
-        else
-            numUNK++;
-    }
-    
-    // get FGIO and IG upstreams and run motif search
-    vector<Label*> labelsFGIO (numFGIO);
-    vector<Label*> labelsIG (numIG);
-    size_t currFGIO = 0, currIG = 0;        // indices
-    
-    for (size_t n = 0; n < operonStatuses.size(); n++) {
-        if (operonStatuses[n] == LabelsParser::FGIO)        labelsFGIO[currFGIO++] = useLabels[n];
-        else if (operonStatuses[n] == LabelsParser::NFGIO)  labelsIG[currIG++] = useLabels[n];
-    }
-    
-    vector<NumSequence> upstreamsFGIO;
-    SequenceParser::extractUpstreamSequences(sequence, labelsFGIO, cnc, this->params.groupA_upstreamLengthPromoter, upstreamsFGIO, true);
-    
-    // take first
-    if (cutPromTrainSeqs) {
-        for (size_t n = 0; n < upstreamsFGIO.size(); n++) {
-            upstreamsFGIO[n] = upstreamsFGIO[n].subseq(0, this->params.groupA_upstreamLengthPromoter - 15);
-        }
-    }
-    
-    vector<NumSequence> upstreamsIG;
-    SequenceParser::extractUpstreamSequences(sequence, labelsIG, cnc, this->params.groupA_upstreamLengthRBS, upstreamsIG);
-    
-//    void runMotifFinder(const vector<NumSequence> &sequencesRaw, OptionsMFinder &optionsMFinder, size_t upstreamLength, NonUniformMarkov* motifMarkov, UnivariatePDF* motifSpacer) {
-//
-    this->numLeaderless = upstreamsFGIO.size();
-    this->numFGIO = upstreamsFGIO.size();
-
-    OptionsMFinder optionMFinderFGIO (*this->optionsMFinder);
-    optionMFinderFGIO.width = params.groupA_widthPromoter;
-    
-    runMotifFinder(upstreamsFGIO, optionMFinderFGIO, *this->alphabet, this->params.groupA_upstreamLengthPromoter, this->promoter, this->promoterSpacer);
-    runMotifFinder(upstreamsIG, *this->optionsMFinder, *this->alphabet, this->params.groupA_upstreamLengthRBS, this->rbs, this->rbsSpacer);
-    
-    
-    // shift probabilities
-    if (cutPromTrainSeqs) {
-        vector<double> extendedProbs (promoterSpacer->size()+15, 0);
-        for (size_t n = 0; n < promoterSpacer->size(); n++) {
-            extendedProbs[n+15] = (*promoterSpacer)[n];
-        }
-        
-        delete promoterSpacer;
-        promoterSpacer = new UnivariatePDF(extendedProbs);
-    }
-    
-}
-
-
-
-void GMS2Trainer::estimateParametersMotifModel_GroupB(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use) {
-    
-    AlphabetDNA alph;
-    CharNumConverter cnc(&alph);
-    NumAlphabetDNA numAlph(alph, cnc);
-    
-    
-    // copy only usable labels
-    size_t numUse = labels.size();
-    if (use.size() > 0) {
-        numUse = 0;
-        for (size_t n = 0; n < labels.size(); n++)
-            if (use[n])
-                numUse++;
-    }
-    
-    vector<Label*> useLabels (numUse);
-    size_t pos = 0;
-    for (size_t n = 0; n < labels.size(); n++) {
-        if (use[n])
-            useLabels[pos++] = labels[n];
-    }
-    
-    // split labels into sets based on operon status
-    vector<LabelsParser::operon_status_t> operonStatuses;
-    LabelsParser::partitionBasedOnOperonStatus(useLabels, params.fgioDistanceThresh, params.igioDistanceThresh, operonStatuses);
-    
-    size_t numFGIO = 0, numIG = 0, numUNK = 0;
-    for (size_t n = 0; n < operonStatuses.size(); n++) {
-        if (operonStatuses[n] == LabelsParser::FGIO)        numFGIO++;
-        else if (operonStatuses[n] == LabelsParser::NFGIO)  numIG++;
-        else
-            numUNK++;
-    }
-    
-    // get FGIO and IG upstreams and run motif search
-    vector<Label*> labelsFGIO (numFGIO);
-    vector<Label*> labelsIG (numIG);
-    size_t currFGIO = 0, currIG = 0;        // indices
-    
-    for (size_t n = 0; n < operonStatuses.size(); n++) {
-        if (operonStatuses[n] == LabelsParser::FGIO)        labelsFGIO[currFGIO++] = useLabels[n];
-        else if (operonStatuses[n] == LabelsParser::NFGIO)  labelsIG[currIG++] = useLabels[n];
-    }
-    
-    vector<NumSequence> upstreamsRBS;
-    vector<NumSequence> upstreamsPromoter;
-    
-    size_t upstrLen = 20;
-    
-    // match FGIO to 16S tail
-    vector<NumSequence> upstreamsFGIO;
-    SequenceParser::extractUpstreamSequences(sequence, labelsFGIO, cnc, upstrLen, upstreamsFGIO);
-    
-    Sequence strMatchSeq (params.groupB_extendedSD);
-    NumSequence matchSeq (strMatchSeq, cnc);
-    
-    pair<NumSequence::size_type, NumSequence::size_type> positionsOfMatches;
-    vector<pair<NumSequence::num_t, NumSequence::num_t> > substitutions;
-    if (params.groupB_allowAGSubstitution)
-        substitutions.push_back(pair<NumSequence::num_t, NumSequence::num_t> (cnc.convert('A'), cnc.convert('G')));
-
-    size_t skipFromStart = 3;
-    for (size_t n = 0; n < upstreamsFGIO.size(); n++) {
-        NumSequence match = SequenceAlgorithms::longestMatchTo16S(matchSeq, upstreamsFGIO[n], positionsOfMatches, substitutions);
-
-        // keep track of nonmatches
-        if (match.size() < params.groupB_minMatchToExtendedSD)
-            upstreamsPromoter.push_back(upstreamsFGIO[n].subseq(0, upstreamsFGIO[n].size() - skipFromStart));
-        else
-            upstreamsRBS.push_back(upstreamsFGIO[n]);
-    }
-    
-    
-    vector<NumSequence> upstreamsIG;
-    SequenceParser::extractUpstreamSequences(sequence, labelsIG, cnc, upstrLen, upstreamsIG);
-    for (size_t n = 0; n < upstreamsIG.size(); n++) {
-        upstreamsRBS.push_back(upstreamsIG[n]);
-    }
-    
-    this->numLeaderless = upstreamsPromoter.size();
-    this->numFGIO = upstreamsFGIO.size();
-    
-    
-    runMotifFinder(upstreamsPromoter, *this->optionsMFinder, *this->alphabet, upstrLen-skipFromStart, this->promoter, this->promoterSpacer);
-    runMotifFinder(upstreamsRBS, *this->optionsMFinder, *this->alphabet, upstrLen, this->rbs, this->rbsSpacer);
-    
-    // shift probabilities
-    vector<double> extendedProbs (promoterSpacer->size()+skipFromStart, 0);
-    for (size_t n = 0; n < promoterSpacer->size(); n++) {
-        extendedProbs[n+skipFromStart] = (*promoterSpacer)[n];
-    }
-    
-    delete promoterSpacer;
-    promoterSpacer = new UnivariatePDF(extendedProbs);
-    
-    
-}
-
-
-void GMS2Trainer::estimateParametersMotifModel_GroupE(const NumSequence &sequence, const vector<Label*> &labels, const vector<bool> &use) {
-    
-    AlphabetDNA alph;
-    CharNumConverter cnc(&alph);
-    NumAlphabetDNA numAlph(alph, cnc);
-    
-    // copy only usable labels
-    size_t numUse = labels.size();
-    if (use.size() > 0) {
-        numUse = 0;
-        for (size_t n = 0; n < labels.size(); n++)
-            if (use[n])
-                numUse++;
-    }
-    
-    vector<Label*> useLabels (numUse);
-    size_t pos = 0;
-    for (size_t n = 0; n < labels.size(); n++) {
-        if (use[n])
-            useLabels[pos++] = labels[n];
-    }
-    
-    size_t upstrLen = 20;
-    Sequence strMatchSeq (params.groupE_extendedSD);
-    NumSequence matchSeq (strMatchSeq, cnc);
-    
-    pair<NumSequence::size_type, NumSequence::size_type> positionsOfMatches;
-    vector<pair<NumSequence::num_t, NumSequence::num_t> > substitutions;
-    if (params.groupE_allowAGSubstitution)
-        substitutions.push_back(pair<NumSequence::num_t, NumSequence::num_t> (cnc.convert('A'), cnc.convert('G')));
-    
-    
-    // extract upstream for every sequence and match it to 16S tail
-    vector<NumSequence> upstreams (useLabels.size());
-    SequenceParser::extractUpstreamSequences(sequence, useLabels, cnc, upstrLen, upstreams);
-    size_t skipFromStart = 0;
-    
-    vector<Label*> labelsSig;
-    vector<Label*> labelsRBS;
-    
-    for (size_t n = 0; n < upstreams.size(); n++) {
-        NumSequence match = SequenceAlgorithms::longestMatchTo16S(matchSeq, upstreams[n], positionsOfMatches, substitutions);
-        
-        // keep track of nonmatches
-        if (match.size() < params.groupE_minMatchToExtendedSD)
-            labelsSig.push_back(useLabels[n]);
-        else
-            labelsRBS.push_back(useLabels[n]);
-    }
-    
-    // for all non-Sig sequences, append "N" to mask Sig sequences
-    string Ns = "";
-    size_t numNs = 0;
-    if ( this->params.groupE_lengthUpstreamSignature >= this->params.lengthStartContext &&
-         this->params.groupE_lengthUpstreamSignature - this->params.lengthStartContext >= this->params.groupE_orderUpstreamSignature)
-        numNs = (this->params.groupE_lengthUpstreamSignature - this->params.lengthStartContext) - this->params.groupE_orderUpstreamSignature;
-    
-    for (size_t n = 0; n < numNs; n++)
-        Ns += "N";
-    
-    NumSequence numSeqNs (Sequence(Ns), cnc);       // numeric sequence of N's
-    
-    NonUniformCounts counts(params.groupE_orderUpstreamSignature, params.groupE_lengthUpstreamSignature, *this->alphabet);
-    
-    vector<NumSequence> contextsRBS;
-    long long posRelToStart = - (params.lengthStartContext + params.marginStartContext + params.groupE_orderUpstreamSignature);
-    SequenceParser::extractStartContextSequences(sequence, labelsRBS, cnc, posRelToStart, params.lengthStartContext + this->params.groupE_orderUpstreamSignature, contextsRBS);
-
-    for (size_t n = 0; n < contextsRBS.size(); n++) {
-        NumSequence withNs = numSeqNs + contextsRBS[n];     // append N's
-        counts.count(withNs.begin(), withNs.end());
-//        cout << cnc.convert(withNs.begin(), withNs.end()) << endl;
-    }
-    
-    // add Sig sequences
-    vector<NumSequence> contextsSig;
-    SequenceParser::extractStartContextSequences(sequence, labelsSig, cnc, -( (int)params.groupE_lengthUpstreamSignature + params.marginStartContext), params.groupE_lengthUpstreamSignature, contextsSig);
-    
-    for (size_t n = 0; n < contextsSig.size(); n++) {
-        counts.count(contextsSig[n].begin(), contextsSig[n].end());
-//        cout << cnc.convert(contextsSig[n].begin(), contextsSig[n].end()) << endl;
-    }
-    
-    // for sequences without motifs
-    startContext = new NonUniformMarkov(params.groupE_orderUpstreamSignature, params.groupE_lengthUpstreamSignature, *this->alphabet);
-    startContext->construct(&counts, params.pcounts);
-    
-    // run motif search for RBS
-    vector<NumSequence> upstreamsRBS;
-    SequenceParser::extractUpstreamSequences(sequence, labelsRBS, cnc, this->params.groupE_upstreamLengthRBS, upstreamsRBS);
-    runMotifFinder(upstreamsRBS, *this->optionsMFinder, *this->alphabet, this->params.groupE_upstreamLengthRBS, this->rbs, this->rbsSpacer);
-    
-    
-    
-}
-
 void GMS2Trainer::estimateParameters(const NumSequence &sequence, const vector<gmsuite::Label *> &labels) {
     
     // reset all models
@@ -1125,7 +764,7 @@ void GMS2Trainer::estimateParameters(const NumSequence &sequence, const vector<g
 
 
 
-
+// Deallocate memory for all models
 void GMS2Trainer::deallocAllModels() {
     
     // dealloc public variables for models
@@ -1139,7 +778,7 @@ void GMS2Trainer::deallocAllModels() {
     if (promoterSpacer != NULL) delete promoterSpacer;
 }
 
-// destructor
+// Destructor
 GMS2Trainer::~GMS2Trainer() {
     deallocAllModels();
 }
@@ -1158,7 +797,7 @@ void codonFrequencyToMod(const map<CharNumConverter::seq_t, double> &codons, con
     
 }
 
-
+// Convert models and parameters to string in model file format
 void GMS2Trainer::toModFile(vector<pair<string, string> > &toMod, const OptionsGMS2Training &options) const {
     
     typedef pair<string, string> mpair;
@@ -1267,7 +906,7 @@ void GMS2Trainer::toModFile(vector<pair<string, string> > &toMod, const OptionsG
 
 
 
-// assume useCoding is same size as labels vector
+// Select labels to be used for estimation of coding model parameters
 void GMS2Trainer::selectLabelsForCodingParameters(const vector<Label*> &labels, vector<bool> &useCoding) const {
     
     if (useCoding.size() != labels.size())
@@ -1294,69 +933,40 @@ void GMS2Trainer::selectLabelsForCodingParameters(const vector<Label*> &labels, 
 
 
 
+/*************************\
+ *      Start Models     *
+\*************************/
 
-void GMS2Trainer::estimateParametersMotifModel_groupA2(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use) {
+
+
+
+void GMS2Trainer::estimateParametersMotifModel_groupA2(const NumSequence &sequence, const vector<Label *> &labels) {
     
     AlphabetDNA alph;
     CharNumConverter cnc(&alph);
     NumAlphabetDNA numAlph(alph, cnc);
     
-    
-    // copy only usable labels
-    size_t numUse = labels.size();
-    if (use.size() > 0) {
-        numUse = 0;
-        for (size_t n = 0; n < labels.size(); n++)
-            if (use[n])
-                numUse++;
-    }
-    
-    vector<Label*> useLabels (numUse);
-    size_t pos = 0;
-    for (size_t n = 0; n < labels.size(); n++) {
-        if (use[n])
-            useLabels[pos++] = labels[n];
-    }
-    
     // split labels into sets based on operon status
     vector<LabelsParser::operon_status_t> operonStatuses;
-    LabelsParser::partitionBasedOnOperonStatus(useLabels, params.fgioDistanceThresh, params.igioDistanceThresh, operonStatuses);
+    LabelsParser::partitionBasedOnOperonStatus(labels, params.fgioDistanceThresh, params.igioDistanceThresh, operonStatuses);
     
-    size_t numFGIO = 0, numIG = 0, numUNK = 0;
-    for (size_t n = 0; n < operonStatuses.size(); n++) {
-        if (operonStatuses[n] == LabelsParser::FGIO)        numFGIO++;
-        else if (operonStatuses[n] == LabelsParser::NFGIO)  numIG++;
-        else
-            numUNK++;
-    }
-    
-    // get FGIO and IG upstreams and run motif search
-    vector<Label*> labelsFGIO (numFGIO);
-    vector<Label*> labelsIG (numIG);
-    size_t currFGIO = 0, currIG = 0;        // indices
-    
-    for (size_t n = 0; n < operonStatuses.size(); n++) {
-        if (operonStatuses[n] == LabelsParser::FGIO)        labelsFGIO[currFGIO++] = useLabels[n];
-        else if (operonStatuses[n] == LabelsParser::NFGIO)  labelsIG[currIG++] = useLabels[n];
-    }
+    vector<Label*> labelsFGIO, labelsIG, labelsUNK;
+    LabelsParser::splitBasedOnPartition(labels, operonStatuses, labelsFGIO, labelsIG, labelsUNK);
     
     vector<NumSequence> upstreamsRBS;
     vector<NumSequence> upstreamsPromoter;
     
-    size_t upstrLenForMatching = 20;
-    size_t upstrLenForPromoter = 40;
+    
     
     // match FGIO to 16S tail
     vector<NumSequence> upstreamsFGIOForMatching, upstreamsFGIOForPromoter;
-    SequenceParser::extractUpstreamSequences(sequence, labelsFGIO, cnc, upstrLenForPromoter, upstreamsFGIOForPromoter, true);
+    SequenceParser::extractUpstreamSequences(sequence, labelsFGIO, cnc, params.groupA_upstreamLengthPromoter, upstreamsFGIOForPromoter, true);
     
     upstreamsFGIOForMatching.resize(upstreamsFGIOForPromoter.size());
     for (size_t n = 0; n < upstreamsFGIOForPromoter.size(); n++) {
-        upstreamsFGIOForMatching[n] = upstreamsFGIOForPromoter[n].subseq(upstrLenForPromoter - upstrLenForMatching, upstrLenForMatching);
-        assert(upstreamsFGIOForMatching[n].size() == upstrLenForMatching);
+        upstreamsFGIOForMatching[n] = upstreamsFGIOForPromoter[n].subseq(params.groupA_upstreamLengthPromoter - params.groupA_upstreamLengthRBS, params.groupA_upstreamLengthRBS);
+        assert(upstreamsFGIOForMatching[n].size() == params.groupA_upstreamLengthRBS);
     }
-//    SequenceParser::extractUpstreamSequences(sequence, labelsFGIO, cnc, upstrLenForMatching, upstreamsFGIOForMatching, true);
-    
     
     assert(upstreamsFGIOForPromoter.size() == upstreamsFGIOForMatching.size());
     
@@ -1381,7 +991,7 @@ void GMS2Trainer::estimateParametersMotifModel_groupA2(const NumSequence &sequen
     
     
     vector<NumSequence> upstreamsIG;
-    SequenceParser::extractUpstreamSequences(sequence, labelsIG, cnc, upstrLenForMatching, upstreamsIG);
+    SequenceParser::extractUpstreamSequences(sequence, labelsIG, cnc, params.groupA_upstreamLengthRBS, upstreamsIG);
     for (size_t n = 0; n < upstreamsIG.size(); n++) {
         upstreamsRBS.push_back(upstreamsIG[n]);
     }
@@ -1398,18 +1008,18 @@ void GMS2Trainer::estimateParametersMotifModel_groupA2(const NumSequence &sequen
             upstreamsPromoter[n] = upstreamsPromoter[n].subseq(0, params.groupA_upstreamLengthPromoter - 15);
         }
     }
-
+    
     runMotifFinder(upstreamsPromoter, optionMFinderPromoter, *this->alphabet, params.groupA_upstreamLengthPromoter, this->promoter, this->promoterSpacer);
     runMotifFinder(upstreamsRBS, *this->optionsMFinder, *this->alphabet, params.groupA_upstreamLengthRBS, this->rbs, this->rbsSpacer);
     
-//    // shift probabilities
-//    vector<double> extendedProbs (promoterSpacer->size()+skipFromStart, 0);
-//    for (size_t n = 0; n < promoterSpacer->size(); n++) {
-//        extendedProbs[n+skipFromStart] = (*promoterSpacer)[n];
-//    }
-//    
-//    delete promoterSpacer;
-//    promoterSpacer = new UnivariatePDF(extendedProbs);
+    //    // shift probabilities
+    //    vector<double> extendedProbs (promoterSpacer->size()+skipFromStart, 0);
+    //    for (size_t n = 0; n < promoterSpacer->size(); n++) {
+    //        extendedProbs[n+skipFromStart] = (*promoterSpacer)[n];
+    //    }
+    //
+    //    delete promoterSpacer;
+    //    promoterSpacer = new UnivariatePDF(extendedProbs);
     
     // shift probabilities
     if (cutPromTrainSeqs) {
@@ -1424,6 +1034,123 @@ void GMS2Trainer::estimateParametersMotifModel_groupA2(const NumSequence &sequen
     
 }
 
+
+void GMS2Trainer::estimateParametersMotifModel_GroupA(const NumSequence &sequence, const vector<Label *> &labels) {
+    
+    AlphabetDNA alph;
+    CharNumConverter cnc(&alph);
+    NumAlphabetDNA numAlph(alph, cnc);
+    
+    // split labels into sets based on operon status
+    vector<LabelsParser::operon_status_t> operonStatuses;
+    LabelsParser::partitionBasedOnOperonStatus(labels, params.fgioDistanceThresh, params.igioDistanceThresh, operonStatuses);
+    
+    vector<Label*> labelsFGIO, labelsIG, labelsUNK;
+    LabelsParser::splitBasedOnPartition(labels, operonStatuses, labelsFGIO, labelsIG, labelsUNK);
+    
+    vector<NumSequence> upstreamsFGIO;
+    SequenceParser::extractUpstreamSequences(sequence, labelsFGIO, cnc, this->params.groupA_upstreamLengthPromoter, upstreamsFGIO, true);
+    
+    // take first
+    if (cutPromTrainSeqs) {
+        for (size_t n = 0; n < upstreamsFGIO.size(); n++) {
+            upstreamsFGIO[n] = upstreamsFGIO[n].subseq(0, this->params.groupA_upstreamLengthPromoter - 15);
+        }
+    }
+    
+    vector<NumSequence> upstreamsIG;
+    SequenceParser::extractUpstreamSequences(sequence, labelsIG, cnc, this->params.groupA_upstreamLengthRBS, upstreamsIG);
+    
+    //    void runMotifFinder(const vector<NumSequence> &sequencesRaw, OptionsMFinder &optionsMFinder, size_t upstreamLength, NonUniformMarkov* motifMarkov, UnivariatePDF* motifSpacer) {
+    //
+    this->numLeaderless = upstreamsFGIO.size();
+    this->numFGIO = upstreamsFGIO.size();
+    
+    OptionsMFinder optionMFinderFGIO (*this->optionsMFinder);
+    optionMFinderFGIO.width = params.groupA_widthPromoter;
+    
+    runMotifFinder(upstreamsFGIO, optionMFinderFGIO, *this->alphabet, this->params.groupA_upstreamLengthPromoter, this->promoter, this->promoterSpacer);
+    runMotifFinder(upstreamsIG, *this->optionsMFinder, *this->alphabet, this->params.groupA_upstreamLengthRBS, this->rbs, this->rbsSpacer);
+    
+    
+    // shift probabilities
+    if (cutPromTrainSeqs) {
+        vector<double> extendedProbs (promoterSpacer->size()+15, 0);
+        for (size_t n = 0; n < promoterSpacer->size(); n++) {
+            extendedProbs[n+15] = (*promoterSpacer)[n];
+        }
+        
+        delete promoterSpacer;
+        promoterSpacer = new UnivariatePDF(extendedProbs);
+    }
+    
+}
+
+
+void GMS2Trainer::estimateParametersMotifModel_GroupB(const NumSequence &sequence, const vector<Label *> &labels) {
+    
+    AlphabetDNA alph;
+    CharNumConverter cnc(&alph);
+    NumAlphabetDNA numAlph(alph, cnc);
+    
+    // split labels into sets based on operon status
+    vector<LabelsParser::operon_status_t> operonStatuses;
+    LabelsParser::partitionBasedOnOperonStatus(labels, params.fgioDistanceThresh, params.igioDistanceThresh, operonStatuses);
+    
+    vector<Label*> labelsFGIO, labelsIG, labelsUNK;
+    LabelsParser::splitBasedOnPartition(labels, operonStatuses, labelsFGIO, labelsIG, labelsUNK);
+    
+    vector<NumSequence> upstreamsRBS;
+    vector<NumSequence> upstreamsPromoter;
+    
+    // match FGIO to 16S tail
+    vector<NumSequence> upstreamsFGIO;
+    SequenceParser::extractUpstreamSequences(sequence, labelsFGIO, cnc, params.groupB_upstreamLengthPromoter, upstreamsFGIO);
+    
+    Sequence strMatchSeq (params.groupB_extendedSD);
+    NumSequence matchSeq (strMatchSeq, cnc);
+    
+    pair<NumSequence::size_type, NumSequence::size_type> positionsOfMatches;
+    vector<pair<NumSequence::num_t, NumSequence::num_t> > substitutions;
+    if (params.groupB_allowAGSubstitution)
+        substitutions.push_back(pair<NumSequence::num_t, NumSequence::num_t> (cnc.convert('A'), cnc.convert('G')));
+    
+    size_t skipFromStart = 3;
+    for (size_t n = 0; n < upstreamsFGIO.size(); n++) {
+        NumSequence match = SequenceAlgorithms::longestMatchTo16S(matchSeq, upstreamsFGIO[n], positionsOfMatches, substitutions);
+        
+        // keep track of nonmatches
+        if (match.size() < params.groupB_minMatchToExtendedSD)
+            upstreamsPromoter.push_back(upstreamsFGIO[n].subseq(0, upstreamsFGIO[n].size() - skipFromStart));
+        else
+            upstreamsRBS.push_back(upstreamsFGIO[n]);
+    }
+    
+    
+    vector<NumSequence> upstreamsIG;
+    SequenceParser::extractUpstreamSequences(sequence, labelsIG, cnc, params.groupB_upstreamLengthRBS, upstreamsIG);
+    for (size_t n = 0; n < upstreamsIG.size(); n++) {
+        upstreamsRBS.push_back(upstreamsIG[n]);
+    }
+    
+    this->numLeaderless = upstreamsPromoter.size();
+    this->numFGIO = upstreamsFGIO.size();
+    
+    
+    runMotifFinder(upstreamsPromoter, *this->optionsMFinder, *this->alphabet, params.groupB_upstreamLengthPromoter-skipFromStart, this->promoter, this->promoterSpacer);
+    runMotifFinder(upstreamsRBS, *this->optionsMFinder, *this->alphabet, params.groupB_upstreamLengthRBS, this->rbs, this->rbsSpacer);
+    
+    // shift probabilities
+    vector<double> extendedProbs (promoterSpacer->size()+skipFromStart, 0);
+    for (size_t n = 0; n < promoterSpacer->size(); n++) {
+        extendedProbs[n+skipFromStart] = (*promoterSpacer)[n];
+    }
+    
+    delete promoterSpacer;
+    promoterSpacer = new UnivariatePDF(extendedProbs);
+    
+    
+}
 
 
 void GMS2Trainer::estimateParametersMotifModel_GroupC(const NumSequence &sequence, const vector<Label *> &labels) {
@@ -1482,7 +1209,82 @@ void GMS2Trainer::estimateParametersMotifModel_GroupD(const NumSequence &sequenc
 }
 
 
-
-
-
-
+void GMS2Trainer::estimateParametersMotifModel_GroupE(const NumSequence &sequence, const vector<Label *> &labels) {
+    
+    AlphabetDNA alph;
+    CharNumConverter cnc(&alph);
+    NumAlphabetDNA numAlph(alph, cnc);
+    
+    
+    Sequence strMatchSeq (params.groupE_extendedSD);
+    NumSequence matchSeq (strMatchSeq, cnc);
+    
+    pair<NumSequence::size_type, NumSequence::size_type> positionsOfMatches;
+    vector<pair<NumSequence::num_t, NumSequence::num_t> > substitutions;
+    if (params.groupE_allowAGSubstitution)
+        substitutions.push_back(pair<NumSequence::num_t, NumSequence::num_t> (cnc.convert('A'), cnc.convert('G')));
+    
+    
+    // extract upstream for every sequence and match it to 16S tail
+    vector<NumSequence> upstreams (labels.size());
+    SequenceParser::extractUpstreamSequences(sequence, labels, cnc, params.groupE_upstreamLengthRBS, upstreams);
+    size_t skipFromStart = 0;
+    
+    vector<Label*> labelsSig;
+    vector<Label*> labelsRBS;
+    
+    for (size_t n = 0; n < upstreams.size(); n++) {
+        NumSequence match = SequenceAlgorithms::longestMatchTo16S(matchSeq, upstreams[n], positionsOfMatches, substitutions);
+        
+        // keep track of nonmatches
+        if (match.size() < params.groupE_minMatchToExtendedSD)
+            labelsSig.push_back(labels[n]);
+        else
+            labelsRBS.push_back(labels[n]);
+    }
+    
+    // for all non-Sig sequences, append "N" to mask Sig sequences
+    string Ns = "";
+    size_t numNs = 0;
+    if ( this->params.groupE_lengthUpstreamSignature >= this->params.lengthStartContext &&
+        this->params.groupE_lengthUpstreamSignature - this->params.lengthStartContext >= this->params.groupE_orderUpstreamSignature)
+        numNs = (this->params.groupE_lengthUpstreamSignature - this->params.lengthStartContext) - this->params.groupE_orderUpstreamSignature;
+    
+    for (size_t n = 0; n < numNs; n++)
+        Ns += "N";
+    
+    NumSequence numSeqNs (Sequence(Ns), cnc);       // numeric sequence of N's
+    
+    NonUniformCounts counts(params.groupE_orderUpstreamSignature, params.groupE_lengthUpstreamSignature, *this->alphabet);
+    
+    vector<NumSequence> contextsRBS;
+    long long posRelToStart = - (params.lengthStartContext + params.marginStartContext + params.groupE_orderUpstreamSignature);
+    SequenceParser::extractStartContextSequences(sequence, labelsRBS, cnc, posRelToStart, params.lengthStartContext + this->params.groupE_orderUpstreamSignature, contextsRBS);
+    
+    for (size_t n = 0; n < contextsRBS.size(); n++) {
+        NumSequence withNs = numSeqNs + contextsRBS[n];     // append N's
+        counts.count(withNs.begin(), withNs.end());
+        //        cout << cnc.convert(withNs.begin(), withNs.end()) << endl;
+    }
+    
+    // add Sig sequences
+    vector<NumSequence> contextsSig;
+    SequenceParser::extractStartContextSequences(sequence, labelsSig, cnc, -( (int)params.groupE_lengthUpstreamSignature + params.marginStartContext), params.groupE_lengthUpstreamSignature, contextsSig);
+    
+    for (size_t n = 0; n < contextsSig.size(); n++) {
+        counts.count(contextsSig[n].begin(), contextsSig[n].end());
+        //        cout << cnc.convert(contextsSig[n].begin(), contextsSig[n].end()) << endl;
+    }
+    
+    // for sequences without motifs
+    startContext = new NonUniformMarkov(params.groupE_orderUpstreamSignature, params.groupE_lengthUpstreamSignature, *this->alphabet);
+    startContext->construct(&counts, params.pcounts);
+    
+    // run motif search for RBS
+    vector<NumSequence> upstreamsRBS;
+    SequenceParser::extractUpstreamSequences(sequence, labelsRBS, cnc, this->params.groupE_upstreamLengthRBS, upstreamsRBS);
+    runMotifFinder(upstreamsRBS, *this->optionsMFinder, *this->alphabet, this->params.groupE_upstreamLengthRBS, this->rbs, this->rbsSpacer);
+    
+    
+    
+}
