@@ -212,7 +212,7 @@ void OptionsGMS2Training::addProcessOptions(OptionsGMS2Training &options, po::op
     ("igio-dist-thr",       po::value<numseqsize>   (&options.igioDistanceThresh                 )->default_value(22),   "Maximum distance between IGIO and upstream gene on same strand")
     ("pcounts",             po::value<unsigned>     (&options.pcounts                            )->default_value(1),    "Pseudocounts")
     ("genome-group",        po::value<genome_group_t> (&options.genomeGroup                      )->required(),          "The genome's group: A,B,C,D,E,A2")
-    ("genetic-code",        po::value<gcode_t>      (&options.geneticCode                        )->default_value(GeneticCode::ELEVEN), "Genetic code")
+    ("genetic-code",        po::value<gcode_t>      (&options.gcode                              )->default_value(GeneticCode::ELEVEN), "Genetic code")
     ("min-gene-len",        po::value<numseqsize>   (&options.minimumGeneLengthTraining          )->default_value(300),  "Minimym gene length used in training parameters")
     ("only-train-on-native",po::value<bool>         (&options.onlyTrainOnNativeGenes             )->default_value(false),"Only train on native genes")
     ("run-motif-search",    po::value<bool>         (&options.runMotifSearch                     )->default_value(true), "Run motif search")

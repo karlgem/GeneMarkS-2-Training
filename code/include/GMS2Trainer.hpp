@@ -451,11 +451,63 @@ namespace gmsuite {
         }
         
         GMS2Trainer build() {
-            return GMS2Trainer ();
+            return GMS2Trainer (orderCoding, orderNonCoding, orderStartContext, lengthStartContext, marginStartContext, fgioDistanceThresh, igioDistanceThresh, pcounts, genomeGroup, gcode, minimumGeneLengthTraining, onlyTrainOnNativeGenes, runMotifSearch, groupA_widthPromoter, groupA_widthRBS, groupA_upstreamLengthPromoter, groupA_upstreamLengthRBS, groupA_spacerScoreThresh, groupA_spacerDistThresh, groupA_spacerWindowSize, groupA_extendedSD, groupA_minMatchToExtendedSD, groupA_allowAGSubstitution, groupB_widthPromoter, groupB_widthRBS, groupB_upstreamLengthPromoter, groupB_upstreamLengthRBS, groupB_spacerScoreThresh, groupB_spacerDistThresh, groupB_spacerWindowSize, groupB_extendedSD, groupB_minMatchToExtendedSD, groupB_allowAGSubstitution, groupC_widthRBS, groupC_upstreamLengthRBS, groupC_minMatchRBSPromoter, groupC_minMatchToExtendedSD, groupC_extendedSD, groupD_widthRBS, groupD_upstreamLengthRBS, groupD_percentMatchRBS, groupD_extendedSD, groupD_minMatchToExtendedSD, groupD_allowAGSubstitution, groupE_widthRBS, groupE_upstreamLengthRBS, groupE_lengthUpstreamSignature, groupE_orderUpstreamSignature, groupE_extendedSD, groupE_allowAGSubstitution);
         }
         
         GMS2Trainer build(const OptionsGMS2Training &options) {
-            // set all parameters
+            
+            setGroupA_widthPromoter          (options.groupA_widthPromoter          );
+            setGroupA_widthRBS               (options.groupA_widthRBS               );
+            setGroupA_upstreamLengthPromoter (options.groupA_upstreamLengthPromoter );
+            setGroupA_upstreamLengthRBS      (options.groupA_upstreamLengthRBS      );
+            setGroupA_spacerScoreThresh      (options.groupA_spacerScoreThresh      );
+            setGroupA_spacerDistThresh       (options.groupA_spacerDistThresh       );
+            setGroupA_spacerWindowSize       (options.groupA_spacerWindowSize       );
+            setGroupA_extendedSD             (options.groupA_extendedSD             );
+            setGroupA_minMatchToExtendedSD   (options.groupA_minMatchToExtendedSD   );
+            setGroupA_allowAGSubstitution    (options.groupA_allowAGSubstitution    );
+            setGroupB_widthPromoter          (options.groupB_widthPromoter          );
+            setGroupB_widthRBS               (options.groupB_widthRBS               );
+            setGroupB_upstreamLengthPromoter (options.groupB_upstreamLengthPromoter );
+            setGroupB_upstreamLengthRBS      (options.groupB_upstreamLengthRBS      );
+            setGroupB_spacerScoreThresh      (options.groupB_spacerScoreThresh      );
+            setGroupB_spacerDistThresh       (options.groupB_spacerDistThresh       );
+            setGroupB_spacerWindowSize       (options.groupB_spacerWindowSize       );
+            setGroupB_extendedSD             (options.groupB_extendedSD             );
+            setGroupB_minMatchToExtendedSD   (options.groupB_minMatchToExtendedSD   );
+            setGroupB_allowAGSubstitution    (options.groupB_allowAGSubstitution    );
+            setGroupC_widthRBS               (options.groupC_widthRBS               );
+            setGroupC_upstreamLengthRBS      (options.groupC_upstreamLengthRBS      );
+            setGroupC_minMatchRBSPromoter    (options.groupC_minMatchRBSPromoter    );
+            setGroupC_minMatchToExtendedSD   (options.groupC_minMatchToExtendedSD   );
+            setGroupC_extendedSD             (options.groupC_extendedSD             );
+            setGroupD_widthRBS               (options.groupD_widthRBS               );
+            setGroupD_upstreamLengthRBS      (options.groupD_upstreamLengthRBS      );
+            setGroupD_percentMatchRBS        (options.groupD_percentMatchRBS        );
+            setGroupD_extendedSD             (options.groupD_extendedSD             );
+            setGroupD_minMatchToExtendedSD   (options.groupD_minMatchToExtendedSD   );
+            setGroupD_allowAGSubstitution    (options.groupD_allowAGSubstitution    );
+            setGroupE_widthRBS               (options.groupE_widthRBS               );
+            setGroupE_upstreamLengthRBS      (options.groupE_upstreamLengthRBS      );
+            setGroupE_lengthUpstreamSignature(options.groupE_lengthUpstreamSignature);
+            setGroupE_orderUpstreamSignature (options.groupE_orderUpstreamSignature );
+            setGroupE_extendedSD             (options.groupE_extendedSD             );
+            setGroupE_minMatchToExtendedSD   (options.groupE_minMatchToExtendedSD   );
+            setGroupE_allowAGSubstitution    (options.groupE_allowAGSubstitution    );
+            setOrderCoding                   (options.orderCoding                   );
+            setOrderNonCoding                (options.orderNonCoding                );
+            setOrderStartContext             (options.orderStartContext             );
+            setLengthStartContext            (options.lengthStartContext            );
+            setMarginStartContext            (options.marginStartContext            );
+            setFgioDistanceThresh            (options.fgioDistanceThresh            );
+            setIgioDistanceThresh            (options.igioDistanceThresh            );
+            setPcounts                       (options.pcounts                       );
+            setGenomeGroup                   (options.genomeGroup                   );
+            setGcode                         (options.gcode                         );
+            setMinimumGeneLengthTraining     (options.minimumGeneLengthTraining     );
+            setOnlyTrainOnNativeGenes        (options.onlyTrainOnNativeGenes        );
+            setRunMotifSearch                (options.runMotifSearch                );
+            
             return build();
         }
         
