@@ -102,6 +102,7 @@ namespace gmsuite {
         NumSequence::size_type  minimumGeneLengthTraining           ;
         bool                    onlyTrainOnNativeGenes              ;
         bool                    runMotifSearch                      ;
+        const OptionsMFinder*   optionsMFinder                      ;
     };
     
     
@@ -163,6 +164,7 @@ namespace gmsuite {
                     NumSequence::size_type  minimumGeneLengthTraining           ,
                     bool                    onlyTrainOnNativeGenes              ,
                     bool                    runMotifSearch                      ,
+                    const OptionsMFinder&   optionsMFinder                      ,
                     // Group-A
                     unsigned                groupA_widthPromoter                ,
                     unsigned                groupA_widthRBS                     ,
@@ -227,9 +229,6 @@ namespace gmsuite {
         void estimateParametersMotifModel_GroupD(const NumSequence &sequence, const vector<Label *> &labels);
         void estimateParametersMotifModel_GroupE(const NumSequence &sequence, const vector<Label*> &labels);
         
-            
-        
-        const OptionsMFinder* optionsMFinder;
         
         // public variables for models
         UniformMarkov *noncoding;
@@ -351,6 +350,7 @@ namespace gmsuite {
         NumSequence::size_type  minimumGeneLengthTraining           ;
         bool                    onlyTrainOnNativeGenes              ;
         bool                    runMotifSearch                      ;
+        const OptionsMFinder*   optionsMFinder                      ;
         
         
     public:
@@ -420,10 +420,11 @@ namespace gmsuite {
             minimumGeneLengthTraining           = 300                         ;
             onlyTrainOnNativeGenes              = false                       ;
             runMotifSearch                      = true                        ;
+            optionsMFinder                      = NULL                        ;     // FIXME: figure out how to set default MFinder options
         }
         
         GMS2Trainer build() {
-            return GMS2Trainer (orderCoding, orderNonCoding, orderStartContext, lengthStartContext, marginStartContext, fgioDistanceThresh, igioDistanceThresh, pcounts, genomeGroup, gcode, minimumGeneLengthTraining, onlyTrainOnNativeGenes, runMotifSearch, groupA_widthPromoter, groupA_widthRBS, groupA_upstreamLengthPromoter, groupA_upstreamLengthRBS, groupA_spacerScoreThresh, groupA_spacerDistThresh, groupA_spacerWindowSize, groupA_extendedSD, groupA_minMatchToExtendedSD, groupA_allowAGSubstitution, groupB_widthPromoter, groupB_widthRBS, groupB_upstreamLengthPromoter, groupB_upstreamLengthRBS, groupB_spacerScoreThresh, groupB_spacerDistThresh, groupB_spacerWindowSize, groupB_extendedSD, groupB_minMatchToExtendedSD, groupB_allowAGSubstitution, groupC_widthRBS, groupC_upstreamLengthRBS, groupC_minMatchRBSPromoter, groupC_minMatchToExtendedSD, groupC_extendedSD, groupD_widthRBS, groupD_upstreamLengthRBS, groupD_percentMatchRBS, groupD_extendedSD, groupD_minMatchToExtendedSD, groupD_allowAGSubstitution, groupE_widthRBS, groupE_upstreamLengthRBS, groupE_lengthUpstreamSignature, groupE_orderUpstreamSignature, groupE_extendedSD, groupE_allowAGSubstitution);
+            return GMS2Trainer (orderCoding, orderNonCoding, orderStartContext, lengthStartContext, marginStartContext, fgioDistanceThresh, igioDistanceThresh, pcounts, genomeGroup, gcode, minimumGeneLengthTraining, onlyTrainOnNativeGenes, runMotifSearch, *optionsMFinder, groupA_widthPromoter, groupA_widthRBS, groupA_upstreamLengthPromoter, groupA_upstreamLengthRBS, groupA_spacerScoreThresh, groupA_spacerDistThresh, groupA_spacerWindowSize, groupA_extendedSD, groupA_minMatchToExtendedSD, groupA_allowAGSubstitution, groupB_widthPromoter, groupB_widthRBS, groupB_upstreamLengthPromoter, groupB_upstreamLengthRBS, groupB_spacerScoreThresh, groupB_spacerDistThresh, groupB_spacerWindowSize, groupB_extendedSD, groupB_minMatchToExtendedSD, groupB_allowAGSubstitution, groupC_widthRBS, groupC_upstreamLengthRBS, groupC_minMatchRBSPromoter, groupC_minMatchToExtendedSD, groupC_extendedSD, groupD_widthRBS, groupD_upstreamLengthRBS, groupD_percentMatchRBS, groupD_extendedSD, groupD_minMatchToExtendedSD, groupD_allowAGSubstitution, groupE_widthRBS, groupE_upstreamLengthRBS, groupE_lengthUpstreamSignature, groupE_orderUpstreamSignature, groupE_extendedSD, groupE_allowAGSubstitution);
         }
         
         GMS2Trainer build(const OptionsGMS2Training &options) {
@@ -479,6 +480,7 @@ namespace gmsuite {
             setMinimumGeneLengthTraining     (options.minimumGeneLengthTraining     );
             setOnlyTrainOnNativeGenes        (options.onlyTrainOnNativeGenes        );
             setRunMotifSearch                (options.runMotifSearch                );
+            setOptionsMFinder                (options.optionsMFinder                );
             
             return build();
         }
@@ -540,6 +542,7 @@ namespace gmsuite {
         Builder& setMinimumGeneLengthTraining       (const NumSequence::size_type v)    {  minimumGeneLengthTraining = v;     return *this; }
         Builder& setOnlyTrainOnNativeGenes          (const bool v)                      {  onlyTrainOnNativeGenes    = v;     return *this; }
         Builder& setRunMotifSearch                  (const bool v)                      {  runMotifSearch            = v;     return *this; }
+        Builder& setOptionsMFinder                  (const OptionsMFinder &v)           {  optionsMFinder            = &v;     return *this; }
     };
     
     

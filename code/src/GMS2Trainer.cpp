@@ -169,6 +169,7 @@ GMS2Trainer::GMS2Trainer(
             NumSequence::size_type  minimumGeneLengthTraining           ,
             bool                    onlyTrainOnNativeGenes              ,
             bool                    runMotifSearch                      ,
+            const OptionsMFinder&   optionsMFinder                      ,
             // Group-A
             unsigned                groupA_widthPromoter                ,
             unsigned                groupA_widthRBS                     ,
@@ -227,6 +228,7 @@ GMS2Trainer::GMS2Trainer(
     this->params.minimumGeneLengthTraining       =  minimumGeneLengthTraining             ;
     this->params.onlyTrainOnNativeGenes          =  onlyTrainOnNativeGenes                ;
     this->params.runMotifSearch                  =  runMotifSearch                        ;
+    this->params.optionsMFinder                  =  &optionsMFinder                       ;
     this->params.groupA_widthPromoter            =  groupA_widthPromoter                  ;
     this->params.groupA_widthRBS                 =  groupA_widthRBS                       ;
     this->params.groupA_upstreamLengthPromoter   =  groupA_upstreamLengthPromoter         ;
@@ -634,99 +636,6 @@ void runMotifFinder(const vector<NumSequence> &sequencesRaw, const OptionsMFinde
     
 }
 
-vector<GeneStat> separateLabelsViaOperonStatus(const vector<Label*> &labels, unsigned thresh, unsigned threshNFIO) {
-    
-    
-    vector<GeneStat> result (labels.size());
-    
-    // for every label
-    for (size_t n = 0; n < labels.size(); n++) {
-        
-        // get label
-        const Label* lab = labels[n];
-        
-        // if on positive strand
-        if (lab->strand == Label::POS) {
-            
-            size_t start = lab->left;          // start location
-            
-            // if no gene before it, set as first in operon
-            if (n == 0) {
-                result[n] = FIRST_OP;
-            }
-            // otherwise, check to see if stop of previous gene is nearby
-            else {
-                
-                const Label* prevLab = labels[n-1];         // previous label
-                
-                if (prevLab->strand == Label::POS) {   // should be on positive strand
-                    
-                    size_t prevStop = prevLab->right;
-                    
-                    // if too far away, then current gene is first in op
-                    if (prevStop < start - thresh)
-                        result[n] = FIRST_OP;
-                    // if threshNFIO is set and gene is too close
-                    else if (threshNFIO != 0) {
-                        if (prevStop > start - threshNFIO)
-                            result[n] = NOT_FIRST_OP;
-                        else
-                            result[n] = IGNORE;
-                    }
-                    // otherwise, current gene belongs to same operon as previous
-                    else
-                        result[n] = NOT_FIRST_OP;
-                    
-                }
-                // otherwise it's on negative strand, so first in operon
-                else
-                    result[n] = FIRST_OP;
-            }
-        }
-        
-        // if on negative strand
-        else if (lab->strand == Label::NEG) {
-            
-            size_t start = lab->right;        // start location
-            
-            // if no gene after it, then set as first in operon
-            if (n == labels.size()-1) {
-                result[n] = FIRST_OP;
-            }
-            // otherwise, check to see if stop of previous gene (i.e. to the right) is nearby
-            else {
-                const Label* prevLab = labels[n+1];     // "next" label
-                
-                if (prevLab->strand == Label::NEG) {      // should be on negative strand
-                    
-                    size_t prevStop = prevLab->left;
-                    
-                    // if too far away, then current gene is first in op
-                    if (prevStop > start + thresh)
-                        result[n] = FIRST_OP;
-                    // if threshNFIO is set and gene is too close
-                    else if (threshNFIO != 0) {
-                        if (prevStop < start + threshNFIO)
-                            result[n] = NOT_FIRST_OP;
-                        else
-                            result[n] = IGNORE;
-                    }
-                    // otherwise, current gene belongs to same operon as previous
-                    else
-                        result[n] = NOT_FIRST_OP;
-                }
-                // oterhwise, previous gene is on different strand, so current is first in operon
-                else
-                    result[n] = FIRST_OP;
-            }
-        }
-        
-    }
-    
-    
-    return result;
-    
-}
 
 
 void GMS2Trainer::estimateParameters(const NumSequence &sequence, const vector<gmsuite::Label *> &labels) {
@@ -783,7 +692,7 @@ GMS2Trainer::~GMS2Trainer() {
     deallocAllModels();
 }
 
-
+// convert codon frequency models to model file output
 void codonFrequencyToMod(const map<CharNumConverter::seq_t, double> &codons, const CharNumConverter &cnc, vector<pair<string, string> > &toMod) {
     
     for (map<CharNumConverter::seq_t, double>::const_iterator iter = codons.begin(); iter != codons.end(); iter++) {
@@ -999,7 +908,7 @@ void GMS2Trainer::estimateParametersMotifModel_groupA2(const NumSequence &sequen
     this->numLeaderless = upstreamsPromoter.size();
     this->numFGIO = upstreamsFGIOForMatching.size();
     
-    OptionsMFinder optionMFinderPromoter (*this->optionsMFinder);
+    OptionsMFinder optionMFinderPromoter (*this->params.optionsMFinder);
     optionMFinderPromoter.width = params.groupA_widthPromoter;
     
     // take first
@@ -1010,7 +919,7 @@ void GMS2Trainer::estimateParametersMotifModel_groupA2(const NumSequence &sequen
     }
     
     runMotifFinder(upstreamsPromoter, optionMFinderPromoter, *this->alphabet, params.groupA_upstreamLengthPromoter, this->promoter, this->promoterSpacer);
-    runMotifFinder(upstreamsRBS, *this->optionsMFinder, *this->alphabet, params.groupA_upstreamLengthRBS, this->rbs, this->rbsSpacer);
+    runMotifFinder(upstreamsRBS, *this->params.optionsMFinder, *this->alphabet, params.groupA_upstreamLengthRBS, this->rbs, this->rbsSpacer);
     
     //    // shift probabilities
     //    vector<double> extendedProbs (promoterSpacer->size()+skipFromStart, 0);
@@ -1066,11 +975,11 @@ void GMS2Trainer::estimateParametersMotifModel_GroupA(const NumSequence &sequenc
     this->numLeaderless = upstreamsFGIO.size();
     this->numFGIO = upstreamsFGIO.size();
     
-    OptionsMFinder optionMFinderFGIO (*this->optionsMFinder);
+    OptionsMFinder optionMFinderFGIO (*this->params.optionsMFinder);
     optionMFinderFGIO.width = params.groupA_widthPromoter;
     
     runMotifFinder(upstreamsFGIO, optionMFinderFGIO, *this->alphabet, this->params.groupA_upstreamLengthPromoter, this->promoter, this->promoterSpacer);
-    runMotifFinder(upstreamsIG, *this->optionsMFinder, *this->alphabet, this->params.groupA_upstreamLengthRBS, this->rbs, this->rbsSpacer);
+    runMotifFinder(upstreamsIG, *this->params.optionsMFinder, *this->alphabet, this->params.groupA_upstreamLengthRBS, this->rbs, this->rbsSpacer);
     
     
     // shift probabilities
@@ -1137,8 +1046,8 @@ void GMS2Trainer::estimateParametersMotifModel_GroupB(const NumSequence &sequenc
     this->numFGIO = upstreamsFGIO.size();
     
     
-    runMotifFinder(upstreamsPromoter, *this->optionsMFinder, *this->alphabet, params.groupB_upstreamLengthPromoter-skipFromStart, this->promoter, this->promoterSpacer);
-    runMotifFinder(upstreamsRBS, *this->optionsMFinder, *this->alphabet, params.groupB_upstreamLengthRBS, this->rbs, this->rbsSpacer);
+    runMotifFinder(upstreamsPromoter, *this->params.optionsMFinder, *this->alphabet, params.groupB_upstreamLengthPromoter-skipFromStart, this->promoter, this->promoterSpacer);
+    runMotifFinder(upstreamsRBS, *this->params.optionsMFinder, *this->alphabet, params.groupB_upstreamLengthRBS, this->rbs, this->rbsSpacer);
     
     // shift probabilities
     vector<double> extendedProbs (promoterSpacer->size()+skipFromStart, 0);
@@ -1161,7 +1070,7 @@ void GMS2Trainer::estimateParametersMotifModel_GroupC(const NumSequence &sequenc
 void GMS2Trainer::estimateParametersMotifModel_GroupD(const NumSequence &sequence, const vector<Label *> &labels) {
     
     MotifFinder::Builder b;
-    MotifFinder mfinder = b.build(*this->optionsMFinder);
+    MotifFinder mfinder = b.build(*this->params.optionsMFinder);
     
     
     // split labels into sets based on operon status
@@ -1187,21 +1096,21 @@ void GMS2Trainer::estimateParametersMotifModel_GroupD(const NumSequence &sequenc
     mfinder.findMotifs(upstreams, positions);
     
     // build RBS model
-    NonUniformCounts rbsCounts(optionsMFinder->motifOrder, optionsMFinder->width, *this->alphabet);
+    NonUniformCounts rbsCounts(params.optionsMFinder->motifOrder, params.optionsMFinder->width, *this->alphabet);
     for (size_t n = 0; n < upstreams.size(); n++) {
-        rbsCounts.count(upstreams[n].begin()+positions[n], upstreams[n].begin()+positions[n]+optionsMFinder->width);
+        rbsCounts.count(upstreams[n].begin()+positions[n], upstreams[n].begin()+positions[n]+params.optionsMFinder->width);
     }
     
-    rbs = new NonUniformMarkov(optionsMFinder->motifOrder, optionsMFinder->width, *this->alphabet);
-    rbs->construct(&rbsCounts, optionsMFinder->pcounts);
+    rbs = new NonUniformMarkov(params.optionsMFinder->motifOrder, params.optionsMFinder->width, *this->alphabet);
+    rbs->construct(&rbsCounts, params.optionsMFinder->pcounts);
     
     // build spacer distribution
     // build histogram from positions
-    vector<double> positionCounts (params.groupD_upstreamLengthRBS - optionsMFinder->width+1, 0);
+    vector<double> positionCounts (params.groupD_upstreamLengthRBS - params.optionsMFinder->width+1, 0);
     for (size_t n = 0; n < positions.size(); n++) {
         // FIXME account for LEFT alignment
         // below is only for right
-        positionCounts[params.groupD_upstreamLengthRBS - optionsMFinder->width - positions[n]]++;        // increment position
+        positionCounts[params.groupD_upstreamLengthRBS - params.optionsMFinder->width - positions[n]]++;        // increment position
     }
     
     rbsSpacer = new UnivariatePDF(positionCounts, false, params.pcounts);
@@ -1283,8 +1192,123 @@ void GMS2Trainer::estimateParametersMotifModel_GroupE(const NumSequence &sequenc
     // run motif search for RBS
     vector<NumSequence> upstreamsRBS;
     SequenceParser::extractUpstreamSequences(sequence, labelsRBS, cnc, this->params.groupE_upstreamLengthRBS, upstreamsRBS);
-    runMotifFinder(upstreamsRBS, *this->optionsMFinder, *this->alphabet, this->params.groupE_upstreamLengthRBS, this->rbs, this->rbsSpacer);
+    runMotifFinder(upstreamsRBS, *this->params.optionsMFinder, *this->alphabet, this->params.groupE_upstreamLengthRBS, this->rbs, this->rbsSpacer);
     
     
     
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// REMOVE
+//vector<GeneStat> separateLabelsViaOperonStatus(const vector<Label*> &labels, unsigned thresh, unsigned threshNFIO) {
+//
+//
+//    vector<GeneStat> result (labels.size());
+//
+//    // for every label
+//    for (size_t n = 0; n < labels.size(); n++) {
+//
+//        // get label
+//        const Label* lab = labels[n];
+//
+//        // if on positive strand
+//        if (lab->strand == Label::POS) {
+//
+//            size_t start = lab->left;          // start location
+//
+//            // if no gene before it, set as first in operon
+//            if (n == 0) {
+//                result[n] = FIRST_OP;
+//            }
+//            // otherwise, check to see if stop of previous gene is nearby
+//            else {
+//
+//                const Label* prevLab = labels[n-1];         // previous label
+//
+//                if (prevLab->strand == Label::POS) {   // should be on positive strand
+//
+//                    size_t prevStop = prevLab->right;
+//
+//                    // if too far away, then current gene is first in op
+//                    if (prevStop < start - thresh)
+//                        result[n] = FIRST_OP;
+//                    // if threshNFIO is set and gene is too close
+//                    else if (threshNFIO != 0) {
+//                        if (prevStop > start - threshNFIO)
+//                            result[n] = NOT_FIRST_OP;
+//                        else
+//                            result[n] = IGNORE;
+//                    }
+//                    // otherwise, current gene belongs to same operon as previous
+//                    else
+//                        result[n] = NOT_FIRST_OP;
+//
+//                }
+//                // otherwise it's on negative strand, so first in operon
+//                else
+//                    result[n] = FIRST_OP;
+//            }
+//        }
+//
+//        // if on negative strand
+//        else if (lab->strand == Label::NEG) {
+//
+//            size_t start = lab->right;        // start location
+//
+//            // if no gene after it, then set as first in operon
+//            if (n == labels.size()-1) {
+//                result[n] = FIRST_OP;
+//            }
+//            // otherwise, check to see if stop of previous gene (i.e. to the right) is nearby
+//            else {
+//                const Label* prevLab = labels[n+1];     // "next" label
+//
+//                if (prevLab->strand == Label::NEG) {      // should be on negative strand
+//
+//                    size_t prevStop = prevLab->left;
+//
+//                    // if too far away, then current gene is first in op
+//                    if (prevStop > start + thresh)
+//                        result[n] = FIRST_OP;
+//                    // if threshNFIO is set and gene is too close
+//                    else if (threshNFIO != 0) {
+//                        if (prevStop < start + threshNFIO)
+//                            result[n] = NOT_FIRST_OP;
+//                        else
+//                            result[n] = IGNORE;
+//                    }
+//                    // otherwise, current gene belongs to same operon as previous
+//                    else
+//                        result[n] = NOT_FIRST_OP;
+//                }
+//                // oterhwise, previous gene is on different strand, so current is first in operon
+//                else
+//                    result[n] = FIRST_OP;
+//            }
+//        }
+//
+//    }
+//
+//
+//    return result;
+//
+//}
+
