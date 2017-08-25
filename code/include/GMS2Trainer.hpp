@@ -32,6 +32,79 @@ using std::pair;
 namespace gmsuite {
     
     
+    class GMS2TrainerParameters {
+        
+        typedef ProkGeneStartModel::genome_group_t genome_group_t;
+
+    public:
+        
+        // Group-A
+        unsigned                groupA_widthPromoter                ;
+        unsigned                groupA_widthRBS                     ;
+        NumSequence::size_type  groupA_upstreamLengthPromoter       ;
+        NumSequence::size_type  groupA_upstreamLengthRBS            ;
+        double                  groupA_spacerScoreThresh            ;
+        NumSequence::size_type  groupA_spacerDistThresh             ;
+        NumSequence::size_type  groupA_spacerWindowSize             ;
+        string                  groupA_extendedSD                   ;
+        unsigned                groupA_minMatchToExtendedSD         ;
+        bool                    groupA_allowAGSubstitution          ;
+        
+        // Group B
+        unsigned                groupB_widthPromoter                ;
+        unsigned                groupB_widthRBS                     ;
+        NumSequence::size_type  groupB_upstreamLengthPromoter       ;
+        NumSequence::size_type  groupB_upstreamLengthRBS            ;
+        double                  groupB_spacerScoreThresh            ;
+        NumSequence::size_type  groupB_spacerDistThresh             ;
+        NumSequence::size_type  groupB_spacerWindowSize             ;
+        string                  groupB_extendedSD                   ;
+        unsigned                groupB_minMatchToExtendedSD         ;
+        bool                    groupB_allowAGSubstitution          ;
+        
+        // Group-C
+        unsigned                groupC_widthRBS                     ;
+        NumSequence::size_type  groupC_upstreamLengthRBS            ;
+        unsigned                groupC_minMatchRBSPromoter          ;
+        unsigned                groupC_minMatchToExtendedSD         ;
+        string                  groupC_extendedSD                   ;
+        
+        // Group-D
+        unsigned                groupD_widthRBS                     ;
+        NumSequence::size_type  groupD_upstreamLengthRBS            ;
+        double                  groupD_percentMatchRBS              ;
+        string                  groupD_extendedSD                   ;
+        unsigned                groupD_minMatchToExtendedSD         ;
+        bool                    groupD_allowAGSubstitution          ;
+        
+        // Group-E
+        unsigned                groupE_widthRBS                     ;
+        NumSequence::size_type  groupE_upstreamLengthRBS            ;
+        NumSequence::size_type  groupE_lengthUpstreamSignature      ;
+        unsigned                groupE_orderUpstreamSignature       ;
+        string                  groupE_extendedSD                   ;
+        unsigned                groupE_minMatchToExtendedSD         ;
+        bool                    groupE_allowAGSubstitution          ;
+        
+        // Coding and Noncoding Models
+        unsigned                orderCoding                         ;
+        unsigned                orderNonCoding                      ;
+        unsigned                orderStartContext                   ;
+        NumSequence::size_type  lengthStartContext                  ;
+        int                     marginStartContext                  ;
+        
+        // Misc Variables
+        NumSequence::size_type  fgioDistanceThresh                  ;
+        NumSequence::size_type  igioDistanceThresh                  ;
+        unsigned                pcounts                             ;
+        genome_group_t          genomeGroup                         ;
+        GeneticCode::gcode_t    gcode                               ;
+        NumSequence::size_type  minimumGeneLengthTraining           ;
+        bool                    onlyTrainOnNativeGenes              ;
+        bool                    runMotifSearch                      ;
+    };
+    
+    
     /**
      * @class GMS2Trainer
      * @brief Train model parameters for GMS2
@@ -73,7 +146,66 @@ namespace gmsuite {
                     unsigned upstreamSignatureOrder = 2,
                     bool trainNonCodingOnFullGenome=false,
                     unsigned FGIO_DIST_THRESH = 25,
-                    bool cutPromTrainSeqs = false);
+                    bool cutPromTrainSeqs = false);             // Deprecated
+        
+        GMS2Trainer(// Coding and Noncoding Models
+                    unsigned                orderCoding                         ,
+                    unsigned                orderNonCoding                      ,
+                    unsigned                orderStartContext                   ,
+                    NumSequence::size_type  lengthStartContext                  ,
+                    int                     marginStartContext                  ,
+                    // Misc Variables
+                    NumSequence::size_type  fgioDistanceThresh                  ,
+                    NumSequence::size_type  igioDistanceThresh                  ,
+                    unsigned                pcounts                             ,
+                    genome_group_t          genomeGroup                         ,
+                    GeneticCode::gcode_t    gcode                               ,
+                    NumSequence::size_type  minimumGeneLengthTraining           ,
+                    bool                    onlyTrainOnNativeGenes              ,
+                    bool                    runMotifSearch                      ,
+                    // Group-A
+                    unsigned                groupA_widthPromoter                ,
+                    unsigned                groupA_widthRBS                     ,
+                    NumSequence::size_type  groupA_upstreamLengthPromoter       ,
+                    NumSequence::size_type  groupA_upstreamLengthRBS            ,
+                    double                  groupA_spacerScoreThresh            ,
+                    NumSequence::size_type  groupA_spacerDistThresh             ,
+                    NumSequence::size_type  groupA_spacerWindowSize             ,
+                    string                  groupA_extendedSD                   ,
+                    unsigned                groupA_minMatchToExtendedSD         ,
+                    bool                    groupA_allowAGSubstitution          ,
+                    // Group B
+                    unsigned                groupB_widthPromoter                ,
+                    unsigned                groupB_widthRBS                     ,
+                    NumSequence::size_type  groupB_upstreamLengthPromoter       ,
+                    NumSequence::size_type  groupB_upstreamLengthRBS            ,
+                    double                  groupB_spacerScoreThresh            ,
+                    NumSequence::size_type  groupB_spacerDistThresh             ,
+                    NumSequence::size_type  groupB_spacerWindowSize             ,
+                    string                  groupB_extendedSD                   ,
+                    unsigned                groupB_minMatchToExtendedSD         ,
+                    bool                    groupB_allowAGSubstitution          ,
+                    // Group-C
+                    unsigned                groupC_widthRBS                     ,
+                    NumSequence::size_type  groupC_upstreamLengthRBS            ,
+                    unsigned                groupC_minMatchRBSPromoter          ,
+                    unsigned                groupC_minMatchToExtendedSD         ,
+                    string                  groupC_extendedSD                   ,
+                    // Group-D
+                    unsigned                groupD_widthRBS                     ,
+                    NumSequence::size_type  groupD_upstreamLengthRBS            ,
+                    double                  groupD_percentMatchRBS              ,
+                    string                  groupD_extendedSD                   ,
+                    unsigned                groupD_minMatchToExtendedSD         ,
+                    bool                    groupD_allowAGSubstitution          ,
+                    // Group-E
+                    unsigned                groupE_widthRBS                     ,
+                    NumSequence::size_type  groupE_upstreamLengthRBS            ,
+                    NumSequence::size_type  groupE_lengthUpstreamSignature      ,
+                    unsigned                groupE_orderUpstreamSignature       ,
+                    string                  groupE_extendedSD                   ,
+                    bool                    groupE_allowAGSubstitution
+        );
         
         ~GMS2Trainer();
         
@@ -97,38 +229,34 @@ namespace gmsuite {
         void estimateParametersMotifModel_groupA2(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use);
             
         // parameters
-        unsigned pcounts;
-        unsigned codingOrder;
-        unsigned noncodingOrder;
-        unsigned startContextOrder;
-        NumSequence::size_type upstreamLength;          // for genome
-        NumSequence::size_type startContextLength;
-        genome_group_t genomeClass;
+//        NumSequence::size_type upstreamLength;          // for genome
+//        NumSequence::size_type startContextLength;
+//        genome_group_t genomeClass;
         const OptionsMFinder* optionsMFinder;
-        const NumAlphabetDNA *alphabet;
-        const NumGeneticCode *numGeneticCode;
-        NumSequence::size_type MIN_GENE_LEN;            // minimum gene length
-        NumSequence::size_type MIN_UPSTR_LEN_FGIO;           // minimum upstream length for first-genes-in-operon
-        NumSequence::size_type UPSTR_LEN_NFGIO;         // deprecated
-        NumSequence::size_type UPSTR_LEN_IG;    
-        NumSequence::size_type UPSTR_LEN_FGIO;
-        unsigned FGIO_DIST_THRESH;
-        unsigned NFGIO_DIST_THRES;
-        int scMargin;
-        bool trainOnNative;
-        bool runMotifSearch;
-        unsigned widthArchaeaPromoter;
-        bool trainNonCodingOnFullGenome;
-        size_t numLeaderless;
-        size_t numFGIO;
-        string genomeType;
-        
-        string matchTo;
-        bool allowAGSubstitution;
-        unsigned matchThresh;
-        
-        NumSequence::size_type upstreamSignatureLength;
-        unsigned upstreamSignatureOrder;
+//        const NumAlphabetDNA *alphabet;
+//        const NumGeneticCode *numGeneticCode;
+//        NumSequence::size_type MIN_GENE_LEN;            // minimum gene length
+//        NumSequence::size_type MIN_UPSTR_LEN_FGIO;           // minimum upstream length for first-genes-in-operon
+//        NumSequence::size_type UPSTR_LEN_NFGIO;         // deprecated
+//        NumSequence::size_type UPSTR_LEN_IG;
+//        NumSequence::size_type UPSTR_LEN_FGIO;
+//        unsigned FGIO_DIST_THRESH;
+//        unsigned NFGIO_DIST_THRES;
+//        int scMargin;
+//        bool trainOnNative;
+//        bool runMotifSearch;
+//        unsigned widthArchaeaPromoter;
+//        bool trainNonCodingOnFullGenome;
+//        size_t numLeaderless;
+//        size_t numFGIO;
+//        string genomeType;
+//
+//        string matchTo;
+//        bool allowAGSubstitution;
+//        unsigned matchThresh;
+//
+//        NumSequence::size_type upstreamSignatureLength;
+//        unsigned upstreamSignatureOrder;
         
         // public variables for models
 //        NonUniformMarkov *motif;
@@ -159,6 +287,23 @@ namespace gmsuite {
         
         
         void selectLabelsForCodingParameters(const vector<Label*> &labels, vector<bool> &useCoding) const;
+        
+        
+    public:                 // parameters
+        
+        GMS2TrainerParameters params;
+        size_t numLeaderless;
+        size_t numFGIO;
+        string genomeType;
+
+        const AlphabetDNA *charAlph;
+        const NumAlphabetDNA *alphabet;
+        const GeneticCode *geneticCode;
+        const NumGeneticCode *numGeneticCode;
+        const CharNumConverter *cnc;
+        
+        
+        
     };
     
     
@@ -178,6 +323,9 @@ namespace gmsuite {
         double                  groupA_spacerScoreThresh            ;
         NumSequence::size_type  groupA_spacerDistThresh             ;
         NumSequence::size_type  groupA_spacerWindowSize             ;
+        string                  groupA_extendedSD                   ;
+        unsigned                groupA_minMatchToExtendedSD         ;
+        bool                    groupA_allowAGSubstitution          ;
         
         // Group B
         unsigned                groupB_widthPromoter                ;
@@ -212,6 +360,7 @@ namespace gmsuite {
         NumSequence::size_type  groupE_lengthUpstreamSignature      ;
         unsigned                groupE_orderUpstreamSignature       ;
         string                  groupE_extendedSD                   ;
+        unsigned                groupE_minMatchToExtendedSD         ;
         bool                    groupE_allowAGSubstitution          ;
         
         // Coding and Noncoding Models
@@ -243,6 +392,9 @@ namespace gmsuite {
             groupA_spacerScoreThresh            = 0.1                         ;
             groupA_spacerDistThresh             = 14                          ;
             groupA_spacerWindowSize             = 1                           ;
+            groupA_extendedSD                   = "TAAGGAGGTGA"               ;
+            groupA_minMatchToExtendedSD         = 4                           ;
+            groupA_allowAGSubstitution          = true                        ;
             
             // Group-B
             groupB_widthPromoter                = 6                           ;
@@ -277,6 +429,7 @@ namespace gmsuite {
             groupE_lengthUpstreamSignature      = 35                          ;
             groupE_orderUpstreamSignature       = 2                           ;
             groupE_extendedSD                   = "TAAGGAGGTGA"               ;
+            groupE_minMatchToExtendedSD         = 4                           ;
             groupE_allowAGSubstitution          = true                        ;
             
             // Models
@@ -315,6 +468,10 @@ namespace gmsuite {
         Builder& setGroupA_spacerScoreThresh        (const double v)                    { this->groupA_spacerScoreThresh       = v;    return *this; }
         Builder& setGroupA_spacerDistThresh         (const NumSequence::size_type v)    { this->groupA_spacerDistThresh        = v;    return *this; }
         Builder& setGroupA_spacerWindowSize         (const NumSequence::size_type v)    { this->groupA_spacerWindowSize        = v;    return *this; }
+        Builder& setGroupA_extendedSD               (const string v)                    { this->groupA_extendedSD              = v;    return *this; }
+        Builder& setGroupA_minMatchToExtendedSD     (const unsigned v)                  { this->groupA_minMatchToExtendedSD    = v;    return *this; }
+        Builder& setGroupA_allowAGSubstitution      (const bool v)                      { this->groupA_allowAGSubstitution     = v;    return *this; }
+        
         Builder& setGroupB_widthPromoter            (const unsigned v)                  { this->groupB_widthPromoter           = v;    return *this; }
         Builder& setGroupB_widthRBS                 (const unsigned v)                  { this->groupB_widthRBS                = v;    return *this; }
         Builder& setGroupB_upstreamLengthPromoter   (const NumSequence::size_type v)    { this->groupB_upstreamLengthPromoter  = v;    return *this; }
@@ -341,6 +498,7 @@ namespace gmsuite {
         Builder& setGroupE_lengthUpstreamSignature  (const NumSequence::size_type v)    { this->groupE_lengthUpstreamSignature = v;    return *this; }
         Builder& setGroupE_orderUpstreamSignature   (const unsigned v)                  { this->groupE_orderUpstreamSignature  = v;    return *this; }
         Builder& setGroupE_extendedSD               (const string v)                    { this->groupE_extendedSD              = v;    return *this; }
+        Builder& setGroupE_minMatchToExtendedSD     (const unsigned v)                  { this->groupE_minMatchToExtendedSD    = v;    return *this; }
         Builder& setGroupE_allowAGSubstitution      (const bool v)                      { this->groupE_allowAGSubstitution     = v;    return *this; }
         
         
