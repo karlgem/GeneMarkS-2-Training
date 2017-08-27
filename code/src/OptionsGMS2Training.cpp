@@ -206,7 +206,7 @@ void OptionsGMS2Training::addProcessOptions(OptionsGMS2Training &options, po::op
     ("order-noncoding",     po::value<unsigned>     (&options.orderNonCoding                     )->default_value(2),    "Order of non-coding model")
     ("order-start-context", po::value<unsigned>     (&options.orderStartContext                  )->default_value(2),    "Order of start-context model")
     ("len-start-context",   po::value<numseqsize>   (&options.lengthStartContext                 )->default_value(18),   "Length of start-context model")
-    ("margin-start-context",po::value<int>          (&options.marginStartContext                 )->default_value(15),   "3' Position of start-context model relative to start (positive numbers move downstream into the gene")
+    ("margin-start-context",po::value<int>          (&options.marginStartContext                 )->default_value(-15),   "3' Position of start-context model relative to start (negative numbers move downstream into the gene")
     // Misc Variables
     ("fgio-dist-thr",       po::value<numseqsize>   (&options.fgioDistanceThresh                 )->default_value(25),   "Minimum distance between FGIO and upstream gene on same strand")
     ("igio-dist-thr",       po::value<numseqsize>   (&options.igioDistanceThresh                 )->default_value(22),   "Maximum distance between IGIO and upstream gene on same strand")
