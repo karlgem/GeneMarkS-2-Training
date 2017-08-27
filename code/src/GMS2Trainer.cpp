@@ -291,6 +291,8 @@ GMS2Trainer::GMS2Trainer(
     geneticCode = new GeneticCode(params.gcode);
     numGeneticCode = new NumGeneticCode(*geneticCode, *cnc);
     
+    cutPromTrainSeqs = false;
+    
 }
 
 // Esimate parameters for start/stop codons
