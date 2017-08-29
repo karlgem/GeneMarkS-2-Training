@@ -27,12 +27,13 @@ my $comparePrediction = "$scriptPath/compp";    # compare prediction files to ch
 
 # ------------------------------ #
 #      Modes for iterations      #
-# ------------------------------ # 
-my $modeGroupA = "group-a";
-my $modeGroupB = "group-b";
-my $modeGroupC = "group-c";
-my $modeGroupD = "group-d";
-my $modeGroupE = "group-e";
+# ------------------------------ #
+my $modeNoMotif = "no-motif"; 
+my $modeGroupA  = "group-a";
+my $modeGroupB  = "group-b";
+my $modeGroupC  = "group-c";
+my $modeGroupD  = "group-d";
+my $modeGroupE  = "group-e";
 my @validIterationModes = ($modeNoMotif, $modeGroupA, $modeGroupB, $modeGroupC, $modeGroupD, $modeGroupE);
 
 
@@ -743,7 +744,7 @@ sub IsGroupB {
     my $iter = $_[0];
 
     my $test1 = FGIONotMatching16SHaveSignalBeforeThresh($iter, $groupB_spacerDistThresh, $groupB_spacerScoreThresh, $groupB_spacerWindowSize);
-    my $test2 = PromoterAndRBSConsensusMatch($fnmod, $groupC_minMatchPromoterRBS);
+    my $test2 = PromoterAndRBSConsensusMatch($iter, $groupC_minMatchPromoterRBS);
 
     return $test1 and $test2;
 }
@@ -776,7 +777,7 @@ sub IsGroupD {
 
 
 sub GetTrainingCommand {
-    my ($currIter, $mode) = $_[0];
+    my ($currIter, $mode) = @_;
 
     if ($currIter == 0) {
         print "Cannot construct training model at iteration 0";
