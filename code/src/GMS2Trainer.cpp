@@ -195,6 +195,7 @@ GMS2Trainer::GMS2Trainer(
             // Group-C
             unsigned                groupC_widthRBS                     ,
             NumSequence::size_type  groupC_upstreamLengthRBS            ,
+            NumSequence::size_type  groupC_upstreamRegion3Prime         ,
             unsigned                groupC_minMatchRBSPromoter          ,
             unsigned                groupC_minMatchToExtendedSD         ,
             string                  groupC_extendedSD                   ,
@@ -251,6 +252,7 @@ GMS2Trainer::GMS2Trainer(
     this->params.groupB_allowAGSubstitution      =  groupB_allowAGSubstitution            ;
     this->params.groupC_widthRBS                 =  groupC_widthRBS                       ;
     this->params.groupC_upstreamLengthRBS        =  groupC_upstreamLengthRBS              ;
+    this->params.groupC_upstreamRegion3Prime     =  groupC_upstreamRegion3Prime           ;
     this->params.groupC_minMatchRBSPromoter      =  groupC_minMatchRBSPromoter            ;
     this->params.groupC_minMatchToExtendedSD     =  groupC_minMatchToExtendedSD           ;
     this->params.groupC_extendedSD               =  groupC_extendedSD                     ;
@@ -1091,7 +1093,7 @@ void GMS2Trainer::estimateParametersMotifModel_GroupD(const NumSequence &sequenc
     vector<NumSequence> upstreams;
     for (size_t n = 0; n < upstreamsRaw.size(); n++) {
         if (!upstreamsRaw[n].containsInvalid(*this->alphabet))
-            upstreams.push_back(upstreamsRaw[n]);
+            upstreams.push_back(upstreamsRaw[n].subseq(0, upstreamsRaw[n].size() - params.groupC_upstreamRegion3Prime));
     }
     
     vector<NumSequence::size_type> positions;

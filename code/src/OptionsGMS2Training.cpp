@@ -241,6 +241,7 @@ void OptionsGMS2Training::addProcessOptions(OptionsGMS2Training &options, po::op
     // Group C
     ("gc-width-rbs",        po::value<unsigned>     (&options.groupC_widthRBS                    )->default_value(6),    "Group C: rbs width")
     ("gc-upstr-len-rbs",    po::value<numseqsize>   (&options.groupC_upstreamLengthRBS           )->default_value(20),   "Group C: upstream length for rbs training")
+    ("gc-upstr-reg-3-prime",po::value<numseqsize>   (&options.groupC_upstreamRegion3Prime        )->default_value(0),    "Group C: 3'prime end of upstream region used for rbs training")
     ("gc-min-match-rbs-prom",  po::value<unsigned>  (&options.groupC_minMatchRBSPromoter         )->default_value(3),    "Group C: minimum number of consecutive matches between rbs and promoter")
     ("gc-min-match-to-sd",  po::value<unsigned>     (&options.groupC_minMatchToExtendedSD        )->default_value(4),    "Group C: minimum number of consecutive matches to SD")
     ("gc-extended-sd",      po::value<string>       (&options.groupC_extendedSD                  )->default_value("TAAGGAGGTGA"), "Group C: extended SD sequence")
