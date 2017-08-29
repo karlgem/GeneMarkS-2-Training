@@ -325,7 +325,7 @@ else {
         else {
 
             # go back one iteration (to cancel group C)
-            MoveFilesFromIteration($prevIter);
+            MoveFilesFromIteration($prevIter, "groupC");
             $prevIter -= 1;
             
             # Group D: single iteration to test for Group-B membership
@@ -344,7 +344,7 @@ else {
             # Group D: If membership not satisfied, move on to group E
             else {
                 # go back one iteration (to cancel group D)
-                MoveFilesFromIteration($prevIter);
+                MoveFilesFromIteration($prevIter, 'groupD');
                 $prevIter -= 1;
 
                 ($iterBegin, $iterEnd) = GetBeginEndIterations($prevIter);
@@ -369,7 +369,7 @@ $prevMod  = CreateModFileName($prevIter);        # Model file: get name of previ
 my $finalPred = $fnoutput;
 my $finalMod = "GMS2.mod";
 my $finalMGM = $mgmMod;  
-run("mv $modForFinalPred $finalMod");
+run("cp $prevMod $finalMod");
 
 
 
@@ -508,7 +508,7 @@ sub RunIterations {
 
         my $currMod  = CreateModFileName($iter);        # model file for current iteration
         my $currPred = CreatePredFileName($iter);       # prediction file for current iteration
-        my $prevIter = CreatePredFileName($iter-1);
+        my $prevPred = CreatePredFileName($iter-1);
 
         # Training step: use prediction of previous iteration
         my $trainingCommand = GetTrainingCommand($iter, $mode);          # construct training command
