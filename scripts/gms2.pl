@@ -28,21 +28,14 @@ my $comparePrediction = "$scriptPath/compp";    # compare prediction files to ch
 # ------------------------------ #
 #      Modes for iterations      #
 # ------------------------------ # 
-my $modeNoMotif             = "no-motif";
-my $modePureRBS             = "group-d";
-my $modeArchaeaLeaderless   = "group-a";
-my $modeBacteriaLeaderless  = "group-b";
-my $modeUpstreamSignature   = "group-e";
-my $modeClassC              = "group-c";
-my @validIterationModes = ($modeNoMotif, $modePureRBS, $modeArchaeaLeaderless, $modeBacteriaLeaderless, $modeUpstreamSignature);
+my $modeGroupA = "group-a";
+my $modeGroupB = "group-b";
+my $modeGroupC = "group-c";
+my $modeGroupD = "group-d";
+my $modeGroupE = "group-e";
+my @validIterationModes = ($modeNoMotif, $modeGroupA, $modeGroupB, $modeGroupC, $modeGroupD, $modeGroupE);
 
-# Class Names
-my $classA_mode = "group-a";
-my $classB_mode = "group-b";
-my $classC_mode = "group-c";
-my $classD_mode = "group-d";
-my $classE_mode = "group-e";
-my $classA2_mode = "group-a2";
+
 
 
 # ------------------------------ #
@@ -86,45 +79,45 @@ my $formatOutput                        = $D_FORMAT_OUTPUT                  ;   
 my $fnAA                                                                    ;       # amino acid sequences
 my $fnNN                                                                    ;       # nucleotide sequences
 
-# Class-A
-my $classA_widthPromoter                = $D_PROM_WIDTH_A                   ;
-my $classA_widthRBS                     = $D_RBS_WIDTH                      ;
-my $classA_promoterUpstreamLength       = $D_PROM_UPSTR_LEN_A               ;
-my $classA_rbsUpstreamLength            = $D_RBS_UPSTR_LEN                  ;
-my $classA_spacerScoreThresh            = $D_SPACER_SCORE_THRESH_A          ;
-my $classA_spacerDistThresh             = $D_SPACER_DIST_THRESH             ;
-my $classA_spacerWindowSize             = $D_SPACER_WINDOW_SIZE             ;
+# Group-A
+my $groupA_widthPromoter                = $D_PROM_WIDTH_A                   ;
+my $groupA_widthRBS                     = $D_RBS_WIDTH                      ;
+my $groupA_promoterUpstreamLength       = $D_PROM_UPSTR_LEN_A               ;
+my $groupA_rbsUpstreamLength            = $D_RBS_UPSTR_LEN                  ;
+my $groupA_spacerScoreThresh            = $D_SPACER_SCORE_THRESH_A          ;
+my $groupA_spacerDistThresh             = $D_SPACER_DIST_THRESH             ;
+my $groupA_spacerWindowSize             = $D_SPACER_WINDOW_SIZE             ;
 
-# Class-B
-my $classB_widthPromoter                = $D_PROM_WIDTH_B                   ;
-my $classB_widthRBS                     = $D_RBS_WIDTH                      ;
-my $classB_promoterUpstreamLength       = $D_PROM_UPSTR_LEN_B               ;
-my $classB_rbsUpstreamLength            = $D_RBS_UPSTR_LEN                  ;
-my $classB_spacerScoreThresh            = $D_SPACER_SCORE_THRESH_B          ;
-my $classB_spacerWindowSize             = $D_SPACER_WINDOW_SIZE             ;
-my $classB_spacerDistThresh             = $D_SPACER_DIST_THRESH             ;
-my $classB_tail16S                      = $D_16S                            ;
-my $classB_minMatchToTail               = $D_MIN_MATCH_16S                  ;
+# Group-B
+my $groupB_widthPromoter                = $D_PROM_WIDTH_B                   ;
+my $groupB_widthRBS                     = $D_RBS_WIDTH                      ;
+my $groupB_promoterUpstreamLength       = $D_PROM_UPSTR_LEN_B               ;
+my $groupB_rbsUpstreamLength            = $D_RBS_UPSTR_LEN                  ;
+my $groupB_spacerScoreThresh            = $D_SPACER_SCORE_THRESH_B          ;
+my $groupB_spacerWindowSize             = $D_SPACER_WINDOW_SIZE             ;
+my $groupB_spacerDistThresh             = $D_SPACER_DIST_THRESH             ;
+my $groupB_tail16S                      = $D_16S                            ;
+my $groupB_minMatchToTail               = $D_MIN_MATCH_16S                  ;
 
-# Class-C
-my $classC_widthRBS                     = $D_RBS_WIDTH                      ;
-my $classC_rbsUpstreamLength            = $D_RBS_UPSTR_LEN                  ;
-my $classC_minMatchPromoterRBS          = $D_MIN_MATCH_RBS_PROM             ;
-my $classC_minMatchRBS16S               = $D_MIN_MATCH_16S                  ;
+# Group-C
+my $groupC_widthRBS                     = $D_RBS_WIDTH                      ;
+my $groupC_rbsUpstreamLength            = $D_RBS_UPSTR_LEN                  ;
+my $groupC_minMatchPromoterRBS          = $D_MIN_MATCH_RBS_PROM             ;
+my $groupC_minMatchRBS16S               = $D_MIN_MATCH_16S                  ;
 
-# Class-D
-my $classD_widthRBS                     = $D_RBS_WIDTH                      ;
-my $classD_rbsUpstreamLength            = $D_RBS_UPSTR_LEN                  ;
-my $classD_percentMatchRBS              = $D_MIN_FRAC_RBS_16S_MATCH         ;
-my $classD_minMatchRBS16S               = $D_MIN_MATCH_16S                  ;
-my $classD_tail16S                      = $D_16S                            ;
+# Group-D
+my $groupD_widthRBS                     = $D_RBS_WIDTH                      ;
+my $groupD_rbsUpstreamLength            = $D_RBS_UPSTR_LEN                  ;
+my $groupD_percentMatchRBS              = $D_MIN_FRAC_RBS_16S_MATCH         ;
+my $groupD_minMatchRBS16S               = $D_MIN_MATCH_16S                  ;
+my $groupD_tail16S                      = $D_16S                            ;
 
-# Class-E
-my $classE_widthRBS                     = $D_RBS_WIDTH                      ;
-my $classE_rbsUpstreamLength            = $D_RBS_UPSTR_LEN                  ;
-my $classE_upstreamSignatureLength      = $D_UPSTR_SIG_LENGTH               ;
-my $classE_upstreamSignatureOrder       = $D_UPSTR_SIG_ORDER                ;
-my $classE_tail16S                      = $D_16S                            ;
+# Group-E
+my $groupE_widthRBS                     = $D_RBS_WIDTH                      ;
+my $groupE_rbsUpstreamLength            = $D_RBS_UPSTR_LEN                  ;
+my $groupE_upstreamSignatureLength      = $D_UPSTR_SIG_LENGTH               ;
+my $groupE_upstreamSignatureOrder       = $D_UPSTR_SIG_ORDER                ;
+my $groupE_tail16S                      = $D_16S                            ;
 
 # Iteration control
 my $MAX_ITER                            = $D_MAX_ITER                       ;       # number of max iterations in main cycle
@@ -148,8 +141,6 @@ my $showAdvancedOptions;
 my $mgmType = $D_MGMTYPE                                                    ;       # Type of MGM model: options: "bac, arc, auto"
 my $verbose                                                                 ;       # verbose mode
 my $keepAllFiles                                                            ;
-my $twoStepClassA                                                           ;
-my $cutPromTrainSeqs                                                        ;       # train promoter on fragment of upstream region
 
 # Parse command-line options
 GetOptions (
@@ -160,37 +151,37 @@ GetOptions (
     'format=s'                              =>  \$formatOutput,
     'faa=s'                                 =>  \$fnAA,
     'fnn=s'                                 =>  \$fnNN,
-    # Class-A
-    'class-a-width-promoter=i'              =>  \$classA_widthPromoter,
-    'class-a-width-rbs=i'                   =>  \$classA_widthRBS,
-    'class-a-promoter-upstream-length=i'    =>  \$classA_promoterUpstreamLength,
-    'class-a-rbs-upstream-length=i'         =>  \$classA_rbsUpstreamLength,
-    'class-a-spacer-score-thresh=f'         =>  \$classA_spacerScoreThresh,
-    'class-a-spacer-dist-thresh=i'          =>  \$classA_spacerDistThresh,
-    'class-a-spacer-window-size=i'          =>  \$classA_spacerWindowSize,
-    # Class-B
-    'class-b-width-promoter=i'              =>  \$classB_widthPromoter,
-    'class-b-width-rbs=i'                   =>  \$classB_widthRBS,
-    'class-b-promoter-upstream-length=i'    =>  \$classB_promoterUpstreamLength,
-    'class-b-rbs-upstream-length=i'         =>  \$classB_rbsUpstreamLength,
-    'class-b-spacer-score-thresh=f'         =>  \$classB_spacerScoreThresh,
-    'class-b-spacer-window-size=i'          =>  \$classB_spacerWindowSize,
-    'class-b-tail-16s=s'                    =>  \$classB_tail16S,
-    'class-b-min-match-to-tail=i'           =>  \$classB_minMatchToTail,
-    # Class-C
-    'class-c-width-rbs=i'                   =>  \$classC_widthRBS,
-    'class-c-rbs-upstream-length=i'         =>  \$classC_rbsUpstreamLength,
-    'class-c-min-match-promoter-rbs=i'      =>  \$classC_minMatchPromoterRBS,
-    # Class-D
-    'class-d-width-rbs=i'                   =>  \$classD_widthRBS,
-    'class-d-rbs-upstream-length=i'         =>  \$classD_rbsUpstreamLength,
-    'class-d-percent-match-rbs=f'           =>  \$classD_percentMatchRBS,
-    # Class-E
-    'class-e-width-rbs=i'                   =>  \$classE_widthRBS,
-    'class-e-rbs-upstream-length=i'         =>  \$classE_rbsUpstreamLength,
-    'class-e-upstream-signature-length=i'   =>  \$classE_upstreamSignatureLength,
-    'class-e-upstream-signature-order=i'    =>  \$classE_upstreamSignatureOrder,
-    'class-e-tail-16s=s'                    =>  \$classE_tail16S,
+    # Group-A
+    'group-a-width-promoter=i'              =>  \$groupA_widthPromoter,
+    'group-a-width-rbs=i'                   =>  \$groupA_widthRBS,
+    'group-a-promoter-upstream-length=i'    =>  \$groupA_promoterUpstreamLength,
+    'group-a-rbs-upstream-length=i'         =>  \$groupA_rbsUpstreamLength,
+    'group-a-spacer-score-thresh=f'         =>  \$groupA_spacerScoreThresh,
+    'group-a-spacer-dist-thresh=i'          =>  \$groupA_spacerDistThresh,
+    'group-a-spacer-window-size=i'          =>  \$groupA_spacerWindowSize,
+    # Group-B
+    'group-b-width-promoter=i'              =>  \$groupB_widthPromoter,
+    'group-b-width-rbs=i'                   =>  \$groupB_widthRBS,
+    'group-b-promoter-upstream-length=i'    =>  \$groupB_promoterUpstreamLength,
+    'group-b-rbs-upstream-length=i'         =>  \$groupB_rbsUpstreamLength,
+    'group-b-spacer-score-thresh=f'         =>  \$groupB_spacerScoreThresh,
+    'group-b-spacer-window-size=i'          =>  \$groupB_spacerWindowSize,
+    'group-b-tail-16s=s'                    =>  \$groupB_tail16S,
+    'group-b-min-match-to-tail=i'           =>  \$groupB_minMatchToTail,
+    # Group-C
+    'group-c-width-rbs=i'                   =>  \$groupC_widthRBS,
+    'group-c-rbs-upstream-length=i'         =>  \$groupC_rbsUpstreamLength,
+    'group-c-min-match-promoter-rbs=i'      =>  \$groupC_minMatchPromoterRBS,
+    # Group-D
+    'group-d-width-rbs=i'                   =>  \$groupD_widthRBS,
+    'group-d-rbs-upstream-length=i'         =>  \$groupD_rbsUpstreamLength,
+    'group-d-percent-match-rbs=f'           =>  \$groupD_percentMatchRBS,
+    # Group-E
+    'group-e-width-rbs=i'                   =>  \$groupE_widthRBS,
+    'group-e-rbs-upstream-length=i'         =>  \$groupE_rbsUpstreamLength,
+    'group-e-upstream-signature-length=i'   =>  \$groupE_upstreamSignatureLength,
+    'group-e-upstream-signature-order=i'    =>  \$groupE_upstreamSignatureOrder,
+    'group-e-tail-16s=s'                    =>  \$groupE_tail16S,
     # Iteration control
     'max-iter=i'                            =>  \$MAX_ITER,
     'conv-thresh=f'                         =>  \$CONV_THRESH,
@@ -209,8 +200,6 @@ GetOptions (
     'advanced-options'                      =>  \$showAdvancedOptions,
     'mgm-type=s'                            =>  \$mgmType,
     'keep-all-files'                        =>  \$keepAllFiles,
-    'two-step-class-a'                      =>  \$twoStepClassA,
-    'cut-prom-train-seqs'                   =>  \$cutPromTrainSeqs,
 );
 
 Usage($scriptName) if (!defined $fn_genome or !defined $genomeType or !isValidGenomeType($genomeType));
@@ -218,11 +207,6 @@ Usage($scriptName) if (!defined $fn_genome or !defined $genomeType or !isValidGe
 
 # setup temporary file collection
 my @tempFiles;
-
-my $extraGroupA = "";
-if (defined $cutPromTrainSeqs) {
-    $extraGroupA = "--cut-prom-train-seqs";
-}
 
 # create "single fasta format" from multifasta file
 my $fnseq = "tmpseq.fna";
@@ -240,9 +224,9 @@ if (defined $runMFinderWithoutSpacer) {
 }
 
 
-my $runClassA = ($genomeType eq "archaea" or $genomeType eq "auto");
-my $runClassB = ($genomeType eq "bacteria" or $genomeType eq "auto");
-my $runClassATwoStep = ($runClassA and defined $twoStepClassA);
+my $testGroupA = ($genomeType eq "archaea"  or $genomeType eq "auto");
+my $testGroupB = ($genomeType eq "bacteria" or $genomeType eq "auto");
+
 
 #----------------------------------------
 # Run initial MGM prediction
@@ -264,223 +248,115 @@ my ($bacProb, $arcProb) = EstimateBacArc($mgmPred);
 my $prevPred = $mgmPred;        # Previous iteration prediction: start with MGM predictions
 my $prevMod = $mgmMod;          # Previous iteration model:      start with MGM model
 
-# Run iterations without RBS
+# Run iterations without start motif model
 my $iterBegin = 1;
 my $iterEnd = $numIterWithoutRBS;
 my $prevIter = RunIterations( { "mode" => $modeNoMotif, "iteration-begin" => $iterBegin, "iteration-end" => $iterEnd } );
 
-$prevPred = "itr_$prevIter.lst";
-$prevMod = "itr_$prevIter.mod";
 
 
-# run single class A iteration
-if ($runClassA and !$runClassA) {           # HERE
+# Group A: if Group-A testing enabled, run single iteration to test for Group-A membership
+if ($testGroupA) {
     $iterBegin = $prevIter + 1;
-    $iterEnd   = $iterBegin;            # run single iteration
-    $prevIter = RunIterations( { "mode" => $classA_mode, "iteration-begin" => $iterBegin, "iteration-end" => $iterEnd} );
+    $iterEnd   = $iterBegin;            
 
-    $prevPred = CreatePredFileName($prevIter);
-    $prevMod = CreateModFileName($prevIter);
+    print "Testing Group-A membership...\n" if defined $verbose;
 
-    print "Ran class A iteration: $prevIter\n" if defined $verbose;
+    $prevIter = RunIterations( { "mode" => $modeGroupA, "iteration-begin" => $iterBegin, "iteration-end" => $iterEnd } );
 }
 
+# Group-A: if membership satisfied, run remaining iterations until convergence
+if ($testGroupA and IsGroupA($prevIter)) {
 
-# If: class A testing enabled, and FGIO have a singnal localized > 14nt         HERE
-if ($runClassA and !$runClassA and FGIOHaveSignalAfterThresh($prevIter, $classA_spacerDistThresh, $classA_spacerScoreThresh, $classA_spacerWindowSize)) {
-    my $numIterRemain = NumOfIterRemaining($prevIter, $MAX_ITER);
-    $iterBegin = $prevIter + 1;
-    $iterEnd = $iterBegin + $numIterRemain - 1;
-    $prevIter = RunIterations( { "mode" => $classA_mode, "iteration-begin" => $iterBegin, "iteration-end" => $iterEnd, "extra" => $extraGroupA });
+    print "Group-A membership: successful.\n" if defined $verbose;
+
+    ($iterBegin, $iterEnd) = GetBeginEndIterations($prevIter);
+    
+    $prevIter = RunIterations( { "mode" => $modeGroupA, "iteration-begin" => $iterBegin, "iteration-end" => $iterEnd } );
 }
-# Otherwise, either class A disabled, or FGIO don't have localized signal > 14nt
+# Group A: If membership not satisfied, move on to group B
 else {
-
-    # go back one iteration (to cancel archaea)
-    my $prevModCancel = CreateModFileName($prevIter);
-    my $prevPredCancel = CreatePredFileName($prevIter);
-
-    if ($runClassA and !$runClassA) {
-        `mv $prevModCancel classA.mod`;
-        `mv $prevPredCancel classA.lst`;
-
-        print "Entering class B: Moved model $prevModCancel\n" if defined $verbose;
-
-        $prevIter -= 1;
-        $prevPred = CreatePredFileName($prevIter);
-        $prevMod = CreateModFileName($prevIter);
-
-        print "Moved back one iteration to: $prevIter\n" if defined $verbose;
+    # If Group A was tested, revert iteration count and move model file
+    if ($testGroupA) {
+        print "Group-A membership: failed.\n" if defined $verbose;
+        MoveFilesFromIteration($prevIter);                              # revert files of failed iteration
+        $prevIter -= 1;                                                 # decrement iteration counter by 1
     }
 
-    $prevPred = CreatePredFileName($prevIter);
-    $prevMod = CreateModFileName($prevIter);
-
-    if ($runClassATwoStep) {
-        # single iteration
+    # Group B: single iteration to test for Group-B membership
+    if ($testGroupB) {
         $iterBegin = $prevIter + 1;
-        $iterEnd   = $iterBegin;            # run single iteration
-        $prevIter = RunIterations( { "mode" => $classA2_mode, "iteration-begin" => $iterBegin, "iteration-end" => $iterEnd } );
-
-        $prevPred = CreatePredFileName($prevIter);
-        $prevMod = CreateModFileName($prevIter);
-
-        print "Ran class A2 iteration: $prevIter\n" if defined $verbose;
+        $iterEnd = $iterBegin;          
+        $prevIter = RunIterations( { "mode" => $modeGroupB, "iteration-begin" => $iterBegin, "iteration-end" => $iterEnd } );
     }
 
+    # Group-B: if membership satisfied, run remaining iterations until convergence
+    if ($testGroupB and IsGroupB($prevIter)) {
+        
+        print "Group-B membership: successful.\n" if defined $verbose;
 
-    if ($runClassATwoStep and FGIOHaveSignalAfterThresh($prevIter, $classA_spacerDistThresh, $classA_spacerScoreThresh, $classA_spacerWindowSize)) {
-        my $numIterRemain = NumOfIterRemaining($prevIter, $MAX_ITER);
-        $iterBegin = $prevIter + 1;
-        $iterEnd = $iterBegin + $numIterRemain - 1;
-        $prevIter = RunIterations( { "mode" => $classA2_mode, "iteration-begin" => $iterBegin, "iteration-end" => $iterEnd, "extra" => $extraGroupA } );
+        ($iterBegin, $iterEnd) = GetBeginEndIterations($prevIter);
 
-        $prevPred = CreatePredFileName($prevIter);
-        $prevMod = CreateModFileName($prevIter);
+        $prevIter = RunIterations( { "mode" => $modeGroupB, "iteration-begin" => $iterBegin, "iteration-end" => $iterEnd } );
     }
+    # Group B: If membership not satisfied, move on to group C
     else {
 
+        MoveFilesFromIteration($prevIter, "groupB") if ($testGroupB);
+        MoveFilesFromIteration($prevIter, "groupA") if ($testGroupA and !$testGroupB);
+        $prevIter -= 1;
 
-        if ($runClassATwoStep) {
-            # go back one iteration (to cancel archaea)
-            my $prevModCancel = CreateModFileName($prevIter);
-            my $prevPredCancel = CreatePredFileName($prevIter);
+        # Group C: single iteration to test for Group-B membership
+        $iterBegin = $prevIter + 1;
+        $iterEnd = $iterBegin;
+        $prevIter = RunIterations( { "mode" => $modeGroupC, "iteration-begin" => $iterBegin, "iteration-end" => $iterEnd } );
 
+        # Group-C: if membership satisfied, run remaining iterations until convergence
+        if (IsGroupC($prevIter)) {
 
-            `mv $prevModCancel classA2.mod`;
-            `mv $prevPredCancel classA2.lst`;
+            print "Group-C membership: successful.\n" if defined $verbose;
 
-            print "Entering class B: Moved model $prevModCancel\n" if defined $verbose;
+            ($iterBegin, $iterEnd) = GetBeginEndIterations($prevIter);
 
-            $prevIter -= 1;
-            $prevPred = CreatePredFileName($prevIter);
-            $prevMod = CreateModFileName($prevIter);
-
-            print "Moved back one iteration to: $prevIter\n" if defined $verbose;
+            $prevIter = RunIterations( { "mode" => $modeGroupC, "iteration-begin" => $iterBegin, "iteration-end" => $iterEnd } );
         }
-
-        # run single iteration of class B
-        # if ($runClassB) {
-            $iterBegin = $prevIter + 1;
-            $iterEnd = $iterBegin;          # Run single iteration
-            $prevIter = RunIterations( { "mode" => $classB_mode, "iteration-begin" => $iterBegin, "iteration-end" => $iterEnd } );
-
-            $prevPred = CreatePredFileName($prevIter);
-            $prevMod = CreateModFileName($prevIter);
-        # }
-        
-        # If: class B testing enabled, and FGIO-16S have signal localized <= 14nt, and promoter/RBS don't match
-        if($runClassB and FGIONotMatching16SHaveSignalBeforeThresh($prevIter, $classB_spacerDistThresh, $classB_spacerScoreThresh, $classB_spacerWindowSize) and not PromoterAndRBSConsensusMatch($prevIter, $classC_minMatchPromoterRBS) ) {
-            my $numIterRemain = NumOfIterRemaining($prevIter, $MAX_ITER);
-            $iterBegin = $prevIter + 1;
-            $iterEnd = $iterBegin + $numIterRemain - 1;
-            $prevIter = RunIterations( { "mode" => $classB_mode, "iteration-begin" => $iterBegin, "iteration-end" => $iterEnd } );
-
-            $prevPred = CreatePredFileName($prevIter);
-            $prevMod = CreateModFileName($prevIter);
-        }
-        # Otherwise, either class B disabled, or FGIO-16S don't have localized signal <= 14nt, or promoter/RBS match
+        # Group C: If membership not satisfied, move on to group D
         else {
 
-            my $promoterAndRBSMatched = PromoterAndRBSConsensusMatch($prevIter, $classC_minMatchPromoterRBS);;
-            # go back one iteration (to cancel class C)
-            $prevModCancel = CreateModFileName($prevIter);
-            $prevPredCancel = CreatePredFileName($prevIter);
-
-            # if ($runClassB) {
-                `mv $prevModCancel classB.mod`;
-                `mv $prevPredCancel classB.lst`;
-
-                # add temporary files
-                push @tempFiles, ("classB.mod", "classB.lst") unless $keepAllFiles;
-
-                $prevIter -= 1;
-            # }
-            # elsif (!$runClassB and $runClassA) {
-            #     `mv $prevModCancel classA.mod`;
-            #     `mv $prevPredCancel classA.lst`;   
-
-            #     push @tempFiles, ("classA.mod", "classA.lst") unless $keepAllFiles;
-            # }
-
+            # go back one iteration (to cancel group C)
+            MoveFilesFromIteration($prevIter);
+            $prevIter -= 1;
             
-
-            $prevPred = CreatePredFileName($prevIter);
-            $prevMod = CreateModFileName($prevIter);
-
-            # run single iteration
+            # Group D: single iteration to test for Group-B membership
             $iterBegin = $prevIter + 1;
             $iterEnd = $iterBegin;
-            $prevIter = RunIterations( { "mode" => $classC_mode, "iteration-begin" => $iterBegin, "iteration-end" => $iterEnd } );
+            $prevIter = RunIterations( { "mode" => $modeGroupD, "iteration-begin" => $iterBegin, "iteration-end" => $iterEnd  } );
+            
+            # Group-D: if membership satisfied, run remaining iterations until convergence
+            if (IsGroupD($prevIter)) {
+                print "Group-D membership: successful.\n" if defined $verbose;
 
-            $prevPred = CreatePredFileName($prevIter);
-            $prevMod = CreateModFileName($prevIter);
+                ($iterBegin, $iterEnd) = GetBeginEndIterations($prevIter);
 
-            # if RBS consensus doesn't match 16S tail, then this is non-canonical rbs
-            # if ($promoterAndRBSMatched and !RBSConsensusAnd16SMatch($prevIter, $classC_minMatchRBS16S)) {     # matchpr
-            if (!RBSConsensusAnd16SMatch($prevIter, $classC_minMatchRBS16S)) {
-                my $numIterRemain = NumOfIterRemaining($prevIter, $MAX_ITER);
-                $iterBegin = $prevIter + 1;
-                $iterEnd = $iterBegin + $numIterRemain - 1;
-                $prevIter = RunIterations( { "mode" => $classC_mode, "iteration-begin" => $iterBegin, "iteration-end" => $iterEnd } );
+                $prevIter = RunIterations( { "mode" => $modeGroupD, "iteration-begin" => $iterBegin, "iteration-end" => $iterEnd } );
             }
-            # class D (canonical rbs)
+            # Group D: If membership not satisfied, move on to group E
             else {
-
-                # go back one iteration (to cancel class C)
-                $prevModCancel = CreateModFileName($prevIter);
-                $prevPredCancel = CreatePredFileName($prevIter);
-                `mv $prevModCancel classC.mod`;
-                `mv $prevPredCancel classC.lst`;
-
-                push @tempFiles, ("classC.mod", "classC.lst") unless $keepAllFiles;
-
+                # go back one iteration (to cancel group D)
+                MoveFilesFromIteration($prevIter);
                 $prevIter -= 1;
 
-                $prevPred = CreatePredFileName($prevIter);
-                $prevMod = CreateModFileName($prevIter);
-                
-                # run single iteration
-                $iterBegin = $prevIter + 1;
-                $iterEnd = $iterBegin;
-                $prevIter = RunIterations( { "mode" => $classD_mode, "iteration-begin" => $iterBegin, "iteration-end" => $iterEnd  } );
-
-                $prevPred = CreatePredFileName($prevIter);
-                $prevMod = CreateModFileName($prevIter);
-
-                if (PredictedRBSMatch16S($prevPred, $classD_tail16S, $classD_minMatchRBS16S)) {
-                    my $numIterRemain = NumOfIterRemaining($prevIter, $MAX_ITER);
-                    $iterBegin = $prevIter+1;
-                    $iterEnd = $iterBegin + $numIterRemain - 1;
-                    $prevIter = RunIterations( { "mode" => $classD_mode, "iteration-begin" => $iterBegin, "iteration-end" => $iterEnd } );
-                }
-                # class E
-                else {
-                    # go back one iteration (to cancel class D)
-                    $prevModCancel = CreateModFileName($prevIter);
-                    $prevPredCancel = CreatePredFileName($prevIter);
-                    `mv $prevModCancel classD.mod`;
-                    `mv $prevPredCancel classD.lst`;
-
-                    push @tempFiles, ("classD.mod", "classD.lst") unless $keepAllFiles;
-
-                    $prevIter -= 1;
-                    $prevPred = CreatePredFileName($prevIter);
-                    $prevMod = CreateModFileName($prevIter);
-
-                    my $numIterRemain = NumOfIterRemaining($prevIter, $MAX_ITER);
-                    $iterBegin = $prevIter + 1;
-                    $iterEnd =  $iterBegin + $numIterRemain - 1;
-                    $prevIter = RunIterations( { "mode" => $classE_mode, "iteration-begin" => $iterBegin, "iteration-end" => $iterEnd } );
-                } 
-            }
+                ($iterBegin, $iterEnd) = GetBeginEndIterations($prevIter);
+                $prevIter = RunIterations( { "mode" => $modeGroupE, "iteration-begin" => $iterBegin, "iteration-end" => $iterEnd } );
+            } 
         }
     }
 }
 
 
-$prevPred = CreatePredFileName($prevIter);      # Prediction file: get name of previous iteration
-$prevMod = CreateModFileName($prevIter);        # Model file: get name of previous iteration;
+
+$prevPred = CreatePredFileName($prevIter);       # Prediction file: get name of previous iteration
+$prevMod  = CreateModFileName($prevIter);        # Model file: get name of previous iteration
 
 
 
@@ -515,9 +391,6 @@ $extraOutput .= "--NT $fnNN " if defined $fnNN;
 
 
 run("$predictor -m $finalMod -M $finalMGM -s $fn_genome -o $finalPred --format $formatOutput $extraOutput");
-# run("$predictor -m $finalMod -M $finalMGM -s $fn_genome -o $finalPred.mgm.algo_test   --format $formatOutput --native_prob 0.0000000001 --mgm_prob 1");
-# run("$predictor -m $finalMod -M $finalMGM -s $fn_genome -o $finalPred.norm.algo_test  --format $formatOutput --native_prob $toNativeProb ");
-
 
 run ("rm -f @tempFiles");
 
@@ -580,7 +453,7 @@ sub PredictedRBSMatch16S {
 
     print "Percent of matched RBS: $percentMatched\n" if defined $verbose;
 
-    return $percentMatched >= $classD_percentMatchRBS;
+    return $percentMatched >= $groupD_percentMatchRBS;
 }
 
 # Return true if the Promoter and RBS model consensus sequences match each other
@@ -589,10 +462,10 @@ sub PromoterAndRBSConsensusMatch {
 
     my $fnmod = "itr_$prevIter.mod";
 
-    my $isClassC = run("$trainer experiment promoter-and-rbs-match --fnmod $fnmod --match-thresh $minMatch");
-    chomp $isClassC;
+    my $isGroupC = run("$trainer experiment promoter-and-rbs-match --fnmod $fnmod --match-thresh $minMatch");
+    chomp $isGroupC;
 
-    return $isClassC eq "yes";
+    return $isGroupC eq "yes";
 }
 
 # Return true if the RBS model consensus matches the 16S tail
@@ -615,12 +488,13 @@ sub RunIterations {
     my $iterBegin   = $params{"iteration-begin"};
     my $iterEnd     = $params{"iteration-end"};
 
-    my $extraOptions  = "";
-    if (exists $params{"extra"}) {
-        $extraOptions = $params{"extra"};
+    my $iter = $iterBegin;
+
+    if ($iter <= 0) {
+        print "Cannot run training for iteration <= 0.";
+        return;
     }
 
-    my $iter = $iterBegin;
     while ($iter <= $iterEnd) {
 
         print "Mode $mode: Entering iteration $iter...\n" if defined $verbose;
@@ -633,63 +507,11 @@ sub RunIterations {
 
         my $currMod  = CreateModFileName($iter);        # model file for current iteration
         my $currPred = CreatePredFileName($iter);       # prediction file for current iteration
-
-        my $currMFinderResult = CreateMFinderResultFileName($iter);
-        my $prevMFinderResult = CreateMFinderResultFileName($iter-1);
-
+        my $prevIter = CreatePredFileName($iter-1);
 
         # Training step: use prediction of previous iteration
-        # my $trainingCommand = "$trainer gms2-training -s $fnseq -l $prevPred -m $currMod --coding-order $orderCod --noncoding-order $orderNon --train-on-native-only $nativeOnly --genetic-code $geneticCode --sc-order $scOrder $noncodingOnFullGenome --fgio-dist-thresh $fgioDistThresh";
-
-       my $trainingCommand = "$trainer gms2-training -s $fnseq -l $prevPred -m $currMod --order-coding $orderCod --order-noncoding $orderNon --only-train-on-native $nativeOnly --genetic-code $geneticCode --order-start-context $scOrder --fgio-dist-thr $fgioDistThresh";
-
-        $trainingCommand .= " $extraOptions ";
-
-        # if version of mfinder supports reusing previous iteration
-        if ($trainer eq "$scriptPath/kgsuite_mfinder_reuse") {
-            if ($iter == $iterBegin) {
-                $trainingCommand .= " --fn-mfinder-output $currMFinderResult";
-            }
-            elsif ($iter > $iterBegin) {
-                $trainingCommand .= " --fn-mfinder-output $currMFinderResult  --fn-mfinder-input $prevMFinderResult";
-            }
-        }
-
-
-
-        if ($mode eq $modeNoMotif) {
-            $trainingCommand .= " --run-motif-search false";
-            $trainingCommand .= " --genome-group D";        # FIXME: remove requirement from training
-        }
-        elsif ($mode eq $classA_mode) {
-            $trainingCommand .= " --genome-group A --ga-upstr-len-rbs $classA_rbsUpstreamLength --align $alignmentInMFinder --ga-width-rbs $classA_widthRBS --ga-upstr-len-prom $classA_promoterUpstreamLength --ga-width-prom $classA_widthPromoter";
-        }
-        elsif ($mode eq $classA2_mode) {
-            $trainingCommand .= " --genome-group A2 --ga-upstr-len-rbs $classB_rbsUpstreamLength --align $alignmentInMFinder --ga-width-rbs $classB_widthRBS --ga-upstr-len-prom $classA_promoterUpstreamLength --ga-width-prom $classA_widthPromoter --ga-extended-sd $classB_tail16S";            
-        }
-        elsif ($mode eq $classB_mode) {
-            $trainingCommand .= " --genome-group B --gb-upstr-len-rbs $classB_rbsUpstreamLength --align $alignmentInMFinder --gb-width-rbs $classB_widthRBS --gb-upstr-len-prom $classB_promoterUpstreamLength --gb-width-prom $classB_widthPromoter --gb-extended-sd $classB_tail16S";
-        }
-        elsif ($mode eq $classC_mode) {
-            $trainingCommand .= " --genome-group C --gc-upstr-len-rbs $classC_rbsUpstreamLength --align $alignmentInMFinder --gc-width-rbs $classC_widthRBS";
-        }
-        elsif ($mode eq $classD_mode) {
-            $trainingCommand .= " --genome-group D --gd-upstr-len-rbs $classD_rbsUpstreamLength --align $alignmentInMFinder --gd-width-rbs $classD_widthRBS";
-        }
-        elsif ($mode eq $classE_mode) {
-            $trainingCommand .= " --genome-group E --ge-upstr-len-rbs $classE_rbsUpstreamLength --align $alignmentInMFinder --ge-width-rbs $classE_widthRBS --ge-len-upstr-sig $classE_upstreamSignatureLength --ge-order-upstr-sig $classE_upstreamSignatureOrder --ge-extended-sd $classE_tail16S";
-        }
-        else {
-            die "Mode invalid: should not reach this point";
-        }
-
-        run("$trainingCommand");
-
-        # if ($mode eq $classA2_mode) {
-        #     run("sed -i 's/GENOME_TYPE bacteria-promoter/GENOME_TYPE archaea-promoter/g' $currMod");
-        # }
-
-        `cp $currMod $modForFinalPred`;
+        my $trainingCommand = GetTrainingCommand($iter, $mode);          # construct training command
+        run("$trainingCommand");                                         # run training command
 
         # add bacteria and archaea probability to model file
         AddToModel($currMod, "TO_ATYPICAL_FIRST_BACTERIA", $bacProb);
@@ -898,6 +720,137 @@ sub isValidGenomeType {
 
 
 
+
+
+##############################
+#                            #
+#   Group Membership Tests   #
+#                            #
+##############################
+
+
+
+
+sub IsGroupA {
+    my $iter = $_[0];
+
+    my $testResult = FGIOHaveSignalAfterThresh($iter, $groupA_spacerDistThresh, $groupA_spacerScoreThresh, $groupA_spacerWindowSize);
+
+    return $testResult;
+}
+
+sub IsGroupB {
+    my $iter = $_[0];
+
+    my $test1 = FGIONotMatching16SHaveSignalBeforeThresh($iter, $groupB_spacerDistThresh, $groupB_spacerScoreThresh, $groupB_spacerWindowSize);
+    my $test2 = PromoterAndRBSConsensusMatch($fnmod, $groupC_minMatchPromoterRBS);
+
+    return $test1 and $test2;
+}
+
+sub IsGroupC {
+    my $iter = $_[0];
+
+    my $test = RBSConsensusAnd16SMatch($iter, $groupC_minMatchRBS16S);
+
+    return !$test;
+}
+
+sub IsGroupD {
+    my $iter = $_[0];
+
+    my $fnpred = CreatePredFileName($iter);
+
+    my $test = PredictedRBSMatch16S($fnpred, $groupD_tail16S, $groupD_minMatchRBS16S);
+
+    return $test;
+
+}
+
+
+##############################
+#                            #
+#   Auxilliary Functions     #
+#                            #
+##############################
+
+
+sub GetTrainingCommand {
+    my ($currIter, $mode) = $_[0];
+
+    if ($currIter == 0) {
+        print "Cannot construct training model at iteration 0";
+        return undef;
+    }
+
+    my $prevIter = $currIter - 1;
+
+    my $currMod  = CreateModFileName($currIter);        # model file for current iteration
+    my $prevPred = CreatePredFileName($prevIter);       # prediction file of previous iteration
+
+
+    # train on native genes
+    my $nativeOnly = 0;
+    if ($currIter > 1) {
+        $nativeOnly = 1;
+    }
+    
+
+    # Training step: use prediction of previous iteration
+    my $trainingCommand = "$trainer gms2-training -s $fnseq -l $prevPred -m $currMod --order-coding $orderCod --order-noncoding $orderNon --only-train-on-native $nativeOnly --genetic-code $geneticCode --order-start-context $scOrder --fgio-dist-thr $fgioDistThresh";
+
+
+    if ($mode eq $modeNoMotif) {
+        $trainingCommand .= " --run-motif-search false";
+        $trainingCommand .= " --genome-group D";        # FIXME: remove requirement from training
+    }
+    elsif ($mode eq $modeGroupA) {
+        $trainingCommand .= " --genome-group A2 --ga-upstr-len-rbs $groupB_rbsUpstreamLength --align $alignmentInMFinder --ga-width-rbs $groupB_widthRBS --ga-upstr-len-prom $groupA_promoterUpstreamLength --ga-width-prom $groupA_widthPromoter --ga-extended-sd $groupB_tail16S";            
+    }
+    elsif ($mode eq $modeGroupB) {
+        $trainingCommand .= " --genome-group B --gb-upstr-len-rbs $groupB_rbsUpstreamLength --align $alignmentInMFinder --gb-width-rbs $groupB_widthRBS --gb-upstr-len-prom $groupB_promoterUpstreamLength --gb-width-prom $groupB_widthPromoter --gb-extended-sd $groupB_tail16S";
+    }
+    elsif ($mode eq $modeGroupC) {
+        $trainingCommand .= " --genome-group C --gc-upstr-len-rbs $groupC_rbsUpstreamLength --align $alignmentInMFinder --gc-width-rbs $groupC_widthRBS";
+    }
+    elsif ($mode eq $modeGroupD) {
+        $trainingCommand .= " --genome-group D --gd-upstr-len-rbs $groupD_rbsUpstreamLength --align $alignmentInMFinder --gd-width-rbs $groupD_widthRBS";
+    }
+    elsif ($mode eq $modeGroupE) {
+        $trainingCommand .= " --genome-group E --ge-upstr-len-rbs $groupE_rbsUpstreamLength --align $alignmentInMFinder --ge-width-rbs $groupE_widthRBS --ge-len-upstr-sig $groupE_upstreamSignatureLength --ge-order-upstr-sig $groupE_upstreamSignatureOrder --ge-extended-sd $groupE_tail16S";
+    }
+    else {
+        die "Mode invalid: should not reach this point";
+    }
+
+    return $trainingCommand;
+}
+
+sub MoveFilesFromIteration {
+    my $iter = $_[0];
+    my $name = $_[1];
+
+    my $fnmod  = CreateModFileName  ($iter);
+    my $fnpred = CreatePredFileName ($iter);
+
+    print "Move files from iteration $iter to name '$name'\n" if defined $verbose;
+
+    run("mv $fnmod  $name.mod");
+    run("mv $fnpred $name.lst");
+}
+
+
+sub GetBeginEndIterations {
+    my ($prevIter) = @_;
+
+    my $numIterRemain = NumOfIterRemaining($prevIter, $MAX_ITER);
+
+    $iterBegin = $prevIter + 1;
+    $iterEnd = $iterBegin + $numIterRemain - 1;
+
+    return ($iterBegin, $iterEnd);
+}
+
 # FIXME: fnn, faa, check gcode 11,4, keep-all-files
 
 
@@ -936,47 +889,46 @@ run-mfinder-without-spacer              Disable the \"location distribution\" in
 mgm-type                                Type of genome model to use for MGM predictions
                                         Option: bac, arc, auto. Default: (default: $D_MGMTYPE)
 keep-all-files                          Keep all intermediary files 
-two-step-class-a                        If set, the two-step classification is applied to class A
 fgio-dist-thresh                        Distance threshold for FGIO identification
 
-# Class-A
-class-a-width-promoter                  Width of the promoter motif model (default: $D_PROM_WIDTH_A)
-class-a-width-rbs                       Width of the rbs motif model (default: $D_RBS_WIDTH)
-class-a-promoter-upstream-length        Upstream length for promoter training (default: $D_PROM_UPSTR_LEN_A)
-class-a-rbs-upstream-length             Upstream length for rbs training (default: $D_RBS_UPSTR_LEN)
-class-a-spacer-score-thresh             Minimum peak threshold for the spacer distribution (default: $D_SPACER_SCORE_THRESH_A)
-class-a-spacer-dist-thresh              Minimum distance threshold for the spacer distribution (default: $D_SPACER_DIST_THRESH)
-class-a-spacer-window-size              Window size for calculating the \"peak value\" to compare
+# Group-A
+group-a-width-promoter                  Width of the promoter motif model (default: $D_PROM_WIDTH_A)
+group-a-width-rbs                       Width of the rbs motif model (default: $D_RBS_WIDTH)
+group-a-promoter-upstream-length        Upstream length for promoter training (default: $D_PROM_UPSTR_LEN_A)
+group-a-rbs-upstream-length             Upstream length for rbs training (default: $D_RBS_UPSTR_LEN)
+group-a-spacer-score-thresh             Minimum peak threshold for the spacer distribution (default: $D_SPACER_SCORE_THRESH_A)
+group-a-spacer-dist-thresh              Minimum distance threshold for the spacer distribution (default: $D_SPACER_DIST_THRESH)
+group-a-spacer-window-size              Window size for calculating the \"peak value\" to compare
                                         against the score threshold. (default: $D_SPACER_WINDOW_SIZE)
-# Class-B
-class-b-width-promoter                  Width of the promoter motif model (default: $D_PROM_WIDTH_B)
-class-b-width-rbs                       Width of the rbs motif model (default: $D_RBS_WIDTH)
-class-b-promoter-upstream-length        Upstream length for promoter training (default: $D_PROM_UPSTR_LEN_B)
-class-b-rbs-upstream-length             Upstream length for rbs training (default: $D_RBS_UPSTR_LEN)
-class-b-spacer-score-thresh             Minimum peak threshold for the spacer distribution (default: $D_SPACER_SCORE_THRESH_B)
-class-b-spacer-window-size              Window size for calculating the \"peak value\" to compare
+# Group-B
+group-b-width-promoter                  Width of the promoter motif model (default: $D_PROM_WIDTH_B)
+group-b-width-rbs                       Width of the rbs motif model (default: $D_RBS_WIDTH)
+group-b-promoter-upstream-length        Upstream length for promoter training (default: $D_PROM_UPSTR_LEN_B)
+group-b-rbs-upstream-length             Upstream length for rbs training (default: $D_RBS_UPSTR_LEN)
+group-b-spacer-score-thresh             Minimum peak threshold for the spacer distribution (default: $D_SPACER_SCORE_THRESH_B)
+group-b-spacer-window-size              Window size for calculating the \"peak value\" to compare
                                         against the score threshold (default: $D_SPACER_WINDOW_SIZE)
-class-b-tail-16s                        The 16S rRNA tail used for selecting training sequences for
+group-b-tail-16s                        The 16S rRNA tail used for selecting training sequences for
                                         the promoter model (default: $D_16S)
-class-b-min-match-to-tail               Minimum number of consecutive nucleotide matches to the 16S (default: $D_MIN_MATCH_16S)
+group-b-min-match-to-tail               Minimum number of consecutive nucleotide matches to the 16S (default: $D_MIN_MATCH_16S)
 
-# Class-C
-class-c-width-rbs                       Width of the rbs motif model (default: $D_RBS_WIDTH)
-class-c-rbs-upstream-length             Upstream length for rbs training (default: $D_RBS_UPSTR_LEN)
-class-c-min-match-promoter-rbs          Minimum number of consecutive nucleotide matches between the 
+# Group-C
+group-c-width-rbs                       Width of the rbs motif model (default: $D_RBS_WIDTH)
+group-c-rbs-upstream-length             Upstream length for rbs training (default: $D_RBS_UPSTR_LEN)
+group-c-min-match-promoter-rbs          Minimum number of consecutive nucleotide matches between the 
                                         promoter and RBS (default: $D_MIN_MATCH_RBS_PROM)
 
-# Class-D
-class-d-width-rbs                       Width of the rbs motif model (default: $D_RBS_WIDTH)
-class-d-rbs-upstream-length             Upstream length for rbs training (default: $D_RBS_UPSTR_LEN)
-class-d-percent-match-rbs               Minimum percentage of predicted RBS sequences that match to 16S (default: $D_MIN_FRAC_RBS_16S_MATCH)
+# Group-D
+group-d-width-rbs                       Width of the rbs motif model (default: $D_RBS_WIDTH)
+group-d-rbs-upstream-length             Upstream length for rbs training (default: $D_RBS_UPSTR_LEN)
+group-d-percent-match-rbs               Minimum percentage of predicted RBS sequences that match to 16S (default: $D_MIN_FRAC_RBS_16S_MATCH)
 
-# Class-E
-class-e-width-rbs                       Width of the rbs motif model (default: $D_RBS_WIDTH)
-class-e-rbs-upstream-length             Upstream length for rbs training (default: $D_RBS_UPSTR_LEN)
-class-e-upstream-signature-length       Length of the upstream-signature Nonuniform Markov model (default: $D_UPSTR_SIG_LENGTH)
-class-e-upstream-signature-order        Order of the upstream-signature Nonuniform Markov model (default: $D_UPSTR_SIG_ORDER)
-class-e-tail-16s                        The 16S rRNA tail used for selecting training sequences for
+# Group-E
+group-e-width-rbs                       Width of the rbs motif model (default: $D_RBS_WIDTH)
+group-e-rbs-upstream-length             Upstream length for rbs training (default: $D_RBS_UPSTR_LEN)
+group-e-upstream-signature-length       Length of the upstream-signature Nonuniform Markov model (default: $D_UPSTR_SIG_LENGTH)
+group-e-upstream-signature-order        Order of the upstream-signature Nonuniform Markov model (default: $D_UPSTR_SIG_ORDER)
+group-e-tail-16s                        The 16S rRNA tail used for selecting training sequences for
                                         the RBS model (default: $D_16S)
 ";
     }
