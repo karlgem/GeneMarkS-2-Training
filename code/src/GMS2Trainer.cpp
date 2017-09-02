@@ -212,6 +212,7 @@ GMS2Trainer::GMS2Trainer(
             NumSequence::size_type  groupE_lengthUpstreamSignature      ,
             unsigned                groupE_orderUpstreamSignature       ,
             string                  groupE_extendedSD                   ,
+            unsigned                groupE_minMatchToExtendedSD         ,
             bool                    groupE_allowAGSubstitution
                               ) {
     
@@ -267,6 +268,7 @@ GMS2Trainer::GMS2Trainer(
     this->params.groupE_lengthUpstreamSignature  =  groupE_lengthUpstreamSignature        ;
     this->params.groupE_orderUpstreamSignature   =  groupE_orderUpstreamSignature         ;
     this->params.groupE_extendedSD               =  groupE_extendedSD                     ;
+    this->params.groupE_minMatchToExtendedSD     =  groupE_minMatchToExtendedSD           ;
     this->params.groupE_allowAGSubstitution      =  groupE_allowAGSubstitution            ;
     
     // public variables for models

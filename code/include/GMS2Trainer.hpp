@@ -208,6 +208,7 @@ namespace gmsuite {
                     NumSequence::size_type  groupE_lengthUpstreamSignature      ,
                     unsigned                groupE_orderUpstreamSignature       ,
                     string                  groupE_extendedSD                   ,
+                    unsigned                groupE_minMatchToExtendedSD         ,
                     bool                    groupE_allowAGSubstitution
         );
         
@@ -428,7 +429,7 @@ namespace gmsuite {
         }
         
         GMS2Trainer build() {
-            return GMS2Trainer (orderCoding, orderNonCoding, orderStartContext, lengthStartContext, marginStartContext, fgioDistanceThresh, igioDistanceThresh, pcounts, genomeGroup, gcode, minimumGeneLengthTraining, onlyTrainOnNativeGenes, runMotifSearch, *optionsMFinder, groupA_widthPromoter, groupA_widthRBS, groupA_upstreamLengthPromoter, groupA_upstreamLengthRBS, groupA_spacerScoreThresh, groupA_spacerDistThresh, groupA_spacerWindowSize, groupA_extendedSD, groupA_minMatchToExtendedSD, groupA_allowAGSubstitution, groupB_widthPromoter, groupB_widthRBS, groupB_upstreamLengthPromoter, groupB_upstreamLengthRBS, groupB_spacerScoreThresh, groupB_spacerDistThresh, groupB_spacerWindowSize, groupB_extendedSD, groupB_minMatchToExtendedSD, groupB_allowAGSubstitution, groupC_widthRBS, groupC_upstreamLengthRBS, groupC_upstreamRegion3Prime, groupC_minMatchRBSPromoter, groupC_minMatchToExtendedSD, groupC_extendedSD, groupD_widthRBS, groupD_upstreamLengthRBS, groupD_percentMatchRBS, groupD_extendedSD, groupD_minMatchToExtendedSD, groupD_allowAGSubstitution, groupE_widthRBS, groupE_upstreamLengthRBS, groupE_lengthUpstreamSignature, groupE_orderUpstreamSignature, groupE_extendedSD, groupE_allowAGSubstitution);
+            return GMS2Trainer (orderCoding, orderNonCoding, orderStartContext, lengthStartContext, marginStartContext, fgioDistanceThresh, igioDistanceThresh, pcounts, genomeGroup, gcode, minimumGeneLengthTraining, onlyTrainOnNativeGenes, runMotifSearch, *optionsMFinder, groupA_widthPromoter, groupA_widthRBS, groupA_upstreamLengthPromoter, groupA_upstreamLengthRBS, groupA_spacerScoreThresh, groupA_spacerDistThresh, groupA_spacerWindowSize, groupA_extendedSD, groupA_minMatchToExtendedSD, groupA_allowAGSubstitution, groupB_widthPromoter, groupB_widthRBS, groupB_upstreamLengthPromoter, groupB_upstreamLengthRBS, groupB_spacerScoreThresh, groupB_spacerDistThresh, groupB_spacerWindowSize, groupB_extendedSD, groupB_minMatchToExtendedSD, groupB_allowAGSubstitution, groupC_widthRBS, groupC_upstreamLengthRBS, groupC_upstreamRegion3Prime, groupC_minMatchRBSPromoter, groupC_minMatchToExtendedSD, groupC_extendedSD, groupD_widthRBS, groupD_upstreamLengthRBS, groupD_percentMatchRBS, groupD_extendedSD, groupD_minMatchToExtendedSD, groupD_allowAGSubstitution, groupE_widthRBS, groupE_upstreamLengthRBS, groupE_lengthUpstreamSignature, groupE_orderUpstreamSignature, groupE_extendedSD, groupE_minMatchToExtendedSD, groupE_allowAGSubstitution);
         }
         
         GMS2Trainer build(const OptionsGMS2Training &options) {
