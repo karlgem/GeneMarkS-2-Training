@@ -280,7 +280,7 @@ else {
     # If Group A was tested, revert iteration count and move model file
     if ($testGroupA) {
         print "Group-A membership: failed.\n" if defined $verbose;
-        MoveFilesFromIteration($prevIter);                              # revert files of failed iteration
+        MoveFilesFromIteration($prevIter, "groupA");                              # revert files of failed iteration
         $prevIter -= 1;                                                 # decrement iteration counter by 1
     }
 
@@ -745,8 +745,12 @@ sub IsGroupB {
 
     my $test1 = FGIONotMatching16SHaveSignalBeforeThresh($iter, $groupB_spacerDistThresh, $groupB_spacerScoreThresh, $groupB_spacerWindowSize);
     my $test2 = PromoterAndRBSConsensusMatch($iter, $groupC_minMatchPromoterRBS);
-
-    return $test1 and $test2;
+    if ($test1 and not $test2) {
+        return 1;
+    }
+    else {
+        return undef;
+    }
 }
 
 sub IsGroupC {
@@ -754,7 +758,14 @@ sub IsGroupC {
 
     my $test = RBSConsensusAnd16SMatch($iter, $groupC_minMatchRBS16S);
 
-    return !$test;
+    my $test2 = RBSSignalLocalized($iter, 15, 0.25, 1);
+
+    if (!$test and $test2) {
+        return 1;
+    }
+    else {
+        return undef;
+    }
 }
 
 sub IsGroupD {
@@ -812,7 +823,7 @@ sub GetTrainingCommand {
         $trainingCommand .= " --genome-group B --gb-upstr-len-rbs $groupB_rbsUpstreamLength --align $alignmentInMFinder --gb-width-rbs $groupB_widthRBS --gb-upstr-len-prom $groupB_promoterUpstreamLength --gb-width-prom $groupB_widthPromoter --gb-extended-sd $groupB_tail16S";
     }
     elsif ($mode eq $modeGroupC) {
-        $trainingCommand .= " --genome-group C --gc-upstr-len-rbs $groupC_rbsUpstreamLength --align $alignmentInMFinder --gc-width-rbs $groupC_widthRBS";
+        $trainingCommand .= " --genome-group C --gc-upstr-len-rbs $groupC_rbsUpstreamLength --align $alignmentInMFinder --gc-width-rbs $groupC_widthRBS --gc-upstr-reg-3-prime 3";
     }
     elsif ($mode eq $modeGroupD) {
         $trainingCommand .= " --genome-group D --gd-upstr-len-rbs $groupD_rbsUpstreamLength --align $alignmentInMFinder --gd-width-rbs $groupD_widthRBS";
