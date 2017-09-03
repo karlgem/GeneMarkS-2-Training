@@ -134,11 +134,11 @@ my $fgioDistThresh                      = $D_FGIO_DIST_THRESH               ;
 # Misc Variables
 my $toMgmProb                           = 0.15                              ;
 my $toNativeProb                        = 0.85                              ;
-my $fixedNativeAtypicalProb;
-my $trainNonCodingOnFullGenome;
+my $fixedNativeAtypicalProb                                                 ;
+my $trainNonCodingOnFullGenome                                              ;
 my $minAtypicalProb                     = 0.02                              ;
-my $runMFinderWithoutSpacer;
-my $showAdvancedOptions;            
+my $runMFinderWithoutSpacer                                                 ;
+my $showAdvancedOptions                                                     ;            
 my $mgmType = $D_MGMTYPE                                                    ;       # Type of MGM model: options: "bac, arc, auto"
 my $verbose                                                                 ;       # verbose mode
 my $keepAllFiles                                                            ;
