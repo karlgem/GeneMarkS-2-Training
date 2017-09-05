@@ -206,6 +206,9 @@ GetOptions (
 Usage($scriptName) if (!defined $fn_genome or !defined $genomeType or !isValidGenomeType($genomeType));
 
 
+# variable that's set if group B is tested and Promoter and RBS matched
+my $testGroupB_PromoterMatchedRBS;
+
 # setup temporary file collection
 my @tempFiles;
 
@@ -745,6 +748,9 @@ sub IsGroupB {
 
     my $test1 = FGIONotMatching16SHaveSignalBeforeThresh($iter, $groupB_spacerDistThresh, $groupB_spacerScoreThresh, $groupB_spacerWindowSize);
     my $test2 = PromoterAndRBSConsensusMatch($iter, $groupC_minMatchPromoterRBS);
+
+    $testGroupB_PromoterMatchedRBS = $test2;
+
     if ($test1 and not $test2) {
         return 1;
     }
@@ -758,10 +764,23 @@ sub IsGroupC {
 
     my $test = RBSConsensusAnd16SMatch($iter, $groupC_minMatchRBS16S);
 
-    my $test2 = RBSSignalLocalized($iter, 15, 0.25, 1);
+    if (!$test) {
 
-    if (!$test and $test2) {
-        return 1;
+        # return 1;
+
+        if ($testGroupB) {
+            
+            if ($testGroupB_PromoterMatchedRBS) {
+                return 1;
+            }
+            else {
+                return undef;
+            }
+        }
+        # if group B wasn't tested for
+        else {
+            return 1;
+        }
     }
     else {
         return undef;
@@ -823,7 +842,8 @@ sub GetTrainingCommand {
         $trainingCommand .= " --genome-group B --gb-upstr-len-rbs $groupB_rbsUpstreamLength --align $alignmentInMFinder --gb-width-rbs $groupB_widthRBS --gb-upstr-len-prom $groupB_promoterUpstreamLength --gb-width-prom $groupB_widthPromoter --gb-extended-sd $groupB_tail16S";
     }
     elsif ($mode eq $modeGroupC) {
-        $trainingCommand .= " --genome-group C --gc-upstr-len-rbs $groupC_rbsUpstreamLength --align $alignmentInMFinder --gc-width-rbs $groupC_widthRBS --gc-upstr-reg-3-prime 3";
+        # $trainingCommand .= " --genome-group C --gc-upstr-len-rbs $groupC_rbsUpstreamLength --align $alignmentInMFinder --gc-width-rbs $groupC_widthRBS";  # --gc-upstr-reg-3-prime 3
+        $trainingCommand .= " --genome-group C2 --align $alignmentInMFinder ";  # --gc-upstr-reg-3-prime 3
     }
     elsif ($mode eq $modeGroupD) {
         $trainingCommand .= " --genome-group D --gd-upstr-len-rbs $groupD_rbsUpstreamLength --align $alignmentInMFinder --gd-width-rbs $groupD_widthRBS";
