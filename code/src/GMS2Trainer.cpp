@@ -1134,9 +1134,9 @@ void GMS2Trainer::estimateParametersMotifModel_GroupC2(const NumSequence &sequen
         
         // keep track of nonmatches
         if (match.size() < params.groupC2_minMatchToExtendedSD)
-            upstreamsSD.push_back(upstreams[n].subseq(0, upstreams[n].size() - skipFromStart));
+            upstreamsNonSD.push_back(upstreams[n].subseq(0, upstreams[n].size() - skipFromStart));
         else
-            upstreamsNonSD.push_back(upstreams[n]);
+            upstreamsSD.push_back(upstreams[n]);
     }
     
     
