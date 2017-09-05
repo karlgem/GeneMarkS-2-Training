@@ -70,6 +70,15 @@ namespace gmsuite {
         unsigned                groupC_minMatchToExtendedSD         ;
         string                  groupC_extendedSD                   ;
         
+        // Group-C-2
+        unsigned                groupC2_widthSDRBS                  ;
+        unsigned                groupC2_widthNonSDRBS               ;
+        NumSequence::size_type  groupC2_upstreamLengthSDRBS         ;
+        NumSequence::size_type  groupC2_upstreamLengthNonSDRBS      ;
+        NumSequence::size_type  groupC2_upstreamRegion3Prime        ;
+        unsigned                groupC2_minMatchToExtendedSD        ;
+        string                  groupC2_extendedSD                  ;
+        
         // Group-D
         unsigned                groupD_widthRBS                     ;
         NumSequence::size_type  groupD_upstreamLengthRBS            ;
@@ -195,6 +204,14 @@ namespace gmsuite {
                     unsigned                groupC_minMatchRBSPromoter          ,
                     unsigned                groupC_minMatchToExtendedSD         ,
                     string                  groupC_extendedSD                   ,
+                    // Group-C-2
+                    unsigned                groupC2_widthSDRBS                  ,
+                    unsigned                groupC2_widthNonSDRBS               ,
+                    NumSequence::size_type  groupC2_upstreamLengthSDRBS         ,
+                    NumSequence::size_type  groupC2_upstreamLengthNonSDRBS      ,
+                    NumSequence::size_type  groupC2_upstreamRegion3Prime        ,
+                    unsigned                groupC2_minMatchToExtendedSD        ,
+                    string                  groupC2_extendedSD                  ,
                     // Group-D
                     unsigned                groupD_widthRBS                     ,
                     NumSequence::size_type  groupD_upstreamLengthRBS            ,
@@ -229,6 +246,7 @@ namespace gmsuite {
         void estimateParametersMotifModel_groupA2(const NumSequence &sequence, const vector<Label *> &labels);
         void estimateParametersMotifModel_GroupB(const NumSequence &sequence, const vector<Label *> &labels);
         void estimateParametersMotifModel_GroupC(const NumSequence &sequence, const vector<Label *> &labels);
+        void estimateParametersMotifModel_GroupC2(const NumSequence &sequence, const vector<Label *> &labels);
         void estimateParametersMotifModel_GroupD(const NumSequence &sequence, const vector<Label *> &labels);
         void estimateParametersMotifModel_GroupE(const NumSequence &sequence, const vector<Label*> &labels);
         
@@ -321,6 +339,15 @@ namespace gmsuite {
         unsigned                groupC_minMatchToExtendedSD         ;
         string                  groupC_extendedSD                   ;
         
+        // Group-C-2
+        unsigned                groupC2_widthSDRBS                  ;
+        unsigned                groupC2_widthNonSDRBS               ;
+        NumSequence::size_type  groupC2_upstreamLengthSDRBS         ;
+        NumSequence::size_type  groupC2_upstreamLengthNonSDRBS      ;
+        NumSequence::size_type  groupC2_upstreamRegion3Prime        ;
+        unsigned                groupC2_minMatchToExtendedSD        ;
+        string                  groupC2_extendedSD                  ;
+        
         // Group-D
         unsigned                groupD_widthRBS                     ;
         NumSequence::size_type  groupD_upstreamLengthRBS            ;
@@ -392,6 +419,15 @@ namespace gmsuite {
             groupC_minMatchToExtendedSD         = 4                           ;
             groupC_extendedSD                   = "TAAGGAGGTGA"               ;
             
+            // Group-C-2
+            groupC2_widthSDRBS                  = 6                           ;
+            groupC2_upstreamLengthSDRBS         = 20                          ;
+            groupC2_widthNonSDRBS               = 6                           ;
+            groupC2_upstreamLengthNonSDRBS      = 20                          ;
+            groupC2_upstreamRegion3Prime        = 0                           ;
+            groupC2_minMatchToExtendedSD        = 4                           ;
+            groupC2_extendedSD                  = "TAAGGAGGTGA"               ;
+            
             // Group-D
             groupD_widthRBS                     = 6                           ;
             groupD_upstreamLengthRBS            = 20                          ;
@@ -429,7 +465,7 @@ namespace gmsuite {
         }
         
         GMS2Trainer build() {
-            return GMS2Trainer (orderCoding, orderNonCoding, orderStartContext, lengthStartContext, marginStartContext, fgioDistanceThresh, igioDistanceThresh, pcounts, genomeGroup, gcode, minimumGeneLengthTraining, onlyTrainOnNativeGenes, runMotifSearch, *optionsMFinder, groupA_widthPromoter, groupA_widthRBS, groupA_upstreamLengthPromoter, groupA_upstreamLengthRBS, groupA_spacerScoreThresh, groupA_spacerDistThresh, groupA_spacerWindowSize, groupA_extendedSD, groupA_minMatchToExtendedSD, groupA_allowAGSubstitution, groupB_widthPromoter, groupB_widthRBS, groupB_upstreamLengthPromoter, groupB_upstreamLengthRBS, groupB_spacerScoreThresh, groupB_spacerDistThresh, groupB_spacerWindowSize, groupB_extendedSD, groupB_minMatchToExtendedSD, groupB_allowAGSubstitution, groupC_widthRBS, groupC_upstreamLengthRBS, groupC_upstreamRegion3Prime, groupC_minMatchRBSPromoter, groupC_minMatchToExtendedSD, groupC_extendedSD, groupD_widthRBS, groupD_upstreamLengthRBS, groupD_percentMatchRBS, groupD_extendedSD, groupD_minMatchToExtendedSD, groupD_allowAGSubstitution, groupE_widthRBS, groupE_upstreamLengthRBS, groupE_lengthUpstreamSignature, groupE_orderUpstreamSignature, groupE_extendedSD, groupE_minMatchToExtendedSD, groupE_allowAGSubstitution);
+            return GMS2Trainer (orderCoding, orderNonCoding, orderStartContext, lengthStartContext, marginStartContext, fgioDistanceThresh, igioDistanceThresh, pcounts, genomeGroup, gcode, minimumGeneLengthTraining, onlyTrainOnNativeGenes, runMotifSearch, *optionsMFinder, groupA_widthPromoter, groupA_widthRBS, groupA_upstreamLengthPromoter, groupA_upstreamLengthRBS, groupA_spacerScoreThresh, groupA_spacerDistThresh, groupA_spacerWindowSize, groupA_extendedSD, groupA_minMatchToExtendedSD, groupA_allowAGSubstitution, groupB_widthPromoter, groupB_widthRBS, groupB_upstreamLengthPromoter, groupB_upstreamLengthRBS, groupB_spacerScoreThresh, groupB_spacerDistThresh, groupB_spacerWindowSize, groupB_extendedSD, groupB_minMatchToExtendedSD, groupB_allowAGSubstitution, groupC_widthRBS, groupC_upstreamLengthRBS, groupC_upstreamRegion3Prime, groupC_minMatchRBSPromoter, groupC_minMatchToExtendedSD, groupC_extendedSD, groupC2_widthSDRBS, groupC2_widthNonSDRBS, groupC2_upstreamLengthSDRBS, groupC2_upstreamLengthNonSDRBS, groupC2_upstreamRegion3Prime, groupC2_minMatchToExtendedSD, groupC2_extendedSD, groupD_widthRBS, groupD_upstreamLengthRBS, groupD_percentMatchRBS, groupD_extendedSD, groupD_minMatchToExtendedSD, groupD_allowAGSubstitution, groupE_widthRBS, groupE_upstreamLengthRBS, groupE_lengthUpstreamSignature, groupE_orderUpstreamSignature, groupE_extendedSD, groupE_minMatchToExtendedSD, groupE_allowAGSubstitution);
         }
         
         GMS2Trainer build(const OptionsGMS2Training &options) {
@@ -460,6 +496,16 @@ namespace gmsuite {
             setGroupC_minMatchRBSPromoter    (options.groupC_minMatchRBSPromoter    );
             setGroupC_minMatchToExtendedSD   (options.groupC_minMatchToExtendedSD   );
             setGroupC_extendedSD             (options.groupC_extendedSD             );
+            
+            setGroupC2_widthSDRBS              (options.groupC2_widthSDRBS             );
+            setGroupC2_widthNonSDRBS           (options.groupC2_widthNonSDRBS          );
+            setGroupC2_upstreamLengthSDRBS     (options.groupC2_upstreamLengthSDRBS    );
+            setGroupC2_upstreamLengthNonSDRBS  (options.groupC2_upstreamLengthNonSDRBS );
+            setGroupC2_upstreamRegion3Prime    (options.groupC2_upstreamRegion3Prime   );
+            setGroupC2_minMatchToExtendedSD    (options.groupC2_minMatchToExtendedSD   );
+            setGroupC2_extendedSD              (options.groupC2_extendedSD             );
+            
+            
             setGroupD_widthRBS               (options.groupD_widthRBS               );
             setGroupD_upstreamLengthRBS      (options.groupD_upstreamLengthRBS      );
             setGroupD_percentMatchRBS        (options.groupD_percentMatchRBS        );
@@ -520,6 +566,16 @@ namespace gmsuite {
         Builder& setGroupC_minMatchRBSPromoter      (const unsigned v)                  { this->groupC_minMatchRBSPromoter     = v;    return *this; }
         Builder& setGroupC_minMatchToExtendedSD     (const unsigned v)                  { this->groupC_minMatchToExtendedSD    = v;    return *this; }
         Builder& setGroupC_extendedSD               (const string v)                    { this->groupC_extendedSD              = v;    return *this; }
+        
+        // Group-C-2
+        Builder& setGroupC2_widthSDRBS              (const unsigned v)                  { this->groupC2_widthSDRBS             = v;    return *this; }
+        Builder& setGroupC2_widthNonSDRBS           (const unsigned v)                  { this->groupC2_widthNonSDRBS          = v;    return *this; }
+        Builder& setGroupC2_upstreamLengthSDRBS     (const NumSequence::size_type v)    { this->groupC2_upstreamLengthSDRBS    = v;    return *this; }
+        Builder& setGroupC2_upstreamLengthNonSDRBS  (const NumSequence::size_type v)    { this->groupC2_upstreamLengthNonSDRBS = v;    return *this; }
+        Builder& setGroupC2_upstreamRegion3Prime    (const NumSequence::size_type v)    { this->groupC2_upstreamRegion3Prime   = v;    return *this; }
+        Builder& setGroupC2_minMatchToExtendedSD    (const unsigned v)                  { this->groupC2_minMatchToExtendedSD   = v;    return *this; }
+        Builder& setGroupC2_extendedSD              (const string v)                    { this->groupC2_extendedSD             = v;    return *this; }
+        
         Builder& setGroupD_widthRBS                 (const unsigned v)                  { this->groupD_widthRBS                = v;    return *this; }
         Builder& setGroupD_upstreamLengthRBS        (const NumSequence::size_type v)    { this->groupD_upstreamLengthRBS       = v;    return *this; }
         Builder& setGroupD_percentMatchRBS          (const double v)                    { this->groupD_percentMatchRBS         = v;    return *this; }
