@@ -1134,14 +1134,14 @@ void GMS2Trainer::estimateParametersMotifModel_GroupC2(const NumSequence &sequen
         
         // keep track of nonmatches
         if (match.size() < params.groupC2_minMatchToExtendedSD)
-            upstreamsNonSD.push_back(upstreams[n].subseq(0, upstreams[n].size() - skipFromStart));
+            upstreamsSD.push_back(upstreams[n].subseq(0, upstreams[n].size() - skipFromStart));
         else
-            upstreamsSD.push_back(upstreams[n]);
+            upstreamsNonSD.push_back(upstreams[n]);
     }
     
     
-    runMotifFinder(upstreamsNonSD, *this->params.optionsMFinder, *this->alphabet, params.groupC2_upstreamLengthNonSDRBS-skipFromStart, this->promoter, this->promoterSpacer);
-    runMotifFinder(upstreamsSD, *this->params.optionsMFinder, *this->alphabet, params.groupC2_upstreamLengthSDRBS, this->rbs, this->rbsSpacer);
+    runMotifFinder(upstreamsSD, *this->params.optionsMFinder, *this->alphabet, params.groupC2_upstreamLengthSDRBS-skipFromStart, this->promoter, this->promoterSpacer);
+    runMotifFinder(upstreamsNonSD, *this->params.optionsMFinder, *this->alphabet, params.groupC2_upstreamLengthNonSDRBS, this->rbs, this->rbsSpacer);
     
     // shift probabilities
     vector<double> extendedProbs (promoterSpacer->size()+skipFromStart, 0);
