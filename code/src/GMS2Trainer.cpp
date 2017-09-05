@@ -1128,7 +1128,7 @@ void GMS2Trainer::estimateParametersMotifModel_GroupC2(const NumSequence &sequen
     if (params.groupB_allowAGSubstitution)
         substitutions.push_back(pair<NumSequence::num_t, NumSequence::num_t> (this->cnc->convert('A'), this->cnc->convert('G')));
     
-    size_t skipFromStart = 3;
+    size_t skipFromStart = 0;
     for (size_t n = 0; n < upstreams.size(); n++) {
         NumSequence match = SequenceAlgorithms::longestMatchTo16S(matchSeq, upstreams[n], positionsOfMatches, substitutions);
         
