@@ -1152,6 +1152,8 @@ void GMS2Trainer::estimateParametersMotifModel_GroupC2(const NumSequence &sequen
     delete promoterSpacer;
     promoterSpacer = new UnivariatePDF(extendedProbs);
     
+    this->numLeaderless = upstreamsSD.size();
+    
 }
 
 
