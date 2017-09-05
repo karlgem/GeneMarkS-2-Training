@@ -199,6 +199,14 @@ GMS2Trainer::GMS2Trainer(
             unsigned                groupC_minMatchRBSPromoter          ,
             unsigned                groupC_minMatchToExtendedSD         ,
             string                  groupC_extendedSD                   ,
+            // Group-C2
+            unsigned                groupC2_widthSDRBS                  ,
+            unsigned                groupC2_widthNonSDRBS               ,
+            NumSequence::size_type  groupC2_upstreamLengthSDRBS         ,
+            NumSequence::size_type  groupC2_upstreamLengthNonSDRBS      ,
+            NumSequence::size_type  groupC2_upstreamRegion3Prime        ,
+            unsigned                groupC2_minMatchToExtendedSD        ,
+            string                  groupC2_extendedSD                  ,
             // Group-D
             unsigned                groupD_widthRBS                     ,
             NumSequence::size_type  groupD_upstreamLengthRBS            ,
@@ -257,6 +265,13 @@ GMS2Trainer::GMS2Trainer(
     this->params.groupC_minMatchRBSPromoter      =  groupC_minMatchRBSPromoter            ;
     this->params.groupC_minMatchToExtendedSD     =  groupC_minMatchToExtendedSD           ;
     this->params.groupC_extendedSD               =  groupC_extendedSD                     ;
+    this->params.groupC2_widthSDRBS                  = groupC2_widthSDRBS                    ;
+    this->params.groupC2_widthNonSDRBS               = groupC2_widthNonSDRBS                 ;
+    this->params.groupC2_upstreamLengthSDRBS         = groupC2_upstreamLengthSDRBS           ;
+    this->params.groupC2_upstreamLengthNonSDRBS      = groupC2_upstreamLengthNonSDRBS        ;
+    this->params.groupC2_upstreamRegion3Prime        = groupC2_upstreamRegion3Prime          ;
+    this->params.groupC2_minMatchToExtendedSD        = groupC2_minMatchToExtendedSD          ;
+    this->params.groupC2_extendedSD                  = groupC2_extendedSD                    ;
     this->params.groupD_widthRBS                 =  groupD_widthRBS                       ;
     this->params.groupD_upstreamLengthRBS        =  groupD_upstreamLengthRBS              ;
     this->params.groupD_percentMatchRBS          =  groupD_percentMatchRBS                ;
@@ -589,6 +604,10 @@ void GMS2Trainer::estimateParametersMotifModel(const NumSequence &sequence, cons
     else if (params.genomeGroup == ProkGeneStartModel::C) {
         this->genomeType = "group-c";
         estimateParametersMotifModel_GroupC(sequence, useLabels);
+    }
+    else if (params.genomeGroup == ProkGeneStartModel::C2) {
+        this->genomeType = "group-c2";
+        estimateParametersMotifModel_GroupC2(sequence,useLabels);
     }
     else if (params.genomeGroup == ProkGeneStartModel::D) {
         this->genomeType = "group-d";
@@ -1070,6 +1089,69 @@ void GMS2Trainer::estimateParametersMotifModel_GroupB(const NumSequence &sequenc
 
 void GMS2Trainer::estimateParametersMotifModel_GroupC(const NumSequence &sequence, const vector<Label *> &labels) {
     this->estimateParametersMotifModel_GroupD(sequence, labels);
+}
+
+
+void GMS2Trainer::estimateParametersMotifModel_GroupC2(const NumSequence &sequence, const vector<Label *> &labels) {
+    
+    // split labels into sets based on operon status
+    vector<LabelsParser::operon_status_t> operonStatuses;
+    LabelsParser::partitionBasedOnOperonStatus(labels, params.fgioDistanceThresh, params.igioDistanceThresh, operonStatuses);
+    
+    // scope since variables won't (shouldn't) be used outside
+    {
+    vector<Label*> labelsFGIO, labelsIGIO, labelsAMBIG;
+    LabelsParser::splitBasedOnPartition(labels, operonStatuses, labelsFGIO, labelsIGIO, labelsAMBIG);
+    
+    this->numFGIO = labelsFGIO.size();
+    }
+    
+    // extract upstream of each label
+    vector<NumSequence> upstreamsRaw;
+    SequenceParser::extractUpstreamSequences(sequence, labels, *alphabet->getCNC(), params.groupC2_upstreamLengthSDRBS, upstreamsRaw, false, params.minimumGeneLengthTraining);
+    
+    vector<NumSequence> upstreams;
+    for (size_t n = 0; n < upstreamsRaw.size(); n++) {
+        if (!upstreamsRaw[n].containsInvalid(*this->alphabet))
+            upstreams.push_back(upstreamsRaw[n].subseq(0, upstreamsRaw[n].size() - params.groupC2_upstreamRegion3Prime));
+    }
+    
+    
+    vector<NumSequence> upstreamsSD, upstreamsNonSD;
+    
+    // match against SD
+    Sequence strMatchSeq (params.groupC2_extendedSD);
+    NumSequence matchSeq (strMatchSeq, *this->cnc);
+    
+    pair<NumSequence::size_type, NumSequence::size_type> positionsOfMatches;
+    vector<pair<NumSequence::num_t, NumSequence::num_t> > substitutions;
+    if (params.groupB_allowAGSubstitution)
+        substitutions.push_back(pair<NumSequence::num_t, NumSequence::num_t> (this->cnc->convert('A'), this->cnc->convert('G')));
+    
+    size_t skipFromStart = 3;
+    for (size_t n = 0; n < upstreams.size(); n++) {
+        NumSequence match = SequenceAlgorithms::longestMatchTo16S(matchSeq, upstreams[n], positionsOfMatches, substitutions);
+        
+        // keep track of nonmatches
+        if (match.size() < params.groupC2_minMatchToExtendedSD)
+            upstreamsNonSD.push_back(upstreams[n].subseq(0, upstreams[n].size() - skipFromStart));
+        else
+            upstreamsSD.push_back(upstreams[n]);
+    }
+    
+    
+    runMotifFinder(upstreamsNonSD, *this->params.optionsMFinder, *this->alphabet, params.groupC2_upstreamLengthNonSDRBS-skipFromStart, this->promoter, this->promoterSpacer);
+    runMotifFinder(upstreamsSD, *this->params.optionsMFinder, *this->alphabet, params.groupC2_upstreamLengthSDRBS, this->rbs, this->rbsSpacer);
+    
+    // shift probabilities
+    vector<double> extendedProbs (promoterSpacer->size()+skipFromStart, 0);
+    for (size_t n = 0; n < promoterSpacer->size(); n++) {
+        extendedProbs[n+skipFromStart] = (*promoterSpacer)[n];
+    }
+    
+    delete promoterSpacer;
+    promoterSpacer = new UnivariatePDF(extendedProbs);
+    
 }
 
 

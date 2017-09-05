@@ -107,6 +107,15 @@ namespace gmsuite {
         unsigned                groupC_minMatchToExtendedSD         ;
         string                  groupC_extendedSD                   ;
         
+        // Group-C-2
+        unsigned                groupC2_widthSDRBS                  ;
+        NumSequence::size_type  groupC2_upstreamLengthSDRBS         ;
+        unsigned                groupC2_widthNonSDRBS               ;
+        NumSequence::size_type  groupC2_upstreamLengthNonSDRBS      ;
+        NumSequence::size_type  groupC2_upstreamRegion3Prime        ;
+        unsigned                groupC2_minMatchToExtendedSD        ;
+        string                  groupC2_extendedSD                  ;
+        
         // Group-D
         unsigned                groupD_widthRBS                     ;
         NumSequence::size_type  groupD_upstreamLengthRBS            ;

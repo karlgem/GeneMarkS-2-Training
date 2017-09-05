@@ -47,6 +47,8 @@ namespace gmsuite {
             unit = ProkGeneStartModel::C;      // class C
         else if (token == "A2")
             unit = ProkGeneStartModel::A2;      // arhcaea step 2
+        else if (token == "C2")
+            unit = ProkGeneStartModel::C2;      // class C2
         else
             throw validation_error(validation_error::invalid_option_value);
         
@@ -245,6 +247,14 @@ void OptionsGMS2Training::addProcessOptions(OptionsGMS2Training &options, po::op
     ("gc-min-match-rbs-prom",  po::value<unsigned>  (&options.groupC_minMatchRBSPromoter         )->default_value(3),    "Group C: minimum number of consecutive matches between rbs and promoter")
     ("gc-min-match-to-sd",  po::value<unsigned>     (&options.groupC_minMatchToExtendedSD        )->default_value(4),    "Group C: minimum number of consecutive matches to SD")
     ("gc-extended-sd",      po::value<string>       (&options.groupC_extendedSD                  )->default_value("TAAGGAGGTGA"), "Group C: extended SD sequence")
+    // Group C2
+    ("gc2-width-sd-rbs",        po::value<unsigned>     (&options.groupC2_widthSDRBS             )->default_value(6),    "Group C2: sd rbs width")
+    ("gc2-width-non-sd-rbs",    po::value<unsigned>     (&options.groupC2_widthNonSDRBS          )->default_value(6),    "Group C2: non-sd rbs width")
+    ("gc2-upstr-len-sd-rbs",    po::value<numseqsize>   (&options.groupC2_upstreamLengthSDRBS    )->default_value(20),   "Group C2: upstream length for SD RBS training")
+    ("gc2-upstr-len-non-sd-rbs",po::value<numseqsize>   (&options.groupC2_upstreamLengthNonSDRBS )->default_value(20),   "Group C2: upstream length for non-SD RBS training")
+    ("gc2-upstr-reg-3-prime",po::value<numseqsize>   (&options.groupC2_upstreamRegion3Prime      )->default_value(0),    "Group C2: 3'prime end of upstream region used for rbs training")
+    ("gc2-min-match-to-sd",  po::value<unsigned>     (&options.groupC2_minMatchToExtendedSD      )->default_value(4),    "Group C2: minimum number of consecutive matches to SD")
+    ("gc2-extended-sd",      po::value<string>       (&options.groupC2_extendedSD                )->default_value("TAAGGAGGTGA"), "Group C2: extended SD sequence")
     // Group D
     ("gd-width-rbs",        po::value<unsigned>     (&options.groupD_widthRBS                    )->default_value(6),    "Group D: rbs width")
     ("gd-upstr-len-rbs",    po::value<numseqsize>   (&options.groupD_upstreamLengthRBS           )->default_value(20),   "Group D: upstream length for rbs training")
