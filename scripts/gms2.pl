@@ -29,12 +29,13 @@ my $comparePrediction = "$scriptPath/compp";    # compare prediction files to ch
 #      Modes for iterations      #
 # ------------------------------ #
 my $modeNoMotif = "no-motif"; 
-my $modeGroupA  = "group-a";
+my $modeGroupAStep1  = "group-a1";
+my $modeGroupAStep2  = "group-a2";
 my $modeGroupB  = "group-b";
 my $modeGroupC  = "group-c";
 my $modeGroupD  = "group-d";
 my $modeGroupE  = "group-e";
-my @validIterationModes = ($modeNoMotif, $modeGroupA, $modeGroupB, $modeGroupC, $modeGroupD, $modeGroupE);
+my @validIterationModes = ($modeNoMotif, $modeGroupAStep1, $modeGroupAStep2, $modeGroupB, $modeGroupC, $modeGroupD, $modeGroupE);
 
 
 
@@ -206,6 +207,9 @@ GetOptions (
 Usage($scriptName) if (!defined $fn_genome or !defined $genomeType or !isValidGenomeType($genomeType));
 
 
+# variable that's set if group B is tested and Promoter and RBS matched
+my $testGroupB_PromoterMatchedRBS;
+
 # setup temporary file collection
 my @tempFiles;
 
@@ -227,6 +231,9 @@ if (defined $runMFinderWithoutSpacer) {
 
 my $testGroupA = ($genomeType eq "archaea"  or $genomeType eq "auto");
 my $testGroupB = ($genomeType eq "bacteria" or $genomeType eq "auto");
+
+my $testGroupAStep1 = $testGroupA;
+my $testGroupAStep2 = $testGroupA;
 
 
 #----------------------------------------
@@ -256,104 +263,140 @@ my $prevIter = RunIterations( { "mode" => $modeNoMotif, "iteration-begin" => $it
 
 
 
-# Group A: if Group-A testing enabled, run single iteration to test for Group-A membership
-if ($testGroupA) {
+
+# Group A - step 1: If Group-A testing enabled, run single iteration to test for Group-A membership (step 1)
+if ($testGroupAStep1) {
     $iterBegin = $prevIter + 1;
     $iterEnd   = $iterBegin;            
 
-    print "Testing Group-A membership...\n" if defined $verbose;
+    print "Testing Step-1 of Group-A membership...\n" if defined $verbose;
 
-    $prevIter = RunIterations( { "mode" => $modeGroupA, "iteration-begin" => $iterBegin, "iteration-end" => $iterEnd } );
+    $prevIter = RunIterations( { "mode" => $modeGroupAStep1, "iteration-begin" => $iterBegin, "iteration-end" => $iterEnd } );
 }
 
-# Group-A: if membership satisfied, run remaining iterations until convergence
-if ($testGroupA and IsGroupA($prevIter)) {
-
-    print "Group-A membership: successful.\n" if defined $verbose;
+if ($testGroupAStep1 and IsGroupA($prevIter)) {
+    print "Group-A membership: successful (by step 1).\n" if defined $verbose;
 
     ($iterBegin, $iterEnd) = GetBeginEndIterations($prevIter);
     
-    $prevIter = RunIterations( { "mode" => $modeGroupA, "iteration-begin" => $iterBegin, "iteration-end" => $iterEnd } );
+    $prevIter = RunIterations( { "mode" => $modeGroupAStep1, "iteration-begin" => $iterBegin, "iteration-end" => $iterEnd } );
 }
-# Group A: If membership not satisfied, move on to group B
 else {
-    # If Group A was tested, revert iteration count and move model file
-    if ($testGroupA) {
+
+    # If Group A (step-1) was tested, revert iteration count and move model file
+    if ($testGroupAStep1) {
         print "Group-A membership: failed.\n" if defined $verbose;
-        MoveFilesFromIteration($prevIter, "groupA");                              # revert files of failed iteration
+        MoveFilesFromIteration($prevIter, "groupA1");                              # revert files of failed iteration
         $prevIter -= 1;                                                 # decrement iteration counter by 1
     }
 
-    # Group B: single iteration to test for Group-B membership
-    if ($testGroupB) {
+
+    # Group A: if Group-A testing enabled, run single iteration to test for Group-A membership
+    if ($testGroupAStep2) {
         $iterBegin = $prevIter + 1;
-        $iterEnd = $iterBegin;          
-        $prevIter = RunIterations( { "mode" => $modeGroupB, "iteration-begin" => $iterBegin, "iteration-end" => $iterEnd } );
+        $iterEnd   = $iterBegin;            
+
+        print "Testing Group-A membership...\n" if defined $verbose;
+
+        $prevIter = RunIterations( { "mode" => $modeGroupAStep2, "iteration-begin" => $iterBegin, "iteration-end" => $iterEnd } );
     }
 
-    # Group-B: if membership satisfied, run remaining iterations until convergence
-    if ($testGroupB and IsGroupB($prevIter)) {
-        
-        print "Group-B membership: successful.\n" if defined $verbose;
+    # Group-A: if membership satisfied, run remaining iterations until convergence
+    if ($testGroupAStep2 and IsGroupA($prevIter)) {
+
+        print "Group-A membership: successful.\n" if defined $verbose;
 
         ($iterBegin, $iterEnd) = GetBeginEndIterations($prevIter);
-
-        $prevIter = RunIterations( { "mode" => $modeGroupB, "iteration-begin" => $iterBegin, "iteration-end" => $iterEnd } );
+        
+        $prevIter = RunIterations( { "mode" => $modeGroupAStep2, "iteration-begin" => $iterBegin, "iteration-end" => $iterEnd } );
     }
-    # Group B: If membership not satisfied, move on to group C
+    # Group A: If membership not satisfied, move on to group B
     else {
+        # If Group A was tested, revert iteration count and move model file
+        if ($testGroupAStep2) {
+            print "Group-A membership: failed.\n" if defined $verbose;
+            MoveFilesFromIteration($prevIter, "groupA2");                              # revert files of failed iteration
+            $prevIter -= 1;                                                 # decrement iteration counter by 1
+        }
 
-        MoveFilesFromIteration($prevIter, "groupB") if ($testGroupB);
-        MoveFilesFromIteration($prevIter, "groupA") if ($testGroupA and !$testGroupB);
-        $prevIter -= 1;
+        # If Group A was tested, revert iteration count and move model file
+        if ($testGroupAStep1) {
+            print "Group-A membership: failed.\n" if defined $verbose;
+            MoveFilesFromIteration($prevIter, "groupA1");                              # revert files of failed iteration
+            $prevIter -= 1;                                                 # decrement iteration counter by 1
+        }
 
-        # Group C: single iteration to test for Group-B membership
-        $iterBegin = $prevIter + 1;
-        $iterEnd = $iterBegin;
-        $prevIter = RunIterations( { "mode" => $modeGroupC, "iteration-begin" => $iterBegin, "iteration-end" => $iterEnd } );
+        # Group B: single iteration to test for Group-B membership
+        if ($testGroupB) {
+            $iterBegin = $prevIter + 1;
+            $iterEnd = $iterBegin;          
+            $prevIter = RunIterations( { "mode" => $modeGroupB, "iteration-begin" => $iterBegin, "iteration-end" => $iterEnd } );
+        }
 
-        # Group-C: if membership satisfied, run remaining iterations until convergence
-        if (IsGroupC($prevIter)) {
-
-            print "Group-C membership: successful.\n" if defined $verbose;
+        # Group-B: if membership satisfied, run remaining iterations until convergence
+        if ($testGroupB and IsGroupB($prevIter)) {
+            
+            print "Group-B membership: successful.\n" if defined $verbose;
 
             ($iterBegin, $iterEnd) = GetBeginEndIterations($prevIter);
 
-            $prevIter = RunIterations( { "mode" => $modeGroupC, "iteration-begin" => $iterBegin, "iteration-end" => $iterEnd } );
+            $prevIter = RunIterations( { "mode" => $modeGroupB, "iteration-begin" => $iterBegin, "iteration-end" => $iterEnd } );
         }
-        # Group C: If membership not satisfied, move on to group D
+        # Group B: If membership not satisfied, move on to group C
         else {
 
-            # go back one iteration (to cancel group C)
-            MoveFilesFromIteration($prevIter, "groupC");
+            MoveFilesFromIteration($prevIter, "groupB") if ($testGroupB);
+            MoveFilesFromIteration($prevIter, "groupA2") if ($testGroupAStep2 and !$testGroupB);
+            MoveFilesFromIteration($prevIter, "groupA1") if ($testGroupAStep1 and not !$testGroupAStep2 and !$testGroupB);
             $prevIter -= 1;
-            
-            # Group D: single iteration to test for Group-B membership
+
+            # Group C: single iteration to test for Group-B membership
             $iterBegin = $prevIter + 1;
             $iterEnd = $iterBegin;
-            $prevIter = RunIterations( { "mode" => $modeGroupD, "iteration-begin" => $iterBegin, "iteration-end" => $iterEnd  } );
-            
-            # Group-D: if membership satisfied, run remaining iterations until convergence
-            if (IsGroupD($prevIter)) {
-                print "Group-D membership: successful.\n" if defined $verbose;
+            $prevIter = RunIterations( { "mode" => $modeGroupC, "iteration-begin" => $iterBegin, "iteration-end" => $iterEnd } );
+
+            # Group-C: if membership satisfied, run remaining iterations until convergence
+            if (IsGroupC($prevIter)) {
+
+                print "Group-C membership: successful.\n" if defined $verbose;
 
                 ($iterBegin, $iterEnd) = GetBeginEndIterations($prevIter);
 
-                $prevIter = RunIterations( { "mode" => $modeGroupD, "iteration-begin" => $iterBegin, "iteration-end" => $iterEnd } );
+                $prevIter = RunIterations( { "mode" => $modeGroupC, "iteration-begin" => $iterBegin, "iteration-end" => $iterEnd } );
             }
-            # Group D: If membership not satisfied, move on to group E
+            # Group C: If membership not satisfied, move on to group D
             else {
-                # go back one iteration (to cancel group D)
-                MoveFilesFromIteration($prevIter, 'groupD');
-                $prevIter -= 1;
 
-                ($iterBegin, $iterEnd) = GetBeginEndIterations($prevIter);
-                $prevIter = RunIterations( { "mode" => $modeGroupE, "iteration-begin" => $iterBegin, "iteration-end" => $iterEnd } );
-            } 
+                # go back one iteration (to cancel group C)
+                MoveFilesFromIteration($prevIter, "groupC");
+                $prevIter -= 1;
+                
+                # Group D: single iteration to test for Group-B membership
+                $iterBegin = $prevIter + 1;
+                $iterEnd = $iterBegin;
+                $prevIter = RunIterations( { "mode" => $modeGroupD, "iteration-begin" => $iterBegin, "iteration-end" => $iterEnd  } );
+                
+                # Group-D: if membership satisfied, run remaining iterations until convergence
+                if (IsGroupD($prevIter)) {
+                    print "Group-D membership: successful.\n" if defined $verbose;
+
+                    ($iterBegin, $iterEnd) = GetBeginEndIterations($prevIter);
+
+                    $prevIter = RunIterations( { "mode" => $modeGroupD, "iteration-begin" => $iterBegin, "iteration-end" => $iterEnd } );
+                }
+                # Group D: If membership not satisfied, move on to group E
+                else {
+                    # go back one iteration (to cancel group D)
+                    MoveFilesFromIteration($prevIter, 'groupD');
+                    $prevIter -= 1;
+
+                    ($iterBegin, $iterEnd) = GetBeginEndIterations($prevIter);
+                    $prevIter = RunIterations( { "mode" => $modeGroupE, "iteration-begin" => $iterBegin, "iteration-end" => $iterEnd } );
+                } 
+            }
         }
     }
 }
-
 
 
 $prevPred = CreatePredFileName($prevIter);       # Prediction file: get name of previous iteration
@@ -745,6 +788,9 @@ sub IsGroupB {
 
     my $test1 = FGIONotMatching16SHaveSignalBeforeThresh($iter, $groupB_spacerDistThresh, $groupB_spacerScoreThresh, $groupB_spacerWindowSize);
     my $test2 = PromoterAndRBSConsensusMatch($iter, $groupC_minMatchPromoterRBS);
+
+    $testGroupB_PromoterMatchedRBS = $test2;
+
     if ($test1 and not $test2) {
         return 1;
     }
@@ -758,10 +804,23 @@ sub IsGroupC {
 
     my $test = RBSConsensusAnd16SMatch($iter, $groupC_minMatchRBS16S);
 
-    my $test2 = RBSSignalLocalized($iter, 15, 0.25, 1);
+    if (!$test) {
 
-    if (!$test and $test2) {
         return 1;
+
+        if ($testGroupB) {
+            
+            if ($testGroupB_PromoterMatchedRBS) {
+                return 1;
+            }
+            else {
+                return undef;
+            }
+        }
+        # if group B wasn't tested for
+        else {
+            return 1;
+        }
     }
     else {
         return undef;
@@ -816,14 +875,18 @@ sub GetTrainingCommand {
         $trainingCommand .= " --run-motif-search false";
         $trainingCommand .= " --genome-group D";        # FIXME: remove requirement from training
     }
-    elsif ($mode eq $modeGroupA) {
+    elsif ($mode eq $modeGroupAStep1) {
+        $trainingCommand .= " --genome-group A --ga-upstr-len-rbs $groupA_rbsUpstreamLength --align $alignmentInMFinder --ga-width-rbs $groupA_widthRBS --ga-upstr-len-prom $groupA_promoterUpstreamLength --ga-width-prom $groupA_widthPromoter";            
+    }
+    elsif ($mode eq $modeGroupAStep2) {
         $trainingCommand .= " --genome-group A2 --ga-upstr-len-rbs $groupB_rbsUpstreamLength --align $alignmentInMFinder --ga-width-rbs $groupB_widthRBS --ga-upstr-len-prom $groupA_promoterUpstreamLength --ga-width-prom $groupA_widthPromoter --ga-extended-sd $groupB_tail16S";            
     }
     elsif ($mode eq $modeGroupB) {
         $trainingCommand .= " --genome-group B --gb-upstr-len-rbs $groupB_rbsUpstreamLength --align $alignmentInMFinder --gb-width-rbs $groupB_widthRBS --gb-upstr-len-prom $groupB_promoterUpstreamLength --gb-width-prom $groupB_widthPromoter --gb-extended-sd $groupB_tail16S";
     }
     elsif ($mode eq $modeGroupC) {
-        $trainingCommand .= " --genome-group C --gc-upstr-len-rbs $groupC_rbsUpstreamLength --align $alignmentInMFinder --gc-width-rbs $groupC_widthRBS --gc-upstr-reg-3-prime 3";
+        $trainingCommand .= " --genome-group C --gc-upstr-len-rbs $groupC_rbsUpstreamLength --align $alignmentInMFinder --gc-width-rbs $groupC_widthRBS";  # --gc-upstr-reg-3-prime 3
+        # $trainingCommand .= " --genome-group C2 --align $alignmentInMFinder ";  # --gc-upstr-reg-3-prime 3
     }
     elsif ($mode eq $modeGroupD) {
         $trainingCommand .= " --genome-group D --gd-upstr-len-rbs $groupD_rbsUpstreamLength --align $alignmentInMFinder --gd-width-rbs $groupD_widthRBS";
