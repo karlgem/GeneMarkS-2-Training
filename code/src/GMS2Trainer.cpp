@@ -1003,8 +1003,12 @@ void GMS2Trainer::estimateParametersMotifModel_GroupA(const NumSequence &sequenc
     OptionsMFinder optionMFinderFGIO (*this->params.optionsMFinder);
     optionMFinderFGIO.width = params.groupA_widthPromoter;
     
+    MotifFinder::Builder b;
+    OptionsMFinder optionsMFinderRBS (*this->params.optionsMFinder);
+    optionsMFinderRBS.width =  params.groupA_widthRBS;
+    
     runMotifFinder(upstreamsFGIO, optionMFinderFGIO, *this->alphabet, this->params.groupA_upstreamLengthPromoter, this->promoter, this->promoterSpacer);
-    runMotifFinder(upstreamsIG, *this->params.optionsMFinder, *this->alphabet, this->params.groupA_upstreamLengthRBS, this->rbs, this->rbsSpacer);
+    runMotifFinder(upstreamsIG, optionsMFinderRBS, *this->alphabet, this->params.groupA_upstreamLengthRBS, this->rbs, this->rbsSpacer);
     
     
     // shift probabilities
@@ -1070,9 +1074,15 @@ void GMS2Trainer::estimateParametersMotifModel_GroupB(const NumSequence &sequenc
     this->numLeaderless = upstreamsPromoter.size();
     this->numFGIO = upstreamsFGIO.size();
     
+    MotifFinder::Builder b;
+    OptionsMFinder optionsMFinderPromoter (*this->params.optionsMFinder);
+    optionsMFinderPromoter.width =  params.groupB_widthPromoter;
     
-    runMotifFinder(upstreamsPromoter, *this->params.optionsMFinder, *this->alphabet, params.groupB_upstreamLengthPromoter-skipFromStart, this->promoter, this->promoterSpacer);
-    runMotifFinder(upstreamsRBS, *this->params.optionsMFinder, *this->alphabet, params.groupB_upstreamLengthRBS, this->rbs, this->rbsSpacer);
+    OptionsMFinder optionsMFinderRBS (*this->params.optionsMFinder);
+    optionsMFinderRBS.width =  params.groupB_widthRBS;
+    
+    runMotifFinder(upstreamsPromoter, optionsMFinderPromoter, *this->alphabet, params.groupB_upstreamLengthPromoter-skipFromStart, this->promoter, this->promoterSpacer);
+    runMotifFinder(upstreamsRBS, optionsMFinderRBS, *this->alphabet, params.groupB_upstreamLengthRBS, this->rbs, this->rbsSpacer);
     
     // shift probabilities
     vector<double> extendedProbs (promoterSpacer->size()+skipFromStart, 0);
@@ -1160,7 +1170,11 @@ void GMS2Trainer::estimateParametersMotifModel_GroupC2(const NumSequence &sequen
 void GMS2Trainer::estimateParametersMotifModel_GroupD(const NumSequence &sequence, const vector<Label *> &labels) {
     
     MotifFinder::Builder b;
-    MotifFinder mfinder = b.build(*this->params.optionsMFinder);
+    OptionsMFinder optionsMFinderGroupD (*this->params.optionsMFinder);
+    optionsMFinderGroupD.width =  params.groupD_widthRBS;
+    if (params.genomeGroup == ProkGeneStartModel::C)
+        optionsMFinderGroupD.width =  params.groupC_widthRBS;
+    MotifFinder mfinder = b.build(optionsMFinderGroupD);
     
     
     // split labels into sets based on operon status
@@ -1282,7 +1296,11 @@ void GMS2Trainer::estimateParametersMotifModel_GroupE(const NumSequence &sequenc
     // run motif search for RBS
     vector<NumSequence> upstreamsRBS;
     SequenceParser::extractUpstreamSequences(sequence, labelsRBS, cnc, this->params.groupE_upstreamLengthRBS, upstreamsRBS);
-    runMotifFinder(upstreamsRBS, *this->params.optionsMFinder, *this->alphabet, this->params.groupE_upstreamLengthRBS, this->rbs, this->rbsSpacer);
+    
+    MotifFinder::Builder b;
+    OptionsMFinder optionsMFinderGroupE (*this->params.optionsMFinder);
+    optionsMFinderGroupE.width =  params.groupE_widthRBS;
+    runMotifFinder(upstreamsRBS, optionsMFinderGroupE, *this->alphabet, this->params.groupE_upstreamLengthRBS, this->rbs, this->rbsSpacer);
     
     
     
