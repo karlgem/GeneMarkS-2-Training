@@ -936,6 +936,9 @@ void GMS2Trainer::estimateParametersMotifModel_groupA2(const NumSequence &sequen
     OptionsMFinder optionMFinderPromoter (*this->params.optionsMFinder);
     optionMFinderPromoter.width = params.groupA_widthPromoter;
     
+    OptionsMFinder optionMFinderRBS (*this->params.optionsMFinder);
+    optionMFinderRBS.width = params.groupA_widthRBS;
+    
     // take first
     if (cutPromTrainSeqs) {
         for (size_t n = 0; n < upstreamsPromoter.size(); n++) {
@@ -944,7 +947,7 @@ void GMS2Trainer::estimateParametersMotifModel_groupA2(const NumSequence &sequen
     }
     
     runMotifFinder(upstreamsPromoter, optionMFinderPromoter, *this->alphabet, params.groupA_upstreamLengthPromoter, this->promoter, this->promoterSpacer);
-    runMotifFinder(upstreamsRBS, *this->params.optionsMFinder, *this->alphabet, params.groupA_upstreamLengthRBS, this->rbs, this->rbsSpacer);
+    runMotifFinder(upstreamsRBS, optionMFinderRBS, *this->alphabet, params.groupA_upstreamLengthRBS, this->rbs, this->rbsSpacer);
     
     //    // shift probabilities
     //    vector<double> extendedProbs (promoterSpacer->size()+skipFromStart, 0);
@@ -1200,21 +1203,21 @@ void GMS2Trainer::estimateParametersMotifModel_GroupD(const NumSequence &sequenc
     mfinder.findMotifs(upstreams, positions);
     
     // build RBS model
-    NonUniformCounts rbsCounts(params.optionsMFinder->motifOrder, params.optionsMFinder->width, *this->alphabet);
+    NonUniformCounts rbsCounts(optionsMFinderGroupD.motifOrder, optionsMFinderGroupD.width, *this->alphabet);
     for (size_t n = 0; n < upstreams.size(); n++) {
-        rbsCounts.count(upstreams[n].begin()+positions[n], upstreams[n].begin()+positions[n]+params.optionsMFinder->width);
+        rbsCounts.count(upstreams[n].begin()+positions[n], upstreams[n].begin()+positions[n]+optionsMFinderGroupD.width);
     }
     
-    rbs = new NonUniformMarkov(params.optionsMFinder->motifOrder, params.optionsMFinder->width, *this->alphabet);
-    rbs->construct(&rbsCounts, params.optionsMFinder->pcounts);
+    rbs = new NonUniformMarkov(optionsMFinderGroupD.motifOrder, optionsMFinderGroupD.width, *this->alphabet);
+    rbs->construct(&rbsCounts, optionsMFinderGroupD.pcounts);
     
     // build spacer distribution
     // build histogram from positions
-    vector<double> positionCounts (params.groupD_upstreamLengthRBS - params.optionsMFinder->width+1, 0);
+    vector<double> positionCounts (params.groupD_upstreamLengthRBS - optionsMFinderGroupD.width+1, 0);
     for (size_t n = 0; n < positions.size(); n++) {
         // FIXME account for LEFT alignment
         // below is only for right
-        positionCounts[params.groupD_upstreamLengthRBS - params.optionsMFinder->width - positions[n]]++;        // increment position
+        positionCounts[params.groupD_upstreamLengthRBS - optionsMFinderGroupD.width - positions[n]]++;        // increment position
     }
     
     rbsSpacer = new UnivariatePDF(positionCounts, false, params.pcounts);
