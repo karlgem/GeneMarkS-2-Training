@@ -63,7 +63,7 @@ NumSequence extractUpstreamSequence(const NumSequence& sequence, const Label &la
 }
 
 // Classify genome
-ModuleGMS2::genome_class_t ModuleGMS2::classifyGenome(const NumSequence &numSeq, const CharNumConverter &cnc, const vector<Label*> labels, NumSequence::size_type upstrLength) const {
+ModuleGMS2::genome_group_t ModuleGMS2::classifyGenome(const NumSequence &numSeq, const CharNumConverter &cnc, const vector<Label*> labels, NumSequence::size_type upstrLength) const {
     
     // extract upstream region, and reverse complement when on negative strand
     vector<NumSequence> upstreamRegions (labels.size());
@@ -107,7 +107,7 @@ ModuleGMS2::genome_class_t ModuleGMS2::classifyGenome(const NumSequence &numSeq,
     
     UnivariatePDF spacerDistribution(positionCounts);
     
-    genome_class_t genomeClass;
+    genome_group_t genomeClass;
     
     // analyze spacer and get class
     double maxProb = 0;
@@ -125,23 +125,23 @@ ModuleGMS2::genome_class_t ModuleGMS2::classifyGenome(const NumSequence &numSeq,
     
     // default is class 1
     if (!maxFound)
-        return ProkGeneStartModel::C1;
+        return ProkGeneStartModel::D;
     
     // decide start class
     if (maxProb > options.CLASS_PROB_THRESHOLD) {
         
         // Class 1: rbs
         if (posOfMax < options.CLASS_DIST_THRESHOLD)
-            genomeClass = ProkGeneStartModel::C1;
+            genomeClass = ProkGeneStartModel::D;
         
         // Class 2: promoter
         else
-            genomeClass = ProkGeneStartModel::C3;
+            genomeClass = ProkGeneStartModel::B;
         
     }
     // Class 3
     else
-        genomeClass = ProkGeneStartModel::C2;
+        genomeClass = ProkGeneStartModel::A;
     
     return genomeClass;
 }
@@ -193,7 +193,7 @@ void ModuleGMS2::run() {
     vector<Label*> initialParse;
     
     // Step 3: Classify genome into type
-    genome_class_t genomeClass = classifyGenome(numSeq, cnc, initialParse, options.upstrLength);
+    genome_group_t genomeClass = classifyGenome(numSeq, cnc, initialParse, options.upstrLength);
     
     /*******************************\
      *      Step 2: Main Cycle     *

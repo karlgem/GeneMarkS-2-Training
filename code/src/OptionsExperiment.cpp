@@ -26,6 +26,7 @@ using namespace gmsuite;
 #define STR_START_MODEL_STRATEGY_2  "start-model-strategy-2"
 #define STR_PROMOTER_AND_RBS_MATCH "promoter-and-rbs-match"
 #define STR_RBS_CONSENSUS_AND_16S_MATCH "rbs-consensus-and-16s-match"
+#define STR_RBS_IS_LOCALIZED        "rbs-is-localized"
 
 namespace gmsuite {
     // convert string to experiment_t
@@ -46,6 +47,7 @@ namespace gmsuite {
         else if (token == STR_START_MODEL_STRATEGY_2)   unit = OptionsExperiment::START_MODEL_STRATEGY_2;
         else if (token == STR_PROMOTER_AND_RBS_MATCH)   unit = OptionsExperiment::PROMOTER_AND_RBS_MATCH;
         else if (token == STR_RBS_CONSENSUS_AND_16S_MATCH) unit = OptionsExperiment::RBS_CONSENSUS_AND_16S_MATCH;
+        else if (token == STR_RBS_IS_LOCALIZED)         unit = OptionsExperiment::RBS_IS_LOCALIZED;
         else
             throw boost::program_options::invalid_option_value(token);
         
@@ -165,6 +167,8 @@ bool OptionsExperiment::parse(int argc, const char **argv) {
             addProcessOptions_PromoterAndRBSMatchOptions(promoterAndRBSMatch, expDesc);
         if (experiment == RBS_CONSENSUS_AND_16S_MATCH)
             addProcessOptions_RBSConsensusAnd16SMatch(rbsConsensusAnd16SMatch, expDesc);
+        if (experiment == RBS_IS_LOCALIZED)
+            addProcessOptions_RBSIsLocalized(rbsIsLocalized, expDesc);
         
         cmdline_options.add(expDesc);
         
@@ -399,3 +403,11 @@ void OptionsExperiment::addProcessOptions_RBSConsensusAnd16SMatch(RBSConsensusAn
 
 
 
+void OptionsExperiment::addProcessOptions_RBSIsLocalized(RBSIsLocalized &options, po::options_description &processOptions) {
+    processOptions.add_options()
+    ("fnmod", po::value<string>(&options.fnmod)->required(), "Name of mod file containing RBS spacer.")
+    ("dist-thresh", po::value<size_t>(&options.distanceThresh)->default_value(15), "Distance threshold before which spacer indicates promoter.")
+    ("score-thresh", po::value<double>(&options.scoreThresh)->default_value(0.1), "Minimum score above which spacer is considered localized.")
+    ("window-size", po::value<size_t>(&options.windowSize)->default_value(1), "Size of window in which to determine localization")
+    ;
+}
