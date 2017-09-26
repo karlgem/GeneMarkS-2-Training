@@ -20,7 +20,7 @@ namespace po = boost::program_options;
 
 
 namespace gmsuite {
-    // convert string to genome_class_t
+    // convert string to genome_group_t
     std::istream& operator>>(std::istream& in, OptionsMFinder::align_t& unit) {
         string token;
         in >> token;

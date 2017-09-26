@@ -44,7 +44,7 @@ string usage_message(string progName) {
     ssm << "Usage: " << progName << " mode" << endl;
     ssm << "The valid modes are:" << endl;
     ssm << "\t" << MOD_GMS2 << "\t" << "GeneMarkS2" << endl;
-    ssm << "\t" << MOD_MFINDER << "\t" << "MFinder" << endl;
+    ssm << "\t" << MOD_MFINDER << "\t" << "Motif finder using GibbsL" << endl;
     ssm << "\t" << MOD_UTILITIES << "\t" << "Utilities" << endl;
     ssm << "\t" << MOD_EXPERIMENT << "\t" << "Experiment" << endl;
     ssm << "\t" << MOD_GMS2_TRAINING << "\t" << "GMS2 Training step" << endl;

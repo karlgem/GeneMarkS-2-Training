@@ -67,6 +67,8 @@ void ModuleExperiment::run() {
         runPromoterAndRBSMatch();
     else if (options.experiment == OptionsExperiment::RBS_CONSENSUS_AND_16S_MATCH)
         runRbsConsensus16SMatch();
+    else if (options.experiment == OptionsExperiment::RBS_IS_LOCALIZED)
+        runRbsIsLocalized();
     
 }
 
@@ -157,7 +159,7 @@ void ModuleExperiment::runMatchSeqToNoncoding() {
     OptionsMFinder optionsMFinder;
     
     // run training step
-    GMS2Trainer trainer((unsigned) expOptions.pcounts, 0, expOptions.order, 0, 40, 0, ProkGeneStartModel::C1, optionsMFinder, numAlph, 300, numGeneticCode, -15, false);
+    GMS2Trainer trainer((unsigned) expOptions.pcounts, 0, expOptions.order, 0, 40, 0, ProkGeneStartModel::D, optionsMFinder, numAlph, 300, numGeneticCode, -15, false);
     
     trainer.estimateParameters(numSequence, labels);
     
@@ -1496,3 +1498,51 @@ void ModuleExperiment::runRbsConsensus16SMatch() {
 
 
 
+
+
+
+void ModuleExperiment::runRbsIsLocalized() {
+    
+    OptionsExperiment::RBSIsLocalized expOptions = options.rbsIsLocalized;
+    
+    // open mod file
+    ModelFile mfile (expOptions.fnmod, ModelFile::READ);
+    
+    string rbsSpacerStr = mfile.readValueForKey("RBS_POS_DISTR");       // get spacer distribution
+    string rbsMaxDurStr = mfile.readValueForKey("RBS_MAX_DUR");         // get maximum duration
+    size_t rbsMaxDur = boost::lexical_cast<size_t>(rbsMaxDurStr);
+    
+    
+    vector<double> rbsSpacer (rbsMaxDur, 0);
+    
+    // convert string to vector of probabilities
+    istringstream f(rbsSpacerStr);
+    string line;
+    while (getline(f, line)) {
+        size_t pos;
+        double prob;
+        
+        istringstream ssmPerLine (line);
+        ssmPerLine >> pos;
+        ssmPerLine >> prob;
+        
+        rbsSpacer[pos] = prob;
+    }
+    
+    
+    // create distribution from vector
+    UnivariatePDF spacer (rbsSpacer, false, 0, false);
+    
+    UnivariatePDF::localization_metric_t localization = spacer.localization(expOptions.windowSize);
+    
+    string promoterIsValid = "no";
+    
+    // check position and score
+    if (localization.windowBegin < expOptions.distanceThresh) {       // possibly promoter
+        if (localization.windowTotal > expOptions.scoreThresh) {     // definitely promoter
+            promoterIsValid = "yes";
+        }
+    }
+    
+    cout << promoterIsValid << endl;
+}

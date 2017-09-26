@@ -28,24 +28,29 @@ OptionsGMS2Training::OptionsGMS2Training(string mode) : Options(mode), optionsMF
 }
 
 namespace gmsuite {
-    std::istream& operator>>(std::istream& in, ProkGeneStartModel::genome_class_t& unit)
+    std::istream& operator>>(std::istream& in, ProkGeneStartModel::genome_group_t& unit)
     {
+        
+        using namespace boost::program_options;
+        
         std::string token;
         in >> token;
-        if (token == "1")
-            unit = ProkGeneStartModel::C1;      // class D
-        else if (token == "2")
-            unit = ProkGeneStartModel::C2;      // class A
-        else if (token == "3")
-            unit = ProkGeneStartModel::C3;      // class B
-        else if (token == "4")
-            unit = ProkGeneStartModel::C4;      // class E
-        else if (token == "5")
-            unit = ProkGeneStartModel::C5;      // class C
-        else if (token == "6")
-            unit = ProkGeneStartModel::C6;      // arhcaea step 2
-    //    else
-    //        throw boost::program_options::validation_error("Invalid genome class");
+        if (token == "D")
+            unit = ProkGeneStartModel::D;      // class D
+        else if (token == "A")
+            unit = ProkGeneStartModel::A;      // class A
+        else if (token == "B")
+            unit = ProkGeneStartModel::B;      // class B
+        else if (token == "E")
+            unit = ProkGeneStartModel::E;      // class E
+        else if (token == "C")
+            unit = ProkGeneStartModel::C;      // class C
+        else if (token == "A2")
+            unit = ProkGeneStartModel::A2;      // arhcaea step 2
+        else if (token == "C2")
+            unit = ProkGeneStartModel::C2;      // class C2
+        else
+            throw validation_error(validation_error::invalid_option_value);
         
         return in;
     }
@@ -67,7 +72,7 @@ namespace gmsuite {
 
 void validate(boost::any& v,
               const std::vector<std::string>& values,
-              ProkGeneStartModel::genome_class_t * target_type, int)
+              ProkGeneStartModel::genome_group_t * target_type, int)
 {
     static sregex expr = sregex::compile("^\\s*(\\d)*");
     using namespace boost::program_options;
@@ -82,7 +87,7 @@ void validate(boost::any& v,
     // int.
     smatch match;
     if (regex_search(s, match, expr)) {
-//        v = boost::any(ProkGeneStartModel::genome_class_t(boost::lexical_cast<int>(match[1])));
+//        v = boost::any(ProkGeneStartModel::genome_group_t(boost::lexical_cast<int>(match[1])));
     } else {
         throw validation_error(validation_error::invalid_option_value);
     }
@@ -114,56 +119,9 @@ bool OptionsGMS2Training::parse(int argc, const char *argv[]) {
         ("fn-sequence,s", po::value<string>(&fn_sequence)->required(), "Name of sequence file")
         ("fn-labels,l", po::value<string>(&fn_labels)->required(), "Name of labels file")
         ("fn-mod,m", po::value<string>(&fn_outmod)->required(), "Name of output model file")
-        
-        
-        // GMS2 model parameters
-        ("genome-class", po::value<ProkGeneStartModel::genome_class_t>(&genomeClass)->required(), "The genome's class: 1,2,3,4,5,6")
-        ("pcounts", po::value<double>(&pcounts)->default_value(1), "Pseudocounts for gms2 models")
-        ("coding-order", po::value<unsigned>(&codingOrder)->default_value(4), "Order for coding Markov model")
-        ("noncoding-order", po::value<unsigned>(&noncodingOrder)->default_value(2), "Order for noncoding Markov model")
-        ("sc-order", po::value<unsigned>(&startContextOrder)->default_value(0), "Order for start-context model")
-        ("sc-length", po::value<NumSequence::size_type>(&startContextLength)->default_value(18), "Length of start-context model")
-        ("upstream-length", po::value<NumSequence::size_type>(&upstreamLength)->default_value(40), "Length of upstream region for motif search")
-        ("MIN_GENE_LEN", po::value<NumSequence::size_type>(&MIN_GENE_LEN)->default_value(300), "Minimum gene length allowed in training")
-        ("sc-margin", po::value<int>(&startContextMargin)->default_value(-15), "Margin for start context matrix")
-        ("genetic-code", po::value<gcode_t>(&geneticCode)->default_value(GeneticCode::ELEVEN), "Genetic code")
-        ("train-on-native-only", po::value<bool>(&trainOnNativeOnly)->default_value(false), "Train on native genes only")
-        ("fn-settings", po::value<string>(&fn_settings), "Settings to put in output model file.")
-        ("run-motif-search", po::value<bool>(&runMotifSearch)->default_value(true), "Enable/disable motif search.")
-        ("upstream-length-fgio", po::value<size_t>(&upstrLenFGIO)->default_value(40), "Upstream length of first-gene-in-operon.")
-        ("width-archaea-promoter", po::value<unsigned>(&widthArchaeaPromoter)->default_value(12), "Width for promoters in Archaea.")
-        ("match-to", po::value<string>(&matchTo)->default_value("TAAGGAGGTGA"), "16S tail")
-        ("allow-ag-substitution", po::bool_switch(&allowAGSubstitution)->default_value(true), "Allow AG substitution.")
-        ("match-thresh", po::value<unsigned>(&matchThresh)->default_value(4), "Match threshold for 16S tail.")
-        ("upstream-sig-length", po::value<NumSequence::size_type>(&upstreamSignatureLength)->default_value(35), "Length of full upstream signature model")
-        ("upstream-sig-order", po::value<unsigned> (&upstreamSignatureOrder)->default_value(2), "Order of upstream signature model")
-        ("train-noncoding-on-genome", po::bool_switch(&trainNonCodingOnFullGenome)->default_value(false), "If set, non-coding is trained on full genome, rather than only on intergenic regionns")
-        ("fgio-dist-thresh", po::value<unsigned>(&fgioDistThresh)->default_value(25), "Distance threshold to separate first-genes-in-operon")
-        ("cut-prom-train-seqs", po::bool_switch(&cutPromTrainSeqs)->default_value(false), "If set, promoter is trained on fragment of total upstream")
-//        // MFinder options
-//        ("pcounts-mfinder", po::value<double>(&optionsMFinder.pcounts)->default_value(1), "Pseudocounts for mfinder models")
-//        ("width", po::value<unsigned>(&optionsMFinder.width)->default_value(6), "Width of motif in MFinder")
-//        ("motif-order", po::value<unsigned>(&optionsMFinder.motifOrder)->default_value(0), "Order for motif Markov model")
-//        ("bkgd-order", po::value<unsigned>(&optionsMFinder.bkgdOrder)->default_value(0), "Order for background model in MFinder")
-//        ("align", po::value<string>(&optionsMFinder.align)->default_value("none"), "Set to left or right to allow use of spacer distribution in mfinder")
-//        ("tries", po::value<unsigned>(&optionsMFinder.tries)->default_value(10), "Number of tries in mfinder")
         ;
         
-        po::options_description prediction("Prediction Parameters");
-        prediction.add_options()
-        ("NON_P_N", po::value<double>(&nonProbN)->default_value(0.6), "Probability for N value in non-coding region")
-        ("COD_P_N", po::value<double>(&codProbN)->default_value(0.4), "Probability for N value in coding region")
-        ("NON_DURATION_DECAY", po::value<double>(&nonDurationDecay)->default_value(150), "Duration decay for non-coding region")
-        ("COD_DURATION_DECAY", po::value<double>(&codDurationDecay)->default_value(300), "Duration decay for coding region")
-        ("GENE_MIN_LENGTH", po::value<NumSequence::size_type>(&geneMinLengthPrediction)->default_value(89), "Minimum length for genes in prediction step")
-        ;
-        
-        config.add(prediction);
-        
-        // mfinder options
-        po::options_description mfinder("Motif Finder");
-        OptionsMFinder::addProcessOptions(optionsMFinder, mfinder);
-        config.add(mfinder);
+        addProcessOptions(*this, config);
         
         // Create set of hidden arguments (which can correspond to positional arguments). This is used
         // to add positional arguments, while not putting their description in the "options" section.
@@ -198,6 +156,7 @@ bool OptionsGMS2Training::parse(int argc, const char *argv[]) {
                   positional(pos).                              // specify which are positional
                   run(),                                        // parse options
                   vm);                                          // specify storage container
+        
         if (vm.count("config") > 0) {
             config_fnames = vm["config"].as<std::vector<std::string> >();
 
@@ -226,20 +185,6 @@ bool OptionsGMS2Training::parse(int argc, const char *argv[]) {
         // try parsing arguments.
         po::notify(vm);
         
-//        // get genome sequence
-//        switch (vm["genome-class"].as<int>()) {
-//            case 1:
-//                genomeClass = ProkGeneStartModel::C1;
-//                break;
-//            case 2:
-//                genomeClass = ProkGeneStartModel::C2;
-//            case 3:
-//                genomeClass = ProkGeneStartModel::C3;
-//                
-//            default:
-//                throw invalid_argument("Unknown genome class");
-//        }
-        
     }
     catch (exception &ex) {
         cerr << "Error: " << ex.what() << endl;
@@ -255,29 +200,79 @@ bool OptionsGMS2Training::parse(int argc, const char *argv[]) {
 
 void OptionsGMS2Training::addProcessOptions(OptionsGMS2Training &options, po::options_description &processOptions) {
  
-    processOptions.add_options()
-    ("genome-class", po::value<ProkGeneStartModel::genome_class_t>(&options.genomeClass)->required(), "The genome's class: 1,2,3")
-    ("pcounts", po::value<double>(&options.pcounts)->default_value(1), "Pseudocounts for gms2 models")
-    ("coding-order", po::value<unsigned>(&options.codingOrder)->default_value(4), "Order for coding Markov model")
-    ("noncoding-order", po::value<unsigned>(&options.noncodingOrder)->default_value(2), "Order for noncoding Markov model")
-    ("sc-order", po::value<unsigned>(&options.startContextOrder)->default_value(0), "Order for start-context model")
-    ("sc-length", po::value<NumSequence::size_type>(&options.startContextLength)->default_value(18), "Length of start-context model")
-    ("upstream-length", po::value<NumSequence::size_type>(&options.upstreamLength)->default_value(40), "Length of upstream region for motif search")
-    ("MIN_GENE_LEN", po::value<NumSequence::size_type>(&options.MIN_GENE_LEN)->default_value(300), "Minimum gene length allowed in training")
-    ("sc-margin", po::value<int>(&options.startContextMargin)->default_value(-15), "Margin for start context matrix")
-    ("genetic-code", po::value<gcode_t>(&options.geneticCode)->default_value(GeneticCode::ELEVEN), "Genetic code")
-    ("train-on-native-only", po::value<bool>(&options.trainOnNativeOnly)->default_value(false), "Train on native genes only")
-    ("fn-settings", po::value<string>(&options.fn_settings), "Settings to put in output model file.")
-    ("run-motif-search", po::value<bool>(&options.runMotifSearch)->default_value(true), "Enable/disable motif search.")
-    ("upstream-length-fgio", po::value<size_t>(&options.upstrLenFGIO)->default_value(40), "Upstream length of first-gene-in-operon.")
-    ("width-archaea-promoter", po::value<unsigned>(&options.widthArchaeaPromoter)->default_value(12), "Width for promoters in Archaea.")
-    ("upstream-sig-length", po::value<NumSequence::size_type>(&options.upstreamSignatureLength)->default_value(35), "Length of full upstream signature model")
-    ("upstream-sig-order", po::value<unsigned> (&options.upstreamSignatureOrder)->default_value(2), "Order of upstream signature model")
-    ("train-noncoding-on-genome", po::bool_switch(&options.trainNonCodingOnFullGenome)->default_value(false), "If set, non-coding is trained on full genome, rather than only on intergenic regionns")
-    ("fgio-dist-thresh", po::value<unsigned>(&options.fgioDistThresh)->default_value(25), "Distance threshold to separate first-genes-in-operon")
-    ("cut-prom-train-seqs", po::bool_switch(&options.cutPromTrainSeqs)->default_value(false), "If set, promoter is trained on fragment of total upstream")
-    ;
+    typedef NumSequence::size_type numseqsize;
     
+    processOptions.add_options()
+    // Coding and NonCoding Models
+    ("order-coding",        po::value<unsigned>     (&options.orderCoding                        )->default_value(5),    "Order of coding model")
+    ("order-noncoding",     po::value<unsigned>     (&options.orderNonCoding                     )->default_value(2),    "Order of non-coding model")
+    ("order-start-context", po::value<unsigned>     (&options.orderStartContext                  )->default_value(2),    "Order of start-context model")
+    ("len-start-context",   po::value<numseqsize>   (&options.lengthStartContext                 )->default_value(18),   "Length of start-context model")
+    ("margin-start-context",po::value<int>          (&options.marginStartContext                 )->default_value(-15),   "3' Position of start-context model relative to start (negative numbers move downstream into the gene")
+    // Misc Variables
+    ("fgio-dist-thr",       po::value<numseqsize>   (&options.fgioDistanceThresh                 )->default_value(25),   "Minimum distance between FGIO and upstream gene on same strand")
+    ("igio-dist-thr",       po::value<numseqsize>   (&options.igioDistanceThresh                 )->default_value(22),   "Maximum distance between IGIO and upstream gene on same strand")
+    ("pcounts",             po::value<unsigned>     (&options.pcounts                            )->default_value(1),    "Pseudocounts")
+    ("genome-group",        po::value<genome_group_t> (&options.genomeGroup                      )->required(),          "The genome's group: A,B,C,D,E,A2")
+    ("genetic-code",        po::value<gcode_t>      (&options.gcode                              )->default_value(GeneticCode::ELEVEN), "Genetic code")
+    ("min-gene-len",        po::value<numseqsize>   (&options.minimumGeneLengthTraining          )->default_value(300),  "Minimym gene length used in training parameters")
+    ("only-train-on-native",po::value<bool>         (&options.onlyTrainOnNativeGenes             )->default_value(false),"Only train on native genes")
+    ("run-motif-search",    po::value<bool>         (&options.runMotifSearch                     )->default_value(true), "Run motif search")
+    // Group-A
+    ("ga-width-prom",       po::value<unsigned>     (&options.groupA_widthPromoter               )->default_value(12),   "Group A: promoter width")
+    ("ga-width-rbs",        po::value<unsigned>     (&options.groupA_widthRBS                    )->default_value(6),    "Group A: rbs width")
+    ("ga-upstr-len-prom",   po::value<numseqsize>   (&options.groupA_upstreamLengthPromoter      )->default_value(40),   "Group A: upstream length for promoter training")
+    ("ga-upstr-len-rbs",    po::value<numseqsize>   (&options.groupA_upstreamLengthRBS           )->default_value(20),   "Group A: upstream length for rbs training")
+    ("ga-spacer-score-thr", po::value<double>       (&options.groupA_spacerScoreThresh           )->default_value(0.1),  "Group A: minimum peak for valid motif position distribution")
+    ("ga-spacer-dist-thr",  po::value<numseqsize>   (&options.groupA_spacerDistThresh            )->default_value(14),   "Group A: minimum distance from start for valid motif")
+    ("ga-spacer-window",    po::value<numseqsize>   (&options.groupA_spacerWindowSize            )->default_value(1),    "Group A: size of window to determine peak value")
+    ("ga-extended-sd",      po::value<string>       (&options.groupA_extendedSD                  )->default_value("TAAGGAGGTGA"), "Group A: extended SD sequence")
+    ("ga-min-match-to-sd",  po::value<unsigned>     (&options.groupA_minMatchToExtendedSD        )->default_value(4),    "Group A: minimum number of consecutive matches to SD")
+    ("ga-allow-ag-sub",     po::value<bool>         (&options.groupA_allowAGSubstitution         )->default_value(true), "Group A: allow A-G substitution for valid match to SD")
+    // Group B
+    ("gb-width-prom",       po::value<unsigned>     (&options.groupB_widthPromoter               )->default_value(6),    "Group B: promoter width")
+    ("gb-width-rbs",        po::value<unsigned>     (&options.groupB_widthRBS                    )->default_value(6),    "Group B: rbs width")
+    ("gb-upstr-len-prom",   po::value<numseqsize>   (&options.groupB_upstreamLengthPromoter      )->default_value(20),   "Group B: upstream length for promoter training")
+    ("gb-upstr-len-rbs",    po::value<numseqsize>   (&options.groupB_upstreamLengthRBS           )->default_value(20),   "Group B: upstream length for rbs training")
+    ("gb-spacer-score-thr", po::value<double>       (&options.groupB_spacerScoreThresh           )->default_value(0.25), "Group B: minimum peak for valid motif position distribution")
+    ("gb-spacer-dist-thr",  po::value<numseqsize>   (&options.groupB_spacerDistThresh            )->default_value(14),   "Group B: minimum distance from start for valid motif")
+    ("gb-spacer-window",    po::value<numseqsize>   (&options.groupB_spacerWindowSize            )->default_value(1),    "Group B: size of window to determine peak value")
+    ("gb-extended-sd",      po::value<string>       (&options.groupB_extendedSD                  )->default_value("TAAGGAGGTGA"), "Group B: extended SD sequence")
+    ("gb-min-match-to-sd",  po::value<unsigned>     (&options.groupB_minMatchToExtendedSD        )->default_value(4),    "Group B: minimum number of consecutive matches to SD")
+    ("gb-allow-ag-sub",     po::value<bool>         (&options.groupB_allowAGSubstitution         )->default_value(true), "Group B: allow A-G substitution for valid match to SD")
+    // Group C
+    ("gc-width-rbs",        po::value<unsigned>     (&options.groupC_widthRBS                    )->default_value(6),    "Group C: rbs width")
+    ("gc-upstr-len-rbs",    po::value<numseqsize>   (&options.groupC_upstreamLengthRBS           )->default_value(20),   "Group C: upstream length for rbs training")
+    ("gc-upstr-reg-3-prime",po::value<numseqsize>   (&options.groupC_upstreamRegion3Prime        )->default_value(0),    "Group C: 3'prime end of upstream region used for rbs training")
+    ("gc-min-match-rbs-prom",  po::value<unsigned>  (&options.groupC_minMatchRBSPromoter         )->default_value(3),    "Group C: minimum number of consecutive matches between rbs and promoter")
+    ("gc-min-match-to-sd",  po::value<unsigned>     (&options.groupC_minMatchToExtendedSD        )->default_value(4),    "Group C: minimum number of consecutive matches to SD")
+    ("gc-extended-sd",      po::value<string>       (&options.groupC_extendedSD                  )->default_value("TAAGGAGGTGA"), "Group C: extended SD sequence")
+    // Group C2
+    ("gc2-width-sd-rbs",        po::value<unsigned>     (&options.groupC2_widthSDRBS             )->default_value(6),    "Group C2: sd rbs width")
+    ("gc2-width-non-sd-rbs",    po::value<unsigned>     (&options.groupC2_widthNonSDRBS          )->default_value(6),    "Group C2: non-sd rbs width")
+    ("gc2-upstr-len-sd-rbs",    po::value<numseqsize>   (&options.groupC2_upstreamLengthSDRBS    )->default_value(20),   "Group C2: upstream length for SD RBS training")
+    ("gc2-upstr-len-non-sd-rbs",po::value<numseqsize>   (&options.groupC2_upstreamLengthNonSDRBS )->default_value(20),   "Group C2: upstream length for non-SD RBS training")
+    ("gc2-upstr-reg-3-prime",po::value<numseqsize>   (&options.groupC2_upstreamRegion3Prime      )->default_value(0),    "Group C2: 3'prime end of upstream region used for rbs training")
+    ("gc2-min-match-to-sd",  po::value<unsigned>     (&options.groupC2_minMatchToExtendedSD      )->default_value(4),    "Group C2: minimum number of consecutive matches to SD")
+    ("gc2-extended-sd",      po::value<string>       (&options.groupC2_extendedSD                )->default_value("TAAGGAGGTGA"), "Group C2: extended SD sequence")
+    // Group D
+    ("gd-width-rbs",        po::value<unsigned>     (&options.groupD_widthRBS                    )->default_value(6),    "Group D: rbs width")
+    ("gd-upstr-len-rbs",    po::value<numseqsize>   (&options.groupD_upstreamLengthRBS           )->default_value(20),   "Group D: upstream length for rbs training")
+    ("gd-percent-match-rbs",  po::value<double>     (&options.groupD_percentMatchRBS             )->default_value(0.5),  "Group D: minimum percentage of predicted motifs that match SD")
+    ("gd-extended-sd",      po::value<string>       (&options.groupD_extendedSD                  )->default_value("TAAGGAGGTGA"), "Group D: extended SD sequence")
+    ("gd-min-match-to-sd",  po::value<unsigned>     (&options.groupD_minMatchToExtendedSD        )->default_value(4),    "Group D: minimum number of consecutive matches to SD")
+    ("gd-allow-ag-sub",     po::value<bool>         (&options.groupD_allowAGSubstitution         )->default_value(true), "Group D: allow A-G substitution for valid match to SD")
+    // Group E
+    ("ge-width-rbs",        po::value<unsigned>     (&options.groupE_widthRBS                    )->default_value(6),    "Group E: rbs width")
+    ("ge-upstr-len-rbs",    po::value<numseqsize>   (&options.groupE_upstreamLengthRBS           )->default_value(20),   "Group E: upstream length for rbs training")
+    ("ge-len-upstr-sig",    po::value<numseqsize>   (&options.groupE_lengthUpstreamSignature     )->default_value(35),   "Group E: length of upstream signature model")
+    ("ge-order-upstr-sig",  po::value<unsigned>     (&options.groupE_orderUpstreamSignature      )->default_value(2),    "Group E: order of upstream signature model")
+    ("ge-extended-sd",      po::value<string>       (&options.groupE_extendedSD                  )->default_value("TAAGGAGGTGA"), "Group E: extended SD sequence")
+    ("ge-min-match-to-sd",  po::value<unsigned>     (&options.groupE_minMatchToExtendedSD        )->default_value(4),    "Group E: minimum number of consecutive matches to SD")
+    ("ge-allow-ag-sub",     po::value<bool>         (&options.groupE_allowAGSubstitution         )->default_value(true), "Group E: allow A-G substitution for valid match to SD")
+    ;
+
+
     
     po::options_description prediction("Prediction Parameters");
     prediction.add_options()
@@ -294,6 +289,7 @@ void OptionsGMS2Training::addProcessOptions(OptionsGMS2Training &options, po::op
     po::options_description mfinder("Motif Finder");
     OptionsMFinder::addProcessOptions(options.optionsMFinder, mfinder);
     processOptions.add(mfinder);
+    
     
 }
 

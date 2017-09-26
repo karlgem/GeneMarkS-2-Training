@@ -38,7 +38,8 @@ namespace gmsuite {
             PROMOTER_IS_VALID_FOR_BACTERIA,
             START_MODEL_STRATEGY_2,
             PROMOTER_AND_RBS_MATCH,
-            RBS_CONSENSUS_AND_16S_MATCH
+            RBS_CONSENSUS_AND_16S_MATCH,
+            RBS_IS_LOCALIZED
         }
         experiment_t;
         
@@ -216,6 +217,14 @@ namespace gmsuite {
         }
         startModelStrategy2;
         
+        struct RBSIsLocalized : public GenericOptions {
+            string fnmod;
+            size_t distanceThresh;
+            double scoreThresh;
+            size_t windowSize;
+        }
+        rbsIsLocalized;
+        
         
         /**********************************************\
          *              Option Processing             *
@@ -236,6 +245,7 @@ namespace gmsuite {
         static void addProcessOptions_StartModelStrategy2Options(StartModelStrategy2Options &options, po::options_description &processOptions);
         static void addProcessOptions_PromoterAndRBSMatchOptions(PromoterAndRBSMatch &options, po::options_description &processOptions);
         static void addProcessOptions_RBSConsensusAnd16SMatch(RBSConsensusAnd16SMatch &options, po::options_description &processOptions);
+        static void addProcessOptions_RBSIsLocalized(RBSIsLocalized &options, po::options_description &processOptions);
         
         
     };
