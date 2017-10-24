@@ -60,6 +60,8 @@ void ModuleUtilities::run() {
         runComputeGC();
     else if (options.utility == OptionsUtilities::SEPARATE_FGIO_AND_IG)
         runSeparateFGIOAndIG();
+    else if (options.utility == OptionsUtilities::EXTRACT_START_CONTEXT)
+        runExtractStartContext();
     
 //    else            // unrecognized utility to run
 //        throw invalid_argument("Unknown utility function " + options.utility);
@@ -640,6 +642,43 @@ void ModuleUtilities::runCountNumORF() {
     
 }
 
+
+void ModuleUtilities::runExtractStartContext() {
+    
+    OptionsUtilities::ExtractStartContext utilOpt = options.extractStartContext;
+    
+    // read sequence file
+    SequenceFile sequenceFile(utilOpt.fn_sequence, SequenceFile::READ);
+    Sequence strSequence = sequenceFile.read();
+    
+    // read label file
+    LabelFile labelFile(utilOpt.fn_label, LabelFile::READ);
+    vector<Label*> labels;
+    labelFile.read(labels);
+    
+    // create numeric sequence
+    AlphabetDNA alph;
+    CharNumConverter cnc (&alph);
+    NumAlphabetDNA numAlph(alph, cnc);
+    GeneticCode geneticCode(GeneticCode::ELEVEN);           // FIXME: allow genetic code 4
+    NumGeneticCode numGeneticCode(geneticCode, cnc);
+    
+    NumSequence sequence(strSequence, cnc);
+    vector<NumSequence> startContexts;
+    size_t scLength = utilOpt.rightRelativeToStart - utilOpt.leftRelativeToStart + 1;
+    SequenceParser::extractStartContextSequences(sequence, labels, cnc, utilOpt.leftRelativeToStart, scLength, startContexts);
+    
+    // FIXME: Allow printing to file
+    for (size_t n = 0; n < startContexts.size(); n++) {
+        if (startContexts[n].size() == 0)
+            continue;
+        
+        string strSC = cnc.convert(startContexts[n].begin(), startContexts[n].end());
+        cout << strSC << endl;
+    }
+    
+    
+}
 
 
 void ModuleUtilities::runExtractStartContextPerOperonStatus() {
