@@ -36,6 +36,7 @@ OptionsUtilities::OptionsUtilities(string mode) : Options(mode) {
 #define STR_EXTRACT_SC_PER_MOTIF_STATUS "extract-sc-per-motif-status"
 #define STR_COMPUTE_GC "compute-gc"
 #define STR_SEPARATE_FGIO_AND_IG "separate-fgio-and-ig"
+#define STR_EXTRACT_START_CONTEXT "extract-start-context"
 
 namespace gmsuite {
     // convert string to utility_t
@@ -54,6 +55,7 @@ namespace gmsuite {
         else if (token == STR_EXTRACT_SC_PER_MOTIF_STATUS) unit = OptionsUtilities::EXTRACT_SC_PER_MOTIF_STATUS;
         else if (token == STR_COMPUTE_GC)               unit = OptionsUtilities::COMPUTE_GC;
         else if (token == STR_SEPARATE_FGIO_AND_IG)     unit = OptionsUtilities::SEPARATE_FGIO_AND_IG;
+        else if (token == STR_EXTRACT_START_CONTEXT)    unit = OptionsUtilities::EXTRACT_START_CONTEXT;
         else
             throw boost::program_options::invalid_option_value(token);
         
@@ -385,6 +387,22 @@ bool OptionsUtilities::parse(int argc, const char *argv[]) {
             // Parse again...
             po::store(po::command_line_parser(opts).options(utilDesc).run(), vm);
         }
+        // Extract start-contxt
+        else if (utility == EXTRACT_START_CONTEXT) {
+            po::options_description utilDesc (string(STR_EXTRACT_START_CONTEXT) + " options");
+            addProcessOptions_ExtractStartContext(extractStartContext, utilDesc);
+            
+            cmdline_options.add(utilDesc);
+            
+            // Collect all the unrecognized options from the first pass. This will include the
+            // (positional) mode and command name, so we need to erase them
+            vector<string> opts = po::collect_unrecognized(parsed.options, po::include_positional);
+            opts.erase(opts.begin());       // erase mode
+            opts.erase(opts.begin());       // erase command name
+            
+            // Parse again...
+            po::store(po::command_line_parser(opts).options(utilDesc).run(), vm);
+        }
 //        else                                                                        // unrecognized utility
 //            throw po::invalid_option_value(utility);
         
@@ -420,7 +438,18 @@ void OptionsUtilities::addProcessOptions_ExtractUpstream(ExtractUpstreamUtility 
     ;
 }
 
-
+void OptionsUtilities::addProcessOptions_ExtractStartContext(ExtractStartContext &options, po::options_description &processOptions) {
+    
+    processOptions.add_options()
+    ("sequence,s", po::value<string>(&options.fn_sequence)->required(), "Sequence filename")
+    ("label,l", po::value<string>(&options.fn_label)->required(), "Label filename")
+    ("output,o", po::value<string>(&options.fn_output)->required(), "Output filename")
+    ("left", po::value<int>(&options.leftRelativeToStart)->required(), "Left index relative to start")
+    ("right", po::value<int>(&options.rightRelativeToStart)->required(), "Right index relative to start")
+    ("allow-overlap-with-cds", po::bool_switch(&options.allowOverlaps), "If set, contexts can overlap CDS")
+    ("min-gene-length", po::value<size_t>(&options.minimumGeneLength), "Minimum gene length associated with start-context")
+    ;
+}
 
 
 

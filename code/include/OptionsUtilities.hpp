@@ -39,7 +39,8 @@ namespace gmsuite {
             EXTRACT_SC_PER_OPERON_STATUS,
             EXTRACT_SC_PER_MOTIF_STATUS,
             COMPUTE_GC,
-            SEPARATE_FGIO_AND_IG
+            SEPARATE_FGIO_AND_IG,
+            EXTRACT_START_CONTEXT
         }
         utility_t;
         
@@ -78,6 +79,17 @@ namespace gmsuite {
         }
         extractUpstreamUtility;
         
+        // extract start-context
+        struct ExtractStartContext : public GenericOptions {
+            string fn_sequence;             // sequence filename
+            string fn_label;                // label filename
+            string fn_output;               // output filename
+            int leftRelativeToStart;        // left position of context relative to gene-start; 0 indicates at first letter of start codon (inclusive)
+            int rightRelativeToStart;       // right position of context relative to gene-start; 0 indicates at first letter of start codon (inclusive)
+            bool allowOverlaps;             // allow context to overlap with upstream gene
+            size_t minimumGeneLength;       // minimum gene length associated with upstream
+        }
+        extractStartContext;
         
         // start-model-info options
         struct StartModelInfoUtility : public GenericOptions {
@@ -159,6 +171,7 @@ namespace gmsuite {
         } separateFGIOAndIG;
         
         static void addProcessOptions_ExtractUpstream(ExtractUpstreamUtility &options, po::options_description &processOptions);
+        static void addProcessOptions_ExtractStartContext(ExtractStartContext &options, po::options_description &processOptions);
         static void addProcessOptions_StartModelInfo(StartModelInfoUtility &options, po::options_description &processOptions);
         static void addProcessOptions_LabelsSimilarityCheck(LabelsSimilarityCheck &options, po::options_description &processOptions);
         static void addProcessOptions_EmitNonCoding(EmitNonCoding &options, po::options_description &processOptions);
