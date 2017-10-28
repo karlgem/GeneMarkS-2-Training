@@ -62,6 +62,8 @@ void ModuleUtilities::run() {
         runSeparateFGIOAndIG();
     else if (options.utility == OptionsUtilities::EXTRACT_START_CONTEXT)
         runExtractStartContext();
+    else if (options.utility == OptionsUtilities::DNA_TO_AA)
+        runDNAToAA();
     
 //    else            // unrecognized utility to run
 //        throw invalid_argument("Unknown utility function " + options.utility);
@@ -888,7 +890,38 @@ void ModuleUtilities::runSeparateFGIOAndIG() {
 
 
 
-
+void ModuleUtilities::runDNAToAA() {
+    OptionsUtilities::DNAToAA utilOpt = options.dnaToAA;
+    
+    // read sequences
+    SequenceFile sequenceFile (utilOpt.fnseqs, SequenceFile::READ);
+    
+    vector<gmsuite::Sequence> sequences;
+    sequenceFile.read(sequences);
+    
+    AlphabetDNA alph;
+    GeneticCode gcode(GeneticCode::ELEVEN);           // FIXME: allow genetic code 4
+    
+    for (vector<Sequence>::iterator iter = sequences.begin(); iter != sequences.end(); iter++) {
+        string seqStr = iter->toString();
+        
+        // assert length is multiple of 3
+        if (seqStr.length() % 3 != 0) {
+            throw invalid_argument("Sequence length isn't multiple of 3");
+        }
+        
+        string AA = "";
+        
+        // loop over codons
+        for (int i = 0; i < seqStr.length(); i += 3) {
+            AA += gcode.translateCodon(seqStr.substr(i, 3));
+        }
+        
+        cout << AA << endl;
+    }
+    
+    
+}
 
 
 

@@ -54,6 +54,7 @@ namespace gmsuite {
         void runComputeGC();
         void runSeparateFGIOAndIG();
         void runExtractStartContext();
+        void runDNAToAA();
     };
     
 }
