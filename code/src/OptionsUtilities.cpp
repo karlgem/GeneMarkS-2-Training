@@ -37,6 +37,7 @@ OptionsUtilities::OptionsUtilities(string mode) : Options(mode) {
 #define STR_COMPUTE_GC "compute-gc"
 #define STR_SEPARATE_FGIO_AND_IG "separate-fgio-and-ig"
 #define STR_EXTRACT_START_CONTEXT "extract-start-context"
+#define STR_DNA_TO_AA "dna-to-aa"
 
 namespace gmsuite {
     // convert string to utility_t
@@ -56,6 +57,7 @@ namespace gmsuite {
         else if (token == STR_COMPUTE_GC)               unit = OptionsUtilities::COMPUTE_GC;
         else if (token == STR_SEPARATE_FGIO_AND_IG)     unit = OptionsUtilities::SEPARATE_FGIO_AND_IG;
         else if (token == STR_EXTRACT_START_CONTEXT)    unit = OptionsUtilities::EXTRACT_START_CONTEXT;
+        else if (token == STR_DNA_TO_AA)                unit = OptionsUtilities::DNA_TO_AA;
         else
             throw boost::program_options::invalid_option_value(token);
         
@@ -403,6 +405,22 @@ bool OptionsUtilities::parse(int argc, const char *argv[]) {
             // Parse again...
             po::store(po::command_line_parser(opts).options(utilDesc).run(), vm);
         }
+        // Convert DNA to AA
+        else if (utility == DNA_TO_AA) {
+            po::options_description utilDesc (string(STR_DNA_TO_AA) + " options");
+            addProcessOptions_DNAToAA(dnaToAA, utilDesc);
+            
+            cmdline_options.add(utilDesc);
+            
+            // Collect all the unrecognized options from the first pass. This will include the
+            // (positional) mode and command name, so we need to erase them
+            vector<string> opts = po::collect_unrecognized(parsed.options, po::include_positional);
+            opts.erase(opts.begin());       // erase mode
+            opts.erase(opts.begin());       // erase command name
+            
+            // Parse again...
+            po::store(po::command_line_parser(opts).options(utilDesc).run(), vm);
+        }
 //        else                                                                        // unrecognized utility
 //            throw po::invalid_option_value(utility);
         
@@ -543,6 +561,12 @@ void OptionsUtilities::addProcessOptions_SeparateFGIOAndIG(SeparateFGIOAndIG &op
     ("ig", po::value<string>(&options.fnout_ig)->default_value(""), "Filename for IG labels")
     ("dist-thresh-fgio", po::value<size_t>(&options.distThreshFGIO)->default_value(25), "Minimum distance between genes to be classified as FGIO")
     ("dist-thres-ig", po::value<size_t>(&options.distThreshIG)->default_value(22), "Maximum distance between genes to be classified as IG")
+    ;
+}
+
+void OptionsUtilities::addProcessOptions_DNAToAA(DNAToAA &options, po::options_description &processOptions) {
+    processOptions.add_options()
+    ("sequence,s", po::value<string>(&options.fnseqs)->required(), "Sequence filename")
     ;
 }
 

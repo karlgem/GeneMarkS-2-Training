@@ -40,7 +40,8 @@ namespace gmsuite {
             EXTRACT_SC_PER_MOTIF_STATUS,
             COMPUTE_GC,
             SEPARATE_FGIO_AND_IG,
-            EXTRACT_START_CONTEXT
+            EXTRACT_START_CONTEXT,
+            DNA_TO_AA
         }
         utility_t;
         
@@ -170,6 +171,10 @@ namespace gmsuite {
             size_t distThreshIG;            // distance threshold below which genes are declared IG
         } separateFGIOAndIG;
         
+        struct DNAToAA : public GenericOptions {
+            string fnseqs;                  // file containing DNA sequences
+        } dnaToAA;
+        
         static void addProcessOptions_ExtractUpstream(ExtractUpstreamUtility &options, po::options_description &processOptions);
         static void addProcessOptions_ExtractStartContext(ExtractStartContext &options, po::options_description &processOptions);
         static void addProcessOptions_StartModelInfo(StartModelInfoUtility &options, po::options_description &processOptions);
@@ -180,6 +185,7 @@ namespace gmsuite {
         static void addProcessOptions_ExtractStartContextPerMotifStatus(ExtractStartContextPerMotifStatus &options, po::options_description &processOptions);
         static void addProcessOptions_ComputeGC(ComputeGC &options, po::options_description &processOptions);
         static void addProcessOptions_SeparateFGIOAndIG(SeparateFGIOAndIG &options, po::options_description &processOption);
+        static void addProcessOptions_DNAToAA(DNAToAA &options, po::options_description &processOptions);
     };
 }
 
