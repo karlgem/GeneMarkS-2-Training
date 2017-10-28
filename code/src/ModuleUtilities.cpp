@@ -905,6 +905,9 @@ void ModuleUtilities::runDNAToAA() {
     for (vector<Sequence>::iterator iter = sequences.begin(); iter != sequences.end(); iter++) {
         string seqStr = iter->toString();
         
+        if (seqStr.length() == 0)
+            continue;
+        
         // assert length is multiple of 3
         if (seqStr.length() % 3 != 0) {
             throw invalid_argument("Sequence length isn't multiple of 3");
@@ -913,7 +916,7 @@ void ModuleUtilities::runDNAToAA() {
         string AA = "";
         
         // loop over codons
-        for (int i = 0; i < seqStr.length(); i += 3) {
+        for (int i = 0; i < seqStr.length()-3; i += 3) {
             AA += gcode.translateCodon(seqStr.substr(i, 3));
         }
         
