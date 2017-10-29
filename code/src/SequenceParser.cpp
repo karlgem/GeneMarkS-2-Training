@@ -163,7 +163,7 @@ void SequenceParser::extractStartContextSequences(const NumSequence& sequence, c
                 size_t fragLeft = right - posRelToStart - length + 1;
                 size_t fragRight = fragLeft + length-1;
                 
-                if (fragRight < sequence.size()) {
+                if (right >= length && fragRight < sequence.size()) {
                     NumSequence subseq = sequence.subseq(fragLeft, fragRight - fragLeft + 1);
                     subseq.reverseComplement(cnc);
                     contexts.push_back(subseq);
