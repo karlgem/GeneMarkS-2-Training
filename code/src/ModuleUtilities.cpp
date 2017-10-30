@@ -670,16 +670,20 @@ void ModuleUtilities::runExtractStartContext() {
     size_t scLength = utilOpt.rightRelativeToStart - utilOpt.leftRelativeToStart + 1;
     SequenceParser::extractStartContextSequences(sequence, labels, cnc, utilOpt.leftRelativeToStart, scLength, startContexts);
     
+    if (startContexts.size() != labels.size())
+        throw logic_error("Number of start contexts differs from number of labels - will cause misalignment in fasta defs");
+    
     // FIXME: Allow printing to file
     for (size_t n = 0; n < startContexts.size(); n++) {
         if (startContexts[n].size() == 0)
             continue;
         
+        if (utilOpt.outputFastaDefs)
+            cout << ">" << labels[n]->toString(true) << endl;
+        
         string strSC = cnc.convert(startContexts[n].begin(), startContexts[n].end());
         cout << strSC << endl;
     }
-    
-    
 }
 
 

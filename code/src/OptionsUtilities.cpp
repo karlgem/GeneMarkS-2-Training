@@ -466,6 +466,7 @@ void OptionsUtilities::addProcessOptions_ExtractStartContext(ExtractStartContext
     ("right", po::value<int>(&options.rightRelativeToStart)->required(), "Right index relative to start")
     ("allow-overlap-with-cds", po::bool_switch(&options.allowOverlaps), "If set, contexts can overlap CDS")
     ("min-gene-length", po::value<size_t>(&options.minimumGeneLength), "Minimum gene length associated with start-context")
+    ("output-fasta", po::bool_switch(&options.outputFastaDefs)->default_value(false), "If set, output is in FASTA format")
     ;
 }
 
