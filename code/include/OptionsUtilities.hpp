@@ -89,6 +89,7 @@ namespace gmsuite {
             int rightRelativeToStart;       // right position of context relative to gene-start; 0 indicates at first letter of start codon (inclusive)
             bool allowOverlaps;             // allow context to overlap with upstream gene
             size_t minimumGeneLength;       // minimum gene length associated with upstream
+            bool outputFastaDefs;           // if set, FASTA definition outputted
         }
         extractStartContext;
         

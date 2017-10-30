@@ -152,6 +152,8 @@ void SequenceParser::extractStartContextSequences(const NumSequence& sequence, c
                 if (fragRight < sequence.size()) {
                     contexts.push_back(sequence.subseq(fragLeft,fragLength));
                 }
+                else
+                    contexts.push_back(NumSequence());
             }
         }
         else if (strand == Label::NEG) {
@@ -168,6 +170,8 @@ void SequenceParser::extractStartContextSequences(const NumSequence& sequence, c
                     subseq.reverseComplement(cnc);
                     contexts.push_back(subseq);
                 }
+                else
+                    contexts.push_back(NumSequence());
             }
         }
         else
