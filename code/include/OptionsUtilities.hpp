@@ -174,6 +174,7 @@ namespace gmsuite {
         
         struct DNAToAA : public GenericOptions {
             string fnseqs;                  // file containing DNA sequences
+            bool outputFastaDefs;           // if set, FASTA definition outputted
         } dnaToAA;
         
         static void addProcessOptions_ExtractUpstream(ExtractUpstreamUtility &options, po::options_description &processOptions);

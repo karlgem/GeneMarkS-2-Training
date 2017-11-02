@@ -568,6 +568,7 @@ void OptionsUtilities::addProcessOptions_SeparateFGIOAndIG(SeparateFGIOAndIG &op
 void OptionsUtilities::addProcessOptions_DNAToAA(DNAToAA &options, po::options_description &processOptions) {
     processOptions.add_options()
     ("sequence,s", po::value<string>(&options.fnseqs)->required(), "Sequence filename")
+    ("output-fasta", po::bool_switch(&options.outputFastaDefs)->default_value(false), "If set, output is in FASTA format")
     ;
 }
 
