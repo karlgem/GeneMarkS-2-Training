@@ -924,6 +924,10 @@ void ModuleUtilities::runDNAToAA() {
             AA += gcode.translateCodon(seqStr.substr(i, 3));
         }
         
+        if (utilOpt.outputFastaDefs) {
+            cout << iter->getMetaData() << endl;
+        }
+        
         cout << AA << endl;
     }
     
