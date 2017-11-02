@@ -925,7 +925,7 @@ void ModuleUtilities::runDNAToAA() {
         }
         
         if (utilOpt.outputFastaDefs) {
-            cout << iter->getMetaData() << endl;
+            cout << ">" << iter->getMetaData() << endl;
         }
         
         cout << AA << endl;
