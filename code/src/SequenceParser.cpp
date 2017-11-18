@@ -168,7 +168,7 @@ NumSequence SequenceParser::extractStartContextSequence(const NumSequence& seque
         if (posRelToStart >= 0 && length-1 > right - posRelToStart) throw invalid_argument("Attempt to extract start context with left boundary less than 0");
         
         size_t fragLeft = right - posRelToStart - length + 1;
-        return sequence.subseq(fragLeft, length);
+        return sequence.subseq(fragLeft, length).reverseComplement(cnc);
         
     }
     else
