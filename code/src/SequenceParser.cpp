@@ -155,6 +155,9 @@ void SequenceParser::extractStartContextSequences(const NumSequence& sequence, c
                 else
                     contexts.push_back(NumSequence());
             }
+            else {
+                contexts.push_back(NumSequence());
+            }
         }
         else if (strand == Label::NEG) {
             
@@ -173,6 +176,8 @@ void SequenceParser::extractStartContextSequences(const NumSequence& sequence, c
                 else
                     contexts.push_back(NumSequence());
             }
+            else
+                contexts.push_back(NumSequence());
         }
         else
             contexts.push_back(NumSequence());
