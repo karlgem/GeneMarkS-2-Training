@@ -28,7 +28,11 @@ namespace gmsuite {
         
         static void extractStartContextSequences(const NumSequence& sequence, const vector<Label*> &labels, const CharNumConverter &cnc, long long posRelToStart, NumSequence::size_type length, vector<NumSequence> &contexts, const vector<bool> &use = vector<bool>());
         
-        static NumSequence extractStartContextSequence(const NumSequence& sequence, const Label &labels, const CharNumConverter &cnc, long long posRelToStart, NumSequence::size_type length, const vector<bool> &use = vector<bool>());
+        /**
+         * Extract the sequence around the provided label's start-codon (based on strand).
+         * @param posRelToStart is the number of nucleotides from the begining of the start-context is extracted. Set to 0 means it starts at the gene-start. Negative numbers indicate movement upstream, while positive numbers indicate movement downstream.
+         */
+        static NumSequence extractStartContextSequence(const NumSequence& sequence, const Label &label, const CharNumConverter &cnc, long long posRelToStart, NumSequence::size_type length);
         
     };
     
