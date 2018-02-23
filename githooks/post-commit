@@ -5,11 +5,17 @@
 # exit with non-zero status after issuing an appropriate message if
 # it wants to stop the commit.
 
+
+VERBOSE=0
+
+if [[ ! -z $VERBOSE]]; then
+    echo "Executing post-commit hook.";
+fi
+
 filediff=`git diff`;
 
 if [[ ! -z $filediff ]]; then
-    echo "Je t'aime"
-    
+      
     rootDir=`git rev-parse --show-toplevel`;
     
     # If on develop branch
