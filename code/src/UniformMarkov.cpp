@@ -270,6 +270,8 @@ NumSequence UniformMarkov::emit(NumSequence::size_type length) const {
     DIST dist(0,1);
     static GEN  gen(eng,dist);
     
+    gen.engine().seed(static_cast<unsigned int>(std::time(0)));
+    gen.distribution().reset();
     
     // if sequence length <= order+1, simply emit from joint
     if (length <= this->order + 1) {

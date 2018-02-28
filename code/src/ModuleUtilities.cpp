@@ -24,6 +24,7 @@
 #include "ModelFile.hpp"
 #include "NonCodingMarkov.hpp"
 #include "LabelsParser.hpp"
+#include <time.h>
 
 using namespace std;
 using namespace gmsuite;
@@ -454,6 +455,8 @@ void ModuleUtilities::runMatchSeqToNoncoding() {
 
 
 void ModuleUtilities::runEmitNonCoding() {
+    
+    srand(time(NULL));
     
     // read model file
     ModelFile mfile (options.emitNonCoding.fn_mod, ModelFile::READ);
