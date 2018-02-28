@@ -491,6 +491,11 @@ void ModuleUtilities::runEmitNonCoding() {
     // build non-coding model
     NonCodingMarkov nonCodingMarkov(nonCodingProbs, numAlph, cnc);
     
+    // if new-order option set, change model order to given value
+    if (options.emitNonCoding.order != numeric_limits<int>::infinity()) {
+        nonCodingMarkov.changeOrder(options.emitNonCoding.order);
+    }
+    
     // emit noncoding sequence
     NumSequence emittedNumSeq = nonCodingMarkov.emit(options.emitNonCoding.length);
     

@@ -505,6 +505,7 @@ void OptionsUtilities::addProcessOptions_EmitNonCoding(EmitNonCoding &options, p
         ("mod,m", po::value<string>(&options.fn_mod)->required(), "Model file containing non-coding model")
         ("out,o", po::value<string>(&options.fn_out)->required(), "Name of output file containing sequence")
         ("length,l", po::value<NumSequence::size_type>(&options.length)->required(), "Length of generated non-coding sequence")
+        ("order", po::value<unsigned>(&options.order)->default_value(numeric_limits<int>::infinity()))
     ;
     
 }
