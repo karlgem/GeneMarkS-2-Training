@@ -125,6 +125,7 @@ namespace gmsuite {
             string fn_mod;                  // input model file containing noncoding model
             string fn_out;                  // sequence output file
             NumSequence::size_type length;  // length of non-coding sequence
+            unsigned order;                 // order in which markov model should be used
         } emitNonCoding;
         
         struct CountNumORF : public GenericOptions {
