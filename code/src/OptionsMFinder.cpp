@@ -169,6 +169,7 @@ void OptionsMFinder::addProcessOptions(OptionsMFinder &optionsMFinder, po::optio
     string opt_shiftEvery   = prefix + "shift-every"    ;
     string opt_pcount       = prefix + "pcount"         ;
     string opt_filterThresh = prefix + "filter-thresh"  ;
+    string opt_fnout_mod    = prefix + "fnout-mod"      ;
     
     
     processOptions.add_options()
@@ -182,6 +183,7 @@ void OptionsMFinder::addProcessOptions(OptionsMFinder &optionsMFinder, po::optio
     (opt_shiftEvery.c_str(),    po::value<unsigned> (&optionsMFinder.shiftEvery)->default_value(10), "Number of iterations before shifting motif")
     (opt_pcount.c_str(),        po::value<double>   (&optionsMFinder.pcounts)->default_value(1), "Pseudocounts")
     (opt_filterThresh.c_str(),  po::value<double>   (&optionsMFinder.filterThresh)->default_value(-std::numeric_limits<double>::infinity()), "Value for filtering out motifs with low score")
+    (opt_fnout_mod.c_str(),     po::value<string>   (&optionsMFinder.fname_out_models)->default_value(""), "Name of output file that will contain models")
     ;
 }
 

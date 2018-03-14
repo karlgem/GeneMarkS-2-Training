@@ -49,8 +49,13 @@ MotifFinder::MotifFinder(
 }
 
 
-// Find motifs in sequences.
 void MotifFinder::findMotifs (const vector<NumSequence> &sequences, vector<NumSequence::size_type> &positions) {
+    ProbabilityModels *probs;
+    findMotifs(sequences, positions, probs);
+}
+
+// Find motifs in sequences.
+void MotifFinder::findMotifs (const vector<NumSequence> &sequences, vector<NumSequence::size_type> &positions, ProbabilityModels *&probs_out) {
     
     // if no sequences, just return
     if (sequences.size() == 0)
@@ -62,14 +67,19 @@ void MotifFinder::findMotifs (const vector<NumSequence> &sequences, vector<NumSe
     // run algorithm several times; choose output with maximum probability
     for (unsigned t = 0; t < tries; t++) {
         
+        ProbabilityModels *tempProbs;
         vector<NumSequence::size_type> tempPosition;
-        double tempProb = gibbsFinder(sequences, tempPosition);         // run gibbs finder
+        double tempProb = gibbsFinder(sequences, tempPosition, tempProbs);         // run gibbs finder
         
         // if found better alignment, record it
         if (tempProb > maxProbability) {
             maxProbability = tempProb;
             maxPositions = tempPosition;
+            
+            probs_out = new ProbabilityModelsV1(*((ProbabilityModelsV1*) tempProbs));
         }
+        else
+            delete tempProbs;
     }
     
     // get best positions for output
@@ -80,7 +90,7 @@ void MotifFinder::findMotifs (const vector<NumSequence> &sequences, vector<NumSe
 
 
 // Run a single try of gibbs-finder to search for the best motif alignment.
-double MotifFinder::gibbsFinder(const vector<NumSequence> &sequences, vector<NumSequence::size_type> &positions) {
+double MotifFinder::gibbsFinder(const vector<NumSequence> &sequences, vector<NumSequence::size_type> &positions, ProbabilityModels *&probs_out) {
     
     vector<NumSequence>::size_type numSeqs = sequences.size();            // number of sequences
     
@@ -94,16 +104,17 @@ double MotifFinder::gibbsFinder(const vector<NumSequence> &sequences, vector<Num
         tempPositions[n] = rand() % (sequences[n].size() - width + 1);
     }
     
-    CharNumConverter cnc(&this->alphabet);
-    NumAlphabetDNA numAlphabet(this->alphabet, cnc);
+    AlphabetDNA *alphNew = new AlphabetDNA();
+    CharNumConverter *cnc = new CharNumConverter(alphNew);
+    NumAlphabetDNA *numAlphabet = new NumAlphabetDNA(*((const AlphabetDNA*) alphNew), *((const CharNumConverter*) cnc));
     
     
     /***** Construct initial count models *****/
-    CountModels* counts = new CountModelsV1(numAlphabet, width, motifOrder, backOrder, align);
+    CountModels* counts = new CountModelsV1(*numAlphabet, width, motifOrder, backOrder, align);
     counts->construct(sequences, tempPositions);
     
     // allocate space for probability models
-    ProbabilityModels *probs = new ProbabilityModelsV1(numAlphabet, width, motifOrder, backOrder, pcounts, align);
+    ProbabilityModels *probs = new ProbabilityModelsV1(*numAlphabet, width, motifOrder, backOrder, pcounts, align);
     
     double maxScore = -DBL_MAX;                 // maximum alignment score
     vector<Sequence::size_type> maxPositions;   // maximum alignment positions
@@ -214,8 +225,10 @@ double MotifFinder::gibbsFinder(const vector<NumSequence> &sequences, vector<Num
     
     
     // free space
-    delete counts;
-    delete probs;
+//    delete counts;
+//    delete probs;
+    probs_out = new ProbabilityModelsV1(*((ProbabilityModelsV1*)probs));
+    
     
     positions = maxPositions;       // get best positions for output
     return maxScore;                // return score for best alignment

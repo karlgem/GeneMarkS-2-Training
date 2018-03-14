@@ -16,9 +16,10 @@
 #include "GeneticCode.hpp"
 #include "NumGeneticCode.hpp"
 #include "CharNumConverter.hpp"
+#include "ProbabilityModelsV1.hpp"
 
 #include <iostream>
-
+#include <fstream>
 using namespace std;
 using namespace gmsuite;
 
@@ -65,7 +66,8 @@ void ModuleMFinder::run() {
     NumGeneticCode gcNum (gc, cnc);             // create numeric genetic code 11
     
     vector<NumSequence::size_type> positions;
-    mfinder.findMotifs(numSequences, positions);
+    ProbabilityModels *probs = NULL;
+    mfinder.findMotifs(numSequences, positions, probs);
     
     printf("NAME MotifFinder\n");
     printf("VERSION 1.0\n");
@@ -75,4 +77,17 @@ void ModuleMFinder::run() {
         cout << cnc.convert(numSequences[n].begin() + positions[n], numSequences[n].begin() + positions[n] + options.width);
         cout << "\t" << positions[n] + 1 << "\t" << numSequences[n].size() << endl;
     }
+    
+    if (probs == NULL)
+        cout << "HI" << endl;
+    
+    // print models to file
+    if (!this->options.fname_out_models.empty()) {
+        ofstream ofs;
+        ofs.open(this->options.fname_out_models);
+        ofs << probs->toString();
+        ofs.close();
+    }
+    
+//    delete probs;
 }

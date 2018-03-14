@@ -15,7 +15,7 @@
 #include "NumSequence.hpp"
 #include "MFinderModelParams.hpp"
 #include "OptionsMFinder.hpp"
-
+#include "ProbabilityModels.hpp"
 
 namespace gmsuite {
     
@@ -64,6 +64,7 @@ namespace gmsuite {
          * @param positions the motif positions in each sequence
          */
         void findMotifs (const vector<NumSequence> &sequences, vector<NumSequence::size_type> &positions);
+        void findMotifs (const vector<NumSequence> &sequences, vector<NumSequence::size_type> &positions, ProbabilityModels *&probs);
         
         
     private:
@@ -76,7 +77,7 @@ namespace gmsuite {
          * @param positions the motif positions in each sequence
          * @return the alignment's probability
          */
-        double gibbsFinder(const vector<NumSequence> &sequences, vector<NumSequence::size_type> &positions);
+        double gibbsFinder(const vector<NumSequence> &sequences, vector<NumSequence::size_type> &positions, ProbabilityModels *&probs);
         
         
         /**
