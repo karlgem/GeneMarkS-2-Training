@@ -65,6 +65,8 @@ void ModuleUtilities::run() {
         runExtractStartContext();
     else if (options.utility == OptionsUtilities::DNA_TO_AA)
         runDNAToAA();
+    else if (options.utility == OptionsUtilities::CHANGE_ORDER_NONCODING)
+        runChangeOrderNonCoding();
     
 //    else            // unrecognized utility to run
 //        throw invalid_argument("Unknown utility function " + options.utility);
@@ -943,5 +945,73 @@ void ModuleUtilities::runDNAToAA() {
 }
 
 
+void ModuleUtilities::runChangeOrderNonCoding() {
+    OptionsUtilities::ChangeOrderNonCoding utilOpt = options.changeOrderNonCoding;
+    
+    // read input model file
+    ModelFile fin(utilOpt.fnin, ModelFile::READ);
+    
+    map<string,string> modelIn;
+    fin.read(modelIn);
+    
+    
+    // set keys for non-coding model
+    vector<string> keys;
+    keys.push_back("NON_MAT");
+    keys.push_back("NON_ORDER");
+    
+    // get key-value pair for non-coding model
+    map<string, string> mKeyValuePair;
+    fin.read(mKeyValuePair, keys);
+    
+    AlphabetDNA alph;
+    CharNumConverter cnc(&alph);
+    NumAlphabetDNA numAlph(alph, cnc);
+    
+    // break non-coding string into vector of codon-probability pairs
+    vector<pair<string, double> > nonCodingProbs;
+    istringstream ssm(mKeyValuePair["NON_MAT"]);
+    string line;
+    while (std::getline(ssm, line)) {
+        
+        stringstream lineStream (line);
+        string codon;
+        double prob;
+        
+        lineStream >> codon >> prob;
+        nonCodingProbs.push_back(pair<string, double> (codon, prob));
+    }
+    
+    // build non-coding model
+    NonCodingMarkov nonCodingMarkov(nonCodingProbs, numAlph, cnc);
+    
+    nonCodingMarkov.changeOrder(utilOpt.newOrder);
+    
+    modelIn["NON_MAT"] = nonCodingMarkov.toString();
+    
+    stringstream ssm_order;
+    ssm_order << utilOpt.newOrder;
+    modelIn["NON_ORDER"] = (ssm_order.str());
+    
+    // write to output
+    ModelFile fout (utilOpt.fnout, ModelFile::WRITE);
+    
+    vector<pair<string, string> > modelOut;
+    
+    for (map<string, string>::iterator iter = modelIn.begin(); iter != modelIn.end(); iter++) {
+        pair<string, string> p;
+        p.first = iter->first;
+        p.second = iter->second;
+        modelOut.push_back(p);
+    }
+    
+    fout.write(modelOut);
+    
+    
+    
+    
+    
+    
+}
 
 

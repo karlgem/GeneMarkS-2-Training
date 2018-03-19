@@ -38,6 +38,7 @@ OptionsUtilities::OptionsUtilities(string mode) : Options(mode) {
 #define STR_SEPARATE_FGIO_AND_IG "separate-fgio-and-ig"
 #define STR_EXTRACT_START_CONTEXT "extract-start-context"
 #define STR_DNA_TO_AA "dna-to-aa"
+#define STR_CHANGE_ORDER_NONCODING "change-order-noncoding"
 
 namespace gmsuite {
     // convert string to utility_t
@@ -58,6 +59,7 @@ namespace gmsuite {
         else if (token == STR_SEPARATE_FGIO_AND_IG)     unit = OptionsUtilities::SEPARATE_FGIO_AND_IG;
         else if (token == STR_EXTRACT_START_CONTEXT)    unit = OptionsUtilities::EXTRACT_START_CONTEXT;
         else if (token == STR_DNA_TO_AA)                unit = OptionsUtilities::DNA_TO_AA;
+        else if (token == STR_CHANGE_ORDER_NONCODING)   unit = OptionsUtilities::CHANGE_ORDER_NONCODING;
         else
             throw boost::program_options::invalid_option_value(token);
         
@@ -421,6 +423,21 @@ bool OptionsUtilities::parse(int argc, const char *argv[]) {
             // Parse again...
             po::store(po::command_line_parser(opts).options(utilDesc).run(), vm);
         }
+        else if (utility == CHANGE_ORDER_NONCODING) {
+            po::options_description utilDesc (string(STR_CHANGE_ORDER_NONCODING) + " options");
+            addProcessOptions_ChangeOrderNonCoding(changeOrderNonCoding, utilDesc);
+            
+            cmdline_options.add(utilDesc);
+            
+            // Collect all the unrecognized options from the first pass. This will include the
+            // (positional) mode and command name, so we need to erase them
+            vector<string> opts = po::collect_unrecognized(parsed.options, po::include_positional);
+            opts.erase(opts.begin());       // erase mode
+            opts.erase(opts.begin());       // erase command name
+            
+            // Parse again...
+            po::store(po::command_line_parser(opts).options(utilDesc).run(), vm);
+        }
 //        else                                                                        // unrecognized utility
 //            throw po::invalid_option_value(utility);
         
@@ -571,6 +588,15 @@ void OptionsUtilities::addProcessOptions_DNAToAA(DNAToAA &options, po::options_d
     ("sequence,s", po::value<string>(&options.fnseqs)->required(), "Sequence filename")
     ("output-fasta", po::bool_switch(&options.outputFastaDefs)->default_value(false), "If set, output is in FASTA format")
     ;
+}
+
+void OptionsUtilities::addProcessOptions_ChangeOrderNonCoding(ChangeOrderNonCoding &options, po::options_description &processOptions){
+    processOptions.add_options()
+    ("fnin", po::value<string>(&options.fnin)->required(), "Input model file")
+    ("new-order", po::value<unsigned>(&options.newOrder)->required(), "New order for non-coding model")
+    ("fnout", po::value<string>(&options.fnout)->required(), "Output model file")
+    ;
+    
 }
 
 

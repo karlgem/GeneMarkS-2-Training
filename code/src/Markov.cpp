@@ -9,7 +9,8 @@
 #include "Markov.hpp"
 #include <stdexcept>
 #include <math.h>
-
+#include <iostream>
+using namespace std;
 using std::invalid_argument;
 using namespace gmsuite;
 
@@ -269,7 +270,7 @@ void Markov::incrementOrderByOne(unsigned currentOrder, const vector<double> &cu
     // Add shifted T to GC:     111001
     
     size_t elementEncodingSize = ceil(log2(numElements));       // number of bits to encode an element (e.g. 2 bits for A,C,G,T)
-    size_t bitsToShift = elementEncodingSize * currentOrder+1;
+    size_t bitsToShift = elementEncodingSize * (currentOrder+1);
     
     // for each key in current probability space
     for (size_t key = 0; key < currentProbs.size(); key++) {
@@ -284,6 +285,8 @@ void Markov::incrementOrderByOne(unsigned currentOrder, const vector<double> &cu
             
             // set probability value of new key to that of old key
             newProbs[newKey] = currentProbs[key];
+            
+//            cout << newKey << "\t" << currentProbs[key] << endl;
         }
     }
 }
