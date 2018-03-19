@@ -284,7 +284,7 @@ void Markov::incrementOrderByOne(unsigned currentOrder, const vector<double> &cu
             newKey += key;
             
             // set probability value of new key to that of old key
-            newProbs[newKey] = currentProbs[key];
+            newProbs[newKey] = currentProbs[key] / numElements;
             
 //            cout << newKey << "\t" << currentProbs[key] << endl;
         }
