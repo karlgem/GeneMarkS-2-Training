@@ -58,6 +58,7 @@ namespace gmsuite {
         unsigned maxEMIter;             /**< Number of EM iterations per single try */
         unsigned shiftEvery;            /**< Number of iterations before attempting to shift the motif left and right */
         double filterThresh;            /**< Threshold used to filter unwanted */
+        string fname_out_models;        /**< Name of output file that will contain best models */
         
         
     };
