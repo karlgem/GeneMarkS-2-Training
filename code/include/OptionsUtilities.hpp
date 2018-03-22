@@ -41,7 +41,8 @@ namespace gmsuite {
             COMPUTE_GC,
             SEPARATE_FGIO_AND_IG,
             EXTRACT_START_CONTEXT,
-            DNA_TO_AA
+            DNA_TO_AA,
+            CHANGE_ORDER_NONCODING
         }
         utility_t;
         
@@ -178,6 +179,12 @@ namespace gmsuite {
             bool outputFastaDefs;           // if set, FASTA definition outputted
         } dnaToAA;
         
+        struct ChangeOrderNonCoding : public GenericOptions {
+            string fnin;                    // input model file
+            unsigned newOrder;              // new order of non-coding
+            string fnout;                   // output model file
+        } changeOrderNonCoding;
+        
         static void addProcessOptions_ExtractUpstream(ExtractUpstreamUtility &options, po::options_description &processOptions);
         static void addProcessOptions_ExtractStartContext(ExtractStartContext &options, po::options_description &processOptions);
         static void addProcessOptions_StartModelInfo(StartModelInfoUtility &options, po::options_description &processOptions);
@@ -189,6 +196,7 @@ namespace gmsuite {
         static void addProcessOptions_ComputeGC(ComputeGC &options, po::options_description &processOptions);
         static void addProcessOptions_SeparateFGIOAndIG(SeparateFGIOAndIG &options, po::options_description &processOption);
         static void addProcessOptions_DNAToAA(DNAToAA &options, po::options_description &processOptions);
+        static void addProcessOptions_ChangeOrderNonCoding(ChangeOrderNonCoding &options, po::options_description &processOptions);
     };
 }
 
