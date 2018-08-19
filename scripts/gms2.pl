@@ -19,8 +19,7 @@ my $scriptPath = abs_path($0);
 $scriptPath =~ /^(.*)\//;
 $scriptPath = $1;
 
-# my $trainer = "$scriptPath/biogem";        # training of parameters 
-my $trainer = "/home/karl/repos/biogem-cpp/code/bin/biogem";
+my $trainer = "$scriptPath/biogem";        # training of parameters 
 my $predictor = "$scriptPath/gmhmmp2";      # predicting genes
 
 my $comparePrediction = "$scriptPath/compp";    # compare prediction files to check for convergence
@@ -80,6 +79,7 @@ my $fnoutput                            = $D_FNOUTPUT                       ;   
 my $formatOutput                        = $D_FORMAT_OUTPUT                  ;       # Format for output file
 my $fnAA                                                                    ;       # amino acid sequences
 my $fnNN                                                                    ;       # nucleotide sequences
+my $git                                 = ''                                ;       # change gene id labeling to contig_id with id local to contig
 
 # Group-A
 my $groupA_widthPromoter                = $D_PROM_WIDTH_A                   ;
@@ -144,6 +144,7 @@ my $mgmType = $D_MGMTYPE                                                    ;   
 my $verbose                                                                 ;       # verbose mode
 my $keepAllFiles                                                            ;
 my $forceGroup                                                              ;
+my $fn_external                                                             ;       # External evidence in GFF format
 
 # Parse command-line options
 GetOptions (
@@ -154,6 +155,7 @@ GetOptions (
     'format=s'                              =>  \$formatOutput,
     'faa=s'                                 =>  \$fnAA,
     'fnn=s'                                 =>  \$fnNN,
+    'git'                                   =>  \$git,
     # Group-A
     'group-a-width-promoter=i'              =>  \$groupA_widthPromoter,
     'group-a-width-rbs=i'                   =>  \$groupA_widthRBS,
@@ -204,6 +206,7 @@ GetOptions (
     'mgm-type=s'                            =>  \$mgmType,
     'keep-all-files'                        =>  \$keepAllFiles,
     'force-group=s'                         =>  \$forceGroup,
+    'ext=s'                                 =>  \$fn_external,
 );
 
 Usage($scriptName) if (!defined $fn_genome or !defined $genomeType or !isValidGenomeType($genomeType));
@@ -448,7 +451,8 @@ AddToModel($finalMod, "TO_NATIVE", $toNativeProb);
 my $extraOutput = "";
 $extraOutput .= "--AA $fnAA " if defined $fnAA;
 $extraOutput .= "--NT $fnNN " if defined $fnNN;
-
+$extraOutput .= "--gid_per_contig " if $git;
+$extraOutput .= "-e $fn_external " if $fn_external;
 
 run("$predictor -m $finalMod -M $finalMGM -s $fn_genome -o $finalPred --format $formatOutput $extraOutput");
 
@@ -741,7 +745,7 @@ sub MultiToSingleFASTA {
     my ($fnin, $fnout) = @_;
     
     run ("echo '>anydef' > $fnout");
-    run ("grep -v '>' $fnin >> $fnout");
+    run ("grep -v '>' $fnin | tr '[:lower:]' '[:upper:]' >> $fnout");
     return;
 }
 
@@ -890,6 +894,7 @@ sub GetTrainingCommand {
     # Training step: use prediction of previous iteration
     my $trainingCommand = "$trainer gms2-training -s $fnseq -l $prevPred -m $currMod --order-coding $orderCod --order-noncoding $orderNon --only-train-on-native $nativeOnly --genetic-code $geneticCode --order-start-context $scOrder --fgio-dist-thr $fgioDistThresh";
 
+    #$trainingCommand .= " --len-start-context 6 --margin-start-context -3 ";
 
     if ($mode eq $modeNoMotif) {
         $trainingCommand .= " --run-motif-search false";
@@ -963,9 +968,13 @@ Basic Options:
 --gcode                                 The genetic code number (default: $D_GENETIC_CODE. Choices: 11 and 4)
 --output                                Name of output file (default: $D_FNOUTPUT)
 --format                                Format of output file (default: $D_FORMAT_OUTPUT)
+--ext                                   Name of file with external information in GFF format (PLUS mode of GMS2)
 --fnn                                   Name of output file that will hold nucleotide sequences of predicted genes
 --faa                                   Name of output file that will hold protein sequences of predicted genes
+--git                                   Change gene ID format
 --advanced-options                      Show the advanced options
+
+Version: 1.01
 ";
 
     if (defined $showAdvancedOptions) {
