@@ -78,8 +78,6 @@ void MotifFinder::findMotifs (const vector<NumSequence> &sequences, vector<NumSe
             
             probs_out = new ProbabilityModelsV1(*((ProbabilityModelsV1*) tempProbs));
         }
-        else
-            delete tempProbs;
     }
     
     // get best positions for output

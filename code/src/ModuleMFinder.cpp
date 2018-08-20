@@ -82,12 +82,12 @@ void ModuleMFinder::run() {
         cout << "HI" << endl;
     
     // print models to file
-    if (!this->options.fname_out_models.empty()) {
-        ofstream ofs;
-        ofs.open(this->options.fname_out_models);
-        ofs << probs->toString();
-        ofs.close();
-    }
+//if (!this->options.fname_out_models.empty()) {
+  //     ofstream ofs;
+  //      ofs.open(this->options.fname_out_models);
+  //      ofs << probs->toString();
+  //      ofs.close();
+  //  }
     
 //    delete probs;
 }
