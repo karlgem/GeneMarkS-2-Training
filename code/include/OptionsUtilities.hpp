@@ -42,7 +42,8 @@ namespace gmsuite {
             SEPARATE_FGIO_AND_IG,
             EXTRACT_START_CONTEXT,
             DNA_TO_AA,
-            CHANGE_ORDER_NONCODING
+            CHANGE_ORDER_NONCODING,
+            COMPUTE_KL
         }
         utility_t;
         
@@ -166,6 +167,12 @@ namespace gmsuite {
             bool perGene;                   // if set, then print GC per labeled gene (only valid if 'fn_labels' is given)
         } computeGC;
         
+        
+        struct ComputeKL : public GenericOptions {
+            string fn_mod;                  // model filename
+            string motifLabel;              // label for motif
+        } computeKL;
+        
         struct SeparateFGIOAndIG : public GenericOptions {
             string fn_label;                // labels filename
             string fnout_fgio;              // output filename for FGIO
@@ -194,6 +201,7 @@ namespace gmsuite {
         static void addProcessOptions_ExtractStartContextPerOperonStatus(ExtractStartContextPerOperonStatus &options, po::options_description &processOptions);
         static void addProcessOptions_ExtractStartContextPerMotifStatus(ExtractStartContextPerMotifStatus &options, po::options_description &processOptions);
         static void addProcessOptions_ComputeGC(ComputeGC &options, po::options_description &processOptions);
+        static void addProcessOptions_ComputeKL(ComputeKL &options, po::options_description &processOptions);
         static void addProcessOptions_SeparateFGIOAndIG(SeparateFGIOAndIG &options, po::options_description &processOption);
         static void addProcessOptions_DNAToAA(DNAToAA &options, po::options_description &processOptions);
         static void addProcessOptions_ChangeOrderNonCoding(ChangeOrderNonCoding &options, po::options_description &processOptions);

@@ -23,6 +23,7 @@
 #include "GMS2Trainer.hpp"
 #include "ModelFile.hpp"
 #include "NonCodingMarkov.hpp"
+#include "MotifMarkov.hpp"
 #include "LabelsParser.hpp"
 #include <time.h>
 
@@ -67,6 +68,8 @@ void ModuleUtilities::run() {
         runDNAToAA();
     else if (options.utility == OptionsUtilities::CHANGE_ORDER_NONCODING)
         runChangeOrderNonCoding();
+    else if (options.utility == OptionsUtilities::COMPUTE_KL)
+        runComputeKL();
     
 //    else            // unrecognized utility to run
 //        throw invalid_argument("Unknown utility function " + options.utility);
@@ -216,8 +219,9 @@ public:
                 }
                 
                 if (ratio != 0)
-                    score += this->NonUniformMarkov::model[pos][word] * log(ratio);
+                    score += this->NonUniformMarkov::model[pos][word] * log2(ratio);            
             }
+//            cout << endl;
         }
         
         return score;
@@ -852,6 +856,112 @@ void ModuleUtilities::runComputeGC() {
         double gc = SequenceAlgorithms::computeGC(strSequence);
         cout << gc << endl;
     }
+}
+
+
+void ModuleUtilities::runComputeKL() {
+    OptionsUtilities::ComputeKL utilOpt = options.computeKL;
+    
+    // read model file
+    ModelFile modFile (utilOpt.fn_mod, ModelFile::READ);
+    
+    map<string, string> mKeyValuePair;
+    modFile.read(mKeyValuePair);
+    
+    AlphabetDNA alph;
+    CharNumConverter cnc(&alph);
+    NumAlphabetDNA numAlph(alph, cnc);
+    
+    // break non-coding string into vector of codon-probability pairs
+    vector<pair<string, double> > nonCodingProbs;
+    istringstream ssm(mKeyValuePair["NON_MAT"]);
+    string line;
+    while (std::getline(ssm, line)) {
+        
+        stringstream lineStream (line);
+        string codon;
+        double prob;
+        
+        lineStream >> codon >> prob;
+        
+        nonCodingProbs.push_back(pair<string, double> (codon, prob));
+    }
+    
+    // build non-coding model
+    NonCodingMarkov nonCodingMarkov(nonCodingProbs, numAlph, cnc);
+    
+    
+    // Read RBS model
+    
+    
+    istringstream ssmMotifWidth(mKeyValuePair["RBS_WIDTH"]);    // FIXME: any motif type
+    std::getline(ssmMotifWidth, line);
+    int motifWidth = (int) strtol(line.c_str(), NULL, 10);
+    
+    vector<vector<pair<string, double> > > motifProbs (motifWidth);
+    istringstream ssmMotif(mKeyValuePair[utilOpt.motifLabel]);
+    
+    line = "";
+    while (std::getline(ssmMotif, line)) {
+        stringstream lineStream (line);
+        string nucleotides;
+        vector<double> prob (motifWidth);
+        
+        lineStream >> nucleotides;
+        
+        for (int i = 0; i < motifWidth; i++) {
+            lineStream >> prob[i];
+            motifProbs[i].push_back(pair<string, double> (nucleotides, prob[i]));
+        }
+        
+        
+    }
+    
+    MotifMarkov motifMarkov (motifProbs, (size_t) motifWidth, numAlph, cnc);
+    
+    
+    KLDivergence div (&motifMarkov, &nonCodingMarkov);
+    
+    
+    
+    
+    
+    
+    // spacer KL
+    istringstream motifDurMax(mKeyValuePair["RBS_MAX_DUR"]);        // FIXME: any motif spacer
+    std::getline(motifDurMax, line);
+    int maxDur = (int) strtol(line.c_str(), NULL, 10);
+    int spacerLen = maxDur+1;
+    
+    istringstream motifDur(mKeyValuePair["RBS_POS_DISTR"]);
+    vector<double> positionProbs (spacerLen, 0);
+    line = "";
+    while (std::getline(motifDur, line)) {
+        stringstream lineStream (line);
+        int pos;
+        double prob;
+        
+        lineStream >> pos >> prob;
+        
+        positionProbs[pos] = prob;
+    }
+    
+    
+    UnivariatePDF motifSpacerPDF(positionProbs, false);
+    
+    
+    // compute kl of spacer vs uniform
+    double klSpacerUnif = 0;
+    for (size_t n = 0; n < spacerLen; n++) {
+        double ratio = motifSpacerPDF[n] / (1.0/spacerLen);
+        
+        if (ratio != 0)
+            klSpacerUnif += motifSpacerPDF[n] * log2(ratio);
+    }
+    
+    double motifKL = div.computeKL();
+    
+    cout << motifKL << "\t" << klSpacerUnif << "\t" << motifKL + klSpacerUnif <<  endl;;
 }
 
 

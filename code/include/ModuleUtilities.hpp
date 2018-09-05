@@ -56,6 +56,7 @@ namespace gmsuite {
         void runExtractStartContext();
         void runDNAToAA();
         void runChangeOrderNonCoding();
+        void runComputeKL();
     };
     
 }
