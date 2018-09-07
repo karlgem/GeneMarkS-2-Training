@@ -39,6 +39,7 @@ OptionsUtilities::OptionsUtilities(string mode) : Options(mode) {
 #define STR_EXTRACT_START_CONTEXT "extract-start-context"
 #define STR_DNA_TO_AA "dna-to-aa"
 #define STR_CHANGE_ORDER_NONCODING "change-order-noncoding"
+#define STR_COMPUTE_KL "compute-kl"
 
 namespace gmsuite {
     // convert string to utility_t
@@ -60,6 +61,7 @@ namespace gmsuite {
         else if (token == STR_EXTRACT_START_CONTEXT)    unit = OptionsUtilities::EXTRACT_START_CONTEXT;
         else if (token == STR_DNA_TO_AA)                unit = OptionsUtilities::DNA_TO_AA;
         else if (token == STR_CHANGE_ORDER_NONCODING)   unit = OptionsUtilities::CHANGE_ORDER_NONCODING;
+        else if (token == STR_COMPUTE_KL)               unit = OptionsUtilities::COMPUTE_KL;
         else
             throw boost::program_options::invalid_option_value(token);
         
@@ -376,6 +378,21 @@ bool OptionsUtilities::parse(int argc, const char *argv[]) {
             // Parse again...
             po::store(po::command_line_parser(opts).options(utilDesc).run(), vm);
         }
+        else if (utility == COMPUTE_KL) {
+            po::options_description utilDesc (string(STR_COMPUTE_KL) + " options");
+            addProcessOptions_ComputeKL(computeKL, utilDesc);
+            
+            cmdline_options.add(utilDesc);
+            
+            // Collect all the unrecognized options from the first pass. This will include the
+            // (positional) mode and command name, so we need to erase them
+            vector<string> opts = po::collect_unrecognized(parsed.options, po::include_positional);
+            opts.erase(opts.begin());       // erase mode
+            opts.erase(opts.begin());       // erase command name
+            
+            // Parse again...
+            po::store(po::command_line_parser(opts).options(utilDesc).run(), vm);
+        }
         else if (utility == SEPARATE_FGIO_AND_IG) {
             po::options_description utilDesc (string(STR_SEPARATE_FGIO_AND_IG) + " options");
             addProcessOptions_SeparateFGIOAndIG(separateFGIOAndIG, utilDesc);
@@ -570,6 +587,13 @@ void OptionsUtilities::addProcessOptions_ComputeGC(ComputeGC &options, po::optio
     ("sequence,s", po::value<string>(&options.fn_sequence)->required(), "Sequence filename")
     ("label,l", po::value<string>(&options.fn_label)->default_value(""), "Label filename (for genes-based GC)")
     ("per-gene", po::bool_switch(&options.perGene)->default_value(false), "If set, per-gene GC is printed")
+    ;
+}
+
+void OptionsUtilities::addProcessOptions_ComputeKL(ComputeKL &options, po::options_description &processOptions) {
+    processOptions.add_options()
+    ("mod,m", po::value<string>(&options.fn_mod)->required(), "Model filename")
+    ("motif-label,l", po::value<string>(&options.motifLabel)->required(), "Label for motif model (from model file tags)")
     ;
 }
 

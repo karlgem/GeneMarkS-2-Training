@@ -226,6 +226,7 @@ void NonUniformMarkov::initialize() {
     size_t numElements = alphabet->sizeValid();         // the number of elements that can make up valid words (e.g. A,C,G,T)
     
     model.resize(length);
+    this->jointProbs.resize(length);
     
     // for each period, allocate space of size 'numWords', and set all elements to zero
     for (size_t p = 0; p < length; p++) {
@@ -234,6 +235,8 @@ void NonUniformMarkov::initialize() {
         size_t numWords = pow(numElements, wordSize);   // number of possible words of size 'wordSize' with given alphabet
         
         model[p].resize(numWords, 0);
+        
+        jointProbs[p].resize(numWords,0);          // for order, order-1, order-2, ... 0
     }
 }
 
