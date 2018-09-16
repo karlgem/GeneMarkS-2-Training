@@ -27,6 +27,7 @@ using namespace gmsuite;
 #define STR_PROMOTER_AND_RBS_MATCH "promoter-and-rbs-match"
 #define STR_RBS_CONSENSUS_AND_16S_MATCH "rbs-consensus-and-16s-match"
 #define STR_RBS_IS_LOCALIZED        "rbs-is-localized"
+#define STR_COMPUTE_MOTIF_SCORE_FOR_STARTS "compute-motif-score-for-starts"
 
 namespace gmsuite {
     // convert string to experiment_t
@@ -48,6 +49,7 @@ namespace gmsuite {
         else if (token == STR_PROMOTER_AND_RBS_MATCH)   unit = OptionsExperiment::PROMOTER_AND_RBS_MATCH;
         else if (token == STR_RBS_CONSENSUS_AND_16S_MATCH) unit = OptionsExperiment::RBS_CONSENSUS_AND_16S_MATCH;
         else if (token == STR_RBS_IS_LOCALIZED)         unit = OptionsExperiment::RBS_IS_LOCALIZED;
+        else if (token == STR_COMPUTE_MOTIF_SCORE_FOR_STARTS)   unit = OptionsExperiment::COMPUTE_MOTIF_SCORE_FOR_STARTS;
         else
             throw boost::program_options::invalid_option_value(token);
         
@@ -169,6 +171,8 @@ bool OptionsExperiment::parse(int argc, const char **argv) {
             addProcessOptions_RBSConsensusAnd16SMatch(rbsConsensusAnd16SMatch, expDesc);
         if (experiment == RBS_IS_LOCALIZED)
             addProcessOptions_RBSIsLocalized(rbsIsLocalized, expDesc);
+        if (experiment == COMPUTE_MOTIF_SCORE_FOR_STARTS)
+            addProcessOptions_ComputeMotifScoreForStarts(computeMotifScoreForStarts, expDesc);
         
         cmdline_options.add(expDesc);
         
@@ -409,5 +413,15 @@ void OptionsExperiment::addProcessOptions_RBSIsLocalized(RBSIsLocalized &options
     ("dist-thresh", po::value<size_t>(&options.distanceThresh)->default_value(15), "Distance threshold before which spacer indicates promoter.")
     ("score-thresh", po::value<double>(&options.scoreThresh)->default_value(0.1), "Minimum score above which spacer is considered localized.")
     ("window-size", po::value<size_t>(&options.windowSize)->default_value(1), "Size of window in which to determine localization")
+    ;
+}
+
+void OptionsExperiment::addProcessOptions_ComputeMotifScoreForStarts(ComputeMotifScoreForStarts &options, po::options_description &processOptions) {
+    
+    processOptions.add_options()
+    ("fnsequence", po::value<string>(&options.fnsequence)->required(), "Name of sequences file")
+    ("fnmod", po::value<string>(&options.fnmod)->required(), "Name of mod file containing motif and spacer.")
+    ("fnlabels", po::value<string>(&options.fnlabels)->required(), "File containing gene labels.")
+    ("upstream-len", po::value<size_t>(&options.upstreamLength)->default_value(20), "Length of upstream region to search in")
     ;
 }

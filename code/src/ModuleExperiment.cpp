@@ -24,6 +24,7 @@
 #include "OldGMS2ModelFile.hpp"
 #include "NonCodingMarkov.hpp"
 #include "ModelFile.hpp"
+#include "MotifMarkov.hpp"
 
 #include <algorithm>
 #include <iostream>
@@ -69,6 +70,8 @@ void ModuleExperiment::run() {
         runRbsConsensus16SMatch();
     else if (options.experiment == OptionsExperiment::RBS_IS_LOCALIZED)
         runRbsIsLocalized();
+    else if (options.experiment == OptionsExperiment::COMPUTE_MOTIF_SCORE_FOR_STARTS)
+        runComputeMotifScoreForStarts();
     
 }
 
@@ -642,15 +645,29 @@ double scoreMotifAtAllPositions(const MotifModel &model, const NumSequence &sequ
         // compute motif score
         double motifScore = model.motif->evaluate(sequence.begin()+pos, sequence.begin()+pos+width);
         
-        // compute background scores of motif
-        double backScore = model.background->evaluate(sequence.begin()+pos, sequence.begin()+pos+width);;
+        double score;
         
-        // compute combined score
-        if (backScore == 0)
-            continue;
+        if (model.background) {
         
-        double score = log(motifScore) - log(backScore);
-        score += log((*model.spacer)[sequence.size() - width - pos]) - log((*model.noncLengthDist)[sequence.size() - width - pos]);
+            // compute background scores of motif
+            double backScore = model.background->evaluate(sequence.begin()+pos, sequence.begin()+pos+width);;
+            
+            // compute combined score
+            if (backScore == 0)
+                continue;
+            
+            score = log(motifScore) - log(backScore);
+        }
+        else {
+            score = log2(motifScore);
+        }
+        
+//        if (model.noncLengthDist) {
+//            score += log((*model.spacer )[sequence.size() - width - pos]) - log((*model.noncLengthDist)[sequence.size() - width - pos]);
+//        }
+//        else {
+//            score += log((*model.spacer )[sequence.size() - width - pos]);
+//        }
         
         scores[pos] = score;
     }
@@ -1545,4 +1562,100 @@ void ModuleExperiment::runRbsIsLocalized() {
     }
     
     cout << promoterIsValid << endl;
+}
+
+
+void ModuleExperiment::runComputeMotifScoreForStarts() {
+    OptionsExperiment::ComputeMotifScoreForStarts expOptions = options.computeMotifScoreForStarts;
+    
+    AlphabetDNA alph;
+    CharNumConverter cnc(&alph);
+    NumAlphabetDNA numAlph(alph, cnc);
+    
+    // read sequences
+    SequenceFile seqFile (expOptions.fnsequence, SequenceFile::READ);
+    Sequence seq = seqFile.read();
+    NumSequence numSeq (seq, cnc);
+    
+    // read labels
+    LabelFile labFile (expOptions.fnlabels, LabelFile::READ);
+    
+    vector<Label *> labels;
+    labFile.read(labels);
+    
+    // read RBS+spacer model
+    ModelFile modFile (expOptions.fnmod, ModelFile::READ);
+    
+    map<string, string> modData;
+    modFile.read(modData);
+    
+    // construct motif model
+    string line;
+    
+    istringstream ssmMotifWidth(modData["RBS_WIDTH"]);          // FIXME: any motif type
+    std::getline(ssmMotifWidth, line);
+    int motifWidth = (int) strtol(line.c_str(), NULL, 10);
+    
+    vector<vector<pair<string, double> > > motifProbs (motifWidth);
+    istringstream ssmMotif(modData["RBS_MAT"]);
+    
+    line = "";
+    while (std::getline(ssmMotif, line)) {
+        stringstream lineStream (line);
+        string nucleotides;
+        vector<double> prob (motifWidth);
+        
+        lineStream >> nucleotides;
+        
+        for (int i = 0; i < motifWidth; i++) {
+            lineStream >> prob[i];
+            motifProbs[i].push_back(pair<string, double>(nucleotides, prob[i]));
+        }
+    }
+    
+    boost::shared_ptr<MotifMarkov> motifMarkov (new MotifMarkov(motifProbs, (size_t) motifWidth, numAlph, cnc));
+    
+    // construct spacer model
+    istringstream motifDurMax(modData["RBS_MAX_DUR"]);        // FIXME: any motif spacer
+    std::getline(motifDurMax, line);
+    int maxDur = (int) strtol(line.c_str(), NULL, 10);
+    int spacerLen = maxDur+1;
+    
+    istringstream motifDur(modData["RBS_POS_DISTR"]);
+    vector<double> positionProbs (spacerLen, 0);
+    line = "";
+    while (std::getline(motifDur, line)) {
+        stringstream lineStream (line);
+        int pos;
+        double prob;
+        
+        lineStream >> pos >> prob;
+        
+        positionProbs[pos] = prob;
+    }
+    
+    boost::shared_ptr<UnivariatePDF> motifSpacerPDF (new UnivariatePDF(positionProbs, false));
+    
+    
+    MotifModel motifMod;
+    motifMod.motif = motifMarkov;
+//    motifMod.spacer = motifSpacerPDF;
+    
+    
+    // for each label
+    for (vector<Label*>::const_iterator iter = labels.begin(); iter != labels.end(); iter++) {
+    
+        // get upstream region
+        NumSequence upstreamSeq = SequenceParser::extractUpstreamSequence(numSeq, *(const Label*)*iter, cnc, expOptions.upstreamLength);
+    
+        // compute best motif
+        double bestScore = scoreMotifAtAllPositions(motifMod, upstreamSeq, motifMod.motif->getLength());
+    
+        // print score
+        size_t stop = (*iter)->right;
+        if ((*iter)->strand == Label::NEG)
+            stop = (*iter)->left;
+        
+        cout << stop+1 << (*iter)->strand << "\t" << bestScore << endl;
+    }
 }

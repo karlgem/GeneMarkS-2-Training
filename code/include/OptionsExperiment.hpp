@@ -39,7 +39,8 @@ namespace gmsuite {
             START_MODEL_STRATEGY_2,
             PROMOTER_AND_RBS_MATCH,
             RBS_CONSENSUS_AND_16S_MATCH,
-            RBS_IS_LOCALIZED
+            RBS_IS_LOCALIZED,
+            COMPUTE_MOTIF_SCORE_FOR_STARTS
         }
         experiment_t;
         
@@ -191,6 +192,14 @@ namespace gmsuite {
         }
         rbsConsensusAnd16SMatch;
         
+        struct ComputeMotifScoreForStarts : public GenericOptions {
+            string fnsequence;
+            string fnlabels;
+            string fnmod;
+            size_t upstreamLength;
+        }
+        computeMotifScoreForStarts;
+        
         
         struct StartModelStrategy2Options : public GenReadSeqAndLabelsOptions {
             string seq16S;                      // 16S rRNA tail match
@@ -246,6 +255,7 @@ namespace gmsuite {
         static void addProcessOptions_PromoterAndRBSMatchOptions(PromoterAndRBSMatch &options, po::options_description &processOptions);
         static void addProcessOptions_RBSConsensusAnd16SMatch(RBSConsensusAnd16SMatch &options, po::options_description &processOptions);
         static void addProcessOptions_RBSIsLocalized(RBSIsLocalized &options, po::options_description &processOptions);
+        static void addProcessOptions_ComputeMotifScoreForStarts(ComputeMotifScoreForStarts &options, po::options_description &processOptions);
         
         
     };
