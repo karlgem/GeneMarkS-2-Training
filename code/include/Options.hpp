@@ -13,6 +13,7 @@
 #include <vector>
 
 #include <boost/program_options.hpp>
+#include "GeneticCode.hpp"
 
 using std::string;
 using std::vector;
@@ -21,6 +22,22 @@ namespace po = boost::program_options;
 
 namespace gmsuite {
     
+//    inline std::istream& operator>>(std::istream& in, GeneticCode::gcode_t& unit);
+    inline std::istream& operator>>(std::istream& in, GeneticCode::gcode_t& unit)
+    {
+        std::string token;
+        in >> token;
+        if (token == "11")
+            unit = GeneticCode::ELEVEN;
+        else if (token == "4")
+            unit = GeneticCode::FOUR;
+        //    else
+        //        throw boost::program_options::validation_error("Invalid genome class");
+        
+        return in;
+    }
+
+    
     /**
      * @class Options
      * @brief A class that deals with parsing command-line options
@@ -28,6 +45,8 @@ namespace gmsuite {
     class Options {
         
     public:
+        
+        
         
         /**
          * Constructor: set the mode name
@@ -42,9 +61,6 @@ namespace gmsuite {
          * @return true if the parse is successful, false otherwise
          */
         virtual bool parse(int argc, const char *argv[]) = 0;
-        
-        
-        
         
         
     protected:

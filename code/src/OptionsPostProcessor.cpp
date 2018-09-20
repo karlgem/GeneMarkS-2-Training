@@ -16,9 +16,30 @@
 #include <boost/any.hpp>
 
 
-using namespace gmsuite;
 using namespace std;
+using namespace gmsuite;
+
 namespace po = boost::program_options;
+
+//namespace gmsuite {
+//    std::istream& operator>>(std::istream& in, GeneticCode::gcode_t& unit)
+//    {
+//        std::string token;
+//        in >> token;
+//        if (token == "11")
+//            unit = GeneticCode::ELEVEN;
+//        else if (token == "4")
+//            unit = GeneticCode::FOUR;
+//        //    else
+//        //        throw boost::program_options::validation_error("Invalid genome class");
+//        
+//        return in;
+//    }
+//}
+
+OptionsPostProcessor::OptionsPostProcessor(string mode) : Options(mode) {
+    
+}
 
 bool OptionsPostProcessor::parse(int argc, const char **argv) {
     
@@ -122,6 +143,9 @@ void OptionsPostProcessor::addProcessOptions(OptionsPostProcessor &options, po::
     ("labels", po::value<string> (&options.fnlabels)->required(), "File containing labels")
     ("mod", po::value<string> (&options.fnmod)->required(), "file containing models")
     ("window-upstream", po::value<size_t>(&options.windowUpstream)->default_value(60), "Upstream length of window")
+    ("genetic-code",        po::value<GeneticCode::gcode_t>      (&options.gcode                              )->default_value(GeneticCode::ELEVEN), "Genetic code")
     ("window-downstream", po::value<size_t> (&options.windowDownstream)->default_value(60), "Downstream length of window")
+    ("neigh-downstream", po::value<size_t> (&options.neighborhoodDownstream)->default_value(150), "Downstream neighborhood in which to search for candidate starts")
+    ("neigh-upstream", po::value<size_t> (&options.neighborhoodUpstream)->default_value(150), "Upstream neighborhood in which to search for candidate starts")
     ;
 }

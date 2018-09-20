@@ -13,6 +13,7 @@
 #include <limits>
 #include <sstream>
 #include <stdexcept>
+#include <iostream>
 
 using namespace std;
 using namespace gmsuite;
@@ -137,7 +138,7 @@ double PeriodicMarkov::evaluate(NumSequence::const_iterator begin, NumSequence::
     size_t wordIndex = 0;       // contains the index of the current word (made up of order+1 elements)
     
     // loop over first "order" elements to store them as part of the initial word index
-    for (size_t i = 0; i <= order; i++, currentElement++) {
+    for (size_t i = 0; i <= order; i++) {
         wordIndex <<= elementEncodingSize;      // create space at lower bits for a new element
         wordIndex += *currentElement;           // add new element to the wordIndex
         
@@ -150,16 +151,35 @@ double PeriodicMarkov::evaluate(NumSequence::const_iterator begin, NumSequence::
         // mask to remove old junk characters (doesn't affect wordIndex here. I do it just for consistency with remaining code)
         wordIndex = wordIndex & mask;
         
-        // FIXME: use joint probability model (of lower orders, if necessary)
-        if (useLog)
-            score += log2(model[frame][wordIndex]);
-        else
-            score *= model[frame][wordIndex];
+//        // FIXME: use joint probability model (of lower orders, if necessary)
+//        if (useLog)
+//            score += log2(model[frame][wordIndex]);
+//        else
+//            score *= model[frame][wordIndex];
         
-        frame++;                                 // increment frame
-        if (frame == period)
-            frame = 0;                           // set frame to 0 when period is reached
+        currentElement++;
+        if (currentElement == end) {
+            if (useLog)
+                return log2(jointProbs[frame][i][wordIndex]);
+            else
+                return jointProbs[frame][i][wordIndex];
+        }
+        
+        if (i == order) {
+            if (useLog)
+                score += log2(jointProbs[frame][this->order][wordIndex]);
+            else
+                score *= jointProbs[frame][this->order][wordIndex];
+        }
+        
+//        frame++;                                 // increment frame
+//        if (frame == period)
+//            frame = 0;                           // set frame to 0 when period is reached
     }
+    
+    frame++;
+    if (frame == period)
+        frame = 0;
     
     
     // for every word, add a count in the pwm
@@ -233,10 +253,17 @@ void PeriodicMarkov::initialize() {
     size_t numWords = pow(numElements, wordSize);       // number of possible words of size 'wordSize' with given alphabet
     
     model.resize(period);
+    jointProbs.resize(this->period);
     
     // for each period, allocate space of size 'numWords', and set all elements to zero
     for (size_t p = 0; p < period; p++) {
         model[p].resize(numWords, 0);
+        
+        jointProbs[p].resize(this->order + 1);      // for order, order-1, order-2, ... 0
+        
+        for (unsigned o = 0; o < this->order+1; o++) {
+            jointProbs[p][o].resize(pow(numElements, o+1));
+        }
     }
 }
 

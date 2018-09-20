@@ -13,6 +13,7 @@
 #include <string>
 
 #include "Options.hpp"
+#include "GeneticCode.hpp"
 
 using std::string;
 
@@ -43,9 +44,13 @@ namespace gmsuite {
         string fnsequence;
         string fnlabels;
         string fnmod;
+        GeneticCode::gcode_t gcode;
         
         size_t windowUpstream;
         size_t windowDownstream;
+        
+        size_t neighborhoodUpstream;
+        size_t neighborhoodDownstream;
         
     };
 }

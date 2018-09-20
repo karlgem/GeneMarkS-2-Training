@@ -55,19 +55,19 @@ namespace gmsuite {
         return in;
     }
     
-    std::istream& operator>>(std::istream& in, GeneticCode::gcode_t& unit)
-    {
-        std::string token;
-        in >> token;
-        if (token == "11")
-            unit = GeneticCode::ELEVEN;
-        else if (token == "4")
-            unit = GeneticCode::FOUR;
-        //    else
-        //        throw boost::program_options::validation_error("Invalid genome class");
-        
-        return in;
-    }
+//    std::istream& operator>>(std::istream& in, GeneticCode::gcode_t& unit)
+//    {
+//        std::string token;
+//        in >> token;
+//        if (token == "11")
+//            unit = GeneticCode::ELEVEN;
+//        else if (token == "4")
+//            unit = GeneticCode::FOUR;
+//        //    else
+//        //        throw boost::program_options::validation_error("Invalid genome class");
+//        
+//        return in;
+//    }
 }
 
 void validate(boost::any& v,
