@@ -12,6 +12,8 @@
 using std::invalid_argument;
 using namespace gmsuite;
 
+const NumSequence::size_type NumSequence::npos;
+
 // Default constructor: create an empty numeric sequence.
 NumSequence::NumSequence() {
     

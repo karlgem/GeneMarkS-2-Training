@@ -52,6 +52,8 @@ namespace gmsuite {
         size_t neighborhoodUpstream;
         size_t neighborhoodDownstream;
         
+        bool printWindow;
+        
     };
 }
 

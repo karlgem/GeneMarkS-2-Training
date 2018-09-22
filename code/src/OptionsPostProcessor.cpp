@@ -147,5 +147,6 @@ void OptionsPostProcessor::addProcessOptions(OptionsPostProcessor &options, po::
     ("window-downstream", po::value<size_t> (&options.windowDownstream)->default_value(60), "Downstream length of window")
     ("neigh-downstream", po::value<size_t> (&options.neighborhoodDownstream)->default_value(150), "Downstream neighborhood in which to search for candidate starts")
     ("neigh-upstream", po::value<size_t> (&options.neighborhoodUpstream)->default_value(150), "Upstream neighborhood in which to search for candidate starts")
+    ("print-window", po::bool_switch(&options.printWindow)->default_value(false), "If set, all (candidate) starts will have their windows printed.")
     ;
 }
