@@ -43,7 +43,8 @@ namespace gmsuite {
             EXTRACT_START_CONTEXT,
             DNA_TO_AA,
             CHANGE_ORDER_NONCODING,
-            COMPUTE_KL
+            COMPUTE_KL,
+            AB_FILTER
         }
         utility_t;
         
@@ -192,6 +193,13 @@ namespace gmsuite {
             string fnout;                   // output model file
         } changeOrderNonCoding;
         
+        struct ABFilter : public GenericOptions {
+            string fnA;                     // Name of file A
+            string fnB;                     // Name of file B
+            string fnout;                   // Name of output file
+            int threshDistToUpstream;       // Distance threshold to upstream label. Anything below is kept.
+        } abFilter;
+        
         static void addProcessOptions_ExtractUpstream(ExtractUpstreamUtility &options, po::options_description &processOptions);
         static void addProcessOptions_ExtractStartContext(ExtractStartContext &options, po::options_description &processOptions);
         static void addProcessOptions_StartModelInfo(StartModelInfoUtility &options, po::options_description &processOptions);
@@ -205,6 +213,7 @@ namespace gmsuite {
         static void addProcessOptions_SeparateFGIOAndIG(SeparateFGIOAndIG &options, po::options_description &processOption);
         static void addProcessOptions_DNAToAA(DNAToAA &options, po::options_description &processOptions);
         static void addProcessOptions_ChangeOrderNonCoding(ChangeOrderNonCoding &options, po::options_description &processOptions);
+        static void addProcessOptions_ABFilter(ABFilter &options, po::options_description &processOptions);
     };
 }
 

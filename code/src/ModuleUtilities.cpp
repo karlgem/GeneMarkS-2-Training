@@ -70,6 +70,8 @@ void ModuleUtilities::run() {
         runChangeOrderNonCoding();
     else if (options.utility == OptionsUtilities::COMPUTE_KL)
         runComputeKL();
+    else if (options.utility == OptionsUtilities::AB_FILTER)
+        runABFilter();
     
 //    else            // unrecognized utility to run
 //        throw invalid_argument("Unknown utility function " + options.utility);
@@ -1054,6 +1056,102 @@ void ModuleUtilities::runDNAToAA() {
     
 }
 
+
+void ModuleUtilities::runABFilter() {
+    OptionsUtilities::ABFilter utilOpt = options.abFilter;
+    
+    
+    // Read two label files
+    vector<Label*> labelsA, labelsB, labelsOut;        // where labels will be stored and placed at output
+    
+    LabelFile flabA (utilOpt.fnA, LabelFile::READ);
+    LabelFile flabB (utilOpt.fnB, LabelFile::READ);
+    
+    flabA.read(labelsA);
+    flabB.read(labelsB);
+    
+    // make sure they're sorted
+    sort(labelsA.begin(), labelsA.end(), Label::compareByLeftAndStrand);
+    sort(labelsB.begin(), labelsB.end(), Label::compareByLeftAndStrand);
+    
+    // create a hash map for labelsB, where keys are of the form "3prime;strand", and the value is the
+    // index of that gene in labelsB
+    stringstream ssm;
+    
+    map<string, size_t> idToIdxB;
+    for (size_t idx = 0; idx < labelsB.size(); idx++) {
+        
+        Label* label = labelsB[idx];
+        
+        ssm.str(std::string());        // clear the stream
+        
+        // determine 3-prime end
+        size_t loc3Prime = label->get3Prime();
+        ssm << loc3Prime << ";" << label->strandToStr();
+        
+        // add key
+        idToIdxB[ssm.str()] = idx;
+    }
+    
+    
+    // For each label lA in A, find it's 3-prime end counterpart in array B (using hash)
+    // Then, find if there is a label in B close by to the start of lA (i.e. close to
+    // 5prime of lA).
+    for (size_t idx = 0; idx < labelsA.size(); idx++) {
+        Label* labA = labelsA[idx];
+        
+        // construct id from A
+        ssm.str(std::string());
+        
+        size_t loc3Prime = labA->get3Prime();
+        ssm << loc3Prime << ";" << labA->strandToStr();
+    
+        size_t idxInB = idToIdxB[ssm.str()];
+        
+        // get distance to upstream gene from 5prime of labA
+        int distanceToUpstreamLabel = numeric_limits<int>::infinity();          // negative values indicate overlap
+        
+        bool keepLabel = false;
+        
+        if (labA->strand == Label::POS) {
+            // if no label upstream of current, add to output list
+            if (idxInB == 0)
+                keepLabel = true;
+            // otherwise, check distance to upstream
+            else {
+                size_t prevIdxInB = idxInB-1;
+                Label* prevLabB = labelsB[prevIdxInB];
+                
+                distanceToUpstreamLabel = (int)labA->left - (int)prevLabB->right + 1;
+            }
+        }
+        // negative strand
+        else {
+            // if no label upstream of current, add to output list
+            if (idxInB == labelsB.size())
+                keepLabel = true;
+            // otherwise, check distance to upstream
+            else {
+                size_t prevIdxInB = idxInB+1;
+                Label* prevLabB = labelsB[prevIdxInB];
+                
+                distanceToUpstreamLabel = (int) prevLabB->right - (int)labA->left + 1;
+            }
+        }
+        
+        // if distance less than threshold, place in output vector. Otherwise, discard
+        if (distanceToUpstreamLabel > utilOpt.threshDistToUpstream)
+            keepLabel = true;
+        
+        if (keepLabel)
+            labelsOut.push_back(labA);
+    }
+    
+    
+    // print output labels
+    LabelFile fout (utilOpt.fnout, LabelFile::WRITE);
+    fout.write(labelsOut);
+}
 
 void ModuleUtilities::runChangeOrderNonCoding() {
     OptionsUtilities::ChangeOrderNonCoding utilOpt = options.changeOrderNonCoding;
