@@ -26,6 +26,7 @@
 #include "ModuleExperiment.hpp"
 #include "ModuleGMS2Training.hpp"
 #include "VersionNumber.h"
+#include "ModulePostProcessor.hpp"
 
 using namespace std;
 using namespace gmsuite;
@@ -35,6 +36,7 @@ using namespace gmsuite;
 #define MOD_UTILITIES "utilities"
 #define MOD_EXPERIMENT "experiment"
 #define MOD_GMS2_TRAINING "gms2-training"
+#define MOD_POST_PROCESSOR "post-processor"
 
 
 string usage_message(string progName) {
@@ -48,6 +50,7 @@ string usage_message(string progName) {
     ssm << "\t" << MOD_UTILITIES << "\t" << "Utilities" << endl;
     ssm << "\t" << MOD_EXPERIMENT << "\t" << "Experiment" << endl;
     ssm << "\t" << MOD_GMS2_TRAINING << "\t" << "GMS2 Training step" << endl;
+    ssm << "\t" << MOD_POST_PROCESSOR << "\t" << "Post processor" << endl;
     
     return ssm.str();
 }
@@ -108,6 +111,15 @@ int main(int argc, const char * argv[]) {
         
         ModuleGMS2Training module (options);            // create module with options
         module.run();                                   // run module
+    }
+    else if (aMode == MOD_POST_PROCESSOR) {
+        OptionsPostProcessor options(aMode);
+        
+        if (!options.parse(argc, argv))
+            return 1;
+        
+        ModulePostProcessor module (options);
+        module.run();
     }
     else if (aMode == "--version") {
         cout << "Version: " << VERSION_NUMBER_MAJOR << "." << VERSION_NUMBER_MINOR << "." << BUILD_NUMBER << endl;

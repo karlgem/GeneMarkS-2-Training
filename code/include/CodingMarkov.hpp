@@ -33,6 +33,8 @@ namespace gmsuite {
          */
         CodingMarkov(unsigned order, size_t period, const NumAlphabetDNA &alph, const NumGeneticCode &geneticCode);
         
+        CodingMarkov(const vector<vector<pair<string, double> > >  &keyValue, const NumAlphabetDNA &alph, const CharNumConverter &cnc);
+        
     protected:
         
         const NumGeneticCode* geneticCode;      /**< Numeric version of the genetic code */
