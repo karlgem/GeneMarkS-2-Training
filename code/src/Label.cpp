@@ -40,3 +40,38 @@ string Label::toString(bool indexFromOne) const {
     
     return ssm.str();
 }
+
+bool Label::compareByLeftAndStrand(Label* a, Label* b) {
+    if (a->left < b->left)
+        return true;
+    if (a->left == b->left)
+        return a->strand < b->strand;
+    return false;
+}
+
+
+size_t Label::get5Prime() const {
+    
+    if (strand == Label::NONE)
+        invalid_argument("Cannot return 5-prime end. Unknown strand value");
+    
+    return (strand == Label::POS ? left : right);
+}
+
+size_t Label::get3Prime() const {
+    
+    if (strand == Label::NONE)
+        invalid_argument("Cannot return 3-prime end. Unknown strand value");
+    
+    return (strand == Label::POS ? right : left);
+}
+
+string Label::strandToStr() const {
+    if (strand == Label::NONE)
+        invalid_argument("Cannot return string representation of strand. Unknown strand value");
+    
+    return (strand == Label::POS ? "+" : "-");
+}
+
+
+

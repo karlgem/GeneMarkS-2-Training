@@ -40,6 +40,7 @@ OptionsUtilities::OptionsUtilities(string mode) : Options(mode) {
 #define STR_DNA_TO_AA "dna-to-aa"
 #define STR_CHANGE_ORDER_NONCODING "change-order-noncoding"
 #define STR_COMPUTE_KL "compute-kl"
+#define STR_AB_FILTER "ab-filter"
 
 namespace gmsuite {
     // convert string to utility_t
@@ -62,6 +63,7 @@ namespace gmsuite {
         else if (token == STR_DNA_TO_AA)                unit = OptionsUtilities::DNA_TO_AA;
         else if (token == STR_CHANGE_ORDER_NONCODING)   unit = OptionsUtilities::CHANGE_ORDER_NONCODING;
         else if (token == STR_COMPUTE_KL)               unit = OptionsUtilities::COMPUTE_KL;
+        else if (token == STR_AB_FILTER)                unit = OptionsUtilities::AB_FILTER;
         else
             throw boost::program_options::invalid_option_value(token);
         
@@ -220,6 +222,23 @@ bool OptionsUtilities::parse(int argc, const char *argv[]) {
         else if (utility == COUNT_NUM_ORF) {
             po::options_description utilDesc(string(STR_COUNT_NUM_ORF) + " options");
             addProcessOptions_CountNumORF(countNumORF, utilDesc);
+            
+            cmdline_options.add(utilDesc);
+            
+            // Collect all the unrecognized options from the first pass. This will include the
+            // (positional) mode and command name, so we need to erase them
+            vector<string> opts = po::collect_unrecognized(parsed.options, po::include_positional);
+            opts.erase(opts.begin());       // erase mode
+            opts.erase(opts.begin());       // erase command name
+            
+            // Parse again...
+            po::store(po::command_line_parser(opts).options(utilDesc).run(), vm);
+            
+        }
+        // Emit AB filter
+        else if (utility == AB_FILTER) {
+            po::options_description utilDesc(string(STR_AB_FILTER) + " options");
+            addProcessOptions_ABFilter(abFilter, utilDesc);
             
             cmdline_options.add(utilDesc);
             
@@ -623,4 +642,12 @@ void OptionsUtilities::addProcessOptions_ChangeOrderNonCoding(ChangeOrderNonCodi
     
 }
 
+void OptionsUtilities::addProcessOptions_ABFilter(ABFilter &options, po::options_description &processOptions) {
+    processOptions.add_options()
+    ("fnA,a", po::value<string>(&options.fnA)->required(), "Name of file A")
+    ("fnB,b", po::value<string>(&options.fnB)->required(), "Name of file B")
+    ("out", po::value<string>(&options.fnout)->required(), "Name of output file")
+    ("thresh-max-dist-upstr", po::value<int>(&options.threshDistToUpstream)->default_value(100), "Max distance between a gene in A and it's upstream in B for A to be kept")
+    ;
+}
 

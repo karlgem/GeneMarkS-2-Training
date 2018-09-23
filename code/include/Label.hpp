@@ -56,12 +56,38 @@ namespace gmsuite {
          */
         string toString(bool indexFromOne) const;
         
+        /**
+         * Get 5Prime end (based on strand)
+         *
+         * @return 5prime end
+         */
+        size_t get5Prime() const;
+        
+        /**
+         * Get 3Prime end (based on strand);
+         *
+         * @return 3prime end
+         */
+        size_t get3Prime() const;
+        
+        /**
+         * String representation of strand
+         *
+         * @return "+" if strand is positive, "-" if strand is negative, exception if strand is not known
+         */
+        string strandToStr() const;
+        
         
         size_t left;            /**< left-end of the fragment (inclusive) */
         size_t right;           /**< right-end of the fragment (inclusive) */
         strand_t strand;        /**< Strand of the fragment */
         string geneClass;       /**< The gene's class */
         string meta;            /**< Meta information about label */
+        
+        /**
+         * Compare labels (in increasing order) by 'left' and then 'strand' values
+         */
+        static bool compareByLeftAndStrand(Label* a, Label* b);
         
     };
 }
