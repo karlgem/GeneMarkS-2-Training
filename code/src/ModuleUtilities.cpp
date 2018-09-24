@@ -1135,13 +1135,17 @@ void ModuleUtilities::runABFilter() {
                 size_t prevIdxInB = idxInB+1;
                 Label* prevLabB = labelsB[prevIdxInB];
                 
-                distanceToUpstreamLabel = (int) prevLabB->right - (int)labA->left + 1;
+                distanceToUpstreamLabel = (int) prevLabB->left - (int)labA->right + 1;
             }
         }
         
         // if distance less than threshold, place in output vector. Otherwise, discard
         if (distanceToUpstreamLabel > utilOpt.threshDistToUpstream)
             keepLabel = true;
+        
+        // reverse label if reverse option is set
+        if (utilOpt.selectNoSatisfy)
+            keepLabel = !keepLabel;
         
         if (keepLabel)
             labelsOut.push_back(labA);

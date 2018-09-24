@@ -648,6 +648,7 @@ void OptionsUtilities::addProcessOptions_ABFilter(ABFilter &options, po::options
     ("fnB,b", po::value<string>(&options.fnB)->required(), "Name of file B")
     ("out", po::value<string>(&options.fnout)->required(), "Name of output file")
     ("thresh-max-dist-upstr", po::value<int>(&options.threshDistToUpstream)->default_value(100), "Max distance between a gene in A and it's upstream in B for A to be kept")
+    ("select-no-satisfy", po::bool_switch(&options.selectNoSatisfy)->default_value(false), "If set, labels that don't satisfy the above threshold constraint are printed.")
     ;
 }
 

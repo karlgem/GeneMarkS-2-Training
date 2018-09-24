@@ -198,6 +198,8 @@ namespace gmsuite {
             string fnB;                     // Name of file B
             string fnout;                   // Name of output file
             int threshDistToUpstream;       // Distance threshold to upstream label. Anything below is kept.
+            bool selectNoSatisfy;           // if set, inverse label printing list selected
+            
         } abFilter;
         
         static void addProcessOptions_ExtractUpstream(ExtractUpstreamUtility &options, po::options_description &processOptions);
