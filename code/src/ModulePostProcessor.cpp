@@ -503,7 +503,7 @@ double computeConfigurationScore(const NumSequence &numSeq, size_t labelLeft, si
             
             if (labelRight >= windowDownstream+3)
                 windowLeft = labelRight - 2 - windowDownstream;
-            if (labelLeft + 2 + windowUpstream < numSeq.size())
+            if (labelRight + 2 + windowUpstream < numSeq.size())
                 windowRight = labelRight + windowUpstream;
             
             size_t nonCodingLen = windowRight - labelRight;
