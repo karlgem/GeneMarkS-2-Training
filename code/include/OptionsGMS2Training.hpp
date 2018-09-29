@@ -76,62 +76,62 @@ namespace gmsuite {
         OptionsMFinder optionsMFinder;              /**< Options for Motif Finder */
         
         // Group-A
-        unsigned                groupA_widthPromoter                ;
-        unsigned                groupA_widthRBS                     ;
-        NumSequence::size_type  groupA_upstreamLengthPromoter       ;
-        NumSequence::size_type  groupA_upstreamLengthRBS            ;
-        double                  groupA_spacerScoreThresh            ;
-        NumSequence::size_type  groupA_spacerDistThresh             ;
-        NumSequence::size_type  groupA_spacerWindowSize             ;
-        string                  groupA_extendedSD                   ;
-        unsigned                groupA_minMatchToExtendedSD         ;
-        bool                    groupA_allowAGSubstitution          ;
-        
-        // Group B
-        unsigned                groupB_widthPromoter                ;
-        unsigned                groupB_widthRBS                     ;
-        NumSequence::size_type  groupB_upstreamLengthPromoter       ;
-        NumSequence::size_type  groupB_upstreamLengthRBS            ;
-        double                  groupB_spacerScoreThresh            ;
-        NumSequence::size_type  groupB_spacerDistThresh             ;
-        NumSequence::size_type  groupB_spacerWindowSize             ;
-        string                  groupB_extendedSD                   ;
-        unsigned                groupB_minMatchToExtendedSD         ;
-        bool                    groupB_allowAGSubstitution          ;
-        
-        // Group-C
-        unsigned                groupC_widthRBS                     ;
-        NumSequence::size_type  groupC_upstreamLengthRBS            ;
-        NumSequence::size_type  groupC_upstreamRegion3Prime         ;
-        unsigned                groupC_minMatchRBSPromoter          ;
-        unsigned                groupC_minMatchToExtendedSD         ;
-        string                  groupC_extendedSD                   ;
-        
-        // Group-C-2
-        unsigned                groupC2_widthSDRBS                  ;
-        NumSequence::size_type  groupC2_upstreamLengthSDRBS         ;
-        unsigned                groupC2_widthNonSDRBS               ;
-        NumSequence::size_type  groupC2_upstreamLengthNonSDRBS      ;
-        NumSequence::size_type  groupC2_upstreamRegion3Prime        ;
-        unsigned                groupC2_minMatchToExtendedSD        ;
-        string                  groupC2_extendedSD                  ;
-        
-        // Group-D
+        unsigned                groupD_widthPromoter                ;
         unsigned                groupD_widthRBS                     ;
+        NumSequence::size_type  groupD_upstreamLengthPromoter       ;
         NumSequence::size_type  groupD_upstreamLengthRBS            ;
-        double                  groupD_percentMatchRBS              ;
+        double                  groupD_spacerScoreThresh            ;
+        NumSequence::size_type  groupD_spacerDistThresh             ;
+        NumSequence::size_type  groupD_spacerWindowSize             ;
         string                  groupD_extendedSD                   ;
         unsigned                groupD_minMatchToExtendedSD         ;
         bool                    groupD_allowAGSubstitution          ;
         
+        // Group B
+        unsigned                groupC_widthPromoter                ;
+        unsigned                groupC_widthRBS                     ;
+        NumSequence::size_type  groupC_upstreamLengthPromoter       ;
+        NumSequence::size_type  groupC_upstreamLengthRBS            ;
+        double                  groupC_spacerScoreThresh            ;
+        NumSequence::size_type  groupC_spacerDistThresh             ;
+        NumSequence::size_type  groupC_spacerWindowSize             ;
+        string                  groupC_extendedSD                   ;
+        unsigned                groupC_minMatchToExtendedSD         ;
+        bool                    groupC_allowAGSubstitution          ;
+        
+        // Group-C
+        unsigned                groupB_widthRBS                     ;
+        NumSequence::size_type  groupB_upstreamLengthRBS            ;
+        NumSequence::size_type  groupB_upstreamRegion3Prime         ;
+        unsigned                groupB_minMatchRBSPromoter          ;
+        unsigned                groupB_minMatchToExtendedSD         ;
+        string                  groupB_extendedSD                   ;
+        
+        // Group-C-2
+        unsigned                groupB2_widthSDRBS                  ;
+        NumSequence::size_type  groupB2_upstreamLengthSDRBS         ;
+        unsigned                groupB2_widthNonSDRBS               ;
+        NumSequence::size_type  groupB2_upstreamLengthNonSDRBS      ;
+        NumSequence::size_type  groupB2_upstreamRegion3Prime        ;
+        unsigned                groupB2_minMatchToExtendedSD        ;
+        string                  groupB2_extendedSD                  ;
+        
+        // Group-D
+        unsigned                groupA_widthRBS                     ;
+        NumSequence::size_type  groupA_upstreamLengthRBS            ;
+        double                  groupA_percentMatchRBS              ;
+        string                  groupA_extendedSD                   ;
+        unsigned                groupA_minMatchToExtendedSD         ;
+        bool                    groupA_allowAGSubstitution          ;
+        
         // Group-E
-        unsigned                groupE_widthRBS                     ;
-        NumSequence::size_type  groupE_upstreamLengthRBS            ;
-        NumSequence::size_type  groupE_lengthUpstreamSignature      ;
-        unsigned                groupE_orderUpstreamSignature       ;
-        string                  groupE_extendedSD                   ;
-        unsigned                groupE_minMatchToExtendedSD         ;
-        bool                    groupE_allowAGSubstitution          ;
+        unsigned                groupX_widthRBS                     ;
+        NumSequence::size_type  groupX_upstreamLengthRBS            ;
+        NumSequence::size_type  groupX_lengthUpstreamSignature      ;
+        unsigned                groupX_orderUpstreamSignature       ;
+        string                  groupX_extendedSD                   ;
+        unsigned                groupX_minMatchToExtendedSD         ;
+        bool                    groupX_allowAGSubstitution          ;
         
         // Coding and Noncoding Models
         unsigned                orderCoding                         ;
