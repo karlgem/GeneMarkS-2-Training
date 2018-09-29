@@ -25,7 +25,7 @@ namespace gmsuite {
         // X: Upstream signature + RBS
         // B2: non-SD RBS + SD RBS
         // D2: Archaea leaderless step 2
-        typedef enum {A, B, C, D, E, D2, B2} genome_group_t;
+        typedef enum {A, B, C, D, X, D2, B2} genome_group_t;
     };
 }
 

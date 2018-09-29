@@ -41,14 +41,14 @@ namespace gmsuite {
             unit = ProkGeneStartModel::A;      // class A
         else if (token == "B")
             unit = ProkGeneStartModel::B;      // class B
-        else if (token == "E")
-            unit = ProkGeneStartModel::E;      // class E
+        else if (token == "X")
+            unit = ProkGeneStartModel::X;      // class X
         else if (token == "C")
             unit = ProkGeneStartModel::C;      // class C
         else if (token == "D2")
             unit = ProkGeneStartModel::D2;      // arhcaea step 2
         else if (token == "B2")
-            unit = ProkGeneStartModel::B2;      // class C2
+            unit = ProkGeneStartModel::B2;      // class B2
         else
             throw validation_error(validation_error::invalid_option_value);
         
