@@ -8,6 +8,7 @@
 
 #include "Label.hpp"
 #include <sstream>
+#include <stdexcept>
 
 using namespace std;
 using namespace gmsuite;
