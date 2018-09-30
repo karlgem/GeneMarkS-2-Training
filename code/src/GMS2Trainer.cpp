@@ -170,58 +170,58 @@ GMS2Trainer::GMS2Trainer(
             bool                    onlyTrainOnNativeGenes              ,
             bool                    runMotifSearch                      ,
             const OptionsMFinder&   optionsMFinder                      ,
-            // Group-A
-            unsigned                groupA_widthPromoter                ,
-            unsigned                groupA_widthRBS                     ,
-            NumSequence::size_type  groupA_upstreamLengthPromoter       ,
-            NumSequence::size_type  groupA_upstreamLengthRBS            ,
-            double                  groupA_spacerScoreThresh            ,
-            NumSequence::size_type  groupA_spacerDistThresh             ,
-            NumSequence::size_type  groupA_spacerWindowSize             ,
-             string                 groupA_extendedSD                   ,
-             unsigned               groupA_minMatchToExtendedSD         ,
-             bool                   groupA_allowAGSubstitution          ,
-            // Group B
-            unsigned                groupB_widthPromoter                ,
-            unsigned                groupB_widthRBS                     ,
-            NumSequence::size_type  groupB_upstreamLengthPromoter       ,
-            NumSequence::size_type  groupB_upstreamLengthRBS            ,
-            double                  groupB_spacerScoreThresh            ,
-            NumSequence::size_type  groupB_spacerDistThresh             ,
-            NumSequence::size_type  groupB_spacerWindowSize             ,
-            string                  groupB_extendedSD                   ,
-            unsigned                groupB_minMatchToExtendedSD         ,
-            bool                    groupB_allowAGSubstitution          ,
-            // Group-C
-            unsigned                groupC_widthRBS                     ,
-            NumSequence::size_type  groupC_upstreamLengthRBS            ,
-            NumSequence::size_type  groupC_upstreamRegion3Prime         ,
-            unsigned                groupC_minMatchRBSPromoter          ,
-            unsigned                groupC_minMatchToExtendedSD         ,
-            string                  groupC_extendedSD                   ,
-            // Group-C2
-            unsigned                groupC2_widthSDRBS                  ,
-            unsigned                groupC2_widthNonSDRBS               ,
-            NumSequence::size_type  groupC2_upstreamLengthSDRBS         ,
-            NumSequence::size_type  groupC2_upstreamLengthNonSDRBS      ,
-            NumSequence::size_type  groupC2_upstreamRegion3Prime        ,
-            unsigned                groupC2_minMatchToExtendedSD        ,
-            string                  groupC2_extendedSD                  ,
             // Group-D
+            unsigned                groupD_widthPromoter                ,
             unsigned                groupD_widthRBS                     ,
+            NumSequence::size_type  groupD_upstreamLengthPromoter       ,
             NumSequence::size_type  groupD_upstreamLengthRBS            ,
-            double                  groupD_percentMatchRBS              ,
-            string                  groupD_extendedSD                   ,
-            unsigned                groupD_minMatchToExtendedSD         ,
-            bool                    groupD_allowAGSubstitution          ,
-            // Group-E
-            unsigned                groupE_widthRBS                     ,
-            NumSequence::size_type  groupE_upstreamLengthRBS            ,
-            NumSequence::size_type  groupE_lengthUpstreamSignature      ,
-            unsigned                groupE_orderUpstreamSignature       ,
-            string                  groupE_extendedSD                   ,
-            unsigned                groupE_minMatchToExtendedSD         ,
-            bool                    groupE_allowAGSubstitution
+            double                  groupD_spacerScoreThresh            ,
+            NumSequence::size_type  groupD_spacerDistThresh             ,
+            NumSequence::size_type  groupD_spacerWindowSize             ,
+             string                 groupD_extendedSD                   ,
+             unsigned               groupD_minMatchToExtendedSD         ,
+             bool                   groupD_allowAGSubstitution          ,
+            // Group C
+            unsigned                groupC_widthPromoter                ,
+            unsigned                groupC_widthRBS                     ,
+            NumSequence::size_type  groupC_upstreamLengthPromoter       ,
+            NumSequence::size_type  groupC_upstreamLengthRBS            ,
+            double                  groupC_spacerScoreThresh            ,
+            NumSequence::size_type  groupC_spacerDistThresh             ,
+            NumSequence::size_type  groupC_spacerWindowSize             ,
+            string                  groupC_extendedSD                   ,
+            unsigned                groupC_minMatchToExtendedSD         ,
+            bool                    groupC_allowAGSubstitution          ,
+            // Group-B
+            unsigned                groupB_widthRBS                     ,
+            NumSequence::size_type  groupB_upstreamLengthRBS            ,
+            NumSequence::size_type  groupB_upstreamRegion3Prime         ,
+            unsigned                groupB_minMatchRBSPromoter          ,
+            unsigned                groupB_minMatchToExtendedSD         ,
+            string                  groupB_extendedSD                   ,
+            // Group-B2
+            unsigned                groupB2_widthSDRBS                  ,
+            unsigned                groupB2_widthNonSDRBS               ,
+            NumSequence::size_type  groupB2_upstreamLengthSDRBS         ,
+            NumSequence::size_type  groupB2_upstreamLengthNonSDRBS      ,
+            NumSequence::size_type  groupB2_upstreamRegion3Prime        ,
+            unsigned                groupB2_minMatchToExtendedSD        ,
+            string                  groupB2_extendedSD                  ,
+            // Group-A
+            unsigned                groupA_widthRBS                     ,
+            NumSequence::size_type  groupA_upstreamLengthRBS            ,
+            double                  groupA_percentMatchRBS              ,
+            string                  groupA_extendedSD                   ,
+            unsigned                groupA_minMatchToExtendedSD         ,
+            bool                    groupA_allowAGSubstitution          ,
+            // Group-X
+            unsigned                groupX_widthRBS                     ,
+            NumSequence::size_type  groupX_upstreamLengthRBS            ,
+            NumSequence::size_type  groupX_lengthUpstreamSignature      ,
+            unsigned                groupX_orderUpstreamSignature       ,
+            string                  groupX_extendedSD                   ,
+            unsigned                groupX_minMatchToExtendedSD         ,
+            bool                    groupX_allowAGSubstitution
                               ) {
     
     
@@ -239,52 +239,52 @@ GMS2Trainer::GMS2Trainer(
     this->params.onlyTrainOnNativeGenes          =  onlyTrainOnNativeGenes                ;
     this->params.runMotifSearch                  =  runMotifSearch                        ;
     this->params.optionsMFinder                  =  &optionsMFinder                       ;
-    this->params.groupA_widthPromoter            =  groupA_widthPromoter                  ;
-    this->params.groupA_widthRBS                 =  groupA_widthRBS                       ;
-    this->params.groupA_upstreamLengthPromoter   =  groupA_upstreamLengthPromoter         ;
-    this->params.groupA_upstreamLengthRBS        =  groupA_upstreamLengthRBS              ;
-    this->params.groupA_spacerScoreThresh        =  groupA_spacerScoreThresh              ;
-    this->params.groupA_spacerDistThresh         =  groupA_spacerDistThresh               ;
-    this->params.groupA_spacerWindowSize         =  groupA_spacerWindowSize               ;
-    this->params.groupA_extendedSD               =  groupA_extendedSD                     ;
-    this->params.groupA_minMatchToExtendedSD     =  groupA_minMatchToExtendedSD           ;
-    this->params.groupA_allowAGSubstitution      =  groupA_allowAGSubstitution            ;
-    this->params.groupB_widthPromoter            =  groupB_widthPromoter                  ;
-    this->params.groupB_widthRBS                 =  groupB_widthRBS                       ;
-    this->params.groupB_upstreamLengthPromoter   =  groupB_upstreamLengthPromoter         ;
-    this->params.groupB_upstreamLengthRBS        =  groupB_upstreamLengthRBS              ;
-    this->params.groupB_spacerScoreThresh        =  groupB_spacerScoreThresh              ;
-    this->params.groupB_spacerDistThresh         =  groupB_spacerDistThresh               ;
-    this->params.groupB_spacerWindowSize         =  groupB_spacerWindowSize               ;
-    this->params.groupB_extendedSD               =  groupB_extendedSD                     ;
-    this->params.groupB_minMatchToExtendedSD     =  groupB_minMatchToExtendedSD           ;
-    this->params.groupB_allowAGSubstitution      =  groupB_allowAGSubstitution            ;
-    this->params.groupC_widthRBS                 =  groupC_widthRBS                       ;
-    this->params.groupC_upstreamLengthRBS        =  groupC_upstreamLengthRBS              ;
-    this->params.groupC_upstreamRegion3Prime     =  groupC_upstreamRegion3Prime           ;
-    this->params.groupC_minMatchRBSPromoter      =  groupC_minMatchRBSPromoter            ;
-    this->params.groupC_minMatchToExtendedSD     =  groupC_minMatchToExtendedSD           ;
-    this->params.groupC_extendedSD               =  groupC_extendedSD                     ;
-    this->params.groupC2_widthSDRBS                  = groupC2_widthSDRBS                    ;
-    this->params.groupC2_widthNonSDRBS               = groupC2_widthNonSDRBS                 ;
-    this->params.groupC2_upstreamLengthSDRBS         = groupC2_upstreamLengthSDRBS           ;
-    this->params.groupC2_upstreamLengthNonSDRBS      = groupC2_upstreamLengthNonSDRBS        ;
-    this->params.groupC2_upstreamRegion3Prime        = groupC2_upstreamRegion3Prime          ;
-    this->params.groupC2_minMatchToExtendedSD        = groupC2_minMatchToExtendedSD          ;
-    this->params.groupC2_extendedSD                  = groupC2_extendedSD                    ;
+    this->params.groupD_widthPromoter            =  groupD_widthPromoter                  ;
     this->params.groupD_widthRBS                 =  groupD_widthRBS                       ;
+    this->params.groupD_upstreamLengthPromoter   =  groupD_upstreamLengthPromoter         ;
     this->params.groupD_upstreamLengthRBS        =  groupD_upstreamLengthRBS              ;
-    this->params.groupD_percentMatchRBS          =  groupD_percentMatchRBS                ;
+    this->params.groupD_spacerScoreThresh        =  groupD_spacerScoreThresh              ;
+    this->params.groupD_spacerDistThresh         =  groupD_spacerDistThresh               ;
+    this->params.groupD_spacerWindowSize         =  groupD_spacerWindowSize               ;
     this->params.groupD_extendedSD               =  groupD_extendedSD                     ;
     this->params.groupD_minMatchToExtendedSD     =  groupD_minMatchToExtendedSD           ;
     this->params.groupD_allowAGSubstitution      =  groupD_allowAGSubstitution            ;
-    this->params.groupE_widthRBS                 =  groupE_widthRBS                       ;
-    this->params.groupE_upstreamLengthRBS        =  groupE_upstreamLengthRBS              ;
-    this->params.groupE_lengthUpstreamSignature  =  groupE_lengthUpstreamSignature        ;
-    this->params.groupE_orderUpstreamSignature   =  groupE_orderUpstreamSignature         ;
-    this->params.groupE_extendedSD               =  groupE_extendedSD                     ;
-    this->params.groupE_minMatchToExtendedSD     =  groupE_minMatchToExtendedSD           ;
-    this->params.groupE_allowAGSubstitution      =  groupE_allowAGSubstitution            ;
+    this->params.groupC_widthPromoter            =  groupC_widthPromoter                  ;
+    this->params.groupC_widthRBS                 =  groupC_widthRBS                       ;
+    this->params.groupC_upstreamLengthPromoter   =  groupC_upstreamLengthPromoter         ;
+    this->params.groupC_upstreamLengthRBS        =  groupC_upstreamLengthRBS              ;
+    this->params.groupC_spacerScoreThresh        =  groupC_spacerScoreThresh              ;
+    this->params.groupC_spacerDistThresh         =  groupC_spacerDistThresh               ;
+    this->params.groupC_spacerWindowSize         =  groupC_spacerWindowSize               ;
+    this->params.groupC_extendedSD               =  groupC_extendedSD                     ;
+    this->params.groupC_minMatchToExtendedSD     =  groupC_minMatchToExtendedSD           ;
+    this->params.groupC_allowAGSubstitution      =  groupC_allowAGSubstitution            ;
+    this->params.groupB_widthRBS                 =  groupB_widthRBS                       ;
+    this->params.groupB_upstreamLengthRBS        =  groupB_upstreamLengthRBS              ;
+    this->params.groupB_upstreamRegion3Prime     =  groupB_upstreamRegion3Prime           ;
+    this->params.groupB_minMatchRBSPromoter      =  groupB_minMatchRBSPromoter            ;
+    this->params.groupB_minMatchToExtendedSD     =  groupB_minMatchToExtendedSD           ;
+    this->params.groupB_extendedSD               =  groupB_extendedSD                     ;
+    this->params.groupB2_widthSDRBS                  = groupB2_widthSDRBS                    ;
+    this->params.groupB2_widthNonSDRBS               = groupB2_widthNonSDRBS                 ;
+    this->params.groupB2_upstreamLengthSDRBS         = groupB2_upstreamLengthSDRBS           ;
+    this->params.groupB2_upstreamLengthNonSDRBS      = groupB2_upstreamLengthNonSDRBS        ;
+    this->params.groupB2_upstreamRegion3Prime        = groupB2_upstreamRegion3Prime          ;
+    this->params.groupB2_minMatchToExtendedSD        = groupB2_minMatchToExtendedSD          ;
+    this->params.groupB2_extendedSD                  = groupB2_extendedSD                    ;
+    this->params.groupA_widthRBS                 =  groupA_widthRBS                       ;
+    this->params.groupA_upstreamLengthRBS        =  groupA_upstreamLengthRBS              ;
+    this->params.groupA_percentMatchRBS          =  groupA_percentMatchRBS                ;
+    this->params.groupA_extendedSD               =  groupA_extendedSD                     ;
+    this->params.groupA_minMatchToExtendedSD     =  groupA_minMatchToExtendedSD           ;
+    this->params.groupA_allowAGSubstitution      =  groupA_allowAGSubstitution            ;
+    this->params.groupX_widthRBS                 =  groupX_widthRBS                       ;
+    this->params.groupX_upstreamLengthRBS        =  groupX_upstreamLengthRBS              ;
+    this->params.groupX_lengthUpstreamSignature  =  groupX_lengthUpstreamSignature        ;
+    this->params.groupX_orderUpstreamSignature   =  groupX_orderUpstreamSignature         ;
+    this->params.groupX_extendedSD               =  groupX_extendedSD                     ;
+    this->params.groupX_minMatchToExtendedSD     =  groupX_minMatchToExtendedSD           ;
+    this->params.groupX_allowAGSubstitution      =  groupX_allowAGSubstitution            ;
     
     // public variables for models
     noncoding = NULL;
@@ -589,33 +589,33 @@ void GMS2Trainer::estimateParametersMotifModel(const NumSequence &sequence, cons
     }
 
     
-    if (params.genomeGroup == ProkGeneStartModel::A) {
-        this->genomeType = "group-a";
-        estimateParametersMotifModel_GroupA(sequence, useLabels);
+    if (params.genomeGroup == ProkGeneStartModel::D) {
+        this->genomeType = "group-d";
+        estimateParametersMotifModel_GroupD(sequence, useLabels);
     }
-    else if (params.genomeGroup == ProkGeneStartModel::A2) {
-        this->genomeType = "group-a2";
-        estimateParametersMotifModel_groupA2(sequence, useLabels);
-    }
-    else if (params.genomeGroup == ProkGeneStartModel::B) {
-        this->genomeType = "group-b";
-        estimateParametersMotifModel_GroupB(sequence, useLabels);
+    else if (params.genomeGroup == ProkGeneStartModel::D2) {
+        this->genomeType = "group-d2";
+        estimateParametersMotifModel_groupD2(sequence, useLabels);
     }
     else if (params.genomeGroup == ProkGeneStartModel::C) {
         this->genomeType = "group-c";
         estimateParametersMotifModel_GroupC(sequence, useLabels);
     }
-    else if (params.genomeGroup == ProkGeneStartModel::C2) {
-        this->genomeType = "group-c2";
-        estimateParametersMotifModel_GroupC2(sequence,useLabels);
+    else if (params.genomeGroup == ProkGeneStartModel::B) {
+        this->genomeType = "group-b";
+        estimateParametersMotifModel_GroupB(sequence, useLabels);
     }
-    else if (params.genomeGroup == ProkGeneStartModel::D) {
-        this->genomeType = "group-d";
-        estimateParametersMotifModel_GroupD(sequence, useLabels);
+    else if (params.genomeGroup == ProkGeneStartModel::B2) {
+        this->genomeType = "group-b2";
+        estimateParametersMotifModel_GroupB2(sequence,useLabels);
+    }
+    else if (params.genomeGroup == ProkGeneStartModel::A) {
+        this->genomeType = "group-a";
+        estimateParametersMotifModel_GroupA(sequence, useLabels);
     }
     else {
-        this->genomeType = "group-e";
-        estimateParametersMotifModel_GroupE(sequence, useLabels);
+        this->genomeType = "group-x";
+        estimateParametersMotifModel_GroupX(sequence, useLabels);
     }
 }
 
@@ -874,7 +874,7 @@ void GMS2Trainer::selectLabelsForCodingParameters(const vector<Label*> &labels, 
 
 
 
-void GMS2Trainer::estimateParametersMotifModel_groupA2(const NumSequence &sequence, const vector<Label *> &labels) {
+void GMS2Trainer::estimateParametersMotifModel_groupD2(const NumSequence &sequence, const vector<Label *> &labels) {
     
     AlphabetDNA alph;
     CharNumConverter cnc(&alph);
@@ -894,22 +894,22 @@ void GMS2Trainer::estimateParametersMotifModel_groupA2(const NumSequence &sequen
     
     // match FGIO to 16S tail
     vector<NumSequence> upstreamsFGIOForMatching, upstreamsFGIOForPromoter;
-    SequenceParser::extractUpstreamSequences(sequence, labelsFGIO, cnc, params.groupA_upstreamLengthPromoter, upstreamsFGIOForPromoter, true);
+    SequenceParser::extractUpstreamSequences(sequence, labelsFGIO, cnc, params.groupD_upstreamLengthPromoter, upstreamsFGIOForPromoter, true);
     
     upstreamsFGIOForMatching.resize(upstreamsFGIOForPromoter.size());
     for (size_t n = 0; n < upstreamsFGIOForPromoter.size(); n++) {
-        upstreamsFGIOForMatching[n] = upstreamsFGIOForPromoter[n].subseq(params.groupA_upstreamLengthPromoter - params.groupA_upstreamLengthRBS, params.groupA_upstreamLengthRBS);
-        assert(upstreamsFGIOForMatching[n].size() == params.groupA_upstreamLengthRBS);
+        upstreamsFGIOForMatching[n] = upstreamsFGIOForPromoter[n].subseq(params.groupD_upstreamLengthPromoter - params.groupD_upstreamLengthRBS, params.groupD_upstreamLengthRBS);
+        assert(upstreamsFGIOForMatching[n].size() == params.groupD_upstreamLengthRBS);
     }
     
     assert(upstreamsFGIOForPromoter.size() == upstreamsFGIOForMatching.size());
     
-    Sequence strMatchSeq (params.groupA_extendedSD);
+    Sequence strMatchSeq (params.groupD_extendedSD);
     NumSequence matchSeq (strMatchSeq, cnc);
     
     pair<NumSequence::size_type, NumSequence::size_type> positionsOfMatches;
     vector<pair<NumSequence::num_t, NumSequence::num_t> > substitutions;
-    if (params.groupA_allowAGSubstitution)
+    if (params.groupD_allowAGSubstitution)
         substitutions.push_back(pair<NumSequence::num_t, NumSequence::num_t> (cnc.convert('A'), cnc.convert('G')));
     
     size_t skipFromStart = 3;
@@ -917,7 +917,7 @@ void GMS2Trainer::estimateParametersMotifModel_groupA2(const NumSequence &sequen
         NumSequence match = SequenceAlgorithms::longestMatchTo16S(matchSeq, upstreamsFGIOForMatching[n], positionsOfMatches, substitutions);
         
         // keep track of nonmatches
-        if (match.size() < params.groupA_minMatchToExtendedSD)
+        if (match.size() < params.groupD_minMatchToExtendedSD)
             upstreamsPromoter.push_back(upstreamsFGIOForPromoter[n]);
         else
             upstreamsRBS.push_back(upstreamsFGIOForMatching[n]);
@@ -925,7 +925,7 @@ void GMS2Trainer::estimateParametersMotifModel_groupA2(const NumSequence &sequen
     
     
     vector<NumSequence> upstreamsIG;
-    SequenceParser::extractUpstreamSequences(sequence, labelsIG, cnc, params.groupA_upstreamLengthRBS, upstreamsIG);
+    SequenceParser::extractUpstreamSequences(sequence, labelsIG, cnc, params.groupD_upstreamLengthRBS, upstreamsIG);
     for (size_t n = 0; n < upstreamsIG.size(); n++) {
         upstreamsRBS.push_back(upstreamsIG[n]);
     }
@@ -934,20 +934,20 @@ void GMS2Trainer::estimateParametersMotifModel_groupA2(const NumSequence &sequen
     this->numFGIO = upstreamsFGIOForMatching.size();
     
     OptionsMFinder optionMFinderPromoter (*this->params.optionsMFinder);
-    optionMFinderPromoter.width = params.groupA_widthPromoter;
+    optionMFinderPromoter.width = params.groupD_widthPromoter;
     
     OptionsMFinder optionMFinderRBS (*this->params.optionsMFinder);
-    optionMFinderRBS.width = params.groupA_widthRBS;
+    optionMFinderRBS.width = params.groupD_widthRBS;
     
     // take first
     if (cutPromTrainSeqs) {
         for (size_t n = 0; n < upstreamsPromoter.size(); n++) {
-            upstreamsPromoter[n] = upstreamsPromoter[n].subseq(0, params.groupA_upstreamLengthPromoter - 15);
+            upstreamsPromoter[n] = upstreamsPromoter[n].subseq(0, params.groupD_upstreamLengthPromoter - 15);
         }
     }
     
-    runMotifFinder(upstreamsPromoter, optionMFinderPromoter, *this->alphabet, params.groupA_upstreamLengthPromoter, this->promoter, this->promoterSpacer);
-    runMotifFinder(upstreamsRBS, optionMFinderRBS, *this->alphabet, params.groupA_upstreamLengthRBS, this->rbs, this->rbsSpacer);
+    runMotifFinder(upstreamsPromoter, optionMFinderPromoter, *this->alphabet, params.groupD_upstreamLengthPromoter, this->promoter, this->promoterSpacer);
+    runMotifFinder(upstreamsRBS, optionMFinderRBS, *this->alphabet, params.groupD_upstreamLengthRBS, this->rbs, this->rbsSpacer);
     
     //    // shift probabilities
     //    vector<double> extendedProbs (promoterSpacer->size()+skipFromStart, 0);
@@ -972,7 +972,7 @@ void GMS2Trainer::estimateParametersMotifModel_groupA2(const NumSequence &sequen
 }
 
 
-void GMS2Trainer::estimateParametersMotifModel_GroupA(const NumSequence &sequence, const vector<Label *> &labels) {
+void GMS2Trainer::estimateParametersMotifModel_GroupD(const NumSequence &sequence, const vector<Label *> &labels) {
     
     AlphabetDNA alph;
     CharNumConverter cnc(&alph);
@@ -986,17 +986,17 @@ void GMS2Trainer::estimateParametersMotifModel_GroupA(const NumSequence &sequenc
     LabelsParser::splitBasedOnPartition(labels, operonStatuses, labelsFGIO, labelsIG, labelsUNK);
     
     vector<NumSequence> upstreamsFGIO;
-    SequenceParser::extractUpstreamSequences(sequence, labelsFGIO, cnc, this->params.groupA_upstreamLengthPromoter, upstreamsFGIO, true);
+    SequenceParser::extractUpstreamSequences(sequence, labelsFGIO, cnc, this->params.groupD_upstreamLengthPromoter, upstreamsFGIO, true);
     
     // take first
     if (cutPromTrainSeqs) {
         for (size_t n = 0; n < upstreamsFGIO.size(); n++) {
-            upstreamsFGIO[n] = upstreamsFGIO[n].subseq(0, this->params.groupA_upstreamLengthPromoter - 15);
+            upstreamsFGIO[n] = upstreamsFGIO[n].subseq(0, this->params.groupD_upstreamLengthPromoter - 15);
         }
     }
     
     vector<NumSequence> upstreamsIG;
-    SequenceParser::extractUpstreamSequences(sequence, labelsIG, cnc, this->params.groupA_upstreamLengthRBS, upstreamsIG);
+    SequenceParser::extractUpstreamSequences(sequence, labelsIG, cnc, this->params.groupD_upstreamLengthRBS, upstreamsIG);
     
     //    void runMotifFinder(const vector<NumSequence> &sequencesRaw, OptionsMFinder &optionsMFinder, size_t upstreamLength, NonUniformMarkov* motifMarkov, UnivariatePDF* motifSpacer) {
     //
@@ -1004,14 +1004,14 @@ void GMS2Trainer::estimateParametersMotifModel_GroupA(const NumSequence &sequenc
     this->numFGIO = upstreamsFGIO.size();
     
     OptionsMFinder optionMFinderFGIO (*this->params.optionsMFinder);
-    optionMFinderFGIO.width = params.groupA_widthPromoter;
+    optionMFinderFGIO.width = params.groupD_widthPromoter;
     
     MotifFinder::Builder b;
     OptionsMFinder optionsMFinderRBS (*this->params.optionsMFinder);
-    optionsMFinderRBS.width =  params.groupA_widthRBS;
+    optionsMFinderRBS.width =  params.groupD_widthRBS;
     
-    runMotifFinder(upstreamsFGIO, optionMFinderFGIO, *this->alphabet, this->params.groupA_upstreamLengthPromoter, this->promoter, this->promoterSpacer);
-    runMotifFinder(upstreamsIG, optionsMFinderRBS, *this->alphabet, this->params.groupA_upstreamLengthRBS, this->rbs, this->rbsSpacer);
+    runMotifFinder(upstreamsFGIO, optionMFinderFGIO, *this->alphabet, this->params.groupD_upstreamLengthPromoter, this->promoter, this->promoterSpacer);
+    runMotifFinder(upstreamsIG, optionsMFinderRBS, *this->alphabet, this->params.groupD_upstreamLengthRBS, this->rbs, this->rbsSpacer);
     
     
     // shift probabilities
@@ -1028,7 +1028,7 @@ void GMS2Trainer::estimateParametersMotifModel_GroupA(const NumSequence &sequenc
 }
 
 
-void GMS2Trainer::estimateParametersMotifModel_GroupB(const NumSequence &sequence, const vector<Label *> &labels) {
+void GMS2Trainer::estimateParametersMotifModel_GroupC(const NumSequence &sequence, const vector<Label *> &labels) {
     
     AlphabetDNA alph;
     CharNumConverter cnc(&alph);
@@ -1046,14 +1046,14 @@ void GMS2Trainer::estimateParametersMotifModel_GroupB(const NumSequence &sequenc
     
     // match FGIO to 16S tail
     vector<NumSequence> upstreamsFGIO;
-    SequenceParser::extractUpstreamSequences(sequence, labelsFGIO, cnc, params.groupB_upstreamLengthPromoter, upstreamsFGIO);
+    SequenceParser::extractUpstreamSequences(sequence, labelsFGIO, cnc, params.groupC_upstreamLengthPromoter, upstreamsFGIO);
     
-    Sequence strMatchSeq (params.groupB_extendedSD);
+    Sequence strMatchSeq (params.groupC_extendedSD);
     NumSequence matchSeq (strMatchSeq, cnc);
     
     pair<NumSequence::size_type, NumSequence::size_type> positionsOfMatches;
     vector<pair<NumSequence::num_t, NumSequence::num_t> > substitutions;
-    if (params.groupB_allowAGSubstitution)
+    if (params.groupC_allowAGSubstitution)
         substitutions.push_back(pair<NumSequence::num_t, NumSequence::num_t> (cnc.convert('A'), cnc.convert('G')));
     
     size_t skipFromStart = 3;
@@ -1061,7 +1061,7 @@ void GMS2Trainer::estimateParametersMotifModel_GroupB(const NumSequence &sequenc
         NumSequence match = SequenceAlgorithms::longestMatchTo16S(matchSeq, upstreamsFGIO[n], positionsOfMatches, substitutions);
         
         // keep track of nonmatches
-        if (match.size() < params.groupB_minMatchToExtendedSD)
+        if (match.size() < params.groupC_minMatchToExtendedSD)
             upstreamsPromoter.push_back(upstreamsFGIO[n].subseq(0, upstreamsFGIO[n].size() - skipFromStart));
         else
             upstreamsRBS.push_back(upstreamsFGIO[n]);
@@ -1069,7 +1069,7 @@ void GMS2Trainer::estimateParametersMotifModel_GroupB(const NumSequence &sequenc
     
     
     vector<NumSequence> upstreamsIG;
-    SequenceParser::extractUpstreamSequences(sequence, labelsIG, cnc, params.groupB_upstreamLengthRBS, upstreamsIG);
+    SequenceParser::extractUpstreamSequences(sequence, labelsIG, cnc, params.groupC_upstreamLengthRBS, upstreamsIG);
     for (size_t n = 0; n < upstreamsIG.size(); n++) {
         upstreamsRBS.push_back(upstreamsIG[n]);
     }
@@ -1079,13 +1079,13 @@ void GMS2Trainer::estimateParametersMotifModel_GroupB(const NumSequence &sequenc
     
     MotifFinder::Builder b;
     OptionsMFinder optionsMFinderPromoter (*this->params.optionsMFinder);
-    optionsMFinderPromoter.width =  params.groupB_widthPromoter;
+    optionsMFinderPromoter.width =  params.groupC_widthPromoter;
     
     OptionsMFinder optionsMFinderRBS (*this->params.optionsMFinder);
-    optionsMFinderRBS.width =  params.groupB_widthRBS;
+    optionsMFinderRBS.width =  params.groupC_widthRBS;
     
-    runMotifFinder(upstreamsPromoter, optionsMFinderPromoter, *this->alphabet, params.groupB_upstreamLengthPromoter-skipFromStart, this->promoter, this->promoterSpacer);
-    runMotifFinder(upstreamsRBS, optionsMFinderRBS, *this->alphabet, params.groupB_upstreamLengthRBS, this->rbs, this->rbsSpacer);
+    runMotifFinder(upstreamsPromoter, optionsMFinderPromoter, *this->alphabet, params.groupC_upstreamLengthPromoter-skipFromStart, this->promoter, this->promoterSpacer);
+    runMotifFinder(upstreamsRBS, optionsMFinderRBS, *this->alphabet, params.groupC_upstreamLengthRBS, this->rbs, this->rbsSpacer);
     
     // shift probabilities
     vector<double> extendedProbs (promoterSpacer->size()+skipFromStart, 0);
@@ -1100,12 +1100,12 @@ void GMS2Trainer::estimateParametersMotifModel_GroupB(const NumSequence &sequenc
 }
 
 
-void GMS2Trainer::estimateParametersMotifModel_GroupC(const NumSequence &sequence, const vector<Label *> &labels) {
-    this->estimateParametersMotifModel_GroupD(sequence, labels);
+void GMS2Trainer::estimateParametersMotifModel_GroupB(const NumSequence &sequence, const vector<Label *> &labels) {
+    this->estimateParametersMotifModel_GroupA(sequence, labels);
 }
 
 
-void GMS2Trainer::estimateParametersMotifModel_GroupC2(const NumSequence &sequence, const vector<Label *> &labels) {
+void GMS2Trainer::estimateParametersMotifModel_GroupB2(const NumSequence &sequence, const vector<Label *> &labels) {
     
     // split labels into sets based on operon status
     vector<LabelsParser::operon_status_t> operonStatuses;
@@ -1121,24 +1121,24 @@ void GMS2Trainer::estimateParametersMotifModel_GroupC2(const NumSequence &sequen
     
     // extract upstream of each label
     vector<NumSequence> upstreamsRaw;
-    SequenceParser::extractUpstreamSequences(sequence, labels, *alphabet->getCNC(), params.groupC2_upstreamLengthSDRBS, upstreamsRaw, false, params.minimumGeneLengthTraining);
+    SequenceParser::extractUpstreamSequences(sequence, labels, *alphabet->getCNC(), params.groupB2_upstreamLengthSDRBS, upstreamsRaw, false, params.minimumGeneLengthTraining);
     
     vector<NumSequence> upstreams;
     for (size_t n = 0; n < upstreamsRaw.size(); n++) {
         if (!upstreamsRaw[n].containsInvalid(*this->alphabet))
-            upstreams.push_back(upstreamsRaw[n].subseq(0, upstreamsRaw[n].size() - params.groupC2_upstreamRegion3Prime));
+            upstreams.push_back(upstreamsRaw[n].subseq(0, upstreamsRaw[n].size() - params.groupB2_upstreamRegion3Prime));
     }
     
     
     vector<NumSequence> upstreamsSD, upstreamsNonSD;
     
     // match against SD
-    Sequence strMatchSeq (params.groupC2_extendedSD);
+    Sequence strMatchSeq (params.groupB2_extendedSD);
     NumSequence matchSeq (strMatchSeq, *this->cnc);
     
     pair<NumSequence::size_type, NumSequence::size_type> positionsOfMatches;
     vector<pair<NumSequence::num_t, NumSequence::num_t> > substitutions;
-    if (params.groupB_allowAGSubstitution)
+    if (params.groupC_allowAGSubstitution)
         substitutions.push_back(pair<NumSequence::num_t, NumSequence::num_t> (this->cnc->convert('A'), this->cnc->convert('G')));
     
     size_t skipFromStart = 0;
@@ -1146,15 +1146,15 @@ void GMS2Trainer::estimateParametersMotifModel_GroupC2(const NumSequence &sequen
         NumSequence match = SequenceAlgorithms::longestMatchTo16S(matchSeq, upstreams[n], positionsOfMatches, substitutions);
         
         // keep track of nonmatches
-        if (match.size() < params.groupC2_minMatchToExtendedSD)
+        if (match.size() < params.groupB2_minMatchToExtendedSD)
             upstreamsNonSD.push_back(upstreams[n].subseq(0, upstreams[n].size() - skipFromStart));
         else
             upstreamsSD.push_back(upstreams[n]);
     }
     
     
-    runMotifFinder(upstreamsSD, *this->params.optionsMFinder, *this->alphabet, params.groupC2_upstreamLengthSDRBS-skipFromStart, this->promoter, this->promoterSpacer);
-    runMotifFinder(upstreamsNonSD, *this->params.optionsMFinder, *this->alphabet, params.groupC2_upstreamLengthNonSDRBS, this->rbs, this->rbsSpacer);
+    runMotifFinder(upstreamsSD, *this->params.optionsMFinder, *this->alphabet, params.groupB2_upstreamLengthSDRBS-skipFromStart, this->promoter, this->promoterSpacer);
+    runMotifFinder(upstreamsNonSD, *this->params.optionsMFinder, *this->alphabet, params.groupB2_upstreamLengthNonSDRBS, this->rbs, this->rbsSpacer);
     
     // shift probabilities
     vector<double> extendedProbs (promoterSpacer->size()+skipFromStart, 0);
@@ -1170,14 +1170,14 @@ void GMS2Trainer::estimateParametersMotifModel_GroupC2(const NumSequence &sequen
 }
 
 
-void GMS2Trainer::estimateParametersMotifModel_GroupD(const NumSequence &sequence, const vector<Label *> &labels) {
+void GMS2Trainer::estimateParametersMotifModel_GroupA(const NumSequence &sequence, const vector<Label *> &labels) {
     
     MotifFinder::Builder b;
-    OptionsMFinder optionsMFinderGroupD (*this->params.optionsMFinder);
-    optionsMFinderGroupD.width =  params.groupD_widthRBS;
-    if (params.genomeGroup == ProkGeneStartModel::C)
-        optionsMFinderGroupD.width =  params.groupC_widthRBS;
-    MotifFinder mfinder = b.build(optionsMFinderGroupD);
+    OptionsMFinder optionsMFinderGroupA (*this->params.optionsMFinder);
+    optionsMFinderGroupA.width =  params.groupA_widthRBS;
+    if (params.genomeGroup == ProkGeneStartModel::B)
+        optionsMFinderGroupA.width =  params.groupB_widthRBS;
+    MotifFinder mfinder = b.build(optionsMFinderGroupA);
     
     
     // split labels into sets based on operon status
@@ -1191,33 +1191,33 @@ void GMS2Trainer::estimateParametersMotifModel_GroupD(const NumSequence &sequenc
     
     // extract upstream of each label
     vector<NumSequence> upstreamsRaw;
-    SequenceParser::extractUpstreamSequences(sequence, labels, *alphabet->getCNC(), params.groupD_upstreamLengthRBS, upstreamsRaw, false, params.minimumGeneLengthTraining);
+    SequenceParser::extractUpstreamSequences(sequence, labels, *alphabet->getCNC(), params.groupA_upstreamLengthRBS, upstreamsRaw, false, params.minimumGeneLengthTraining);
     
     vector<NumSequence> upstreams;
     for (size_t n = 0; n < upstreamsRaw.size(); n++) {
         if (!upstreamsRaw[n].containsInvalid(*this->alphabet))
-            upstreams.push_back(upstreamsRaw[n].subseq(0, upstreamsRaw[n].size() - params.groupC_upstreamRegion3Prime));
+            upstreams.push_back(upstreamsRaw[n].subseq(0, upstreamsRaw[n].size() - params.groupB_upstreamRegion3Prime));
     }
     
     vector<NumSequence::size_type> positions;
     mfinder.findMotifs(upstreams, positions);
     
     // build RBS model
-    NonUniformCounts rbsCounts(optionsMFinderGroupD.motifOrder, optionsMFinderGroupD.width, *this->alphabet);
+    NonUniformCounts rbsCounts(optionsMFinderGroupA.motifOrder, optionsMFinderGroupA.width, *this->alphabet);
     for (size_t n = 0; n < upstreams.size(); n++) {
-        rbsCounts.count(upstreams[n].begin()+positions[n], upstreams[n].begin()+positions[n]+optionsMFinderGroupD.width);
+        rbsCounts.count(upstreams[n].begin()+positions[n], upstreams[n].begin()+positions[n]+optionsMFinderGroupA.width);
     }
     
-    rbs = new NonUniformMarkov(optionsMFinderGroupD.motifOrder, optionsMFinderGroupD.width, *this->alphabet);
-    rbs->construct(&rbsCounts, optionsMFinderGroupD.pcounts);
+    rbs = new NonUniformMarkov(optionsMFinderGroupA.motifOrder, optionsMFinderGroupA.width, *this->alphabet);
+    rbs->construct(&rbsCounts, optionsMFinderGroupA.pcounts);
     
     // build spacer distribution
     // build histogram from positions
-    vector<double> positionCounts (params.groupD_upstreamLengthRBS - optionsMFinderGroupD.width+1, 0);
+    vector<double> positionCounts (params.groupA_upstreamLengthRBS - optionsMFinderGroupA.width+1, 0);
     for (size_t n = 0; n < positions.size(); n++) {
         // FIXME account for LEFT alignment
         // below is only for right
-        positionCounts[params.groupD_upstreamLengthRBS - optionsMFinderGroupD.width - positions[n]]++;        // increment position
+        positionCounts[params.groupA_upstreamLengthRBS - optionsMFinderGroupA.width - positions[n]]++;        // increment position
     }
     
     rbsSpacer = new UnivariatePDF(positionCounts, false, params.pcounts);
@@ -1225,25 +1225,25 @@ void GMS2Trainer::estimateParametersMotifModel_GroupD(const NumSequence &sequenc
 }
 
 
-void GMS2Trainer::estimateParametersMotifModel_GroupE(const NumSequence &sequence, const vector<Label *> &labels) {
+void GMS2Trainer::estimateParametersMotifModel_GroupX(const NumSequence &sequence, const vector<Label *> &labels) {
     
     AlphabetDNA alph;
     CharNumConverter cnc(&alph);
     NumAlphabetDNA numAlph(alph, cnc);
     
     
-    Sequence strMatchSeq (params.groupE_extendedSD);
+    Sequence strMatchSeq (params.groupX_extendedSD);
     NumSequence matchSeq (strMatchSeq, cnc);
     
     pair<NumSequence::size_type, NumSequence::size_type> positionsOfMatches;
     vector<pair<NumSequence::num_t, NumSequence::num_t> > substitutions;
-    if (params.groupE_allowAGSubstitution)
+    if (params.groupX_allowAGSubstitution)
         substitutions.push_back(pair<NumSequence::num_t, NumSequence::num_t> (cnc.convert('A'), cnc.convert('G')));
     
     
     // extract upstream for every sequence and match it to 16S tail
     vector<NumSequence> upstreams (labels.size());
-    SequenceParser::extractUpstreamSequences(sequence, labels, cnc, params.groupE_upstreamLengthRBS, upstreams);
+    SequenceParser::extractUpstreamSequences(sequence, labels, cnc, params.groupX_upstreamLengthRBS, upstreams);
     size_t skipFromStart = 0;
     
     vector<Label*> labelsSig;
@@ -1253,7 +1253,7 @@ void GMS2Trainer::estimateParametersMotifModel_GroupE(const NumSequence &sequenc
         NumSequence match = SequenceAlgorithms::longestMatchTo16S(matchSeq, upstreams[n], positionsOfMatches, substitutions);
         
         // keep track of nonmatches
-        if (match.size() < params.groupE_minMatchToExtendedSD)
+        if (match.size() < params.groupX_minMatchToExtendedSD)
             labelsSig.push_back(labels[n]);
         else
             labelsRBS.push_back(labels[n]);
@@ -1262,20 +1262,20 @@ void GMS2Trainer::estimateParametersMotifModel_GroupE(const NumSequence &sequenc
     // for all non-Sig sequences, append "N" to mask Sig sequences
     string Ns = "";
     size_t numNs = 0;
-    if ( this->params.groupE_lengthUpstreamSignature >= this->params.lengthStartContext &&
-        this->params.groupE_lengthUpstreamSignature - this->params.lengthStartContext >= this->params.groupE_orderUpstreamSignature)
-        numNs = (this->params.groupE_lengthUpstreamSignature - this->params.lengthStartContext) - this->params.groupE_orderUpstreamSignature;
+    if ( this->params.groupX_lengthUpstreamSignature >= this->params.lengthStartContext &&
+        this->params.groupX_lengthUpstreamSignature - this->params.lengthStartContext >= this->params.groupX_orderUpstreamSignature)
+        numNs = (this->params.groupX_lengthUpstreamSignature - this->params.lengthStartContext) - this->params.groupX_orderUpstreamSignature;
     
     for (size_t n = 0; n < numNs; n++)
         Ns += "N";
     
     NumSequence numSeqNs (Sequence(Ns), cnc);       // numeric sequence of N's
     
-    NonUniformCounts counts(params.groupE_orderUpstreamSignature, params.groupE_lengthUpstreamSignature, *this->alphabet);
+    NonUniformCounts counts(params.groupX_orderUpstreamSignature, params.groupX_lengthUpstreamSignature, *this->alphabet);
     
     vector<NumSequence> contextsRBS;
-    long long posRelToStart = - (params.lengthStartContext + params.marginStartContext + params.groupE_orderUpstreamSignature);
-    SequenceParser::extractStartContextSequences(sequence, labelsRBS, cnc, posRelToStart, params.lengthStartContext + this->params.groupE_orderUpstreamSignature, contextsRBS);
+    long long posRelToStart = - (params.lengthStartContext + params.marginStartContext + params.groupX_orderUpstreamSignature);
+    SequenceParser::extractStartContextSequences(sequence, labelsRBS, cnc, posRelToStart, params.lengthStartContext + this->params.groupX_orderUpstreamSignature, contextsRBS);
     
     for (size_t n = 0; n < contextsRBS.size(); n++) {
         NumSequence withNs = numSeqNs + contextsRBS[n];     // append N's
@@ -1285,7 +1285,7 @@ void GMS2Trainer::estimateParametersMotifModel_GroupE(const NumSequence &sequenc
     
     // add Sig sequences
     vector<NumSequence> contextsSig;
-    SequenceParser::extractStartContextSequences(sequence, labelsSig, cnc, -( (int)params.groupE_lengthUpstreamSignature + params.marginStartContext), params.groupE_lengthUpstreamSignature, contextsSig);
+    SequenceParser::extractStartContextSequences(sequence, labelsSig, cnc, -( (int)params.groupX_lengthUpstreamSignature + params.marginStartContext), params.groupX_lengthUpstreamSignature, contextsSig);
     
     for (size_t n = 0; n < contextsSig.size(); n++) {
         counts.count(contextsSig[n].begin(), contextsSig[n].end());
@@ -1293,17 +1293,17 @@ void GMS2Trainer::estimateParametersMotifModel_GroupE(const NumSequence &sequenc
     }
     
     // for sequences without motifs
-    startContext = new NonUniformMarkov(params.groupE_orderUpstreamSignature, params.groupE_lengthUpstreamSignature, *this->alphabet);
+    startContext = new NonUniformMarkov(params.groupX_orderUpstreamSignature, params.groupX_lengthUpstreamSignature, *this->alphabet);
     startContext->construct(&counts, params.pcounts);
     
     // run motif search for RBS
     vector<NumSequence> upstreamsRBS;
-    SequenceParser::extractUpstreamSequences(sequence, labelsRBS, cnc, this->params.groupE_upstreamLengthRBS, upstreamsRBS);
+    SequenceParser::extractUpstreamSequences(sequence, labelsRBS, cnc, this->params.groupX_upstreamLengthRBS, upstreamsRBS);
     
     MotifFinder::Builder b;
-    OptionsMFinder optionsMFinderGroupE (*this->params.optionsMFinder);
-    optionsMFinderGroupE.width =  params.groupE_widthRBS;
-    runMotifFinder(upstreamsRBS, optionsMFinderGroupE, *this->alphabet, this->params.groupE_upstreamLengthRBS, this->rbs, this->rbsSpacer);
+    OptionsMFinder optionsMFinderGroupX (*this->params.optionsMFinder);
+    optionsMFinderGroupX.width =  params.groupX_widthRBS;
+    runMotifFinder(upstreamsRBS, optionsMFinderGroupX, *this->alphabet, this->params.groupX_upstreamLengthRBS, this->rbs, this->rbsSpacer);
     
     
     

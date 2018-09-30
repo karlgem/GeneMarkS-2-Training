@@ -41,14 +41,14 @@ namespace gmsuite {
             unit = ProkGeneStartModel::A;      // class A
         else if (token == "B")
             unit = ProkGeneStartModel::B;      // class B
-        else if (token == "E")
-            unit = ProkGeneStartModel::E;      // class E
+        else if (token == "X")
+            unit = ProkGeneStartModel::X;      // class X
         else if (token == "C")
             unit = ProkGeneStartModel::C;      // class C
-        else if (token == "A2")
-            unit = ProkGeneStartModel::A2;      // arhcaea step 2
-        else if (token == "C2")
-            unit = ProkGeneStartModel::C2;      // class C2
+        else if (token == "D2")
+            unit = ProkGeneStartModel::D2;      // arhcaea step 2
+        else if (token == "B2")
+            unit = ProkGeneStartModel::B2;      // class B2
         else
             throw validation_error(validation_error::invalid_option_value);
         
@@ -218,58 +218,58 @@ void OptionsGMS2Training::addProcessOptions(OptionsGMS2Training &options, po::op
     ("min-gene-len",        po::value<numseqsize>   (&options.minimumGeneLengthTraining          )->default_value(300),  "Minimym gene length used in training parameters")
     ("only-train-on-native",po::value<bool>         (&options.onlyTrainOnNativeGenes             )->default_value(false),"Only train on native genes")
     ("run-motif-search",    po::value<bool>         (&options.runMotifSearch                     )->default_value(true), "Run motif search")
-    // Group-A
-    ("ga-width-prom",       po::value<unsigned>     (&options.groupA_widthPromoter               )->default_value(12),   "Group A: promoter width")
-    ("ga-width-rbs",        po::value<unsigned>     (&options.groupA_widthRBS                    )->default_value(6),    "Group A: rbs width")
-    ("ga-upstr-len-prom",   po::value<numseqsize>   (&options.groupA_upstreamLengthPromoter      )->default_value(40),   "Group A: upstream length for promoter training")
-    ("ga-upstr-len-rbs",    po::value<numseqsize>   (&options.groupA_upstreamLengthRBS           )->default_value(20),   "Group A: upstream length for rbs training")
-    ("ga-spacer-score-thr", po::value<double>       (&options.groupA_spacerScoreThresh           )->default_value(0.1),  "Group A: minimum peak for valid motif position distribution")
-    ("ga-spacer-dist-thr",  po::value<numseqsize>   (&options.groupA_spacerDistThresh            )->default_value(14),   "Group A: minimum distance from start for valid motif")
-    ("ga-spacer-window",    po::value<numseqsize>   (&options.groupA_spacerWindowSize            )->default_value(1),    "Group A: size of window to determine peak value")
-    ("ga-extended-sd",      po::value<string>       (&options.groupA_extendedSD                  )->default_value("TAAGGAGGTGA"), "Group A: extended SD sequence")
-    ("ga-min-match-to-sd",  po::value<unsigned>     (&options.groupA_minMatchToExtendedSD        )->default_value(4),    "Group A: minimum number of consecutive matches to SD")
-    ("ga-allow-ag-sub",     po::value<bool>         (&options.groupA_allowAGSubstitution         )->default_value(true), "Group A: allow A-G substitution for valid match to SD")
-    // Group B
-    ("gb-width-prom",       po::value<unsigned>     (&options.groupB_widthPromoter               )->default_value(6),    "Group B: promoter width")
-    ("gb-width-rbs",        po::value<unsigned>     (&options.groupB_widthRBS                    )->default_value(6),    "Group B: rbs width")
-    ("gb-upstr-len-prom",   po::value<numseqsize>   (&options.groupB_upstreamLengthPromoter      )->default_value(20),   "Group B: upstream length for promoter training")
-    ("gb-upstr-len-rbs",    po::value<numseqsize>   (&options.groupB_upstreamLengthRBS           )->default_value(20),   "Group B: upstream length for rbs training")
-    ("gb-spacer-score-thr", po::value<double>       (&options.groupB_spacerScoreThresh           )->default_value(0.25), "Group B: minimum peak for valid motif position distribution")
-    ("gb-spacer-dist-thr",  po::value<numseqsize>   (&options.groupB_spacerDistThresh            )->default_value(14),   "Group B: minimum distance from start for valid motif")
-    ("gb-spacer-window",    po::value<numseqsize>   (&options.groupB_spacerWindowSize            )->default_value(1),    "Group B: size of window to determine peak value")
-    ("gb-extended-sd",      po::value<string>       (&options.groupB_extendedSD                  )->default_value("TAAGGAGGTGA"), "Group B: extended SD sequence")
-    ("gb-min-match-to-sd",  po::value<unsigned>     (&options.groupB_minMatchToExtendedSD        )->default_value(4),    "Group B: minimum number of consecutive matches to SD")
-    ("gb-allow-ag-sub",     po::value<bool>         (&options.groupB_allowAGSubstitution         )->default_value(true), "Group B: allow A-G substitution for valid match to SD")
-    // Group C
-    ("gc-width-rbs",        po::value<unsigned>     (&options.groupC_widthRBS                    )->default_value(6),    "Group C: rbs width")
-    ("gc-upstr-len-rbs",    po::value<numseqsize>   (&options.groupC_upstreamLengthRBS           )->default_value(20),   "Group C: upstream length for rbs training")
-    ("gc-upstr-reg-3-prime",po::value<numseqsize>   (&options.groupC_upstreamRegion3Prime        )->default_value(0),    "Group C: 3'prime end of upstream region used for rbs training")
-    ("gc-min-match-rbs-prom",  po::value<unsigned>  (&options.groupC_minMatchRBSPromoter         )->default_value(3),    "Group C: minimum number of consecutive matches between rbs and promoter")
-    ("gc-min-match-to-sd",  po::value<unsigned>     (&options.groupC_minMatchToExtendedSD        )->default_value(4),    "Group C: minimum number of consecutive matches to SD")
-    ("gc-extended-sd",      po::value<string>       (&options.groupC_extendedSD                  )->default_value("TAAGGAGGTGA"), "Group C: extended SD sequence")
-    // Group C2
-    ("gc2-width-sd-rbs",        po::value<unsigned>     (&options.groupC2_widthSDRBS             )->default_value(6),    "Group C2: sd rbs width")
-    ("gc2-width-non-sd-rbs",    po::value<unsigned>     (&options.groupC2_widthNonSDRBS          )->default_value(6),    "Group C2: non-sd rbs width")
-    ("gc2-upstr-len-sd-rbs",    po::value<numseqsize>   (&options.groupC2_upstreamLengthSDRBS    )->default_value(20),   "Group C2: upstream length for SD RBS training")
-    ("gc2-upstr-len-non-sd-rbs",po::value<numseqsize>   (&options.groupC2_upstreamLengthNonSDRBS )->default_value(20),   "Group C2: upstream length for non-SD RBS training")
-    ("gc2-upstr-reg-3-prime",po::value<numseqsize>   (&options.groupC2_upstreamRegion3Prime      )->default_value(0),    "Group C2: 3'prime end of upstream region used for rbs training")
-    ("gc2-min-match-to-sd",  po::value<unsigned>     (&options.groupC2_minMatchToExtendedSD      )->default_value(4),    "Group C2: minimum number of consecutive matches to SD")
-    ("gc2-extended-sd",      po::value<string>       (&options.groupC2_extendedSD                )->default_value("TAAGGAGGTGA"), "Group C2: extended SD sequence")
-    // Group D
+    // Group-D
+    ("gd-width-prom",       po::value<unsigned>     (&options.groupD_widthPromoter               )->default_value(12),   "Group D: promoter width")
     ("gd-width-rbs",        po::value<unsigned>     (&options.groupD_widthRBS                    )->default_value(6),    "Group D: rbs width")
+    ("gd-upstr-len-prom",   po::value<numseqsize>   (&options.groupD_upstreamLengthPromoter      )->default_value(40),   "Group D: upstream length for promoter training")
     ("gd-upstr-len-rbs",    po::value<numseqsize>   (&options.groupD_upstreamLengthRBS           )->default_value(20),   "Group D: upstream length for rbs training")
-    ("gd-percent-match-rbs",  po::value<double>     (&options.groupD_percentMatchRBS             )->default_value(0.5),  "Group D: minimum percentage of predicted motifs that match SD")
+    ("gd-spacer-score-thr", po::value<double>       (&options.groupD_spacerScoreThresh           )->default_value(0.1),  "Group D: minimum peak for valid motif position distribution")
+    ("gd-spacer-dist-thr",  po::value<numseqsize>   (&options.groupD_spacerDistThresh            )->default_value(14),   "Group D: minimum distance from start for valid motif")
+    ("gd-spacer-window",    po::value<numseqsize>   (&options.groupD_spacerWindowSize            )->default_value(1),    "Group D: size of window to determine peak value")
     ("gd-extended-sd",      po::value<string>       (&options.groupD_extendedSD                  )->default_value("TAAGGAGGTGA"), "Group D: extended SD sequence")
     ("gd-min-match-to-sd",  po::value<unsigned>     (&options.groupD_minMatchToExtendedSD        )->default_value(4),    "Group D: minimum number of consecutive matches to SD")
     ("gd-allow-ag-sub",     po::value<bool>         (&options.groupD_allowAGSubstitution         )->default_value(true), "Group D: allow A-G substitution for valid match to SD")
-    // Group E
-    ("ge-width-rbs",        po::value<unsigned>     (&options.groupE_widthRBS                    )->default_value(6),    "Group E: rbs width")
-    ("ge-upstr-len-rbs",    po::value<numseqsize>   (&options.groupE_upstreamLengthRBS           )->default_value(20),   "Group E: upstream length for rbs training")
-    ("ge-len-upstr-sig",    po::value<numseqsize>   (&options.groupE_lengthUpstreamSignature     )->default_value(35),   "Group E: length of upstream signature model")
-    ("ge-order-upstr-sig",  po::value<unsigned>     (&options.groupE_orderUpstreamSignature      )->default_value(2),    "Group E: order of upstream signature model")
-    ("ge-extended-sd",      po::value<string>       (&options.groupE_extendedSD                  )->default_value("TAAGGAGGTGA"), "Group E: extended SD sequence")
-    ("ge-min-match-to-sd",  po::value<unsigned>     (&options.groupE_minMatchToExtendedSD        )->default_value(4),    "Group E: minimum number of consecutive matches to SD")
-    ("ge-allow-ag-sub",     po::value<bool>         (&options.groupE_allowAGSubstitution         )->default_value(true), "Group E: allow A-G substitution for valid match to SD")
+    // Group C
+    ("gc-width-prom",       po::value<unsigned>     (&options.groupC_widthPromoter               )->default_value(6),    "Group C: promoter width")
+    ("gc-width-rbs",        po::value<unsigned>     (&options.groupC_widthRBS                    )->default_value(6),    "Group C: rbs width")
+    ("gc-upstr-len-prom",   po::value<numseqsize>   (&options.groupC_upstreamLengthPromoter      )->default_value(20),   "Group C: upstream length for promoter training")
+    ("gc-upstr-len-rbs",    po::value<numseqsize>   (&options.groupC_upstreamLengthRBS           )->default_value(20),   "Group C: upstream length for rbs training")
+    ("gc-spacer-score-thr", po::value<double>       (&options.groupC_spacerScoreThresh           )->default_value(0.25), "Group C: minimum peak for valid motif position distribution")
+    ("gc-spacer-dist-thr",  po::value<numseqsize>   (&options.groupC_spacerDistThresh            )->default_value(14),   "Group C: minimum distance from start for valid motif")
+    ("gc-spacer-window",    po::value<numseqsize>   (&options.groupC_spacerWindowSize            )->default_value(1),    "Group C: size of window to determine peak value")
+    ("gc-extended-sd",      po::value<string>       (&options.groupC_extendedSD                  )->default_value("TAAGGAGGTGA"), "Group C: extended SD sequence")
+    ("gc-min-match-to-sd",  po::value<unsigned>     (&options.groupC_minMatchToExtendedSD        )->default_value(4),    "Group C: minimum number of consecutive matches to SD")
+    ("gc-allow-ag-sub",     po::value<bool>         (&options.groupC_allowAGSubstitution         )->default_value(true), "Group C: allow A-G substitution for valid match to SD")
+    // Group B
+    ("gb-width-rbs",        po::value<unsigned>     (&options.groupB_widthRBS                    )->default_value(6),    "Group B: rbs width")
+    ("gb-upstr-len-rbs",    po::value<numseqsize>   (&options.groupB_upstreamLengthRBS           )->default_value(20),   "Group B: upstream length for rbs training")
+    ("gb-upstr-reg-3-prime",po::value<numseqsize>   (&options.groupB_upstreamRegion3Prime        )->default_value(0),    "Group B: 3'prime end of upstream region used for rbs training")
+    ("gb-min-match-rbs-prom",  po::value<unsigned>  (&options.groupB_minMatchRBSPromoter         )->default_value(3),    "Group B: minimum number of consecutive matches between rbs and promoter")
+    ("gb-min-match-to-sd",  po::value<unsigned>     (&options.groupB_minMatchToExtendedSD        )->default_value(4),    "Group B: minimum number of consecutive matches to SD")
+    ("gb-extended-sd",      po::value<string>       (&options.groupB_extendedSD                  )->default_value("TAAGGAGGTGA"), "Group B: extended SD sequence")
+    // Group B2
+    ("gb2-width-sd-rbs",        po::value<unsigned>     (&options.groupB2_widthSDRBS             )->default_value(6),    "Group B2: sd rbs width")
+    ("gb2-width-non-sd-rbs",    po::value<unsigned>     (&options.groupB2_widthNonSDRBS          )->default_value(6),    "Group B2: non-sd rbs width")
+    ("gb2-upstr-len-sd-rbs",    po::value<numseqsize>   (&options.groupB2_upstreamLengthSDRBS    )->default_value(20),   "Group B2: upstream length for SD RBS training")
+    ("gb2-upstr-len-non-sd-rbs",po::value<numseqsize>   (&options.groupB2_upstreamLengthNonSDRBS )->default_value(20),   "Group B2: upstream length for non-SD RBS training")
+    ("gb2-upstr-reg-3-prime",po::value<numseqsize>   (&options.groupB2_upstreamRegion3Prime      )->default_value(0),    "Group B2: 3'prime end of upstream region used for rbs training")
+    ("gb2-min-match-to-sd",  po::value<unsigned>     (&options.groupB2_minMatchToExtendedSD      )->default_value(4),    "Group B2: minimum number of consecutive matches to SD")
+    ("gb2-extended-sd",      po::value<string>       (&options.groupB2_extendedSD                )->default_value("TAAGGAGGTGA"), "Group B2: extended SD sequence")
+    // Group A
+    ("ga-width-rbs",        po::value<unsigned>     (&options.groupA_widthRBS                    )->default_value(6),    "Group A: rbs width")
+    ("ga-upstr-len-rbs",    po::value<numseqsize>   (&options.groupA_upstreamLengthRBS           )->default_value(20),   "Group A: upstream length for rbs training")
+    ("ga-percent-match-rbs",  po::value<double>     (&options.groupA_percentMatchRBS             )->default_value(0.5),  "Group A: minimum percentage of predicted motifs that match SD")
+    ("ga-extended-sd",      po::value<string>       (&options.groupA_extendedSD                  )->default_value("TAAGGAGGTGA"), "Group A: extended SD sequence")
+    ("ga-min-match-to-sd",  po::value<unsigned>     (&options.groupA_minMatchToExtendedSD        )->default_value(4),    "Group A: minimum number of consecutive matches to SD")
+    ("ga-allow-ag-sub",     po::value<bool>         (&options.groupA_allowAGSubstitution         )->default_value(true), "Group A: allow A-G substitution for valid match to SD")
+    // Group X
+    ("gx-width-rbs",        po::value<unsigned>     (&options.groupX_widthRBS                    )->default_value(6),    "Group X: rbs width")
+    ("gx-upstr-len-rbs",    po::value<numseqsize>   (&options.groupX_upstreamLengthRBS           )->default_value(20),   "Group X: upstream length for rbs training")
+    ("gx-len-upstr-sig",    po::value<numseqsize>   (&options.groupX_lengthUpstreamSignature     )->default_value(35),   "Group X: length of upstream signature model")
+    ("gx-order-upstr-sig",  po::value<unsigned>     (&options.groupX_orderUpstreamSignature      )->default_value(2),    "Group X: order of upstream signature model")
+    ("gx-extended-sd",      po::value<string>       (&options.groupX_extendedSD                  )->default_value("TAAGGAGGTGA"), "Group X: extended SD sequence")
+    ("gx-min-match-to-sd",  po::value<unsigned>     (&options.groupX_minMatchToExtendedSD        )->default_value(4),    "Group X: minimum number of consecutive matches to SD")
+    ("gx-allow-ag-sub",     po::value<bool>         (&options.groupX_allowAGSubstitution         )->default_value(true), "Group X: allow A-G substitution for valid match to SD")
     ;
 
 

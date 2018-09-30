@@ -39,62 +39,62 @@ namespace gmsuite {
     public:
         
         // Group-A
-        unsigned                groupA_widthPromoter                ;
-        unsigned                groupA_widthRBS                     ;
-        NumSequence::size_type  groupA_upstreamLengthPromoter       ;
-        NumSequence::size_type  groupA_upstreamLengthRBS            ;
-        double                  groupA_spacerScoreThresh            ;
-        NumSequence::size_type  groupA_spacerDistThresh             ;
-        NumSequence::size_type  groupA_spacerWindowSize             ;
-        string                  groupA_extendedSD                   ;
-        unsigned                groupA_minMatchToExtendedSD         ;
-        bool                    groupA_allowAGSubstitution          ;
-        
-        // Group B
-        unsigned                groupB_widthPromoter                ;
-        unsigned                groupB_widthRBS                     ;
-        NumSequence::size_type  groupB_upstreamLengthPromoter       ;
-        NumSequence::size_type  groupB_upstreamLengthRBS            ;
-        double                  groupB_spacerScoreThresh            ;
-        NumSequence::size_type  groupB_spacerDistThresh             ;
-        NumSequence::size_type  groupB_spacerWindowSize             ;
-        string                  groupB_extendedSD                   ;
-        unsigned                groupB_minMatchToExtendedSD         ;
-        bool                    groupB_allowAGSubstitution          ;
-        
-        // Group-C
-        unsigned                groupC_widthRBS                     ;
-        NumSequence::size_type  groupC_upstreamLengthRBS            ;
-        NumSequence::size_type  groupC_upstreamRegion3Prime         ;
-        unsigned                groupC_minMatchRBSPromoter          ;
-        unsigned                groupC_minMatchToExtendedSD         ;
-        string                  groupC_extendedSD                   ;
-        
-        // Group-C-2
-        unsigned                groupC2_widthSDRBS                  ;
-        unsigned                groupC2_widthNonSDRBS               ;
-        NumSequence::size_type  groupC2_upstreamLengthSDRBS         ;
-        NumSequence::size_type  groupC2_upstreamLengthNonSDRBS      ;
-        NumSequence::size_type  groupC2_upstreamRegion3Prime        ;
-        unsigned                groupC2_minMatchToExtendedSD        ;
-        string                  groupC2_extendedSD                  ;
-        
-        // Group-D
+        unsigned                groupD_widthPromoter                ;
         unsigned                groupD_widthRBS                     ;
+        NumSequence::size_type  groupD_upstreamLengthPromoter       ;
         NumSequence::size_type  groupD_upstreamLengthRBS            ;
-        double                  groupD_percentMatchRBS              ;
+        double                  groupD_spacerScoreThresh            ;
+        NumSequence::size_type  groupD_spacerDistThresh             ;
+        NumSequence::size_type  groupD_spacerWindowSize             ;
         string                  groupD_extendedSD                   ;
         unsigned                groupD_minMatchToExtendedSD         ;
         bool                    groupD_allowAGSubstitution          ;
         
+        // Group B
+        unsigned                groupC_widthPromoter                ;
+        unsigned                groupC_widthRBS                     ;
+        NumSequence::size_type  groupC_upstreamLengthPromoter       ;
+        NumSequence::size_type  groupC_upstreamLengthRBS            ;
+        double                  groupC_spacerScoreThresh            ;
+        NumSequence::size_type  groupC_spacerDistThresh             ;
+        NumSequence::size_type  groupC_spacerWindowSize             ;
+        string                  groupC_extendedSD                   ;
+        unsigned                groupC_minMatchToExtendedSD         ;
+        bool                    groupC_allowAGSubstitution          ;
+        
+        // Group-C
+        unsigned                groupB_widthRBS                     ;
+        NumSequence::size_type  groupB_upstreamLengthRBS            ;
+        NumSequence::size_type  groupB_upstreamRegion3Prime         ;
+        unsigned                groupB_minMatchRBSPromoter          ;
+        unsigned                groupB_minMatchToExtendedSD         ;
+        string                  groupB_extendedSD                   ;
+        
+        // Group-C-2
+        unsigned                groupB2_widthSDRBS                  ;
+        unsigned                groupB2_widthNonSDRBS               ;
+        NumSequence::size_type  groupB2_upstreamLengthSDRBS         ;
+        NumSequence::size_type  groupB2_upstreamLengthNonSDRBS      ;
+        NumSequence::size_type  groupB2_upstreamRegion3Prime        ;
+        unsigned                groupB2_minMatchToExtendedSD        ;
+        string                  groupB2_extendedSD                  ;
+        
+        // Group-D
+        unsigned                groupA_widthRBS                     ;
+        NumSequence::size_type  groupA_upstreamLengthRBS            ;
+        double                  groupA_percentMatchRBS              ;
+        string                  groupA_extendedSD                   ;
+        unsigned                groupA_minMatchToExtendedSD         ;
+        bool                    groupA_allowAGSubstitution          ;
+        
         // Group-E
-        unsigned                groupE_widthRBS                     ;
-        NumSequence::size_type  groupE_upstreamLengthRBS            ;
-        NumSequence::size_type  groupE_lengthUpstreamSignature      ;
-        unsigned                groupE_orderUpstreamSignature       ;
-        string                  groupE_extendedSD                   ;
-        unsigned                groupE_minMatchToExtendedSD         ;
-        bool                    groupE_allowAGSubstitution          ;
+        unsigned                groupX_widthRBS                     ;
+        NumSequence::size_type  groupX_upstreamLengthRBS            ;
+        NumSequence::size_type  groupX_lengthUpstreamSignature      ;
+        unsigned                groupX_orderUpstreamSignature       ;
+        string                  groupX_extendedSD                   ;
+        unsigned                groupX_minMatchToExtendedSD         ;
+        bool                    groupX_allowAGSubstitution          ;
         
         // Coding and Noncoding Models
         unsigned                orderCoding                         ;
@@ -176,57 +176,57 @@ namespace gmsuite {
                     bool                    runMotifSearch                      ,
                     const OptionsMFinder&   optionsMFinder                      ,
                     // Group-A
-                    unsigned                groupA_widthPromoter                ,
-                    unsigned                groupA_widthRBS                     ,
-                    NumSequence::size_type  groupA_upstreamLengthPromoter       ,
-                    NumSequence::size_type  groupA_upstreamLengthRBS            ,
-                    double                  groupA_spacerScoreThresh            ,
-                    NumSequence::size_type  groupA_spacerDistThresh             ,
-                    NumSequence::size_type  groupA_spacerWindowSize             ,
-                    string                  groupA_extendedSD                   ,
-                    unsigned                groupA_minMatchToExtendedSD         ,
-                    bool                    groupA_allowAGSubstitution          ,
-                    // Group B
-                    unsigned                groupB_widthPromoter                ,
-                    unsigned                groupB_widthRBS                     ,
-                    NumSequence::size_type  groupB_upstreamLengthPromoter       ,
-                    NumSequence::size_type  groupB_upstreamLengthRBS            ,
-                    double                  groupB_spacerScoreThresh            ,
-                    NumSequence::size_type  groupB_spacerDistThresh             ,
-                    NumSequence::size_type  groupB_spacerWindowSize             ,
-                    string                  groupB_extendedSD                   ,
-                    unsigned                groupB_minMatchToExtendedSD         ,
-                    bool                    groupB_allowAGSubstitution          ,
-                    // Group-C
-                    unsigned                groupC_widthRBS                     ,
-                    NumSequence::size_type  groupC_upstreamLengthRBS            ,
-                    NumSequence::size_type  groupC_upstreamRegion3Prime         ,
-                    unsigned                groupC_minMatchRBSPromoter          ,
-                    unsigned                groupC_minMatchToExtendedSD         ,
-                    string                  groupC_extendedSD                   ,
-                    // Group-C-2
-                    unsigned                groupC2_widthSDRBS                  ,
-                    unsigned                groupC2_widthNonSDRBS               ,
-                    NumSequence::size_type  groupC2_upstreamLengthSDRBS         ,
-                    NumSequence::size_type  groupC2_upstreamLengthNonSDRBS      ,
-                    NumSequence::size_type  groupC2_upstreamRegion3Prime        ,
-                    unsigned                groupC2_minMatchToExtendedSD        ,
-                    string                  groupC2_extendedSD                  ,
-                    // Group-D
+                    unsigned                groupD_widthPromoter                ,
                     unsigned                groupD_widthRBS                     ,
+                    NumSequence::size_type  groupD_upstreamLengthPromoter       ,
                     NumSequence::size_type  groupD_upstreamLengthRBS            ,
-                    double                  groupD_percentMatchRBS              ,
+                    double                  groupD_spacerScoreThresh            ,
+                    NumSequence::size_type  groupD_spacerDistThresh             ,
+                    NumSequence::size_type  groupD_spacerWindowSize             ,
                     string                  groupD_extendedSD                   ,
                     unsigned                groupD_minMatchToExtendedSD         ,
                     bool                    groupD_allowAGSubstitution          ,
+                    // Group B
+                    unsigned                groupC_widthPromoter                ,
+                    unsigned                groupC_widthRBS                     ,
+                    NumSequence::size_type  groupC_upstreamLengthPromoter       ,
+                    NumSequence::size_type  groupC_upstreamLengthRBS            ,
+                    double                  groupC_spacerScoreThresh            ,
+                    NumSequence::size_type  groupC_spacerDistThresh             ,
+                    NumSequence::size_type  groupC_spacerWindowSize             ,
+                    string                  groupC_extendedSD                   ,
+                    unsigned                groupC_minMatchToExtendedSD         ,
+                    bool                    groupC_allowAGSubstitution          ,
+                    // Group-C
+                    unsigned                groupB_widthRBS                     ,
+                    NumSequence::size_type  groupB_upstreamLengthRBS            ,
+                    NumSequence::size_type  groupB_upstreamRegion3Prime         ,
+                    unsigned                groupB_minMatchRBSPromoter          ,
+                    unsigned                groupB_minMatchToExtendedSD         ,
+                    string                  groupB_extendedSD                   ,
+                    // Group-C-2
+                    unsigned                groupB2_widthSDRBS                  ,
+                    unsigned                groupB2_widthNonSDRBS               ,
+                    NumSequence::size_type  groupB2_upstreamLengthSDRBS         ,
+                    NumSequence::size_type  groupB2_upstreamLengthNonSDRBS      ,
+                    NumSequence::size_type  groupB2_upstreamRegion3Prime        ,
+                    unsigned                groupB2_minMatchToExtendedSD        ,
+                    string                  groupB2_extendedSD                  ,
+                    // Group-D
+                    unsigned                groupA_widthRBS                     ,
+                    NumSequence::size_type  groupA_upstreamLengthRBS            ,
+                    double                  groupA_percentMatchRBS              ,
+                    string                  groupA_extendedSD                   ,
+                    unsigned                groupA_minMatchToExtendedSD         ,
+                    bool                    groupA_allowAGSubstitution          ,
                     // Group-E
-                    unsigned                groupE_widthRBS                     ,
-                    NumSequence::size_type  groupE_upstreamLengthRBS            ,
-                    NumSequence::size_type  groupE_lengthUpstreamSignature      ,
-                    unsigned                groupE_orderUpstreamSignature       ,
-                    string                  groupE_extendedSD                   ,
-                    unsigned                groupE_minMatchToExtendedSD         ,
-                    bool                    groupE_allowAGSubstitution
+                    unsigned                groupX_widthRBS                     ,
+                    NumSequence::size_type  groupX_upstreamLengthRBS            ,
+                    NumSequence::size_type  groupX_lengthUpstreamSignature      ,
+                    unsigned                groupX_orderUpstreamSignature       ,
+                    string                  groupX_extendedSD                   ,
+                    unsigned                groupX_minMatchToExtendedSD         ,
+                    bool                    groupX_allowAGSubstitution
         );
         
         ~GMS2Trainer();
@@ -242,13 +242,13 @@ namespace gmsuite {
         void estimateParametersMotifModel(const NumSequence &sequence, const vector<Label *> &labels, const vector<bool> &use = vector<bool>());
         void estimateParametersStartStopCodons(const NumSequence &sequence, const vector<Label*> &labels, const vector<bool> &use = vector<bool>());
         
-        void estimateParametersMotifModel_GroupA(const NumSequence &sequence, const vector<Label *> &labels);
-        void estimateParametersMotifModel_groupA2(const NumSequence &sequence, const vector<Label *> &labels);
-        void estimateParametersMotifModel_GroupB(const NumSequence &sequence, const vector<Label *> &labels);
-        void estimateParametersMotifModel_GroupC(const NumSequence &sequence, const vector<Label *> &labels);
-        void estimateParametersMotifModel_GroupC2(const NumSequence &sequence, const vector<Label *> &labels);
         void estimateParametersMotifModel_GroupD(const NumSequence &sequence, const vector<Label *> &labels);
-        void estimateParametersMotifModel_GroupE(const NumSequence &sequence, const vector<Label*> &labels);
+        void estimateParametersMotifModel_groupD2(const NumSequence &sequence, const vector<Label *> &labels);
+        void estimateParametersMotifModel_GroupC(const NumSequence &sequence, const vector<Label *> &labels);
+        void estimateParametersMotifModel_GroupB(const NumSequence &sequence, const vector<Label *> &labels);
+        void estimateParametersMotifModel_GroupB2(const NumSequence &sequence, const vector<Label *> &labels);
+        void estimateParametersMotifModel_GroupA(const NumSequence &sequence, const vector<Label *> &labels);
+        void estimateParametersMotifModel_GroupX(const NumSequence &sequence, const vector<Label*> &labels);
         
         
         // public variables for models
@@ -308,62 +308,62 @@ namespace gmsuite {
         // variables needed for the GMS2Trainer class
         
         // Group-A
-        unsigned                groupA_widthPromoter                ;
-        unsigned                groupA_widthRBS                     ;
-        NumSequence::size_type  groupA_upstreamLengthPromoter       ;
-        NumSequence::size_type  groupA_upstreamLengthRBS            ;
-        double                  groupA_spacerScoreThresh            ;
-        NumSequence::size_type  groupA_spacerDistThresh             ;
-        NumSequence::size_type  groupA_spacerWindowSize             ;
-        string                  groupA_extendedSD                   ;
-        unsigned                groupA_minMatchToExtendedSD         ;
-        bool                    groupA_allowAGSubstitution          ;
-        
-        // Group B
-        unsigned                groupB_widthPromoter                ;
-        unsigned                groupB_widthRBS                     ;
-        NumSequence::size_type  groupB_upstreamLengthPromoter       ;
-        NumSequence::size_type  groupB_upstreamLengthRBS            ;
-        double                  groupB_spacerScoreThresh            ;
-        NumSequence::size_type  groupB_spacerDistThresh             ;
-        NumSequence::size_type  groupB_spacerWindowSize             ;
-        string                  groupB_extendedSD                   ;
-        unsigned                groupB_minMatchToExtendedSD         ;
-        bool                    groupB_allowAGSubstitution          ;
-        
-        // Group-C
-        unsigned                groupC_widthRBS                     ;
-        NumSequence::size_type  groupC_upstreamLengthRBS            ;
-        NumSequence::size_type  groupC_upstreamRegion3Prime         ;
-        unsigned                groupC_minMatchRBSPromoter          ;
-        unsigned                groupC_minMatchToExtendedSD         ;
-        string                  groupC_extendedSD                   ;
-        
-        // Group-C-2
-        unsigned                groupC2_widthSDRBS                  ;
-        unsigned                groupC2_widthNonSDRBS               ;
-        NumSequence::size_type  groupC2_upstreamLengthSDRBS         ;
-        NumSequence::size_type  groupC2_upstreamLengthNonSDRBS      ;
-        NumSequence::size_type  groupC2_upstreamRegion3Prime        ;
-        unsigned                groupC2_minMatchToExtendedSD        ;
-        string                  groupC2_extendedSD                  ;
-        
-        // Group-D
+        unsigned                groupD_widthPromoter                ;
         unsigned                groupD_widthRBS                     ;
+        NumSequence::size_type  groupD_upstreamLengthPromoter       ;
         NumSequence::size_type  groupD_upstreamLengthRBS            ;
-        double                  groupD_percentMatchRBS              ;
+        double                  groupD_spacerScoreThresh            ;
+        NumSequence::size_type  groupD_spacerDistThresh             ;
+        NumSequence::size_type  groupD_spacerWindowSize             ;
         string                  groupD_extendedSD                   ;
         unsigned                groupD_minMatchToExtendedSD         ;
         bool                    groupD_allowAGSubstitution          ;
         
+        // Group B
+        unsigned                groupC_widthPromoter                ;
+        unsigned                groupC_widthRBS                     ;
+        NumSequence::size_type  groupC_upstreamLengthPromoter       ;
+        NumSequence::size_type  groupC_upstreamLengthRBS            ;
+        double                  groupC_spacerScoreThresh            ;
+        NumSequence::size_type  groupC_spacerDistThresh             ;
+        NumSequence::size_type  groupC_spacerWindowSize             ;
+        string                  groupC_extendedSD                   ;
+        unsigned                groupC_minMatchToExtendedSD         ;
+        bool                    groupC_allowAGSubstitution          ;
+        
+        // Group-C
+        unsigned                groupB_widthRBS                     ;
+        NumSequence::size_type  groupB_upstreamLengthRBS            ;
+        NumSequence::size_type  groupB_upstreamRegion3Prime         ;
+        unsigned                groupB_minMatchRBSPromoter          ;
+        unsigned                groupB_minMatchToExtendedSD         ;
+        string                  groupB_extendedSD                   ;
+        
+        // Group-C-2
+        unsigned                groupB2_widthSDRBS                  ;
+        unsigned                groupB2_widthNonSDRBS               ;
+        NumSequence::size_type  groupB2_upstreamLengthSDRBS         ;
+        NumSequence::size_type  groupB2_upstreamLengthNonSDRBS      ;
+        NumSequence::size_type  groupB2_upstreamRegion3Prime        ;
+        unsigned                groupB2_minMatchToExtendedSD        ;
+        string                  groupB2_extendedSD                  ;
+        
+        // Group-D
+        unsigned                groupA_widthRBS                     ;
+        NumSequence::size_type  groupA_upstreamLengthRBS            ;
+        double                  groupA_percentMatchRBS              ;
+        string                  groupA_extendedSD                   ;
+        unsigned                groupA_minMatchToExtendedSD         ;
+        bool                    groupA_allowAGSubstitution          ;
+        
         // Group-E
-        unsigned                groupE_widthRBS                     ;
-        NumSequence::size_type  groupE_upstreamLengthRBS            ;
-        NumSequence::size_type  groupE_lengthUpstreamSignature      ;
-        unsigned                groupE_orderUpstreamSignature       ;
-        string                  groupE_extendedSD                   ;
-        unsigned                groupE_minMatchToExtendedSD         ;
-        bool                    groupE_allowAGSubstitution          ;
+        unsigned                groupX_widthRBS                     ;
+        NumSequence::size_type  groupX_upstreamLengthRBS            ;
+        NumSequence::size_type  groupX_lengthUpstreamSignature      ;
+        unsigned                groupX_orderUpstreamSignature       ;
+        string                  groupX_extendedSD                   ;
+        unsigned                groupX_minMatchToExtendedSD         ;
+        bool                    groupX_allowAGSubstitution          ;
         
         // Coding and Noncoding Models
         unsigned                orderCoding                         ;
@@ -388,62 +388,62 @@ namespace gmsuite {
         
         Builder() {
             // Group-A
-            groupA_widthPromoter                = 12                          ;
-            groupA_widthRBS                     = 6                           ;
-            groupA_upstreamLengthPromoter       = 20                          ;
-            groupA_upstreamLengthRBS            = 20                          ;
-            groupA_spacerScoreThresh            = 0.1                         ;
-            groupA_spacerDistThresh             = 14                          ;
-            groupA_spacerWindowSize             = 1                           ;
-            groupA_extendedSD                   = "TAAGGAGGTGA"               ;
-            groupA_minMatchToExtendedSD         = 4                           ;
-            groupA_allowAGSubstitution          = true                        ;
-            
-            // Group-B
-            groupB_widthPromoter                = 6                           ;
-            groupB_widthRBS                     = 6                           ;
-            groupB_upstreamLengthPromoter       = 20                          ;
-            groupB_upstreamLengthRBS            = 20                          ;
-            groupB_spacerScoreThresh            = 0.25                        ;
-            groupB_spacerDistThresh             = 14                          ;
-            groupB_spacerWindowSize             = 1                           ;
-            groupB_extendedSD                   = "TAAGGAGGTGA"               ;
-            groupB_minMatchToExtendedSD         = 4                           ;
-            groupB_allowAGSubstitution          = true                        ;
-            
-            // Group-C
-            groupC_widthRBS                     = 6                           ;
-            groupC_upstreamLengthRBS            = 20                          ;
-            groupC_upstreamRegion3Prime         = 0                           ;
-            groupC_minMatchRBSPromoter          = 3                           ;
-            groupC_minMatchToExtendedSD         = 4                           ;
-            groupC_extendedSD                   = "TAAGGAGGTGA"               ;
-            
-            // Group-C-2
-            groupC2_widthSDRBS                  = 6                           ;
-            groupC2_upstreamLengthSDRBS         = 20                          ;
-            groupC2_widthNonSDRBS               = 6                           ;
-            groupC2_upstreamLengthNonSDRBS      = 20                          ;
-            groupC2_upstreamRegion3Prime        = 0                           ;
-            groupC2_minMatchToExtendedSD        = 4                           ;
-            groupC2_extendedSD                  = "TAAGGAGGTGA"               ;
-            
-            // Group-D
+            groupD_widthPromoter                = 12                          ;
             groupD_widthRBS                     = 6                           ;
+            groupD_upstreamLengthPromoter       = 20                          ;
             groupD_upstreamLengthRBS            = 20                          ;
-            groupD_percentMatchRBS              = 0.5                         ;
+            groupD_spacerScoreThresh            = 0.1                         ;
+            groupD_spacerDistThresh             = 14                          ;
+            groupD_spacerWindowSize             = 1                           ;
             groupD_extendedSD                   = "TAAGGAGGTGA"               ;
             groupD_minMatchToExtendedSD         = 4                           ;
             groupD_allowAGSubstitution          = true                        ;
             
+            // Group-B
+            groupC_widthPromoter                = 6                           ;
+            groupC_widthRBS                     = 6                           ;
+            groupC_upstreamLengthPromoter       = 20                          ;
+            groupC_upstreamLengthRBS            = 20                          ;
+            groupC_spacerScoreThresh            = 0.25                        ;
+            groupC_spacerDistThresh             = 14                          ;
+            groupC_spacerWindowSize             = 1                           ;
+            groupC_extendedSD                   = "TAAGGAGGTGA"               ;
+            groupC_minMatchToExtendedSD         = 4                           ;
+            groupC_allowAGSubstitution          = true                        ;
+            
+            // Group-C
+            groupB_widthRBS                     = 6                           ;
+            groupB_upstreamLengthRBS            = 20                          ;
+            groupB_upstreamRegion3Prime         = 0                           ;
+            groupB_minMatchRBSPromoter          = 3                           ;
+            groupB_minMatchToExtendedSD         = 4                           ;
+            groupB_extendedSD                   = "TAAGGAGGTGA"               ;
+            
+            // Group-C-2
+            groupB2_widthSDRBS                  = 6                           ;
+            groupB2_upstreamLengthSDRBS         = 20                          ;
+            groupB2_widthNonSDRBS               = 6                           ;
+            groupB2_upstreamLengthNonSDRBS      = 20                          ;
+            groupB2_upstreamRegion3Prime        = 0                           ;
+            groupB2_minMatchToExtendedSD        = 4                           ;
+            groupB2_extendedSD                  = "TAAGGAGGTGA"               ;
+            
+            // Group-D
+            groupA_widthRBS                     = 6                           ;
+            groupA_upstreamLengthRBS            = 20                          ;
+            groupA_percentMatchRBS              = 0.5                         ;
+            groupA_extendedSD                   = "TAAGGAGGTGA"               ;
+            groupA_minMatchToExtendedSD         = 4                           ;
+            groupA_allowAGSubstitution          = true                        ;
+            
             // Group-E
-            groupE_widthRBS                     = 6                           ;
-            groupE_upstreamLengthRBS            = 20                          ;
-            groupE_lengthUpstreamSignature      = 35                          ;
-            groupE_orderUpstreamSignature       = 2                           ;
-            groupE_extendedSD                   = "TAAGGAGGTGA"               ;
-            groupE_minMatchToExtendedSD         = 4                           ;
-            groupE_allowAGSubstitution          = true                        ;
+            groupX_widthRBS                     = 6                           ;
+            groupX_upstreamLengthRBS            = 20                          ;
+            groupX_lengthUpstreamSignature      = 35                          ;
+            groupX_orderUpstreamSignature       = 2                           ;
+            groupX_extendedSD                   = "TAAGGAGGTGA"               ;
+            groupX_minMatchToExtendedSD         = 4                           ;
+            groupX_allowAGSubstitution          = true                        ;
             
             // Models
             orderCoding                         = 5                           ;
@@ -456,7 +456,7 @@ namespace gmsuite {
             fgioDistanceThresh                  = 25                          ;
             igioDistanceThresh                  = 22                          ;
             pcounts                             = 1                           ;
-            genomeGroup                         = ProkGeneStartModel::D       ;
+            genomeGroup                         = ProkGeneStartModel::A       ;
             gcode                               = GeneticCode::ELEVEN         ;
             minimumGeneLengthTraining           = 300                         ;
             onlyTrainOnNativeGenes              = false                       ;
@@ -465,60 +465,60 @@ namespace gmsuite {
         }
         
         GMS2Trainer build() {
-            return GMS2Trainer (orderCoding, orderNonCoding, orderStartContext, lengthStartContext, marginStartContext, fgioDistanceThresh, igioDistanceThresh, pcounts, genomeGroup, gcode, minimumGeneLengthTraining, onlyTrainOnNativeGenes, runMotifSearch, *optionsMFinder, groupA_widthPromoter, groupA_widthRBS, groupA_upstreamLengthPromoter, groupA_upstreamLengthRBS, groupA_spacerScoreThresh, groupA_spacerDistThresh, groupA_spacerWindowSize, groupA_extendedSD, groupA_minMatchToExtendedSD, groupA_allowAGSubstitution, groupB_widthPromoter, groupB_widthRBS, groupB_upstreamLengthPromoter, groupB_upstreamLengthRBS, groupB_spacerScoreThresh, groupB_spacerDistThresh, groupB_spacerWindowSize, groupB_extendedSD, groupB_minMatchToExtendedSD, groupB_allowAGSubstitution, groupC_widthRBS, groupC_upstreamLengthRBS, groupC_upstreamRegion3Prime, groupC_minMatchRBSPromoter, groupC_minMatchToExtendedSD, groupC_extendedSD, groupC2_widthSDRBS, groupC2_widthNonSDRBS, groupC2_upstreamLengthSDRBS, groupC2_upstreamLengthNonSDRBS, groupC2_upstreamRegion3Prime, groupC2_minMatchToExtendedSD, groupC2_extendedSD, groupD_widthRBS, groupD_upstreamLengthRBS, groupD_percentMatchRBS, groupD_extendedSD, groupD_minMatchToExtendedSD, groupD_allowAGSubstitution, groupE_widthRBS, groupE_upstreamLengthRBS, groupE_lengthUpstreamSignature, groupE_orderUpstreamSignature, groupE_extendedSD, groupE_minMatchToExtendedSD, groupE_allowAGSubstitution);
+            return GMS2Trainer (orderCoding, orderNonCoding, orderStartContext, lengthStartContext, marginStartContext, fgioDistanceThresh, igioDistanceThresh, pcounts, genomeGroup, gcode, minimumGeneLengthTraining, onlyTrainOnNativeGenes, runMotifSearch, *optionsMFinder, groupD_widthPromoter, groupD_widthRBS, groupD_upstreamLengthPromoter, groupD_upstreamLengthRBS, groupD_spacerScoreThresh, groupD_spacerDistThresh, groupD_spacerWindowSize, groupD_extendedSD, groupD_minMatchToExtendedSD, groupD_allowAGSubstitution, groupC_widthPromoter, groupC_widthRBS, groupC_upstreamLengthPromoter, groupC_upstreamLengthRBS, groupC_spacerScoreThresh, groupC_spacerDistThresh, groupC_spacerWindowSize, groupC_extendedSD, groupC_minMatchToExtendedSD, groupC_allowAGSubstitution, groupB_widthRBS, groupB_upstreamLengthRBS, groupB_upstreamRegion3Prime, groupB_minMatchRBSPromoter, groupB_minMatchToExtendedSD, groupB_extendedSD, groupB2_widthSDRBS, groupB2_widthNonSDRBS, groupB2_upstreamLengthSDRBS, groupB2_upstreamLengthNonSDRBS, groupB2_upstreamRegion3Prime, groupB2_minMatchToExtendedSD, groupB2_extendedSD, groupA_widthRBS, groupA_upstreamLengthRBS, groupA_percentMatchRBS, groupA_extendedSD, groupA_minMatchToExtendedSD, groupA_allowAGSubstitution, groupX_widthRBS, groupX_upstreamLengthRBS, groupX_lengthUpstreamSignature, groupX_orderUpstreamSignature, groupX_extendedSD, groupX_minMatchToExtendedSD, groupX_allowAGSubstitution);
         }
         
         GMS2Trainer build(const OptionsGMS2Training &options) {
             
-            setGroupA_widthPromoter          (options.groupA_widthPromoter          );
-            setGroupA_widthRBS               (options.groupA_widthRBS               );
-            setGroupA_upstreamLengthPromoter (options.groupA_upstreamLengthPromoter );
-            setGroupA_upstreamLengthRBS      (options.groupA_upstreamLengthRBS      );
-            setGroupA_spacerScoreThresh      (options.groupA_spacerScoreThresh      );
-            setGroupA_spacerDistThresh       (options.groupA_spacerDistThresh       );
-            setGroupA_spacerWindowSize       (options.groupA_spacerWindowSize       );
-            setGroupA_extendedSD             (options.groupA_extendedSD             );
-            setGroupA_minMatchToExtendedSD   (options.groupA_minMatchToExtendedSD   );
-            setGroupA_allowAGSubstitution    (options.groupA_allowAGSubstitution    );
-            setGroupB_widthPromoter          (options.groupB_widthPromoter          );
-            setGroupB_widthRBS               (options.groupB_widthRBS               );
-            setGroupB_upstreamLengthPromoter (options.groupB_upstreamLengthPromoter );
-            setGroupB_upstreamLengthRBS      (options.groupB_upstreamLengthRBS      );
-            setGroupB_spacerScoreThresh      (options.groupB_spacerScoreThresh      );
-            setGroupB_spacerDistThresh       (options.groupB_spacerDistThresh       );
-            setGroupB_spacerWindowSize       (options.groupB_spacerWindowSize       );
-            setGroupB_extendedSD             (options.groupB_extendedSD             );
-            setGroupB_minMatchToExtendedSD   (options.groupB_minMatchToExtendedSD   );
-            setGroupB_allowAGSubstitution    (options.groupB_allowAGSubstitution    );
-            setGroupC_widthRBS               (options.groupC_widthRBS               );
-            setGroupC_upstreamLengthRBS      (options.groupC_upstreamLengthRBS      );
-            setGroupC_upstreamRegion3Prime   (options.groupC_upstreamRegion3Prime   );
-            setGroupC_minMatchRBSPromoter    (options.groupC_minMatchRBSPromoter    );
-            setGroupC_minMatchToExtendedSD   (options.groupC_minMatchToExtendedSD   );
-            setGroupC_extendedSD             (options.groupC_extendedSD             );
-            
-            setGroupC2_widthSDRBS              (options.groupC2_widthSDRBS             );
-            setGroupC2_widthNonSDRBS           (options.groupC2_widthNonSDRBS          );
-            setGroupC2_upstreamLengthSDRBS     (options.groupC2_upstreamLengthSDRBS    );
-            setGroupC2_upstreamLengthNonSDRBS  (options.groupC2_upstreamLengthNonSDRBS );
-            setGroupC2_upstreamRegion3Prime    (options.groupC2_upstreamRegion3Prime   );
-            setGroupC2_minMatchToExtendedSD    (options.groupC2_minMatchToExtendedSD   );
-            setGroupC2_extendedSD              (options.groupC2_extendedSD             );
-            
-            
+            setGroupD_widthPromoter          (options.groupD_widthPromoter          );
             setGroupD_widthRBS               (options.groupD_widthRBS               );
+            setGroupD_upstreamLengthPromoter (options.groupD_upstreamLengthPromoter );
             setGroupD_upstreamLengthRBS      (options.groupD_upstreamLengthRBS      );
-            setGroupD_percentMatchRBS        (options.groupD_percentMatchRBS        );
+            setGroupD_spacerScoreThresh      (options.groupD_spacerScoreThresh      );
+            setGroupD_spacerDistThresh       (options.groupD_spacerDistThresh       );
+            setGroupD_spacerWindowSize       (options.groupD_spacerWindowSize       );
             setGroupD_extendedSD             (options.groupD_extendedSD             );
             setGroupD_minMatchToExtendedSD   (options.groupD_minMatchToExtendedSD   );
             setGroupD_allowAGSubstitution    (options.groupD_allowAGSubstitution    );
-            setGroupE_widthRBS               (options.groupE_widthRBS               );
-            setGroupE_upstreamLengthRBS      (options.groupE_upstreamLengthRBS      );
-            setGroupE_lengthUpstreamSignature(options.groupE_lengthUpstreamSignature);
-            setGroupE_orderUpstreamSignature (options.groupE_orderUpstreamSignature );
-            setGroupE_extendedSD             (options.groupE_extendedSD             );
-            setGroupE_minMatchToExtendedSD   (options.groupE_minMatchToExtendedSD   );
-            setGroupE_allowAGSubstitution    (options.groupE_allowAGSubstitution    );
+            setGroupC_widthPromoter          (options.groupC_widthPromoter          );
+            setGroupC_widthRBS               (options.groupC_widthRBS               );
+            setGroupC_upstreamLengthPromoter (options.groupC_upstreamLengthPromoter );
+            setGroupC_upstreamLengthRBS      (options.groupC_upstreamLengthRBS      );
+            setGroupC_spacerScoreThresh      (options.groupC_spacerScoreThresh      );
+            setGroupC_spacerDistThresh       (options.groupC_spacerDistThresh       );
+            setGroupC_spacerWindowSize       (options.groupC_spacerWindowSize       );
+            setGroupC_extendedSD             (options.groupC_extendedSD             );
+            setGroupC_minMatchToExtendedSD   (options.groupC_minMatchToExtendedSD   );
+            setGroupC_allowAGSubstitution    (options.groupC_allowAGSubstitution    );
+            setGroupB_widthRBS               (options.groupB_widthRBS               );
+            setGroupB_upstreamLengthRBS      (options.groupB_upstreamLengthRBS      );
+            setGroupB_upstreamRegion3Prime   (options.groupB_upstreamRegion3Prime   );
+            setGroupB_minMatchRBSPromoter    (options.groupB_minMatchRBSPromoter    );
+            setGroupB_minMatchToExtendedSD   (options.groupB_minMatchToExtendedSD   );
+            setGroupB_extendedSD             (options.groupB_extendedSD             );
+            
+            setGroupB2_widthSDRBS              (options.groupB2_widthSDRBS             );
+            setGroupB2_widthNonSDRBS           (options.groupB2_widthNonSDRBS          );
+            setGroupB2_upstreamLengthSDRBS     (options.groupB2_upstreamLengthSDRBS    );
+            setGroupB2_upstreamLengthNonSDRBS  (options.groupB2_upstreamLengthNonSDRBS );
+            setGroupB2_upstreamRegion3Prime    (options.groupB2_upstreamRegion3Prime   );
+            setGroupB2_minMatchToExtendedSD    (options.groupB2_minMatchToExtendedSD   );
+            setGroupB2_extendedSD              (options.groupB2_extendedSD             );
+            
+            
+            setGroupA_widthRBS               (options.groupA_widthRBS               );
+            setGroupA_upstreamLengthRBS      (options.groupA_upstreamLengthRBS      );
+            setGroupA_percentMatchRBS        (options.groupA_percentMatchRBS        );
+            setGroupA_extendedSD             (options.groupA_extendedSD             );
+            setGroupA_minMatchToExtendedSD   (options.groupA_minMatchToExtendedSD   );
+            setGroupA_allowAGSubstitution    (options.groupA_allowAGSubstitution    );
+            setGroupX_widthRBS               (options.groupX_widthRBS               );
+            setGroupX_upstreamLengthRBS      (options.groupX_upstreamLengthRBS      );
+            setGroupX_lengthUpstreamSignature(options.groupX_lengthUpstreamSignature);
+            setGroupX_orderUpstreamSignature (options.groupX_orderUpstreamSignature );
+            setGroupX_extendedSD             (options.groupX_extendedSD             );
+            setGroupX_minMatchToExtendedSD   (options.groupX_minMatchToExtendedSD   );
+            setGroupX_allowAGSubstitution    (options.groupX_allowAGSubstitution    );
             setOrderCoding                   (options.orderCoding                   );
             setOrderNonCoding                (options.orderNonCoding                );
             setOrderStartContext             (options.orderStartContext             );
@@ -539,56 +539,56 @@ namespace gmsuite {
         
         // set custom values for MotifFinder creation
         // returns Builder for shorthand inline usage
-        Builder& setGroupA_widthPromoter            (const unsigned v)                  { this->groupA_widthPromoter           = v;    return *this; }
-        Builder& setGroupA_widthRBS                 (const unsigned v)                  { this->groupA_widthRBS                = v;    return *this; }
-        Builder& setGroupA_upstreamLengthPromoter   (const NumSequence::size_type v)    { this->groupA_upstreamLengthPromoter  = v;    return *this; }
-        Builder& setGroupA_upstreamLengthRBS        (const NumSequence::size_type v)    { this->groupA_upstreamLengthRBS       = v;    return *this; }
-        Builder& setGroupA_spacerScoreThresh        (const double v)                    { this->groupA_spacerScoreThresh       = v;    return *this; }
-        Builder& setGroupA_spacerDistThresh         (const NumSequence::size_type v)    { this->groupA_spacerDistThresh        = v;    return *this; }
-        Builder& setGroupA_spacerWindowSize         (const NumSequence::size_type v)    { this->groupA_spacerWindowSize        = v;    return *this; }
-        Builder& setGroupA_extendedSD               (const string v)                    { this->groupA_extendedSD              = v;    return *this; }
-        Builder& setGroupA_minMatchToExtendedSD     (const unsigned v)                  { this->groupA_minMatchToExtendedSD    = v;    return *this; }
-        Builder& setGroupA_allowAGSubstitution      (const bool v)                      { this->groupA_allowAGSubstitution     = v;    return *this; }
-        
-        Builder& setGroupB_widthPromoter            (const unsigned v)                  { this->groupB_widthPromoter           = v;    return *this; }
-        Builder& setGroupB_widthRBS                 (const unsigned v)                  { this->groupB_widthRBS                = v;    return *this; }
-        Builder& setGroupB_upstreamLengthPromoter   (const NumSequence::size_type v)    { this->groupB_upstreamLengthPromoter  = v;    return *this; }
-        Builder& setGroupB_upstreamLengthRBS        (const NumSequence::size_type v)    { this->groupB_upstreamLengthRBS       = v;    return *this; }
-        Builder& setGroupB_spacerScoreThresh        (const double v)                    { this->groupB_spacerScoreThresh       = v;    return *this; }
-        Builder& setGroupB_spacerDistThresh         (const NumSequence::size_type v)    { this->groupB_spacerDistThresh        = v;    return *this; }
-        Builder& setGroupB_spacerWindowSize         (const NumSequence::size_type v)    { this->groupB_spacerWindowSize        = v;    return *this; }
-        Builder& setGroupB_extendedSD               (const string v)                    { this->groupB_extendedSD              = v;    return *this; }
-        Builder& setGroupB_minMatchToExtendedSD     (const unsigned v)                  { this->groupB_minMatchToExtendedSD    = v;    return *this; }
-        Builder& setGroupB_allowAGSubstitution      (const bool v)                      { this->groupB_allowAGSubstitution     = v;    return *this; }
-        Builder& setGroupC_widthRBS                 (const unsigned v)                  { this->groupC_widthRBS                = v;    return *this; }
-        Builder& setGroupC_upstreamLengthRBS        (const NumSequence::size_type v)    { this->groupC_upstreamLengthRBS       = v;    return *this; }
-        Builder& setGroupC_upstreamRegion3Prime     (const NumSequence::size_type v)    { this->groupC_upstreamRegion3Prime    = v;    return *this; }
-        Builder& setGroupC_minMatchRBSPromoter      (const unsigned v)                  { this->groupC_minMatchRBSPromoter     = v;    return *this; }
-        Builder& setGroupC_minMatchToExtendedSD     (const unsigned v)                  { this->groupC_minMatchToExtendedSD    = v;    return *this; }
-        Builder& setGroupC_extendedSD               (const string v)                    { this->groupC_extendedSD              = v;    return *this; }
-        
-        // Group-C-2
-        Builder& setGroupC2_widthSDRBS              (const unsigned v)                  { this->groupC2_widthSDRBS             = v;    return *this; }
-        Builder& setGroupC2_widthNonSDRBS           (const unsigned v)                  { this->groupC2_widthNonSDRBS          = v;    return *this; }
-        Builder& setGroupC2_upstreamLengthSDRBS     (const NumSequence::size_type v)    { this->groupC2_upstreamLengthSDRBS    = v;    return *this; }
-        Builder& setGroupC2_upstreamLengthNonSDRBS  (const NumSequence::size_type v)    { this->groupC2_upstreamLengthNonSDRBS = v;    return *this; }
-        Builder& setGroupC2_upstreamRegion3Prime    (const NumSequence::size_type v)    { this->groupC2_upstreamRegion3Prime   = v;    return *this; }
-        Builder& setGroupC2_minMatchToExtendedSD    (const unsigned v)                  { this->groupC2_minMatchToExtendedSD   = v;    return *this; }
-        Builder& setGroupC2_extendedSD              (const string v)                    { this->groupC2_extendedSD             = v;    return *this; }
-        
+        Builder& setGroupD_widthPromoter            (const unsigned v)                  { this->groupD_widthPromoter           = v;    return *this; }
         Builder& setGroupD_widthRBS                 (const unsigned v)                  { this->groupD_widthRBS                = v;    return *this; }
+        Builder& setGroupD_upstreamLengthPromoter   (const NumSequence::size_type v)    { this->groupD_upstreamLengthPromoter  = v;    return *this; }
         Builder& setGroupD_upstreamLengthRBS        (const NumSequence::size_type v)    { this->groupD_upstreamLengthRBS       = v;    return *this; }
-        Builder& setGroupD_percentMatchRBS          (const double v)                    { this->groupD_percentMatchRBS         = v;    return *this; }
+        Builder& setGroupD_spacerScoreThresh        (const double v)                    { this->groupD_spacerScoreThresh       = v;    return *this; }
+        Builder& setGroupD_spacerDistThresh         (const NumSequence::size_type v)    { this->groupD_spacerDistThresh        = v;    return *this; }
+        Builder& setGroupD_spacerWindowSize         (const NumSequence::size_type v)    { this->groupD_spacerWindowSize        = v;    return *this; }
         Builder& setGroupD_extendedSD               (const string v)                    { this->groupD_extendedSD              = v;    return *this; }
         Builder& setGroupD_minMatchToExtendedSD     (const unsigned v)                  { this->groupD_minMatchToExtendedSD    = v;    return *this; }
         Builder& setGroupD_allowAGSubstitution      (const bool v)                      { this->groupD_allowAGSubstitution     = v;    return *this; }
-        Builder& setGroupE_widthRBS                 (const unsigned v)                  { this->groupE_widthRBS                = v;    return *this; }
-        Builder& setGroupE_upstreamLengthRBS        (const NumSequence::size_type v)    { this->groupE_upstreamLengthRBS       = v;    return *this; }
-        Builder& setGroupE_lengthUpstreamSignature  (const NumSequence::size_type v)    { this->groupE_lengthUpstreamSignature = v;    return *this; }
-        Builder& setGroupE_orderUpstreamSignature   (const unsigned v)                  { this->groupE_orderUpstreamSignature  = v;    return *this; }
-        Builder& setGroupE_extendedSD               (const string v)                    { this->groupE_extendedSD              = v;    return *this; }
-        Builder& setGroupE_minMatchToExtendedSD     (const unsigned v)                  { this->groupE_minMatchToExtendedSD    = v;    return *this; }
-        Builder& setGroupE_allowAGSubstitution      (const bool v)                      { this->groupE_allowAGSubstitution     = v;    return *this; }
+        
+        Builder& setGroupC_widthPromoter            (const unsigned v)                  { this->groupC_widthPromoter           = v;    return *this; }
+        Builder& setGroupC_widthRBS                 (const unsigned v)                  { this->groupC_widthRBS                = v;    return *this; }
+        Builder& setGroupC_upstreamLengthPromoter   (const NumSequence::size_type v)    { this->groupC_upstreamLengthPromoter  = v;    return *this; }
+        Builder& setGroupC_upstreamLengthRBS        (const NumSequence::size_type v)    { this->groupC_upstreamLengthRBS       = v;    return *this; }
+        Builder& setGroupC_spacerScoreThresh        (const double v)                    { this->groupC_spacerScoreThresh       = v;    return *this; }
+        Builder& setGroupC_spacerDistThresh         (const NumSequence::size_type v)    { this->groupC_spacerDistThresh        = v;    return *this; }
+        Builder& setGroupC_spacerWindowSize         (const NumSequence::size_type v)    { this->groupC_spacerWindowSize        = v;    return *this; }
+        Builder& setGroupC_extendedSD               (const string v)                    { this->groupC_extendedSD              = v;    return *this; }
+        Builder& setGroupC_minMatchToExtendedSD     (const unsigned v)                  { this->groupC_minMatchToExtendedSD    = v;    return *this; }
+        Builder& setGroupC_allowAGSubstitution      (const bool v)                      { this->groupC_allowAGSubstitution     = v;    return *this; }
+        Builder& setGroupB_widthRBS                 (const unsigned v)                  { this->groupB_widthRBS                = v;    return *this; }
+        Builder& setGroupB_upstreamLengthRBS        (const NumSequence::size_type v)    { this->groupB_upstreamLengthRBS       = v;    return *this; }
+        Builder& setGroupB_upstreamRegion3Prime     (const NumSequence::size_type v)    { this->groupB_upstreamRegion3Prime    = v;    return *this; }
+        Builder& setGroupB_minMatchRBSPromoter      (const unsigned v)                  { this->groupB_minMatchRBSPromoter     = v;    return *this; }
+        Builder& setGroupB_minMatchToExtendedSD     (const unsigned v)                  { this->groupB_minMatchToExtendedSD    = v;    return *this; }
+        Builder& setGroupB_extendedSD               (const string v)                    { this->groupB_extendedSD              = v;    return *this; }
+        
+        // Group-C-2
+        Builder& setGroupB2_widthSDRBS              (const unsigned v)                  { this->groupB2_widthSDRBS             = v;    return *this; }
+        Builder& setGroupB2_widthNonSDRBS           (const unsigned v)                  { this->groupB2_widthNonSDRBS          = v;    return *this; }
+        Builder& setGroupB2_upstreamLengthSDRBS     (const NumSequence::size_type v)    { this->groupB2_upstreamLengthSDRBS    = v;    return *this; }
+        Builder& setGroupB2_upstreamLengthNonSDRBS  (const NumSequence::size_type v)    { this->groupB2_upstreamLengthNonSDRBS = v;    return *this; }
+        Builder& setGroupB2_upstreamRegion3Prime    (const NumSequence::size_type v)    { this->groupB2_upstreamRegion3Prime   = v;    return *this; }
+        Builder& setGroupB2_minMatchToExtendedSD    (const unsigned v)                  { this->groupB2_minMatchToExtendedSD   = v;    return *this; }
+        Builder& setGroupB2_extendedSD              (const string v)                    { this->groupB2_extendedSD             = v;    return *this; }
+        
+        Builder& setGroupA_widthRBS                 (const unsigned v)                  { this->groupA_widthRBS                = v;    return *this; }
+        Builder& setGroupA_upstreamLengthRBS        (const NumSequence::size_type v)    { this->groupA_upstreamLengthRBS       = v;    return *this; }
+        Builder& setGroupA_percentMatchRBS          (const double v)                    { this->groupA_percentMatchRBS         = v;    return *this; }
+        Builder& setGroupA_extendedSD               (const string v)                    { this->groupA_extendedSD              = v;    return *this; }
+        Builder& setGroupA_minMatchToExtendedSD     (const unsigned v)                  { this->groupA_minMatchToExtendedSD    = v;    return *this; }
+        Builder& setGroupA_allowAGSubstitution      (const bool v)                      { this->groupA_allowAGSubstitution     = v;    return *this; }
+        Builder& setGroupX_widthRBS                 (const unsigned v)                  { this->groupX_widthRBS                = v;    return *this; }
+        Builder& setGroupX_upstreamLengthRBS        (const NumSequence::size_type v)    { this->groupX_upstreamLengthRBS       = v;    return *this; }
+        Builder& setGroupX_lengthUpstreamSignature  (const NumSequence::size_type v)    { this->groupX_lengthUpstreamSignature = v;    return *this; }
+        Builder& setGroupX_orderUpstreamSignature   (const unsigned v)                  { this->groupX_orderUpstreamSignature  = v;    return *this; }
+        Builder& setGroupX_extendedSD               (const string v)                    { this->groupX_extendedSD              = v;    return *this; }
+        Builder& setGroupX_minMatchToExtendedSD     (const unsigned v)                  { this->groupX_minMatchToExtendedSD    = v;    return *this; }
+        Builder& setGroupX_allowAGSubstitution      (const bool v)                      { this->groupX_allowAGSubstitution     = v;    return *this; }
         
         
         
