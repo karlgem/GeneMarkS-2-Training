@@ -670,12 +670,14 @@ void OptionsUtilities::addProcessOptions_ABFilter(ABFilter &options, po::options
 }
 
 void OptionsUtilities::addProcessOptions_ExtractSpacerNTModel(ExtractSpacerNTModel &options, po::options_description &processOptions) {
+    
     processOptions.add_options()
     ("sequences", po::value<string>(&options.fnsequences)->required(), "Name of sequences file")
     ("labels", po::value<string> (&options.fnlabels)->required(), "Name of labels file (for starts)")
     ("model", po::value<string> (&options.fnmod)->required(), "Name of model file")
     ("upstream-length", po::value<size_t> (&options.upstreamLength)->default_value(20), "Upstream length of region in which to search for motif")
-    ("rbs-model-only", po::bool_switch(&options.RBSOnly)->default_value(false), "Only use the RBS-based sequences if multiple motifs provided")
+    ("rbs-only", po::bool_switch(&options.RBSOnly)->default_value(false), "Only use the RBS-based sequences if multiple motifs provided")
+    ("debug", po::bool_switch(&options.debug)->default_value(false))
     ;
 }
 

@@ -1250,6 +1250,12 @@ pair<NumSequence::size_type, double> findBestMotifLocation2(NumSequence::const_i
             bestScore = score;
             bestLoc = currLoc;
         }
+        
+//        AlphabetDNA alph;
+//        CharNumConverter cnc(&alph);
+//        NumAlphabetDNA numAlph(alph, cnc);
+//
+//        cout << cnc.convert(currElement, currElement+motifWidth) << "\t" << score << endl;
     }
     
     return pair<NumSequence::size_type, double> (bestLoc, bestScore);
@@ -1398,7 +1404,7 @@ void ModuleUtilities::runExtractSpacerNTModel() {
     }
     
     
-    UniformCounts spacerCounts(3, numAlph);
+    UniformCounts spacerCounts(2, numAlph);
     // for each label
     for (vector<Label*>::const_iterator iter = labels.begin(); iter!= labels.end(); iter++) {
         // get search window around labelled start
@@ -1429,6 +1435,9 @@ void ModuleUtilities::runExtractSpacerNTModel() {
             pair<NumSequence::size_type, double> bestRBS (NumSequence::npos, -numeric_limits<double>::infinity());
             pair<NumSequence::size_type, double> bestProm (NumSequence::npos, -numeric_limits<double>::infinity());
 
+//            if (utilOpt.debug)
+//                cout << "#" << cnc.convert(upstrSeq.begin(), upstrSeq.end()) << endl;
+            
             // compute best locations of motifs
             if (rbsMarkov)
                 bestRBS = findBestMotifLocation2(upstrSeq.begin(), upstrSeq.end(), rbsMarkov, rbsSpacerPDF);
@@ -1451,8 +1460,16 @@ void ModuleUtilities::runExtractSpacerNTModel() {
                 bestMotifWidth = promoterMarkov->getLength();
             }
             
-            NumSequence::const_iterator spacerBegin = numSeq.begin() + bestMotif.first + bestMotifWidth;
-            NumSequence::const_iterator spacerEnd = numSeq.end();
+            if (utilOpt.debug) {
+                cout  << "#" << cnc.convert(upstrSeq.begin() + bestMotif.first, upstrSeq.begin()+bestMotif.first + bestMotifWidth) << endl;
+            }
+            
+            NumSequence::const_iterator spacerBegin = upstrSeq.begin() + bestMotif.first + bestMotifWidth;
+            NumSequence::const_iterator spacerEnd = upstrSeq.end();
+            
+            if (utilOpt.debug) {
+                cout << "#SP:\t" << cnc.convert(spacerBegin, spacerEnd) << endl;
+            }
 
             // extract region between RBS and end of upstream region (near start)
             spacerCounts.count(spacerBegin, spacerEnd);
