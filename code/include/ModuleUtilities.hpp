@@ -58,6 +58,8 @@ namespace gmsuite {
         void runChangeOrderNonCoding();
         void runComputeKL();
         void runABFilter();
+        void runExtractSpacerNTModel();
+        
     };
     
 }

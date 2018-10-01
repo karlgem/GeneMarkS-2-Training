@@ -44,7 +44,8 @@ namespace gmsuite {
             DNA_TO_AA,
             CHANGE_ORDER_NONCODING,
             COMPUTE_KL,
-            AB_FILTER
+            AB_FILTER,
+            EXTRACT_SPACER_NT_MODEL
         }
         utility_t;
         
@@ -202,6 +203,14 @@ namespace gmsuite {
             
         } abFilter;
         
+        struct ExtractSpacerNTModel : public GenericOptions {
+            string fnsequences;
+            string fnlabels;
+            string fnmod;                   // for motif
+            size_t upstreamLength;          // length in which to search for motif
+            bool RBSOnly;                   // only use RBS values
+        } extractSpacerNTModel;
+        
         static void addProcessOptions_ExtractUpstream(ExtractUpstreamUtility &options, po::options_description &processOptions);
         static void addProcessOptions_ExtractStartContext(ExtractStartContext &options, po::options_description &processOptions);
         static void addProcessOptions_StartModelInfo(StartModelInfoUtility &options, po::options_description &processOptions);
@@ -216,6 +225,7 @@ namespace gmsuite {
         static void addProcessOptions_DNAToAA(DNAToAA &options, po::options_description &processOptions);
         static void addProcessOptions_ChangeOrderNonCoding(ChangeOrderNonCoding &options, po::options_description &processOptions);
         static void addProcessOptions_ABFilter(ABFilter &options, po::options_description &processOptions);
+        static void addProcessOptions_ExtractSpacerNTModel(ExtractSpacerNTModel &options, po::options_description &processOption);
     };
 }
 

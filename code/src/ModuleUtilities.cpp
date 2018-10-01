@@ -72,6 +72,8 @@ void ModuleUtilities::run() {
         runComputeKL();
     else if (options.utility == OptionsUtilities::AB_FILTER)
         runABFilter();
+    else if (options.utility == OptionsUtilities::EXTRACT_SPACER_NT_MODEL)
+        runExtractSpacerNTModel();
     
 //    else            // unrecognized utility to run
 //        throw invalid_argument("Unknown utility function " + options.utility);
@@ -1218,12 +1220,267 @@ void ModuleUtilities::runChangeOrderNonCoding() {
     }
     
     fout.write(modelOut);
+}
+
+
+
+
+
+pair<NumSequence::size_type, double> findBestMotifLocation2(NumSequence::const_iterator begin, NumSequence::const_iterator end, boost::shared_ptr<const MotifMarkov> motifMarkov, boost::shared_ptr<const UnivariatePDF> motifSpacer) {
+    
+    NumSequence::size_type bestLoc = 0;
+    double bestScore = -numeric_limits<double>::infinity();
+    NumSequence::size_type motifWidth = motifMarkov->getLength();
+    NumSequence::size_type fragLen = std::distance(begin, end);
+    
+    // if motif can't fit in fragment, return -infinity score
+    if (fragLen < motifWidth)
+        return pair<NumSequence::size_type, double> (NumSequence::npos, bestScore);
+    
+    // loop over all valid positions from motif
+    NumSequence::size_type currLoc = 0;
+    for (NumSequence::const_iterator currElement = begin; currElement < end-motifWidth; currElement++, currLoc++) {
+        
+        double score = motifMarkov->evaluate(currElement, currElement+motifWidth, true);
+        
+        NumSequence::size_type posFromRight = fragLen - motifWidth - currLoc;
+        score += log2(motifSpacer->operator[](posFromRight));
+        
+        if (score > bestScore) {
+            bestScore = score;
+            bestLoc = currLoc;
+        }
+        
+//        AlphabetDNA alph;
+//        CharNumConverter cnc(&alph);
+//        NumAlphabetDNA numAlph(alph, cnc);
+//
+//        cout << cnc.convert(currElement, currElement+motifWidth) << "\t" << score << endl;
+    }
+    
+    return pair<NumSequence::size_type, double> (bestLoc, bestScore);
+}
+
+
+
+void ModuleUtilities::runExtractSpacerNTModel() {
+    OptionsUtilities::ExtractSpacerNTModel utilOpt = options.extractSpacerNTModel;
+    
+    AlphabetDNA alph;
+    CharNumConverter cnc(&alph);
+    NumAlphabetDNA numAlph(alph, cnc);
+
+    
+    // read sequence from file
+    SequenceFile seqFile(utilOpt.fnsequences, SequenceFile::READ);
+    Sequence strSeq = seqFile.read();
+    NumSequence numSeq (strSeq, cnc);
+    
+    // read labels from file
+    LabelFile labelFile (utilOpt.fnlabels, LabelFile::READ);
+    vector<Label*> labels;
+    labelFile.read(labels);
+    
+    // read model file
+    ModelFile modFile(utilOpt.fnmod, ModelFile::READ);
+    map<string, string> keyValPair;
+    modFile.read(keyValPair);
+    
+    // check if models enabled
+    bool rbsEnabled = false, promoterEnabled = false;
+    
+    boost::shared_ptr<MotifMarkov> rbsMarkov, promoterMarkov;
+    boost::shared_ptr<UnivariatePDF> rbsSpacerPDF, promoterSpacerPDF;
+    
+    // RBS enabled?
+    if (keyValPair.count("RBS") > 0 && keyValPair["RBS"] == "1")
+        rbsEnabled = true;
+    
+    if (keyValPair.count("PROMOTER") > 0 && keyValPair["PROMOTER"] == "1")
+        promoterEnabled = true;
+    
+    // if neither promoter nor RBS enabled, then nothing to extract
+    if (!rbsEnabled && !promoterEnabled)
+        return;
+    
+    istringstream motifEnabled(keyValPair["RBS"]);
+    
+    string line;
+    
+    // RBS model
+    if (rbsEnabled) {
+        
+        istringstream ssmMotifWidth(keyValPair["RBS_WIDTH"]);    // FIXME: any motif type
+        std::getline(ssmMotifWidth, line);
+        int motifWidth = (int) strtol(line.c_str(), NULL, 10);
+        
+        
+        vector<vector<pair<string, double> > > rbsProbs (motifWidth);
+        istringstream ssmRBS(keyValPair["RBS_MAT"]);
+        line = "";
+        while (std::getline(ssmRBS, line)) {
+            stringstream lineStream (line);
+            string nt;
+            vector<double> prob (motifWidth);
+            
+            lineStream >> nt;
+            
+            for (int i = 0; i < motifWidth; i++) {
+                lineStream >> prob[i];
+                rbsProbs[i].push_back(pair<string, double> (nt, prob[i]));
+            }
+        }
+        
+        
+        rbsMarkov = boost::shared_ptr<MotifMarkov> (new MotifMarkov(rbsProbs, (size_t) motifWidth, numAlph, cnc));
+        
+        // rbs spacer
+        istringstream rbsDurMax(keyValPair["RBS_MAX_DUR"]);        // FIXME: any motif spacer
+        std::getline(rbsDurMax, line);
+        int maxRBSDur = (int) strtol(line.c_str(), NULL, 10);
+        int rbsSpacerLen = maxRBSDur+1;
+        
+        istringstream rbsDur(keyValPair["RBS_POS_DISTR"]);
+        vector<double> rbsPositionProbs (rbsSpacerLen, 0);
+        line = "";
+        while (std::getline(rbsDur, line)) {
+            stringstream lineStream (line);
+            int pos;
+            double prob;
+            
+            lineStream >> pos >> prob;
+            
+            rbsPositionProbs[pos] = prob;
+        }
+        rbsSpacerPDF = boost::shared_ptr<UnivariatePDF> (new UnivariatePDF(rbsPositionProbs, false));
+    }
+    
+    if (promoterEnabled) {
+        
+        if (keyValPair.count("PROMOTER_MAX_DUR") > 0) {
+            istringstream promDurMax(keyValPair["PROMOTER_MAX_DUR"]);
+            std::getline(promDurMax, line);
+            int maxPromDur = (int) strtol(line.c_str(), NULL, 10);
+            int promSpacerLen = maxPromDur + 1;
+            
+            istringstream promDur (keyValPair["PROMOTER_POS_DISTR"]);
+            vector<double> promPositionsProbs (promSpacerLen, 0);
+            line = "";
+            while(std::getline(promDur, line)) {
+                stringstream lineStream (line);
+                int pos;
+                double prob;
+                
+                lineStream >> pos >> prob;
+                promPositionsProbs[pos] = prob;
+            }
+            promoterSpacerPDF = boost::shared_ptr<UnivariatePDF>  (new UnivariatePDF(promPositionsProbs, false));
+        }
+        
+        // Promoter Model
+        if (keyValPair.count("PROMOTER_WIDTH") < 0) {
+            istringstream ssmPromWidth(keyValPair["PROMOTER_WIDTH"]);
+            std::getline(ssmPromWidth, line);
+            int promWidth = (int) strtol(line.c_str(), NULL, 10);
+            
+            vector<vector<pair<string, double> > > promProbs (promWidth);
+            istringstream ssmProm(keyValPair["PROMOTER_MAT"]);
+            line = "";
+            while (std::getline(ssmProm, line)) {
+                stringstream lineStream (line);
+                string nt;
+                vector<double> prob (promWidth);
+                
+                lineStream >> nt;
+                
+                for (int i = 0; i < promWidth; i++) {
+                    lineStream >> prob[i];
+                    promProbs[i].push_back(pair<string, double> (nt, prob[i]));
+                }
+            }
+            
+            promoterMarkov = boost::shared_ptr<MotifMarkov>  (new MotifMarkov(promProbs, (size_t) promWidth, numAlph, cnc));
+        }
+    }
     
     
+    UniformCounts spacerCounts(2, numAlph);
+    // for each label
+    for (vector<Label*>::const_iterator iter = labels.begin(); iter!= labels.end(); iter++) {
+        // get search window around labelled start
+        size_t labelLeft = (*iter)->left;
+        size_t labelRight = (*iter)->right;
+        Label::strand_t strand = (*iter)->strand;
+            
+        if (numSeq.size() > 0) {
+            
+            // extract upstream region
+            NumSequence upstrSeq;
+            
+            if (strand == Label::POS) {
+                if (labelLeft < utilOpt.upstreamLength)
+                    continue;
+                
+                size_t upstrLeft = labelLeft - utilOpt.upstreamLength;
+                upstrSeq = numSeq.subseq(upstrLeft, utilOpt.upstreamLength);
+            }
+            else {
+                if (labelRight + utilOpt.upstreamLength >= numSeq.size())
+                    continue;
+                
+                upstrSeq = numSeq.subseq(labelRight+1, utilOpt.upstreamLength);
+                upstrSeq.reverseComplement(cnc);
+            }
+            
+            pair<NumSequence::size_type, double> bestRBS (NumSequence::npos, -numeric_limits<double>::infinity());
+            pair<NumSequence::size_type, double> bestProm (NumSequence::npos, -numeric_limits<double>::infinity());
+
+//            if (utilOpt.debug)
+//                cout << "#" << cnc.convert(upstrSeq.begin(), upstrSeq.end()) << endl;
+            
+            // compute best locations of motifs
+            if (rbsMarkov)
+                bestRBS = findBestMotifLocation2(upstrSeq.begin(), upstrSeq.end(), rbsMarkov, rbsSpacerPDF);
+            if (promoterMarkov)
+                bestProm = findBestMotifLocation2(upstrSeq.begin(), upstrSeq.end(), promoterMarkov, promoterSpacerPDF);
+            
+            // if RBS only needed and promoter has larger value, skip
+            if (utilOpt.RBSOnly && bestProm.second > bestRBS.second) {
+                continue;
+            }
+            
+            pair<NumSequence::size_type, double> bestMotif = bestRBS;
+            size_t bestMotifWidth = 0;
+            
+            if (rbsMarkov)
+                bestMotifWidth = rbsMarkov->getLength();
+            
+            if (bestProm.second > bestRBS.second) {
+                bestMotif = bestProm;
+                bestMotifWidth = promoterMarkov->getLength();
+            }
+            
+            if (utilOpt.debug) {
+                cout  << "#" << cnc.convert(upstrSeq.begin() + bestMotif.first, upstrSeq.begin()+bestMotif.first + bestMotifWidth) << endl;
+            }
+            
+            NumSequence::const_iterator spacerBegin = upstrSeq.begin() + bestMotif.first + bestMotifWidth;
+            NumSequence::const_iterator spacerEnd = upstrSeq.end();
+            
+            if (utilOpt.debug) {
+                cout << "#SP:\t" << cnc.convert(spacerBegin, spacerEnd) << endl;
+            }
+
+            // extract region between RBS and end of upstream region (near start)
+            spacerCounts.count(spacerBegin, spacerEnd);
+        }
+    }
     
+    UniformMarkov spacerMarkov(2, numAlph);
+    spacerMarkov.construct(&spacerCounts);
     
+    cout << spacerMarkov.toString() << endl;
     
     
 }
-
 
