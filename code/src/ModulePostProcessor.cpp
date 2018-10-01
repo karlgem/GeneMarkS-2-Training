@@ -162,7 +162,7 @@ void ModulePostProcessor::run() {
         }
         
 
-        boost::shared_ptr<MotifMarkov> rbsMarkov (new MotifMarkov(rbsProbs, (size_t) motifWidth, numAlph, cnc));
+        rbsMarkov = boost::shared_ptr<MotifMarkov>  (new MotifMarkov(rbsProbs, (size_t) motifWidth, numAlph, cnc));
         
         // rbs spacer
         istringstream rbsDurMax(keyValPair["RBS_MAX_DUR"]);        // FIXME: any motif spacer
