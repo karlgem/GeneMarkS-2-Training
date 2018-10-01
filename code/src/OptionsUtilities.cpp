@@ -41,6 +41,7 @@ OptionsUtilities::OptionsUtilities(string mode) : Options(mode) {
 #define STR_CHANGE_ORDER_NONCODING "change-order-noncoding"
 #define STR_COMPUTE_KL "compute-kl"
 #define STR_AB_FILTER "ab-filter"
+#define STR_EXTRACT_SPACER_NT_MODEL "extract-spacer-nt-model"
 
 namespace gmsuite {
     // convert string to utility_t
@@ -64,6 +65,7 @@ namespace gmsuite {
         else if (token == STR_CHANGE_ORDER_NONCODING)   unit = OptionsUtilities::CHANGE_ORDER_NONCODING;
         else if (token == STR_COMPUTE_KL)               unit = OptionsUtilities::COMPUTE_KL;
         else if (token == STR_AB_FILTER)                unit = OptionsUtilities::AB_FILTER;
+        else if (token == STR_EXTRACT_SPACER_NT_MODEL)  unit = OptionsUtilities::EXTRACT_SPACER_NT_MODEL;
         else
             throw boost::program_options::invalid_option_value(token);
         
@@ -397,6 +399,21 @@ bool OptionsUtilities::parse(int argc, const char *argv[]) {
             // Parse again...
             po::store(po::command_line_parser(opts).options(utilDesc).run(), vm);
         }
+        else if (utility == EXTRACT_SPACER_NT_MODEL) {
+            po::options_description utilDesc (string(STR_EXTRACT_SPACER_NT_MODEL) + " options");
+            addProcessOptions_ExtractSpacerNTModel(extractSpacerNTModel, utilDesc);
+            
+            cmdline_options.add(utilDesc);
+            
+            // Collect all the unrecognized options from the first pass. This will include the
+            // (positional) mode and command name, so we need to erase them
+            vector<string> opts = po::collect_unrecognized(parsed.options, po::include_positional);
+            opts.erase(opts.begin());       // erase mode
+            opts.erase(opts.begin());       // erase command name
+            
+            // Parse again...
+            po::store(po::command_line_parser(opts).options(utilDesc).run(), vm);
+        }
         else if (utility == COMPUTE_KL) {
             po::options_description utilDesc (string(STR_COMPUTE_KL) + " options");
             addProcessOptions_ComputeKL(computeKL, utilDesc);
@@ -649,6 +666,16 @@ void OptionsUtilities::addProcessOptions_ABFilter(ABFilter &options, po::options
     ("out", po::value<string>(&options.fnout)->required(), "Name of output file")
     ("thresh-max-dist-upstr", po::value<int>(&options.threshDistToUpstream)->default_value(100), "Max distance between a gene in A and it's upstream in B for A to be kept")
     ("select-no-satisfy", po::bool_switch(&options.selectNoSatisfy)->default_value(false), "If set, labels that don't satisfy the above threshold constraint are printed.")
+    ;
+}
+
+void OptionsUtilities::addProcessOptions_ExtractSpacerNTModel(ExtractSpacerNTModel &options, po::options_description &processOptions) {
+    processOptions.add_options()
+    ("sequences", po::value<string>(&options.fnsequences)->required(), "Name of sequences file")
+    ("labels", po::value<string> (&options.fnlabels)->required(), "Name of labels file (for starts)")
+    ("model", po::value<string> (&options.fnmod)->required(), "Name of model file")
+    ("upstream-length", po::value<size_t> (&options.upstreamLength)->default_value(20), "Upstream length of region in which to search for motif")
+    ("rbs-model-only", po::bool_switch(&options.RBSOnly)->default_value(false), "Only use the RBS-based sequences if multiple motifs provided")
     ;
 }
 
