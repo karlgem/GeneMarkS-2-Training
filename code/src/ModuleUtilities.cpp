@@ -1554,6 +1554,9 @@ void ModuleUtilities::runExtractLORF() {
             continue;
         }
         
+        if (currLabel->right >= sequences[currSeqIdx].size())
+            continue;
+        
         string frag = "";
         string fastaHeader = "";
         
