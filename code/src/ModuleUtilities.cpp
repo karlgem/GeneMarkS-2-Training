@@ -1622,7 +1622,7 @@ void ModuleUtilities::runExtractLORF() {
             fastaHeader = ssm.str();
         }
         
-        cout << fastaHeader << endl << frag << endl;
+        cout << ">" << fastaHeader << endl << frag << endl;
     }
 }
 
