@@ -46,7 +46,7 @@ namespace gmsuite {
             COMPUTE_KL,
             AB_FILTER,
             EXTRACT_SPACER_NT_MODEL,
-            EXTRACT_LORF
+            EXTRACT_ORF
         }
         utility_t;
         
@@ -212,11 +212,12 @@ namespace gmsuite {
             bool RBSOnly;                   // only use RBS values
         } extractSpacerNTModel;
 
-        struct ExtractLORF : public GenericOptions {
+        struct ExtractORF : public GenericOptions {
             string fnsequences;             // fasta sequences
             string fnlabels;                // labels of orfs
             GeneticCode::gcode_t gcode;              // genetic code
-        } extractLORF;
+            bool longestORF;                // if set, longest ORF is extracted
+        } extractORF;
         
         static void addProcessOptions_ExtractUpstream(ExtractUpstreamUtility &options, po::options_description &processOptions);
         static void addProcessOptions_ExtractStartContext(ExtractStartContext &options, po::options_description &processOptions);
@@ -233,7 +234,7 @@ namespace gmsuite {
         static void addProcessOptions_ChangeOrderNonCoding(ChangeOrderNonCoding &options, po::options_description &processOptions);
         static void addProcessOptions_ABFilter(ABFilter &options, po::options_description &processOptions);
         static void addProcessOptions_ExtractSpacerNTModel(ExtractSpacerNTModel &options, po::options_description &processOption);
-        static void addProcessOptions_ExtractLORF(ExtractLORF &options, po::options_description &processOption);
+        static void addProcessOptions_ExtractORF(ExtractLORF &options, po::options_description &processOption);
     };
 }
 

@@ -74,8 +74,8 @@ void ModuleUtilities::run() {
         runABFilter();
     else if (options.utility == OptionsUtilities::EXTRACT_SPACER_NT_MODEL)
         runExtractSpacerNTModel();
-    else if (options.utility == OptionsUtilities::EXTRACT_LORF)
-        runExtractLORF();
+    else if (options.utility == OptionsUtilities::EXTRACT_ORF)
+        runExtractORF();
     
 //    else            // unrecognized utility to run
 //        throw invalid_argument("Unknown utility function " + options.utility);
@@ -1516,8 +1516,8 @@ void reverseComplementInPlace(string &nt) {
     }
 }
 
-void ModuleUtilities::runExtractLORF() {
-    OptionsUtilities::ExtractLORF utilOpt = options.extractLORF;
+void ModuleUtilities::runExtractORF() {
+    OptionsUtilities::ExtractORF utilOpt = options.extractORF;
 
     AlphabetDNA alph;
     CharNumConverter cnc(&alph);
@@ -1565,15 +1565,18 @@ void ModuleUtilities::runExtractLORF() {
             
             size_t currPos = currLabel->left;
             size_t lorfLoc = currPos;
-            while (currPos >= 3) {
-                currPos -= 3;        // go back one codon
-                
-                string codon = sequences[currSeqIdx].toString(currPos, 3);
-                
-                if (gcode.isStart(codon))
-                    lorfLoc = currPos;
-                if (gcode.isStop(codon))
-                    break;
+            
+            if (utilOpt.longestORF) {
+                while (currPos >= 3) {
+                    currPos -= 3;        // go back one codon
+                    
+                    string codon = sequences[currSeqIdx].toString(currPos, 3);
+                    
+                    if (gcode.isStart(codon))
+                        lorfLoc = currPos;
+                    if (gcode.isStop(codon))
+                        break;
+                }
             }
             
             size_t newLength = currLabel->right - lorfLoc + 1;
@@ -1597,16 +1600,18 @@ void ModuleUtilities::runExtractLORF() {
             size_t currPos = currLabel->right;
             size_t lorfLoc = currPos;
             
-            while (currPos < sequences[currSeqIdx].size()-3) {
-                currPos += 3;            // go "back" one codon
-                
-                string codon = sequences[currSeqIdx].toString(currPos-2, 3);
-                reverseComplementInPlace(codon);
-                
-                if (gcode.isStart(codon))
-                    lorfLoc = currPos;
-                if (gcode.isStop(codon))
-                    break;
+            if (utilOpt.longestORF) {
+                while (currPos < sequences[currSeqIdx].size()-3) {
+                    currPos += 3;            // go "back" one codon
+                    
+                    string codon = sequences[currSeqIdx].toString(currPos-2, 3);
+                    reverseComplementInPlace(codon);
+                    
+                    if (gcode.isStart(codon))
+                        lorfLoc = currPos;
+                    if (gcode.isStop(codon))
+                        break;
+                }
             }
             
             size_t newLength = lorfLoc - currLabel->left + 1;

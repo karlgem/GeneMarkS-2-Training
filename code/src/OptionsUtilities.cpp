@@ -42,7 +42,7 @@ OptionsUtilities::OptionsUtilities(string mode) : Options(mode) {
 #define STR_COMPUTE_KL "compute-kl"
 #define STR_AB_FILTER "ab-filter"
 #define STR_EXTRACT_SPACER_NT_MODEL "extract-spacer-nt-model"
-#define STR_EXTRACT_LORF "extract-lorf"
+#define STR_EXTRACT_ORF "extract-orf"
 
 namespace gmsuite {
     // convert string to utility_t
@@ -67,7 +67,7 @@ namespace gmsuite {
         else if (token == STR_COMPUTE_KL)               unit = OptionsUtilities::COMPUTE_KL;
         else if (token == STR_AB_FILTER)                unit = OptionsUtilities::AB_FILTER;
         else if (token == STR_EXTRACT_SPACER_NT_MODEL)  unit = OptionsUtilities::EXTRACT_SPACER_NT_MODEL;
-        else if (token == STR_EXTRACT_LORF)             unit = OptionsUtilities::EXTRACT_LORF;
+        else if (token == STR_EXTRACT_ORF)             unit = OptionsUtilities::EXTRACT_ORF;
         else
             throw boost::program_options::invalid_option_value(token);
         
@@ -383,9 +383,9 @@ bool OptionsUtilities::parse(int argc, const char *argv[]) {
             // get remaining parameters whose values were not assigned in add_options() above
             extractStartContextPerMotifStatus.allowOverlaps = vm.count("allow-overlap-with-cds") > 0;
         }
-        else if (utility == EXTRACT_LORF) {
-            po::options_description utilDesc (string(STR_EXTRACT_LORF) + " options");
-            addProcessOptions_ExtractLORF(extractLORF, utilDesc);
+        else if (utility == EXTRACT_ORF) {
+            po::options_description utilDesc (string(STR_EXTRACT_ORF) + " options");
+            addProcessOptions_ExtractORF(extractORF, utilDesc);
 
             cmdline_options.add(utilDesc);
 
@@ -695,11 +695,12 @@ void OptionsUtilities::addProcessOptions_ExtractSpacerNTModel(ExtractSpacerNTMod
     ;
 }
 
-void OptionsUtilities::addProcessOptions_ExtractLORF(ExtractLORF &options, po::options_description &processOptions) {
+void OptionsUtilities::addProcessOptions_ExtractORF(ExtractORF &options, po::options_description &processOptions) {
     processOptions.add_options()
     ("sequences", po::value<string>(&options.fnsequences)->required(), "Name of sequences file")
     ("labels", po::value<string>(&options.fnlabels)->required(), "Name of labels")
     ("gcode", po::value<GeneticCode::gcode_t>(&options.gcode)->default_value(GeneticCode::ELEVEN), "Genetic code")
+    ("lorf", po::bool_switch(&options.longestORF)->default_value(false), "If set, longest ORF is extracted")
     ;
 }
 

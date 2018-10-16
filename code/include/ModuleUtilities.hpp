@@ -59,7 +59,7 @@ namespace gmsuite {
         void runComputeKL();
         void runABFilter();
         void runExtractSpacerNTModel();
-        void runExtractLORF();
+        void runExtractORF();
         
     };
     
