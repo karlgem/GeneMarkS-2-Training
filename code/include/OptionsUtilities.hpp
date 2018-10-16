@@ -234,7 +234,7 @@ namespace gmsuite {
         static void addProcessOptions_ChangeOrderNonCoding(ChangeOrderNonCoding &options, po::options_description &processOptions);
         static void addProcessOptions_ABFilter(ABFilter &options, po::options_description &processOptions);
         static void addProcessOptions_ExtractSpacerNTModel(ExtractSpacerNTModel &options, po::options_description &processOption);
-        static void addProcessOptions_ExtractORF(ExtractLORF &options, po::options_description &processOption);
+        static void addProcessOptions_ExtractORF(ExtractORF &options, po::options_description &processOption);
     };
 }
 
