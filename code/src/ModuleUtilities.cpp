@@ -74,6 +74,8 @@ void ModuleUtilities::run() {
         runABFilter();
     else if (options.utility == OptionsUtilities::EXTRACT_SPACER_NT_MODEL)
         runExtractSpacerNTModel();
+    else if (options.utility == OptionsUtilities::EXTRACT_LORF)
+        runExtractLORF();
     
 //    else            // unrecognized utility to run
 //        throw invalid_argument("Unknown utility function " + options.utility);
@@ -1482,5 +1484,142 @@ void ModuleUtilities::runExtractSpacerNTModel() {
     cout << spacerMarkov.toString() << endl;
     
     
+}
+
+void reverseComplementInPlace(string &nt) {
+    map<char, char> cmap;
+    cmap.insert(std::pair<char,char>('A', 'T'));
+    cmap.insert(std::pair<char,char>('T', 'A'));
+    cmap.insert(std::pair<char,char>('G', 'C'));
+    cmap.insert(std::pair<char,char>('C', 'G'));
+    
+    size_t fromLeft = 0;
+    size_t fromRight = nt.size()-1;
+    
+    while (fromLeft <= fromRight) {
+        
+        char cFromLeft =  nt[fromLeft];
+        char cFromRight = nt[fromRight];
+        
+        // complement the characters
+        cFromLeft  =    cmap.count(cFromLeft)  > 0 ? cmap.at(cFromLeft)  : cFromLeft;
+        cFromRight =    cmap.count(cFromRight) > 0 ? cmap.at(cFromRight) : cFromRight;
+        
+        // swap them
+        nt[fromLeft]  = cFromRight;
+        nt[fromRight] = cFromLeft;
+        
+        fromLeft++;
+        if (fromRight == 0)
+            break;
+        fromRight--;
+    }
+}
+
+void ModuleUtilities::runExtractLORF() {
+    OptionsUtilities::ExtractLORF utilOpt = options.extractLORF;
+
+    AlphabetDNA alph;
+    CharNumConverter cnc(&alph);
+    NumAlphabetDNA numAlph(alph, cnc);
+    
+    GeneticCode gcode(utilOpt.gcode);
+    NumGeneticCode numGcode(gcode, cnc);
+
+    // get sequences
+    SequenceFile fseq (utilOpt.fnsequences, SequenceFile::READ);
+    vector<Sequence> sequences;     fseq.read(sequences);               // read sequences
+
+    // get labels
+    LabelFile flabel (utilOpt.fnlabels, LabelFile::READ);
+    vector<Label*> labels;  flabel.read(labels);
+
+    // for each label, find longest orf
+    for (size_t n = 0; n < labels.size(); n++) {
+        Label* currLabel = labels[n];
+        
+        
+        size_t currSeqIdx = 0;
+        
+        // find sequence with seqname same as current label
+        while (currSeqIdx < sequences.size()) {
+            if (currLabel->meta == sequences[currSeqIdx].getMetaData()) {
+                break;
+            }
+            currSeqIdx++;
+        }
+        
+        if (currSeqIdx == sequences.size()) {
+            cout << "Warning: could not find sequence name " << currLabel->meta << endl;
+            continue;
+        }
+        
+        string frag = "";
+        string fastaHeader = "";
+        
+        // find longest ORF
+        if (currLabel->strand == Label::POS) {
+            
+            size_t currPos = currLabel->left;
+            size_t lorfLoc = currPos;
+            while (currPos >= 3) {
+                currPos -= 3;        // go back one codon
+                
+                string codon = sequences[currSeqIdx].toString(currPos, 3);
+                
+                if (gcode.isStart(codon))
+                    lorfLoc = currPos;
+                if (gcode.isStop(codon))
+                    break;
+            }
+            
+            size_t newLength = currLabel->right - lorfLoc + 1;
+            
+            // extract lorf
+            frag = sequences[currSeqIdx].toString(lorfLoc, newLength);
+            
+            // create new fasta def
+            stringstream ssm;
+            ssm << currLabel->meta << ";";
+            ssm << lorfLoc+1            << ";" << currLabel->right+1 << ";" << currLabel->strandToStr() << ";";
+            ssm << currLabel->left+1    << ";" << currLabel->right+1 << ";" << currLabel->strandToStr();
+            fastaHeader = ssm.str();
+            
+            
+        }
+        // on negative strand
+        else {
+            // extract
+            
+            size_t currPos = currLabel->right;
+            size_t lorfLoc = currPos;
+            
+            while (currPos < sequences[currSeqIdx].size()-3) {
+                currPos += 3;            // go "back" one codon
+                
+                string codon = sequences[currSeqIdx].toString(currPos-2, 3);
+                reverseComplementInPlace(codon);
+                
+                if (gcode.isStart(codon))
+                    lorfLoc = currPos;
+                if (gcode.isStop(codon))
+                    break;
+            }
+            
+            size_t newLength = lorfLoc - currLabel->left + 1;
+            
+            frag = sequences[currSeqIdx].toString(currLabel->left, newLength);
+            reverseComplementInPlace(frag);
+            
+            // create new fasta def
+            stringstream ssm;
+            ssm << currLabel->meta << ";";
+            ssm << currLabel->left+1    << ";" << lorfLoc+1             << ";" << currLabel->strandToStr() << ";";
+            ssm << currLabel->left+1    << ";" << currLabel->right+1    << ";" << currLabel->strandToStr();
+            fastaHeader = ssm.str();
+        }
+        
+        cout << fastaHeader << endl << frag << endl;
+    }
 }
 

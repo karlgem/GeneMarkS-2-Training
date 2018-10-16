@@ -17,6 +17,7 @@ using namespace std;
 
 
 Label* readNextLabelLST(const char*& current, const char* const end);
+Label* readNextLabelGFF(const char*& current, const char* const end);
 void gotoKey(const char*& current, const char* const end, string key);
 
 
@@ -56,6 +57,8 @@ void LabelFile::read(vector<Label*> &output) const {
     // read based on format set
     if (this->format == LST)
         read_lst(output);
+    if (this->format == GFF)
+        read_gff(output);
 }
 
 
@@ -86,7 +89,7 @@ void LabelFile::read_lst(vector<Label*> &output) const {
     
     // ignore all lines until we reach "Predicted Genes"
     gotoKey(current, end_read, "SequenceID");
-
+    
     
     bool foundFirstLabel = false;
     
@@ -118,9 +121,60 @@ void LabelFile::read_lst(vector<Label*> &output) const {
             output.push_back(currlabel);
             foundFirstLabel = true;
         }
-//        else if (foundFirstLabel)
-//            throw runtime_error("Could not read label from file.");
-    }    
+        //        else if (foundFirstLabel)
+        //            throw runtime_error("Could not read label from file.");
+    }
+}
+
+
+
+/**
+ * Read labels from GFF file.
+ *
+ * @param output a vector label pointers that have been read from the file.
+ */
+void LabelFile::read_gff(vector<Label*> &output) const {
+    
+    
+    output.clear();         // clear output vector (sanity check)
+    Label* currlabel;       // stores single label information
+    
+    // point to start of data
+    const char* current = begin_read;
+    
+    bool foundFirstLabel = false;
+    
+    // loop over all the file
+    while (current != end_read) {
+        
+        // skip all white spaces
+        while (current != end_read && isspace(*current))
+            current++;
+        
+        // skip all commented lines
+        while (current != end_read && *current == '#') {
+            // skip all white spaces
+            while (current != end_read && *current != '\n' && *current != '\r')
+                current++;
+            
+            // skip all white spaces
+            while (current != end_read && isspace(*current))
+                current++;
+        }
+        
+        if (current == end_read)
+            break;
+        
+        // read next label
+        currlabel = readNextLabelGFF(current, end_read);
+        
+        if (currlabel != NULL) {
+            output.push_back(currlabel);
+            foundFirstLabel = true;
+        }
+        //        else if (foundFirstLabel)
+        //            throw runtime_error("Could not read label from file.");
+    }
 }
 
 
@@ -178,8 +232,71 @@ Label* readNextLabelLST(const char*& current, const char* const end) {
             strand = Label::NEG;
         else
             throw invalid_argument("Invalid gene strand: " + match.str(2));
-
+        
         label = new Label(left, right, strand, geneClass, meta);
+    }
+    
+    
+    return label;
+}
+
+
+Label* readNextLabelGFF(const char*& current, const char* const end) {
+    string output = "";
+    
+    // start of line
+    const char* startOfLine = current;
+    
+    // read the remainder of the line
+    while (current != end && *current != '\n' && *current != '\r')
+        current++;
+    
+    const char* endOfLine = current;
+    
+    cmatch match;
+    //                                  gene #     strand      left     right    length     class           meta
+    cregex expr = cregex::compile("^(\\S+)\t(.+)\t(\\S+)\t(\\d+)\t(\\d+)\t([-+]?\\d+(?:\\.\\d+)?|\\.)\t([+-])\t(\\d+|\\.)\t(.+)$");
+    
+    Label* label = NULL;
+    
+    string t (startOfLine, endOfLine);
+    
+    // parse 'line' for label information
+    if (regex_search(startOfLine, endOfLine, match, expr) && match.size() > 1) {
+        string seqname;          // chromosome/scaffold name
+        string source;           // data source (e.g. project name)
+        string feature;          // feature type name (e.g. gene)
+        size_t left;             // start position (starting with 1)
+        size_t right;            // end position (starting with 1)
+        double score;            // a float
+        char strandChar;         // + or -
+        int frame;               // 0, 1, or 2
+        string attribute;        // semicolon-separate list of tag-value pairs
+        
+        
+        seqname         = match.str(1);
+        source          = match.str(2);
+        feature         = match.str(3);
+        left            = (size_t) strtol(match.str(4).c_str(), NULL, 10)-1;
+        right           = (size_t) strtol(match.str(5).c_str(), NULL, 10)-1;
+        score           = strtod(match.str(6).c_str(), NULL);
+        strandChar      = match.str(7)[0];
+        frame           = (int) strtol(match.str(8).c_str(), NULL, 10)-1;
+        attribute       = match.str(9);
+        
+        if (source == "RefSeq")
+            return NULL;
+        
+        Label::strand_t strand;
+        
+        if (strandChar == '+')
+            strand = Label::POS;
+        else if (strandChar == '-')
+            strand = Label::NEG;
+        else
+            throw invalid_argument("Invalid gene strand: " + match.str(2));
+        
+        label = new Label(left, right, strand, "", seqname);
     }
     
     
@@ -226,10 +343,42 @@ LabelFile::format_t LabelFile::detectFormat() const {
     if (detectLST(begin_read, end_read))
         return LST;
     
+    if (detectGFF(begin_read, end_read))
+        return GFF;
+    
     // if no format detected, throw exception
     throw logic_error("File format could not be detected.");
 }
 
+
+bool LabelFile::detectGFF(const char* const begin, const char* const end) const {
+    const char* current = begin;
+    
+    while (current != end) {
+        
+        // skip whitespaces
+        while (current != end && isspace(*current))
+            current++;
+        
+        // start of line
+        const char* startOfLine = current;
+        
+        // read the remainder of the line
+        while (current != end && *current != '\n' && *current != '\r')
+            current++;
+        
+        const char* endOfLine = current;
+        
+        cmatch match;
+        cregex expr = cregex::compile("^\\S+\t.+\t\\S+\t\\d+\t\\d+\t([-+]?\\d+(?:\\.\\d+)?|\\.)\t[+-]\t(\\d+|\\.)\t.+$");
+        // check if key found
+        if (regex_search(startOfLine, endOfLine, match, expr)) {
+            return true;
+        }
+    }
+    
+    return false;
+}
 
 bool LabelFile::detectLST(const char* const begin, const char* const end) const {
     
