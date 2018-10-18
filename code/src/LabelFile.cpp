@@ -286,6 +286,8 @@ Label* readNextLabelGFF(const char*& current, const char* const end) {
         
         if (source == "RefSeq")
             return NULL;
+        if (feature != "CDS")
+            return NULL;
         
         Label::strand_t strand;
         

@@ -96,7 +96,9 @@ vector<string> GeneticCode::getStops() const {
  * @param codon the codon to be translated
  */
 char GeneticCode::translateCodon(string codon) const {
-    return translationTable.at(codon);
+    if (translationTable.find( codon ) != translationTable.end())
+        return translationTable.at(codon);
+    return 'X';
 }
 
 // get the genetic code value

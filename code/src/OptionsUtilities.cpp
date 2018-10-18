@@ -701,6 +701,7 @@ void OptionsUtilities::addProcessOptions_ExtractORF(ExtractORF &options, po::opt
     ("labels", po::value<string>(&options.fnlabels)->required(), "Name of labels")
     ("gcode", po::value<GeneticCode::gcode_t>(&options.gcode)->default_value(GeneticCode::ELEVEN), "Genetic code")
     ("lorf", po::bool_switch(&options.longestORF)->default_value(false), "If set, longest ORF is extracted")
+    ("aa", po::bool_switch(&options.aa)->default_value(false), "If set, sequence is printed as amino acid")
     ;
 }
 

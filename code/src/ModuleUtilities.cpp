@@ -1619,6 +1619,19 @@ void ModuleUtilities::runExtractORF() {
             frag = sequences[currSeqIdx].toString(currLabel->left, newLength);
             reverseComplementInPlace(frag);
             
+            // print as amino acid (if requested)
+            if (utilOpt.aa) {
+                
+                stringstream dnaToAA;
+                cout << frag.size() << endl;
+                cout << frag << endl;
+                for (size_t i = 0; i < frag.size(); i+=3)
+                    dnaToAA << gcode.translateCodon(frag.substr(i, 3));
+                
+                
+                frag = dnaToAA.str();
+            }
+            
             // create new fasta def
             stringstream ssm;
             ssm << currLabel->meta << ";";
