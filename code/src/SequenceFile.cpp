@@ -10,6 +10,9 @@
 #include <assert.h>
 
 #include <fstream>
+#include <boost/xpressive/xpressive.hpp>
+
+using namespace boost::xpressive;
 
 using namespace std;
 using namespace gmsuite;
@@ -217,6 +220,9 @@ void SequenceFile::read_fasta(vector<Sequence> &output) const{
     // point to start of data
     const char *  current = begin_read;
     
+    cmatch match;
+    cregex expr = cregex::compile("^(\\S+_\\d+(?:\\.\\d+)?)\\s+");
+    
     // loop over all file
     while (current != end_read) {
         
@@ -229,6 +235,11 @@ void SequenceFile::read_fasta(vector<Sequence> &output) const{
         fastaSeq = readNextFastaSequence(current, end_read);
         
         // create new sequence and add it to the output vector
+        
+        // FIXME: update string to keep full fasta header information
+        // for now, extract accession number (if possible);
+        if (regex_search(&fastaDef[0], &fastaDef[fastaDef.size()-1], match, expr) && match.size() > 1)
+            fastaDef = match.str(1);
         output.push_back(Sequence(fastaSeq, fastaDef));
     }
     

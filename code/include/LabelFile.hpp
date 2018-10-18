@@ -35,7 +35,7 @@ namespace gmsuite {
     public:
         
         typedef enum {READ, WRITE} access_t;                /**< Read or write access to file */
-        typedef enum {LST, AUTO} format_t;                  /**< File format (defines how labels are read/written) */
+        typedef enum {LST, GFF, AUTO} format_t;             /**< File format (defines how labels are read/written) */
         
         /**
          * Constructor: Create a LabelFile instance for a file at a given path, with
@@ -86,6 +86,13 @@ namespace gmsuite {
         bool detectLST(const char* const begin, const char* const end) const;
         
         /**
+         * Check if the file is in GFF format. This assumes an already opened file
+         *
+         * @return true if the file is in GFF format; false otherwise
+         */
+        bool detectGFF(const char* const begin, const char* const end) const;
+        
+        /**
          * Open the file and set start/end pointers to the data.
          */
         void openFile();
@@ -102,6 +109,8 @@ namespace gmsuite {
          * @param output a vector label pointers that have been read from the file.
          */
         void read_lst(vector<Label*> &output) const;
+        
+        void read_gff(vector<Label*> &output) const;
         
         /**
          * Write labels to LST file.
