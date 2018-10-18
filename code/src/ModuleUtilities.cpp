@@ -1631,11 +1631,8 @@ void ModuleUtilities::runExtractORF() {
         if (utilOpt.aa) {
             
             stringstream dnaToAA;
-            cout << frag.size() << endl;
-            cout << frag << endl;
             for (size_t i = 0; i < frag.size(); i+=3)
                 dnaToAA << gcode.translateCodon(frag.substr(i, 3));
-            
             
             frag = dnaToAA.str();
         }
