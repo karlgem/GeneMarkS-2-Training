@@ -218,6 +218,7 @@ namespace gmsuite {
             GeneticCode::gcode_t gcode;              // genetic code
             bool longestORF;                // if set, longest ORF is extracted
             bool aa;                        // if set, print as amino acid sequence
+            size_t upstreamLen;             // length of upstream from start codon
         } extractORF;
         
         static void addProcessOptions_ExtractUpstream(ExtractUpstreamUtility &options, po::options_description &processOptions);

@@ -1564,9 +1564,11 @@ void ModuleUtilities::runExtractORF() {
         if (currLabel->strand == Label::POS) {
             
             size_t currPos = currLabel->left;
-            size_t lorfLoc = currPos;
+            size_t newPos = currPos;
             
             if (utilOpt.longestORF) {
+                size_t lorfLoc = currPos;
+                
                 while (currPos >= 3) {
                     currPos -= 3;        // go back one codon
                     
@@ -1577,17 +1579,27 @@ void ModuleUtilities::runExtractORF() {
                     if (gcode.isStop(codon))
                         break;
                 }
+                
+                newPos = lorfLoc;
             }
             
-            size_t newLength = currLabel->right - lorfLoc + 1;
+            if (utilOpt.upstreamLen > 2) {
+                size_t currUpstreamLen = 0;
+                while (currUpstreamLen < utilOpt.upstreamLen-2 && newPos >= 3) {
+                    newPos -= 3;
+                    currUpstreamLen += 3;
+                }
+            }
+            
+            size_t newLength = currLabel->right - newPos + 1;
             
             // extract lorf
-            frag = sequences[currSeqIdx].toString(lorfLoc, newLength);
+            frag = sequences[currSeqIdx].toString(newPos, newLength);
             
             // create new fasta def
             stringstream ssm;
             ssm << currLabel->meta << ";";
-            ssm << lorfLoc+1            << ";" << currLabel->right+1 << ";" << currLabel->strandToStr() << ";";
+//            ssm << lorfLoc+1            << ";" << currLabel->right+1 << ";" << currLabel->strandToStr() << ";";
             ssm << currLabel->left+1    << ";" << currLabel->right+1 << ";" << currLabel->strandToStr();
             fastaHeader = ssm.str();
             
@@ -1598,9 +1610,10 @@ void ModuleUtilities::runExtractORF() {
             // extract
             
             size_t currPos = currLabel->right;
-            size_t lorfLoc = currPos;
+            size_t newPos = currPos;
             
             if (utilOpt.longestORF) {
+                size_t lorfLoc = currPos;
                 while (currPos < sequences[currSeqIdx].size()-3) {
                     currPos += 3;            // go "back" one codon
                     
@@ -1612,9 +1625,19 @@ void ModuleUtilities::runExtractORF() {
                     if (gcode.isStop(codon))
                         break;
                 }
+                
+                newPos = lorfLoc;
             }
             
-            size_t newLength = lorfLoc - currLabel->left + 1;
+            if (utilOpt.upstreamLen > 2) {
+                size_t currUpstreamLen = 0;
+                while (currUpstreamLen < utilOpt.upstreamLen-2 && newPos < sequences[currSeqIdx].size()-3) {
+                    newPos += 3;
+                    currUpstreamLen += 3;
+                }
+            }
+            
+            size_t newLength = newPos - currLabel->left + 1;
             
             frag = sequences[currSeqIdx].toString(currLabel->left, newLength);
             reverseComplementInPlace(frag);
@@ -1622,7 +1645,7 @@ void ModuleUtilities::runExtractORF() {
             // create new fasta def
             stringstream ssm;
             ssm << currLabel->meta << ";";
-            ssm << currLabel->left+1    << ";" << lorfLoc+1             << ";" << currLabel->strandToStr() << ";";
+//            ssm << currLabel->left+1    << ";" << lorfLoc+1             << ";" << currLabel->strandToStr() << ";";
             ssm << currLabel->left+1    << ";" << currLabel->right+1    << ";" << currLabel->strandToStr();
             fastaHeader = ssm.str();
         }

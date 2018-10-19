@@ -702,6 +702,7 @@ void OptionsUtilities::addProcessOptions_ExtractORF(ExtractORF &options, po::opt
     ("gcode", po::value<GeneticCode::gcode_t>(&options.gcode)->default_value(GeneticCode::ELEVEN), "Genetic code")
     ("lorf", po::bool_switch(&options.longestORF)->default_value(false), "If set, longest ORF is extracted")
     ("aa", po::bool_switch(&options.aa)->default_value(false), "If set, sequence is printed as amino acid")
+    ("upstream-len", po::value<size_t>(&options.upstreamLen)->default_value(0), "Length of upstream region to be extracted")
     ;
 }
 
