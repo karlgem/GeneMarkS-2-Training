@@ -221,7 +221,7 @@ void SequenceFile::read_fasta(vector<Sequence> &output) const{
     const char *  current = begin_read;
     
     cmatch match;
-    cregex expr = cregex::compile("^(\\S+_\\d+(?:\\.\\d+)?)\\s+");
+    cregex expr = cregex::compile("^(\\S+_[A-Za-z0-9]+(?:\\.\\d+)?)\\s+");
     
     // loop over all file
     while (current != end_read) {
