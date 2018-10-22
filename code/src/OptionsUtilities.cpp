@@ -703,6 +703,7 @@ void OptionsUtilities::addProcessOptions_ExtractORF(ExtractORF &options, po::opt
     ("lorf", po::bool_switch(&options.longestORF)->default_value(false), "If set, longest ORF is extracted")
     ("aa", po::bool_switch(&options.aa)->default_value(false), "If set, sequence is printed as amino acid")
     ("upstream-len", po::value<size_t>(&options.upstreamLen)->default_value(0), "Length of upstream region to be extracted")
+    ("tag", po::value<string>(&options.tag)->default_value(""), "Option tag appended to fasta header.")
     ;
 }
 

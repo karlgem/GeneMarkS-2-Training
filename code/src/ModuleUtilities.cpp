@@ -1664,6 +1664,8 @@ void ModuleUtilities::runExtractORF() {
         stringstream ssmHeader;
         string delimiter =  " ";
         ssmHeader << ">" << currLabel->meta;
+        if (!utilOpt.tag.empty())
+            ssmHeader << delimiter << "tag=" << utilOpt.tag;
         ssmHeader << delimiter << "pos=" << posLeft+1 << "," << posRight+1 << "," << currLabel->strandToStr();
         ssmHeader << delimiter << "cds=" << currLabel->left+1 << "," << currLabel->right+1 << "," << currLabel->strandToStr();
         ssmHeader << delimiter << "type=" << (utilOpt.aa ? "prot" : "nucl");
