@@ -1560,6 +1560,12 @@ void ModuleUtilities::runExtractORF() {
         string frag = "";
         string fastaHeader = "";
         
+        // posLeft and posRight are the left and right positions of the fragment being extracted.
+        // In general, these are equivalent to the label's coordinate. But, e.g. if the longest-orf
+        // option is enabled, then these values will correspond to the coordinates of the longest ORF
+        size_t posLeft = currLabel->left;
+        size_t posRight = currLabel->right;
+        
         // find longest ORF
         if (currLabel->strand == Label::POS) {
             
@@ -1590,6 +1596,8 @@ void ModuleUtilities::runExtractORF() {
                     currUpstreamLen += 3;
                 }
             }
+            
+            posLeft = newPos;       // left position of fragment updated (maybe)
             
             size_t newLength = currLabel->right - newPos + 1;
             
@@ -1637,6 +1645,8 @@ void ModuleUtilities::runExtractORF() {
                 }
             }
             
+            posRight = newPos;       // left position of fragment updated (maybe)
+            
             size_t newLength = newPos - currLabel->left + 1;
             
             frag = sequences[currSeqIdx].toString(currLabel->left, newLength);
@@ -1650,6 +1660,16 @@ void ModuleUtilities::runExtractORF() {
             fastaHeader = ssm.str();
         }
         
+        // create fasta header
+        stringstream ssmHeader;
+        string delimiter =  " ";
+        ssmHeader << ">" << currLabel->meta;
+        ssmHeader << delimiter << "pos=" << posLeft+1 << "," << posRight+1 << "," << currLabel->strandToStr();
+        ssmHeader << delimiter << "cds=" << currLabel->left+1 << "," << currLabel->right+1 << "," << currLabel->strandToStr();
+        ssmHeader << delimiter << "type=" << (utilOpt.aa ? "prot" : "nucl");
+        
+        fastaHeader = ssmHeader.str();
+        
         // print as amino acid (if requested)
         if (utilOpt.aa) {
             
@@ -1660,7 +1680,7 @@ void ModuleUtilities::runExtractORF() {
             frag = dnaToAA.str();
         }
         
-        cout << ">" << fastaHeader << endl << frag << endl;
+        cout << fastaHeader << endl << frag << endl;
     }
 }
 
