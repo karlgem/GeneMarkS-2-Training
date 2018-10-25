@@ -1528,7 +1528,7 @@ double percentGC(string str) {
             gc += 1;
     }
     
-    return gc / str.size();
+    return 100* gc / str.size();
 }
 
 void ModuleUtilities::runExtractORF() {
