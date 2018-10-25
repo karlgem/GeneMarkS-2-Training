@@ -26,6 +26,7 @@
 #include "MotifMarkov.hpp"
 #include "LabelsParser.hpp"
 #include <time.h>
+#include <iomanip>
 
 using namespace std;
 using namespace gmsuite;
@@ -1516,6 +1517,20 @@ void reverseComplementInPlace(string &nt) {
     }
 }
 
+double percentGC(string str) {
+    if (str.size() == 0)
+        return 0;
+    
+    double gc = 0;
+    
+    for (size_t i = 0; i < str.size(); i++) {
+        if (str[i] == 'G' || str[i] == 'C')
+            gc += 1;
+    }
+    
+    return gc / str.size();
+}
+
 void ModuleUtilities::runExtractORF() {
     OptionsUtilities::ExtractORF utilOpt = options.extractORF;
 
@@ -1667,6 +1682,12 @@ void ModuleUtilities::runExtractORF() {
         ssmHeader << ">" << currLabel->meta;
         if (!utilOpt.tag.empty())
             ssmHeader << interDelimiter << "tag=" << utilOpt.tag;
+        
+        ios_base::fmtflags oldFlags = ssmHeader.flags();
+        ssmHeader << interDelimiter << "gc=" << fixed << setprecision(2) << percentGC(frag);
+        ssmHeader.flags(oldFlags);
+        
+        
         ssmHeader << interDelimiter << "pos=" << posLeft+1 << intraDelimiter << posRight+1 << intraDelimiter << currLabel->strandToStr();
         ssmHeader << interDelimiter << "cds=" << currLabel->left+1 << intraDelimiter << currLabel->right+1 << intraDelimiter << currLabel->strandToStr();
         ssmHeader << interDelimiter << "type=" << (utilOpt.aa ? "prot" : "nucl");
