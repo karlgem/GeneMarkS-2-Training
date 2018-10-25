@@ -1662,13 +1662,14 @@ void ModuleUtilities::runExtractORF() {
         
         // create fasta header
         stringstream ssmHeader;
-        string delimiter =  " ";
+        string interDelimiter =  ":";
+        string intraDelimiter =  ";";
         ssmHeader << ">" << currLabel->meta;
         if (!utilOpt.tag.empty())
-            ssmHeader << delimiter << "tag=" << utilOpt.tag;
-        ssmHeader << delimiter << "pos=" << posLeft+1 << "," << posRight+1 << "," << currLabel->strandToStr();
-        ssmHeader << delimiter << "cds=" << currLabel->left+1 << "," << currLabel->right+1 << "," << currLabel->strandToStr();
-        ssmHeader << delimiter << "type=" << (utilOpt.aa ? "prot" : "nucl");
+            ssmHeader << interDelimiter << "tag=" << utilOpt.tag;
+        ssmHeader << interDelimiter << "pos=" << posLeft+1 << intraDelimiter << posRight+1 << intraDelimiter << currLabel->strandToStr();
+        ssmHeader << interDelimiter << "cds=" << currLabel->left+1 << intraDelimiter << currLabel->right+1 << intraDelimiter << currLabel->strandToStr();
+        ssmHeader << interDelimiter << "type=" << (utilOpt.aa ? "prot" : "nucl");
         
         fastaHeader = ssmHeader.str();
         
