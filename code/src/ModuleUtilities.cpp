@@ -1687,10 +1687,12 @@ void ModuleUtilities::runExtractORF() {
         ssmHeader << interDelimiter << "gc=" << fixed << setprecision(2) << percentGC(frag);
         ssmHeader.flags(oldFlags);
         
+        size_t loc3Prime = currLabel->strand == Label::POS ? posRight : posLeft;
         
         ssmHeader << interDelimiter << "pos=" << posLeft+1 << intraDelimiter << posRight+1 << intraDelimiter << currLabel->strandToStr();
         ssmHeader << interDelimiter << "cds=" << currLabel->left+1 << intraDelimiter << currLabel->right+1 << intraDelimiter << currLabel->strandToStr();
         ssmHeader << interDelimiter << "type=" << (utilOpt.aa ? "prot" : "nucl");
+        ssmHeader << interDelimiter << "key=" << currLabel->meta << intraDelimiter << loc3Prime << intraDelimiter << currLabel->strandToStr();
         
         fastaHeader = ssmHeader.str();
         
