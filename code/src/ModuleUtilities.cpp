@@ -1817,6 +1817,11 @@ void ModuleUtilities::runOptimalCodons() {
         stringstream ssoutValues;
         stringstream ssoutHeader;
         
+        if (!utilOpt.tag.empty()) {
+            ssoutHeader << "Tag" << "\t";
+            ssoutValues << utilOpt.tag << "\t";
+        }
+        
         // print them out
         for (map<string, map<string, double> >::iterator aaIter = optimalCodonFrequencies.begin(); aaIter != optimalCodonFrequencies.end(); aaIter++) {
             
