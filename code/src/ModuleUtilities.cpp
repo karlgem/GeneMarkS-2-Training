@@ -1731,6 +1731,7 @@ void ModuleUtilities::runOptimalCodons() {
     LabelFile flabel (utilOpt.fnlabels, LabelFile::READ);
     vector<Label*> labels;  flabel.read(labels);
 
+    bool doneFirstIteration = false;
     // for each label
     for (size_t n = 0; n < labels.size(); n++) {
         Label* lab = labels[n];
@@ -1831,15 +1832,16 @@ void ModuleUtilities::runOptimalCodons() {
                 }
             }
             
-            ssoutHeader << aaIter->first << "\t" << aaIter->first;
-            ssoutValues << maxCodon << "\t" <<  maxFreq;
-            
-            cout << ssoutHeader << endl << ssoutValues << endl;
-            
+            ssoutHeader << aaIter->first << "\t" << aaIter->first << "\t";
+            ssoutValues << maxCodon << "\t" <<  maxFreq << "\t";
             
         }
         
+        if (!doneFirstIteration)
+            cout << ssoutHeader.str() << endl;
+        
+        cout << ssoutValues.str() << endl;
+        doneFirstIteration = true;
         
     }
-    
 }

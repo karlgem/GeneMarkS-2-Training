@@ -475,6 +475,21 @@ bool OptionsUtilities::parse(int argc, const char *argv[]) {
             // Parse again...
             po::store(po::command_line_parser(opts).options(utilDesc).run(), vm);
         }
+        else if (utility == OPTIMAL_CODONS) {
+            po::options_description utilDesc (string(STR_OPTIMAL_CODONS) + " options");
+            addProcessOptions_OptimalCodons(optimalCodons, utilDesc);
+            
+            cmdline_options.add(utilDesc);
+            
+            // Collect all the unrecognized options from the first pass. This will include the
+            // (positional) mode and command name, so we need to erase them
+            vector<string> opts = po::collect_unrecognized(parsed.options, po::include_positional);
+            opts.erase(opts.begin());       // erase mode
+            opts.erase(opts.begin());       // erase command name
+            
+            // Parse again...
+            po::store(po::command_line_parser(opts).options(utilDesc).run(), vm);
+        }
         // Convert DNA to AA
         else if (utility == DNA_TO_AA) {
             po::options_description utilDesc (string(STR_DNA_TO_AA) + " options");
