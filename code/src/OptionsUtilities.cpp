@@ -43,7 +43,7 @@ OptionsUtilities::OptionsUtilities(string mode) : Options(mode) {
 #define STR_AB_FILTER "ab-filter"
 #define STR_EXTRACT_SPACER_NT_MODEL "extract-spacer-nt-model"
 #define STR_EXTRACT_ORF "extract-orf"
-
+#define STR_OPTIMAL_CODONS "optimal-codons"
 namespace gmsuite {
     // convert string to utility_t
     std::istream& operator>>(std::istream& in, OptionsUtilities::utility_t& unit) {
@@ -68,6 +68,7 @@ namespace gmsuite {
         else if (token == STR_AB_FILTER)                unit = OptionsUtilities::AB_FILTER;
         else if (token == STR_EXTRACT_SPACER_NT_MODEL)  unit = OptionsUtilities::EXTRACT_SPACER_NT_MODEL;
         else if (token == STR_EXTRACT_ORF)             unit = OptionsUtilities::EXTRACT_ORF;
+        else if (token == STR_OPTIMAL_CODONS)           unit = OptionsUtilities::OPTIMAL_CODONS;
         else
             throw boost::program_options::invalid_option_value(token);
         
@@ -707,3 +708,12 @@ void OptionsUtilities::addProcessOptions_ExtractORF(ExtractORF &options, po::opt
     ;
 }
 
+
+void OptionsUtilities::addProcessOptions_OptimalCodons(OptimalCodons &options, po::options_description &processOptions) {
+    processOptions.add_options()
+    ("sequences", po::value<string>(&options.fnsequences)->required(), "Name of sequences file")
+    ("labels", po::value<string>(&options.fnlabels)->required(), "Name of labels")
+    ("gcode", po::value<GeneticCode::gcode_t>(&options.gcode)->default_value(GeneticCode::ELEVEN), "Genetic code")
+    ("tag", po::value<string>(&options.tag)->default_value(""), "Option tag appended to fasta header.")
+    ;
+}

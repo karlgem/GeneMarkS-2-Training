@@ -89,6 +89,10 @@ vector<string> GeneticCode::getStops() const {
     return stops;
 }
 
+map<string, char> GeneticCode::getTranslationTable() const {
+    return this->translationTable;
+}
+
 
 /**
  * Translate 3-letter codon to amino acid

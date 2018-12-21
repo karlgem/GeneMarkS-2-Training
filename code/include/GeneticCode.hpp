@@ -100,6 +100,13 @@ namespace gmsuite {
         
         
         /**
+         * Get the translation table for the current genetic code
+         *
+         * @return a map of string-char pairs, showing relationship between codon and amino acid
+         */
+        map<string, char> getTranslationTable() const;
+        
+        /**
          * Translate 3-letter codon to amino acid
          *
          * @param codon the codon to be translated

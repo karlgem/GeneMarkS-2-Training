@@ -60,6 +60,7 @@ namespace gmsuite {
         void runABFilter();
         void runExtractSpacerNTModel();
         void runExtractORF();
+        void runOptimalCodons();
         
     };
     

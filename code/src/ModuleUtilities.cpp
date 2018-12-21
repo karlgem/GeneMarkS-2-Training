@@ -27,6 +27,7 @@
 #include "LabelsParser.hpp"
 #include <time.h>
 #include <iomanip>
+#include <string>
 
 using namespace std;
 using namespace gmsuite;
@@ -77,7 +78,8 @@ void ModuleUtilities::run() {
         runExtractSpacerNTModel();
     else if (options.utility == OptionsUtilities::EXTRACT_ORF)
         runExtractORF();
-    
+    else if (options.utility == OptionsUtilities::OPTIMAL_CODONS)
+        runOptimalCodons();
 //    else            // unrecognized utility to run
 //        throw invalid_argument("Unknown utility function " + options.utility);
     
@@ -1710,3 +1712,134 @@ void ModuleUtilities::runExtractORF() {
     }
 }
 
+
+void ModuleUtilities::runOptimalCodons() {
+    OptionsUtilities::OptimalCodons utilOpt = options.optimalCodons;
+    
+    AlphabetDNA alph;
+    CharNumConverter cnc(&alph);
+    NumAlphabetDNA numAlph(alph, cnc);
+    
+    GeneticCode gcode(utilOpt.gcode);
+    NumGeneticCode numGcode(gcode, cnc);
+    
+    // get sequences
+    SequenceFile fseq (utilOpt.fnsequences, SequenceFile::READ);
+    vector<Sequence> sequences;     fseq.read(sequences);               // read sequences
+    
+    // get labels
+    LabelFile flabel (utilOpt.fnlabels, LabelFile::READ);
+    vector<Label*> labels;  flabel.read(labels);
+
+    // for each label
+    for (size_t n = 0; n < labels.size(); n++) {
+        Label* lab = labels[n];
+        
+        size_t left = lab->left;
+        size_t right = lab->right;
+        Label::strand_t strand = lab->strand;
+        
+        string accession = lab->meta;
+        
+        // find sequence with seqname same as current label
+        size_t currSeqIdx = 0;
+        while (currSeqIdx < sequences.size()) {
+            if (lab->meta == sequences[currSeqIdx].getMetaData()) {
+                break;
+            }
+            currSeqIdx++;
+        }
+        
+        // extract fragment
+        string ntFragment = sequences[currSeqIdx].toString(left, right - left + 1);
+        
+        // reverse complement if needed
+        if (strand == Label::NEG)
+            reverseComplementInPlace(ntFragment);
+        
+        // convert to protein
+        // print as amino acid (if requested)
+        stringstream dnaToAA;
+        for (size_t i = 0; i < ntFragment.size(); i+=3)
+            dnaToAA << gcode.translateCodon(ntFragment.substr(i, 3));
+        
+        string aaFragment = dnaToAA.str();
+        
+        
+        map<string, map<string, double> > optimalCodonFrequencies;      // aa -> codon -> frequency per aa
+        
+        // set all frequencies to zero (get info from translation table)
+        map<string, char> translationTable = gcode.getTranslationTable();
+        
+        stringstream ss;
+        for (map<string, char>::const_iterator iter = translationTable.begin(); iter != translationTable.end(); iter++) {
+            string codon = iter->first;
+            char aaChar = iter->second;
+            string aaStr;
+            ss << aaChar;
+            ss >> aaStr;
+            ss.clear();
+            
+            
+            optimalCodonFrequencies.insert(std::pair<string, map<string, double> > (aaStr, map<string, double>()));
+            optimalCodonFrequencies.at(aaStr).insert(std::pair<string, double> (codon, 0.0));
+        }
+        
+        // now that we have both, find optimal codon
+        for (size_t idxInAA = 0; idxInAA < aaFragment.length(); idxInAA++) {
+            size_t idxInNt = idxInAA*3;
+            
+            string aa = aaFragment.substr(idxInAA, 1);
+            string codon = ntFragment.substr(idxInNt, 3);
+            
+            optimalCodonFrequencies[aa][codon] += 1;
+        }
+        
+        // normalize to percentages
+        for (map<string, map<string, double> >::iterator aaIter = optimalCodonFrequencies.begin(); aaIter != optimalCodonFrequencies.end(); aaIter++) {
+            double total = 0;
+            
+            // for each codon of current amino acid
+            for (map<string, double>::iterator codonIter = aaIter->second.begin(); codonIter != aaIter->second.end(); codonIter++) {
+                total += codonIter->second;
+            }
+            
+            // normalize
+            if (total > 0) {
+                for (map<string, double>::iterator codonIter = aaIter->second.begin(); codonIter != aaIter->second.end(); codonIter++) {
+                    codonIter->second /= total;
+                    codonIter->second *= 100;
+                }
+            }
+        }
+        
+        stringstream ssoutValues;
+        stringstream ssoutHeader;
+        
+        // print them out
+        for (map<string, map<string, double> >::iterator aaIter = optimalCodonFrequencies.begin(); aaIter != optimalCodonFrequencies.end(); aaIter++) {
+            
+            
+            string maxCodon = "NA";
+            double maxFreq = 0;
+            
+            // for each codon of current amino acid
+            for (map<string, double>::iterator codonIter = aaIter->second.begin(); codonIter != aaIter->second.end(); codonIter++) {
+                if (codonIter->second > maxFreq) {
+                    maxFreq = codonIter->second;
+                    maxCodon = codonIter->first;
+                }
+            }
+            
+            ssoutHeader << aaIter->first << "\t" << aaIter->first;
+            ssoutValues << maxCodon << "\t" <<  maxFreq;
+            
+            cout << ssoutHeader << endl << ssoutValues << endl;
+            
+            
+        }
+        
+        
+    }
+    
+}
