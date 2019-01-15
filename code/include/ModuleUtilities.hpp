@@ -61,6 +61,7 @@ namespace gmsuite {
         void runExtractSpacerNTModel();
         void runExtractORF();
         void runOptimalCodons();
+        void runOptimalCodonsSpeciesSpecific();
         
     };
     

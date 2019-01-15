@@ -47,7 +47,8 @@ namespace gmsuite {
             AB_FILTER,
             EXTRACT_SPACER_NT_MODEL,
             EXTRACT_ORF,
-            OPTIMAL_CODONS
+            OPTIMAL_CODONS,
+            OPTIMAL_CODONS_SPECIES_SPECIFIC
         }
         utility_t;
         
@@ -230,6 +231,14 @@ namespace gmsuite {
             string tag;
         } optimalCodons;
         
+        struct OptimalCodonsSpeciesSpecific : public GenericOptions {
+            string fnsequences;
+            string fnlabelsAll;
+            string fnlabelsRibosomal;
+            GeneticCode::gcode_t gcode;
+            string tag;
+        } optimalCodonsSpeciesSpecific;
+        
         static void addProcessOptions_ExtractUpstream(ExtractUpstreamUtility &options, po::options_description &processOptions);
         static void addProcessOptions_ExtractStartContext(ExtractStartContext &options, po::options_description &processOptions);
         static void addProcessOptions_StartModelInfo(StartModelInfoUtility &options, po::options_description &processOptions);
@@ -247,6 +256,8 @@ namespace gmsuite {
         static void addProcessOptions_ExtractSpacerNTModel(ExtractSpacerNTModel &options, po::options_description &processOption);
         static void addProcessOptions_ExtractORF(ExtractORF &options, po::options_description &processOption);
         static void addProcessOptions_OptimalCodons(OptimalCodons &options, po::options_description &processOption);
+        void addProcessOptions_OptimalCodonsSpeciesSpecific(OptimalCodonsSpeciesSpecific &options, po::options_description &processOptions);
+
     };
 }
 

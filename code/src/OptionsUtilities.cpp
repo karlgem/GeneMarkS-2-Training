@@ -44,6 +44,8 @@ OptionsUtilities::OptionsUtilities(string mode) : Options(mode) {
 #define STR_EXTRACT_SPACER_NT_MODEL "extract-spacer-nt-model"
 #define STR_EXTRACT_ORF "extract-orf"
 #define STR_OPTIMAL_CODONS "optimal-codons"
+#define STR_OPTIMAL_CODONS_SPECIES_SPECIFIC "optimal-codons-species-specific"
+
 namespace gmsuite {
     // convert string to utility_t
     std::istream& operator>>(std::istream& in, OptionsUtilities::utility_t& unit) {
@@ -69,6 +71,7 @@ namespace gmsuite {
         else if (token == STR_EXTRACT_SPACER_NT_MODEL)  unit = OptionsUtilities::EXTRACT_SPACER_NT_MODEL;
         else if (token == STR_EXTRACT_ORF)             unit = OptionsUtilities::EXTRACT_ORF;
         else if (token == STR_OPTIMAL_CODONS)           unit = OptionsUtilities::OPTIMAL_CODONS;
+        else if (token == STR_OPTIMAL_CODONS_SPECIES_SPECIFIC)           unit = OptionsUtilities::OPTIMAL_CODONS_SPECIES_SPECIFIC;
         else
             throw boost::program_options::invalid_option_value(token);
         
@@ -490,6 +493,21 @@ bool OptionsUtilities::parse(int argc, const char *argv[]) {
             // Parse again...
             po::store(po::command_line_parser(opts).options(utilDesc).run(), vm);
         }
+        else if (utility == OPTIMAL_CODONS_SPECIES_SPECIFIC) {
+            po::options_description utilDesc (string(STR_OPTIMAL_CODONS_SPECIES_SPECIFIC) + " options");
+            addProcessOptions_OptimalCodonsSpeciesSpecific(optimalCodonsSpeciesSpecific, utilDesc);
+            
+            cmdline_options.add(utilDesc);
+            
+            // Collect all the unrecognized options from the first pass. This will include the
+            // (positional) mode and command name, so we need to erase them
+            vector<string> opts = po::collect_unrecognized(parsed.options, po::include_positional);
+            opts.erase(opts.begin());       // erase mode
+            opts.erase(opts.begin());       // erase command name
+            
+            // Parse again...
+            po::store(po::command_line_parser(opts).options(utilDesc).run(), vm);
+        }
         // Convert DNA to AA
         else if (utility == DNA_TO_AA) {
             po::options_description utilDesc (string(STR_DNA_TO_AA) + " options");
@@ -728,6 +746,16 @@ void OptionsUtilities::addProcessOptions_OptimalCodons(OptimalCodons &options, p
     processOptions.add_options()
     ("sequences", po::value<string>(&options.fnsequences)->required(), "Name of sequences file")
     ("labels", po::value<string>(&options.fnlabels)->required(), "Name of labels")
+    ("gcode", po::value<GeneticCode::gcode_t>(&options.gcode)->default_value(GeneticCode::ELEVEN), "Genetic code")
+    ("tag", po::value<string>(&options.tag)->default_value(""), "Option tag appended to fasta header.")
+    ;
+}
+
+void OptionsUtilities::addProcessOptions_OptimalCodonsSpeciesSpecific(OptimalCodonsSpeciesSpecific &options, po::options_description &processOptions) {
+    processOptions.add_options()
+    ("sequences", po::value<string>(&options.fnsequences)->required(), "Name of sequences file")
+    ("labels-all", po::value<string>(&options.fnlabelsAll)->required(), "Name of labels")
+    ("labels-ribosomal", po::value<string>(&options.fnlabelsRibosomal)->required(), "Name of labels")
     ("gcode", po::value<GeneticCode::gcode_t>(&options.gcode)->default_value(GeneticCode::ELEVEN), "Genetic code")
     ("tag", po::value<string>(&options.tag)->default_value(""), "Option tag appended to fasta header.")
     ;

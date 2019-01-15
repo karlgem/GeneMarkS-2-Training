@@ -29,6 +29,8 @@
 #include <iomanip>
 #include <string>
 
+#include <boost/exception/all.hpp>
+
 using namespace std;
 using namespace gmsuite;
 
@@ -80,6 +82,8 @@ void ModuleUtilities::run() {
         runExtractORF();
     else if (options.utility == OptionsUtilities::OPTIMAL_CODONS)
         runOptimalCodons();
+    else if (options.utility == OptionsUtilities::OPTIMAL_CODONS_SPECIES_SPECIFIC)
+        runOptimalCodonsSpeciesSpecific();
 //    else            // unrecognized utility to run
 //        throw invalid_argument("Unknown utility function " + options.utility);
     
@@ -1548,167 +1552,374 @@ void ModuleUtilities::runExtractORF() {
     vector<Sequence> sequences;     fseq.read(sequences);               // read sequences
 
     // get labels
-    LabelFile flabel (utilOpt.fnlabels, LabelFile::READ);
-    vector<Label*> labels;  flabel.read(labels);
+    try {
+        LabelFile flabel (utilOpt.fnlabels, LabelFile::READ);
+        vector<Label*> labels;  flabel.read(labels);
 
-    // for each label, find longest orf
-    for (size_t n = 0; n < labels.size(); n++) {
-        Label* currLabel = labels[n];
+        // for each label, find longest orf
+        for (size_t n = 0; n < labels.size(); n++) {
+            Label* currLabel = labels[n];
+            
+            
+            size_t currSeqIdx = 0;
+            
+            // find sequence with seqname same as current label
+            while (currSeqIdx < sequences.size()) {
+                if (currLabel->meta == sequences[currSeqIdx].getMetaData()) {
+                    break;
+                }
+                currSeqIdx++;
+            }
+            
+            if (currSeqIdx == sequences.size()) {
+                cout << "Warning: could not find sequence name " << currLabel->meta << endl;
+                continue;
+            }
+            
+            if (currLabel->right >= sequences[currSeqIdx].size())
+                continue;
+            
+            string frag = "";
+            string fastaHeader = "";
+            
+            // posLeft and posRight are the left and right positions of the fragment being extracted.
+            // In general, these are equivalent to the label's coordinate. But, e.g. if the longest-orf
+            // option is enabled, then these values will correspond to the coordinates of the longest ORF
+            size_t posLeft = currLabel->left;
+            size_t posRight = currLabel->right;
+            
+            // find longest ORF
+            if (currLabel->strand == Label::POS) {
+                
+                size_t currPos = currLabel->left;
+                size_t newPos = currPos;
+                
+                if (utilOpt.longestORF) {
+                    size_t lorfLoc = currPos;
+                    
+                    while (currPos >= 3) {
+                        currPos -= 3;        // go back one codon
+                        
+                        string codon = sequences[currSeqIdx].toString(currPos, 3);
+                        
+                        if (gcode.isStart(codon))
+                            lorfLoc = currPos;
+                        if (gcode.isStop(codon))
+                            break;
+                    }
+                    
+                    newPos = lorfLoc;
+                }
+                
+                if (utilOpt.upstreamLen > 2) {
+                    size_t currUpstreamLen = 0;
+                    while (currUpstreamLen < utilOpt.upstreamLen-2 && newPos >= 3) {
+                        newPos -= 3;
+                        currUpstreamLen += 3;
+                    }
+                }
+                
+                posLeft = newPos;       // left position of fragment updated (maybe)
+                
+                size_t newLength = currLabel->right - newPos + 1;
+                
+                // extract lorf
+                frag = sequences[currSeqIdx].toString(newPos, newLength);
+                
+                // create new fasta def
+                stringstream ssm;
+                ssm << currLabel->meta << ";";
+    //            ssm << lorfLoc+1            << ";" << currLabel->right+1 << ";" << currLabel->strandToStr() << ";";
+                ssm << currLabel->left+1    << ";" << currLabel->right+1 << ";" << currLabel->strandToStr();
+                fastaHeader = ssm.str();
+                
+                
+            }
+            // on negative strand
+            else {
+                // extract
+                
+                size_t currPos = currLabel->right;
+                size_t newPos = currPos;
+                
+                if (utilOpt.longestORF) {
+                    size_t lorfLoc = currPos;
+                    while (currPos < sequences[currSeqIdx].size()-3) {
+                        currPos += 3;            // go "back" one codon
+                        
+                        string codon = sequences[currSeqIdx].toString(currPos-2, 3);
+                        reverseComplementInPlace(codon);
+                        
+                        if (gcode.isStart(codon))
+                            lorfLoc = currPos;
+                        if (gcode.isStop(codon))
+                            break;
+                    }
+                    
+                    newPos = lorfLoc;
+                }
+                
+                if (utilOpt.upstreamLen > 2) {
+                    size_t currUpstreamLen = 0;
+                    while (currUpstreamLen < utilOpt.upstreamLen-2 && newPos < sequences[currSeqIdx].size()-3) {
+                        newPos += 3;
+                        currUpstreamLen += 3;
+                    }
+                }
+                
+                posRight = newPos;       // left position of fragment updated (maybe)
+                
+                size_t newLength = newPos - currLabel->left + 1;
+                
+                frag = sequences[currSeqIdx].toString(currLabel->left, newLength);
+                reverseComplementInPlace(frag);
+                
+                // create new fasta def
+                stringstream ssm;
+                ssm << currLabel->meta << ";";
+    //            ssm << currLabel->left+1    << ";" << lorfLoc+1             << ";" << currLabel->strandToStr() << ";";
+                ssm << currLabel->left+1    << ";" << currLabel->right+1    << ";" << currLabel->strandToStr();
+                fastaHeader = ssm.str();
+            }
+            
+            // create fasta header
+            stringstream ssmHeader;
+            string interDelimiter =  ":";
+            string intraDelimiter =  ";";
+            ssmHeader << ">" << currLabel->meta;
+            if (!utilOpt.tag.empty())
+                ssmHeader << interDelimiter << "tag=" << utilOpt.tag;
+            
+            ios_base::fmtflags oldFlags = ssmHeader.flags();
+            ssmHeader << interDelimiter << "gc=" << fixed << setprecision(2) << percentGC(frag);
+            ssmHeader.flags(oldFlags);
+            
+            size_t loc3Prime = currLabel->strand == Label::POS ? posRight : posLeft;
+            
+            ssmHeader << interDelimiter << "pos=" << posLeft+1 << intraDelimiter << posRight+1 << intraDelimiter << currLabel->strandToStr();
+            ssmHeader << interDelimiter << "cds=" << currLabel->left+1 << intraDelimiter << currLabel->right+1 << intraDelimiter << currLabel->strandToStr();
+            ssmHeader << interDelimiter << "type=" << (utilOpt.aa ? "prot" : "nucl");
+            ssmHeader << interDelimiter << "key=" << currLabel->meta << intraDelimiter << loc3Prime << intraDelimiter << currLabel->strandToStr();
+            
+            fastaHeader = ssmHeader.str();
+            
+            // print as amino acid (if requested)
+            if (utilOpt.aa) {
+                
+                stringstream dnaToAA;
+                for (size_t i = 0; i < frag.size(); i+=3)
+                    dnaToAA << gcode.translateCodon(frag.substr(i, 3));
+                
+                frag = dnaToAA.str();
+            }
+            
+            cout << fastaHeader << endl << frag << endl;
+        }
+    }
+    catch (boost::exception &e)
+    {
+//        e << errmsg_info{"writing lots of zeros failed"};
+    }
+}
+
+
+void ModuleUtilities::runOptimalCodonsSpeciesSpecific() {
+    OptionsUtilities::OptimalCodonsSpeciesSpecific utilOpt = options.optimalCodonsSpeciesSpecific;
+
+    AlphabetDNA alph;
+    CharNumConverter cnc(&alph);
+    NumAlphabetDNA numAlph(alph, cnc);
+
+    GeneticCode gcode(utilOpt.gcode);
+    NumGeneticCode numGcode(gcode, cnc);
+
+    // get sequences
+    SequenceFile fseq (utilOpt.fnsequences, SequenceFile::READ);
+    vector<Sequence> sequences;     fseq.read(sequences);               // read sequences
+
+    // get labels
+    LabelFile flabelsAll (utilOpt.fnlabelsAll, LabelFile::READ);
+    vector<Label*> labelsAll;  flabelsAll.read(labelsAll);
+    
+    
+    // setup data structure to hold genome-wide codon usages
+    map<string, map<string, double> > optimalCodonFrequencies;      // aa -> codon -> frequency per aa
+    
+    // set all frequencies to zero (get info from translation table)
+    map<string, char> translationTable = gcode.getTranslationTable();
+    
+    stringstream ss;
+    for (map<string, char>::const_iterator iter = translationTable.begin(); iter != translationTable.end(); iter++) {
+        string codon = iter->first;
+        char aaChar = iter->second;
+        string aaStr;
+        ss << aaChar;
+        ss >> aaStr;
+        ss.clear();
         
         
-        size_t currSeqIdx = 0;
+        optimalCodonFrequencies.insert(std::pair<string, map<string, double> > (aaStr, map<string, double>()));
+        optimalCodonFrequencies.at(aaStr).insert(std::pair<string, double> (codon, 0.0));
+    }
+
+
+    /** Count codon usages across all genes **/
+    for (size_t n = 0; n < labelsAll.size(); n++) {
+        Label* lab = labelsAll[n];
+        
+        size_t left = lab->left;
+        size_t right = lab->right;
+        Label::strand_t strand = lab->strand;
+        
+        string accession = lab->meta;
         
         // find sequence with seqname same as current label
+        size_t currSeqIdx = 0;
         while (currSeqIdx < sequences.size()) {
-            if (currLabel->meta == sequences[currSeqIdx].getMetaData()) {
+            if (lab->meta == sequences[currSeqIdx].getMetaData()) {
                 break;
             }
             currSeqIdx++;
         }
         
-        if (currSeqIdx == sequences.size()) {
-            cout << "Warning: could not find sequence name " << currLabel->meta << endl;
-            continue;
-        }
+        // extract fragment
+        string ntFragment = sequences[currSeqIdx].toString(left, right - left + 1);
         
-        if (currLabel->right >= sequences[currSeqIdx].size())
-            continue;
+        // reverse complement if needed
+        if (strand == Label::NEG)
+            reverseComplementInPlace(ntFragment);
         
-        string frag = "";
-        string fastaHeader = "";
-        
-        // posLeft and posRight are the left and right positions of the fragment being extracted.
-        // In general, these are equivalent to the label's coordinate. But, e.g. if the longest-orf
-        // option is enabled, then these values will correspond to the coordinates of the longest ORF
-        size_t posLeft = currLabel->left;
-        size_t posRight = currLabel->right;
-        
-        // find longest ORF
-        if (currLabel->strand == Label::POS) {
-            
-            size_t currPos = currLabel->left;
-            size_t newPos = currPos;
-            
-            if (utilOpt.longestORF) {
-                size_t lorfLoc = currPos;
-                
-                while (currPos >= 3) {
-                    currPos -= 3;        // go back one codon
-                    
-                    string codon = sequences[currSeqIdx].toString(currPos, 3);
-                    
-                    if (gcode.isStart(codon))
-                        lorfLoc = currPos;
-                    if (gcode.isStop(codon))
-                        break;
-                }
-                
-                newPos = lorfLoc;
-            }
-            
-            if (utilOpt.upstreamLen > 2) {
-                size_t currUpstreamLen = 0;
-                while (currUpstreamLen < utilOpt.upstreamLen-2 && newPos >= 3) {
-                    newPos -= 3;
-                    currUpstreamLen += 3;
-                }
-            }
-            
-            posLeft = newPos;       // left position of fragment updated (maybe)
-            
-            size_t newLength = currLabel->right - newPos + 1;
-            
-            // extract lorf
-            frag = sequences[currSeqIdx].toString(newPos, newLength);
-            
-            // create new fasta def
-            stringstream ssm;
-            ssm << currLabel->meta << ";";
-//            ssm << lorfLoc+1            << ";" << currLabel->right+1 << ";" << currLabel->strandToStr() << ";";
-            ssm << currLabel->left+1    << ";" << currLabel->right+1 << ";" << currLabel->strandToStr();
-            fastaHeader = ssm.str();
-            
-            
-        }
-        // on negative strand
-        else {
-            // extract
-            
-            size_t currPos = currLabel->right;
-            size_t newPos = currPos;
-            
-            if (utilOpt.longestORF) {
-                size_t lorfLoc = currPos;
-                while (currPos < sequences[currSeqIdx].size()-3) {
-                    currPos += 3;            // go "back" one codon
-                    
-                    string codon = sequences[currSeqIdx].toString(currPos-2, 3);
-                    reverseComplementInPlace(codon);
-                    
-                    if (gcode.isStart(codon))
-                        lorfLoc = currPos;
-                    if (gcode.isStop(codon))
-                        break;
-                }
-                
-                newPos = lorfLoc;
-            }
-            
-            if (utilOpt.upstreamLen > 2) {
-                size_t currUpstreamLen = 0;
-                while (currUpstreamLen < utilOpt.upstreamLen-2 && newPos < sequences[currSeqIdx].size()-3) {
-                    newPos += 3;
-                    currUpstreamLen += 3;
-                }
-            }
-            
-            posRight = newPos;       // left position of fragment updated (maybe)
-            
-            size_t newLength = newPos - currLabel->left + 1;
-            
-            frag = sequences[currSeqIdx].toString(currLabel->left, newLength);
-            reverseComplementInPlace(frag);
-            
-            // create new fasta def
-            stringstream ssm;
-            ssm << currLabel->meta << ";";
-//            ssm << currLabel->left+1    << ";" << lorfLoc+1             << ";" << currLabel->strandToStr() << ";";
-            ssm << currLabel->left+1    << ";" << currLabel->right+1    << ";" << currLabel->strandToStr();
-            fastaHeader = ssm.str();
-        }
-        
-        // create fasta header
-        stringstream ssmHeader;
-        string interDelimiter =  ":";
-        string intraDelimiter =  ";";
-        ssmHeader << ">" << currLabel->meta;
-        if (!utilOpt.tag.empty())
-            ssmHeader << interDelimiter << "tag=" << utilOpt.tag;
-        
-        ios_base::fmtflags oldFlags = ssmHeader.flags();
-        ssmHeader << interDelimiter << "gc=" << fixed << setprecision(2) << percentGC(frag);
-        ssmHeader.flags(oldFlags);
-        
-        size_t loc3Prime = currLabel->strand == Label::POS ? posRight : posLeft;
-        
-        ssmHeader << interDelimiter << "pos=" << posLeft+1 << intraDelimiter << posRight+1 << intraDelimiter << currLabel->strandToStr();
-        ssmHeader << interDelimiter << "cds=" << currLabel->left+1 << intraDelimiter << currLabel->right+1 << intraDelimiter << currLabel->strandToStr();
-        ssmHeader << interDelimiter << "type=" << (utilOpt.aa ? "prot" : "nucl");
-        ssmHeader << interDelimiter << "key=" << currLabel->meta << intraDelimiter << loc3Prime << intraDelimiter << currLabel->strandToStr();
-        
-        fastaHeader = ssmHeader.str();
-        
+        // convert to protein
         // print as amino acid (if requested)
-        if (utilOpt.aa) {
+        stringstream dnaToAA;
+        for (size_t i = 0; i < ntFragment.size(); i+=3)
+            dnaToAA << gcode.translateCodon(ntFragment.substr(i, 3));
+        
+        string aaFragment = dnaToAA.str();
+        
+        // now that we have both, count usages
+        for (size_t idxInAA = 0; idxInAA < aaFragment.length(); idxInAA++) {
+            size_t idxInNt = idxInAA*3;
             
-            stringstream dnaToAA;
-            for (size_t i = 0; i < frag.size(); i+=3)
-                dnaToAA << gcode.translateCodon(frag.substr(i, 3));
+            string aa = aaFragment.substr(idxInAA, 1);
+            string codon = ntFragment.substr(idxInNt, 3);
             
-            frag = dnaToAA.str();
+            optimalCodonFrequencies[aa][codon] += 1;
+        }
+    }
+    
+    
+    // normalize to percentages
+    for (map<string, map<string, double> >::iterator aaIter = optimalCodonFrequencies.begin(); aaIter != optimalCodonFrequencies.end(); aaIter++) {
+        double total = 0;
+        
+        // for each codon of current amino acid
+        for (map<string, double>::iterator codonIter = aaIter->second.begin(); codonIter != aaIter->second.end(); codonIter++) {
+            total += codonIter->second;
         }
         
-        cout << fastaHeader << endl << frag << endl;
+        // normalize
+        if (total > 0) {
+            for (map<string, double>::iterator codonIter = aaIter->second.begin(); codonIter != aaIter->second.end(); codonIter++) {
+                codonIter->second /= total;
+                codonIter->second *= 100;
+            }
+        }
+    }
+    
+    // for each aa, find optimal codon
+    map<string, string > optimalCodonPerAA;      // aa -> codon
+    
+    // print them out
+    for (map<string, map<string, double> >::iterator aaIter = optimalCodonFrequencies.begin(); aaIter != optimalCodonFrequencies.end(); aaIter++) {
+        string maxCodon = "NA";
+        double maxFreq = 0;
+        
+        // for each codon of current amino acid
+        for (map<string, double>::iterator codonIter = aaIter->second.begin(); codonIter != aaIter->second.end(); codonIter++) {
+            if (codonIter->second > maxFreq) {
+                maxFreq = codonIter->second;
+                maxCodon = codonIter->first;
+            }
+        }
+        
+        optimalCodonPerAA[aaIter->first] = maxCodon;
+    }
+
+    stringstream ssoutValues;
+    stringstream ssoutHeader;
+    
+    if (!utilOpt.tag.empty()) {
+        ssoutHeader << "Tag" << "\t";
+        ssoutValues << utilOpt.tag << "\t";
+    }
+    
+    // read ribosomal genes
+    // get labels
+    LabelFile flabelsRibosomal (utilOpt.fnlabelsRibosomal, LabelFile::READ);
+    vector<Label*> labelsRibosomal;  flabelsRibosomal.read(labelsRibosomal);
+    
+    // for each ribosomal gene, output 1 if it only uses optimal codons, zero otherwise
+    for (vector<Label*>::const_iterator iter = labelsRibosomal.begin(); iter < labelsRibosomal.end(); iter++) {
+        Label* lab = *iter;
+        
+        size_t left = lab->left;
+        size_t right = lab->right;
+        Label::strand_t strand = lab->strand;
+        
+        string accession = lab->meta;
+        
+        // find sequence with seqname same as current label
+        size_t currSeqIdx = 0;
+        while (currSeqIdx < sequences.size()) {
+            if (lab->meta == sequences[currSeqIdx].getMetaData()) {
+                break;
+            }
+            currSeqIdx++;
+        }
+        
+        // extract fragment
+        string ntFragment = sequences[currSeqIdx].toString(left, right - left + 1);
+        
+        // reverse complement if needed
+        if (strand == Label::NEG)
+            reverseComplementInPlace(ntFragment);
+        
+        // convert to protein
+        // print as amino acid (if requested)
+        stringstream dnaToAA;
+        for (size_t i = 0; i < ntFragment.size(); i+=3)
+            dnaToAA << gcode.translateCodon(ntFragment.substr(i, 3));
+        
+        string aaFragment = dnaToAA.str();
+        
+        double percentCodonOptimal = 0;
+        double totalCodons = 0;
+        
+        // now that we have both, check if ribosomal protein only uses optimal codons
+        bool onlyOptimal = true;
+        for (size_t idxInAA = 0; idxInAA < aaFragment.length(); idxInAA++) {
+            size_t idxInNt = idxInAA*3;
+            
+            string aa = aaFragment.substr(idxInAA, 1);
+            string codon = ntFragment.substr(idxInNt, 3);
+            
+//            cout << optimalCodonPerAA[aa] << "\t" <<  codon << endl;
+            if (optimalCodonPerAA[aa] != codon) {
+                onlyOptimal = false;
+            }
+            else
+                percentCodonOptimal += 1;
+            
+            totalCodons += 1;
+        }
+        
+        if (onlyOptimal) {
+            cout << "1\t" << 100 * percentCodonOptimal / totalCodons << endl;
+        }
+        else {
+            cout << "0\t" << 100 * percentCodonOptimal / totalCodons << endl;
+        }
     }
 }
 
