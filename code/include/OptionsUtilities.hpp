@@ -220,6 +220,7 @@ namespace gmsuite {
             bool aa;                        // if set, print as amino acid sequence
             size_t upstreamLen;             // length of upstream from start codon
             string tag;                     // option tag appended to fasta header
+            bool excludeNoStart;
         } extractORF;
         
         static void addProcessOptions_ExtractUpstream(ExtractUpstreamUtility &options, po::options_description &processOptions);

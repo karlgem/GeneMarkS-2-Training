@@ -1587,6 +1587,13 @@ void ModuleUtilities::runExtractORF() {
             size_t currPos = currLabel->left;
             size_t newPos = currPos;
             
+            if (utilOpt.excludeNoStart) {
+                string codon = sequences[currSeqIdx].toString(currPos, 3);
+                
+                if (!gcode.isStart(codon))
+                    continue;
+            }
+            
             if (utilOpt.longestORF) {
                 size_t lorfLoc = currPos;
                 
@@ -1634,6 +1641,18 @@ void ModuleUtilities::runExtractORF() {
             
             size_t currPos = currLabel->right;
             size_t newPos = currPos;
+            
+            if (utilOpt.excludeNoStart) {
+                string codon = sequences[currSeqIdx].toString(currPos-2, 3);
+                reverseComplementInPlace(codon);
+                
+//                cout << "Should I exclude: " << currPos+1 << ": " << codon << endl;
+                if (!gcode.isStart(codon)) {
+//                    cout << "Yes!" << endl;
+                    continue;
+                }
+                
+            }
             
             if (utilOpt.longestORF) {
                 size_t lorfLoc = currPos;
