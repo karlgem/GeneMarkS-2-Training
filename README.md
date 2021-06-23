@@ -1,9 +1,12 @@
+**Note: This repo contains the code for the training phase of GeneMarkS-2 _only_. To download and use the complete program, please visit topaz.gatech.edu**
+
 # GeneMarkS-2
 
 **Article Name**: Modeling leaderless transcription and atypical genes results in more accurate gene prediction in prokaryotes.
 
 **Authors**: Alex Lomsadze^, Karl Gemayel^, Shiyuyun Tang and Mark Borodovsky
-              ^ joint first authors
+              
+	      ^ joint first authors
 
 **Affiliation**: Georgia Institute of Technology
 
